@@ -10,7 +10,7 @@
 
 | Milestone | Status | Phases |
 |-----------|--------|--------|
-| Milestone 1 — Core Demo ($500) | ⬜ Not Started | Phases 1-5 |
+| Milestone 1 — Core Demo ($500) | 🟡 In Progress | Phases 1-5 |
 | Milestone 2 — Voice & Polish ($300) | ⬜ Not Started | Phases 6-9 |
 
 ---
@@ -19,17 +19,17 @@
 
 ## Phase 1: Project Setup
 
-- [ ] **Phase 1 Complete**
+- [x] **Phase 1 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 1.1 | Initialize project with Bun + Vite + React + TypeScript | ⬜ |
-| 1.2 | Install and configure Tailwind CSS | ⬜ |
-| 1.3 | Install and configure shadcn/ui | ⬜ |
-| 1.4 | Set up project folder structure (`/components`, `/lib`, `/assets`) | ⬜ |
-| 1.5 | Add Inter font via Google Fonts | ⬜ |
-| 1.6 | Create Tailwind theme with brand colors (navy, orange, white) | ⬜ |
-| 1.7 | Add logo to `/assets` | ⬜ |
+| 1.1 | Initialize project with Bun + Vite + React + TypeScript | ✅ |
+| 1.2 | Install and configure Tailwind CSS | ✅ |
+| 1.3 | Install and configure shadcn/ui | ✅ |
+| 1.4 | Set up project folder structure (`/components`, `/lib`, `/assets`) | ✅ |
+| 1.5 | Add Inter font via Google Fonts | ✅ |
+| 1.6 | Create Tailwind theme with brand colors (navy, orange, white) | ✅ |
+| 1.7 | Add logo to `/assets` | ❌ (Logo file not provided) |
 
 ---
 
@@ -189,5 +189,5 @@ Fully functional demo with voice features, deployed on Vercel, source code with 
 
 _Use this section to track blockers, decisions, or client feedback._
 
-- 
+- **Task 1.7 Blocked:** Logo file (PathwayEd logo PNG) not found in project directory. Please add the logo file to proceed. 
 
