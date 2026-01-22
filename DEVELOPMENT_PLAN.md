@@ -29,7 +29,7 @@
 | 1.4 | Set up project folder structure (`/components`, `/lib`, `/assets`) | ✅ |
 | 1.5 | Add Inter font via Google Fonts | ✅ |
 | 1.6 | Create Tailwind theme with brand colors (navy, orange, white) | ✅ |
-| 1.7 | Add logo to `/assets` | ❌ (Logo file not provided) |
+| 1.7 | Add logo to `/assets` | ✅ |
 
 ---
 
@@ -189,5 +189,5 @@ Fully functional demo with voice features, deployed on Vercel, source code with 
 
 _Use this section to track blockers, decisions, or client feedback._
 
-- **Task 1.7 Blocked:** Logo file (PathwayEd logo PNG) not found in project directory. Please add the logo file to proceed. 
+- Task 1.7 resolved: Logo added to `/src/assets/logo.png` 
 
