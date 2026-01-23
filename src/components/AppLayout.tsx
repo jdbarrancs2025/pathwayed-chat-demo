@@ -38,8 +38,8 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="flex h-screen bg-slate-100">
       {/* Desktop Sidebar - hidden on mobile */}
-      <aside className="hidden md:block md:w-72 lg:w-80 flex-shrink-0 p-2">
-        <div className="h-full">
+      <aside className="hidden md:block md:w-72 lg:w-80 flex-shrink-0 py-2 pl-2">
+        <div className="h-full rounded-3xl overflow-hidden">
           {sidebarContent}
         </div>
       </aside>
@@ -73,7 +73,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-hidden bg-white md:rounded-3xl md:m-2 md:ml-0 shadow-sm">
+        <main className="flex-1 overflow-hidden bg-white md:rounded-3xl md:my-2 md:mr-2 shadow-sm">
           {children}
         </main>
       </div>

@@ -26,7 +26,7 @@ export function Sidebar({
   ]
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-[#2a4a7f] to-[#1a2f52] text-white p-4 rounded-3xl m-2">
+    <div className="flex flex-col h-full bg-gradient-to-b from-[#2a4a7f] to-[#1a2f52] text-white p-4 rounded-3xl">
       {/* Logo in white card */}
       <div className="flex justify-center pt-4 pb-8">
         <div className="bg-white rounded-2xl p-3 shadow-lg shadow-black/20">
