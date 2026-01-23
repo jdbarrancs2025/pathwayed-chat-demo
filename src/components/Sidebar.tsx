@@ -1,4 +1,3 @@
-import { Switch } from "@/components/ui/switch"
 import { MessageSquarePlus, Volume2, BookOpen, PenTool, GraduationCap, Heart } from "lucide-react"
 import logo from "@/assets/logo.png"
 
@@ -114,30 +113,81 @@ export function Sidebar({
       {/* Divider */}
       <div className="h-px bg-white/10 mx-4 mb-4" />
 
-      {/* Autoplay Voice Toggle */}
-      <div className="flex justify-center mb-4">
-        <button
+      {/* Autoplay Voice Toggle - Playful pill design */}
+      <div className="flex justify-center mb-4 px-2">
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => onAutoplayVoiceChange(!autoplayVoice)}
+          onKeyDown={(e) => e.key === 'Enter' && onAutoplayVoiceChange(!autoplayVoice)}
           className={`
-            flex items-center gap-3 py-2.5 px-5 rounded-full
-            transition-all duration-200 ease-out
+            group relative flex items-center gap-3 py-3 px-4 rounded-2xl cursor-pointer
+            transition-all duration-500 ease-out select-none
             ${autoplayVoice
-              ? "bg-white/15 shadow-inner"
-              : "hover:bg-white/8"
+              ? "bg-gradient-to-r from-accent/20 to-orange-400/10 shadow-lg shadow-accent/10"
+              : "bg-white/5 hover:bg-white/10"
             }
           `}
         >
-          <Volume2 className={`
-            h-4.5 w-4.5 transition-colors duration-200
-            ${autoplayVoice ? "text-accent" : "text-white/70"}
-          `} />
-          <span className="font-medium text-sm text-white/90">Voice</span>
-          <Switch
-            checked={autoplayVoice}
-            onCheckedChange={onAutoplayVoiceChange}
-            className="data-[state=checked]:bg-accent ml-1 scale-90"
-          />
-        </button>
+          {/* Animated background glow when active */}
+          {autoplayVoice && (
+            <div
+              className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent/10 via-transparent to-accent/5 animate-pulse"
+              style={{ animationDuration: '2s' }}
+            />
+          )}
+
+          {/* Speaker icon with sound waves animation */}
+          <div className={`
+            relative flex items-center justify-center w-9 h-9 rounded-xl
+            transition-all duration-300
+            ${autoplayVoice
+              ? "bg-accent text-white shadow-md shadow-accent/40 scale-105"
+              : "bg-white/10 text-white/60 group-hover:bg-white/15 group-hover:text-white/80"
+            }
+          `}>
+            <Volume2 className="w-4.5 h-4.5 relative z-10" />
+            {/* Sound wave rings when active */}
+            {autoplayVoice && (
+              <>
+                <span className="absolute inset-0 rounded-xl border-2 border-accent/40 animate-ping" style={{ animationDuration: '1.5s' }} />
+                <span className="absolute inset-[-4px] rounded-xl border border-accent/20 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
+              </>
+            )}
+          </div>
+
+          {/* Label */}
+          <span className={`
+            font-semibold text-sm transition-colors duration-300
+            ${autoplayVoice ? "text-white" : "text-white/70 group-hover:text-white/90"}
+          `}>
+            Voice
+          </span>
+
+          {/* Custom toggle track */}
+          <div className={`
+            relative w-12 h-7 rounded-full transition-all duration-300 ml-auto
+            ${autoplayVoice
+              ? "bg-accent shadow-inner shadow-accent/50"
+              : "bg-white/15 group-hover:bg-white/20"
+            }
+          `}>
+            {/* Toggle thumb with bounce animation */}
+            <div className={`
+              absolute top-1 w-5 h-5 rounded-full shadow-md
+              transition-all duration-300 ease-out
+              ${autoplayVoice
+                ? "left-6 bg-white scale-110"
+                : "left-1 bg-white/80 group-hover:bg-white group-hover:scale-105"
+              }
+            `}>
+              {/* Inner glow on thumb when active */}
+              {autoplayVoice && (
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white via-white to-orange-100" />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Spacer */}

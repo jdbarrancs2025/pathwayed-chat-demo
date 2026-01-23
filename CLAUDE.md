@@ -36,6 +36,7 @@ All imports use `@/` prefix mapped to `src/`:
 - `@/assets` - Static assets (logo, images)
 
 ### Styling
+- Always use the frontend design skill for front end work!
 - Tailwind v4 configured in `src/index.css` (no tailwind.config.js)
 - CSS variables for theming defined in `:root`
 - Brand colors: `--navy: #1e3a6e`, `--orange: #e85a24`

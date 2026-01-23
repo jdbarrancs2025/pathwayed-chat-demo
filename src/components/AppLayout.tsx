@@ -10,35 +10,34 @@ import { Sidebar, type Mode } from "@/components/Sidebar"
 
 interface AppLayoutProps {
   children: React.ReactNode
+  mode: Mode
+  onModeChange: (mode: Mode) => void
+  autoplayVoice: boolean
+  onAutoplayVoiceChange: (enabled: boolean) => void
+  onNewChat: () => void
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
-  const [mode, setMode] = useState<Mode>("student-support")
-  const [autoplayVoice, setAutoplayVoice] = useState(false)
+export function AppLayout({
+  children,
+  mode,
+  onModeChange,
+  autoplayVoice,
+  onAutoplayVoiceChange,
+  onNewChat,
+}: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  const handleModeChange = (newMode: Mode) => {
-    setMode(newMode)
-    // Chat will reset in Phase 4 when this is wired up
-    console.log("Mode changed to:", newMode)
-  }
-
-  const handleNewChat = () => {
-    // Will be implemented in Phase 4
-    console.log("New chat clicked")
-  }
 
   const sidebarContent = (
     <Sidebar
       mode={mode}
       onModeChange={(newMode) => {
-        handleModeChange(newMode)
+        onModeChange(newMode)
         setSidebarOpen(false)
       }}
       autoplayVoice={autoplayVoice}
-      onAutoplayVoiceChange={setAutoplayVoice}
+      onAutoplayVoiceChange={onAutoplayVoiceChange}
       onNewChat={() => {
-        handleNewChat()
+        onNewChat()
         setSidebarOpen(false)
       }}
     />

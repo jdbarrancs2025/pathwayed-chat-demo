@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react"
+import { X, AlertCircle } from "lucide-react"
 import { ChatMessage, type Message } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
 import { WelcomeMessage } from "./WelcomeMessage"
@@ -7,12 +8,16 @@ interface ChatContainerProps {
   messages: Message[]
   onSendMessage: (message: string) => void
   isLoading?: boolean
+  error?: string | null
+  onDismissError?: () => void
 }
 
 export function ChatContainer({
   messages,
   onSendMessage,
   isLoading,
+  error,
+  onDismissError,
 }: ChatContainerProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -28,6 +33,27 @@ export function ChatContainer({
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-slate-50/50 to-white">
+      {/* Error Banner */}
+      {error && (
+        <div className="flex-shrink-0 px-4 pt-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl text-red-700 animate-in fade-in slide-in-from-top-2 duration-300">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <span className="flex-1 text-sm font-medium">{error}</span>
+              {onDismissError && (
+                <button
+                  onClick={onDismissError}
+                  className="p-1 hover:bg-red-100 rounded-full transition-colors"
+                  aria-label="Dismiss error"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Messages area */}
       <div
         ref={messagesContainerRef}
