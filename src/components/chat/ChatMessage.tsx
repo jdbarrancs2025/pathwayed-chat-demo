@@ -1,4 +1,10 @@
 import { cn } from "@/lib/utils"
+import { Streamdown } from "streamdown"
+import { createMathPlugin } from "@streamdown/math"
+
+const mathPlugin = createMathPlugin({
+  singleDollarTextMath: true,
+})
 
 export interface Message {
   id: string
@@ -46,12 +52,17 @@ export function ChatMessage({ message, isLatest }: ChatMessageProps) {
           )}
 
           {/* Message content */}
-          <p className={cn(
-            "text-[15px] leading-relaxed relative z-10 whitespace-pre-wrap",
-            isUser ? "font-medium" : "font-normal"
-          )}>
-            {message.content}
-          </p>
+          {isUser ? (
+            <p className="text-[15px] leading-relaxed relative z-10 whitespace-pre-wrap font-medium">
+              {message.content}
+            </p>
+          ) : (
+            <div className="text-[15px] leading-relaxed relative z-10 prose prose-slate prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+              <Streamdown plugins={{ math: mathPlugin }}>
+                {message.content}
+              </Streamdown>
+            </div>
+          )}
         </div>
 
         {/* Decorative tail for bubbles */}
