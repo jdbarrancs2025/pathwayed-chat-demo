@@ -39,6 +39,22 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
     }
   }, [message])
 
+  // Scroll input into view on focus (iOS keyboard fix)
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const handleFocus = () => {
+      // Delay allows keyboard to fully appear before scrolling
+      setTimeout(() => {
+        textarea.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 300)
+    }
+
+    textarea.addEventListener("focus", handleFocus)
+    return () => textarea.removeEventListener("focus", handleFocus)
+  }, [])
+
   return (
     <div className="p-3 pb-safe sm:p-4 md:p-5 lg:p-6 bg-gradient-to-t from-slate-50 to-transparent">
       <form
