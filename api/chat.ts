@@ -1,6 +1,6 @@
 import OpenAI from "openai"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { getCombinedSystemPrompt, type Mode } from "./prompts"
+import { getCombinedSystemPrompt, type Mode } from "./prompts.js"
 
 interface ChatMessage {
   role: "user" | "assistant"
