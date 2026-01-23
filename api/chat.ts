@@ -1,3 +1,4 @@
+import OpenAI from "openai"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { getCombinedSystemPrompt, type Mode } from "./prompts"
 
@@ -23,6 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: "OpenAI API key not configured" })
   }
 
+  const openai = new OpenAI({
+    apiKey,
+  })
+
   try {
     const { messages, mode } = req.body as ChatRequest
 
@@ -36,82 +41,45 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Build messages array with system prompt
     const systemPrompt = getCombinedSystemPrompt(mode)
-    const openaiMessages = [
+    const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       { role: "system", content: systemPrompt },
-      ...messages.map((m) => ({ role: m.role, content: m.content })),
+      ...messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
     ]
 
-    // Call OpenAI API with streaming
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: openaiMessages,
-        stream: true,
-        max_tokens: 1024,
-        temperature: 0.7,
-      }),
+    // Call OpenAI API with streaming using the SDK
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: openaiMessages,
+      stream: true,
+      max_tokens: 1024,
+      temperature: 0.7,
     })
-
-    if (!response.ok) {
-      const error = await response.text()
-      console.error("OpenAI API error:", error)
-      return res.status(response.status).json({
-        error: "Failed to get response from AI"
-      })
-    }
 
     // Set up SSE headers
     res.setHeader("Content-Type", "text/event-stream")
     res.setHeader("Cache-Control", "no-cache")
     res.setHeader("Connection", "keep-alive")
 
-    // Stream the response
-    const reader = response.body?.getReader()
-    if (!reader) {
-      return res.status(500).json({ error: "Failed to read response stream" })
-    }
-
-    const decoder = new TextDecoder()
-    let buffer = ""
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split("\n")
-      buffer = lines.pop() || ""
-
-      for (const line of lines) {
-        const trimmed = line.trim()
-        if (!trimmed || !trimmed.startsWith("data: ")) continue
-
-        const data = trimmed.slice(6)
-        if (data === "[DONE]") {
-          res.write("data: [DONE]\n\n")
-          continue
-        }
-
-        try {
-          const parsed = JSON.parse(data)
-          const content = parsed.choices?.[0]?.delta?.content
-          if (content) {
-            res.write(`data: ${JSON.stringify({ content })}\n\n`)
-          }
-        } catch {
-          // Skip malformed JSON
-        }
+    // Stream the response using for-await pattern
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(`data: ${JSON.stringify({ content })}\n\n`)
       }
     }
 
+    res.write("data: [DONE]\n\n")
     res.end()
   } catch (error) {
     console.error("Chat API error:", error)
+
+    // Check if headers already sent (streaming started)
+    if (res.headersSent) {
+      res.write(`data: ${JSON.stringify({ error: "Stream interrupted" })}\n\n`)
+      res.end()
+      return
+    }
+
     return res.status(500).json({ error: "Internal server error" })
   }
 }
