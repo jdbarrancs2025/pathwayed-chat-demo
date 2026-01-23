@@ -1,7 +1,4 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "@/components/ui/switch"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { MessageSquarePlus, Volume2 } from "lucide-react"
 import logo from "@/assets/logo.png"
 
@@ -22,85 +19,85 @@ export function Sidebar({
   onAutoplayVoiceChange,
   onNewChat,
 }: SidebarProps) {
+  const personas: { value: Persona; label: string }[] = [
+    { value: "student", label: "Student" },
+    { value: "teacher", label: "Teacher" },
+    { value: "parent", label: "Parent" },
+  ]
+
   return (
-    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground p-6">
-      {/* Logo */}
-      <div className="mb-8">
-        <img
-          src={logo}
-          alt="PathwayEd"
-          className="h-12 w-auto"
-        />
-      </div>
-
-      {/* Persona Toggle */}
-      <div className="mb-8">
-        <Label className="text-sm font-medium text-sidebar-foreground/70 mb-3 block">
-          I am a...
-        </Label>
-        <RadioGroup
-          value={persona}
-          onValueChange={(value) => onPersonaChange(value as Persona)}
-          className="space-y-2"
-        >
-          {[
-            { value: "student", label: "Student" },
-            { value: "teacher", label: "Teacher" },
-            { value: "parent", label: "Parent" },
-          ].map((option) => (
-            <div
-              key={option.value}
-              className="flex items-center space-x-3 rounded-xl px-4 py-3 transition-colors hover:bg-sidebar-accent cursor-pointer"
-              onClick={() => onPersonaChange(option.value as Persona)}
-            >
-              <RadioGroupItem
-                value={option.value}
-                id={option.value}
-                className="border-sidebar-foreground/50 text-sidebar-primary data-[state=checked]:bg-sidebar-primary data-[state=checked]:border-sidebar-primary"
-              />
-              <Label
-                htmlFor={option.value}
-                className="text-sidebar-foreground cursor-pointer font-medium"
-              >
-                {option.label}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </div>
-
-      {/* Autoplay Voice Toggle */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between rounded-xl px-4 py-3 bg-sidebar-accent/50">
-          <div className="flex items-center space-x-3">
-            <Volume2 className="h-5 w-5 text-sidebar-foreground/70" />
-            <Label
-              htmlFor="autoplay-voice"
-              className="text-sidebar-foreground font-medium cursor-pointer"
-            >
-              Autoplay Voice
-            </Label>
-          </div>
-          <Switch
-            id="autoplay-voice"
-            checked={autoplayVoice}
-            onCheckedChange={onAutoplayVoiceChange}
-            className="data-[state=checked]:bg-sidebar-primary"
+    <div className="flex flex-col h-full bg-gradient-to-b from-[#2a4a7f] to-[#1a2f52] text-white p-4 rounded-3xl m-2">
+      {/* Logo in white card */}
+      <div className="flex justify-center pt-4 pb-8">
+        <div className="bg-white rounded-2xl p-3 shadow-lg shadow-black/20">
+          <img
+            src={logo}
+            alt="PathwayEd"
+            className="h-14 w-auto"
           />
         </div>
+      </div>
+
+      {/* Persona Selection - Centered nav style */}
+      <nav className="flex flex-col items-center space-y-2 mb-8">
+        {personas.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => onPersonaChange(option.value)}
+            className={`
+              w-full max-w-[180px] py-3 px-6 rounded-full text-center font-medium
+              transition-all duration-200 ease-out
+              ${
+                persona === option.value
+                  ? "bg-white/20 shadow-inner"
+                  : "hover:bg-white/10"
+              }
+            `}
+          >
+            {option.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* Autoplay Voice Toggle */}
+      <div className="flex flex-col items-center mb-6">
+        <button
+          onClick={() => onAutoplayVoiceChange(!autoplayVoice)}
+          className={`
+            flex items-center gap-3 py-3 px-6 rounded-full
+            transition-all duration-200 ease-out
+            ${autoplayVoice ? "bg-white/20" : "hover:bg-white/10"}
+          `}
+        >
+          <Volume2 className="h-5 w-5 opacity-80" />
+          <span className="font-medium">Voice</span>
+          <Switch
+            checked={autoplayVoice}
+            onCheckedChange={onAutoplayVoiceChange}
+            className="data-[state=checked]:bg-accent ml-1 scale-90"
+          />
+        </button>
       </div>
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* New Chat Button */}
-      <Button
-        onClick={onNewChat}
-        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl py-6 font-semibold"
-      >
-        <MessageSquarePlus className="mr-2 h-5 w-5" />
-        New Chat
-      </Button>
+      {/* New Chat Button at bottom */}
+      <div className="flex justify-center pb-4">
+        <button
+          onClick={onNewChat}
+          className="
+            flex items-center gap-2 py-3 px-6 rounded-full
+            bg-accent hover:bg-accent/90 text-white font-semibold
+            transition-all duration-200 ease-out
+            shadow-lg shadow-accent/30 hover:shadow-accent/40
+            hover:scale-[1.02] active:scale-[0.98]
+          "
+        >
+          <MessageSquarePlus className="h-5 w-5" />
+          New Chat
+        </button>
+      </div>
     </div>
   )
 }
