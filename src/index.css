@@ -121,3 +121,38 @@
     margin-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
+
+/* Landscape mode utilities for phones in landscape orientation */
+@layer utilities {
+  /* Hide elements in landscape mode on short screens */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .landscape\:hidden {
+      display: none;
+    }
+    .landscape\:pt-4 {
+      padding-top: 1rem;
+    }
+    .landscape\:pb-4 {
+      padding-bottom: 1rem;
+    }
+    .landscape\:mb-4 {
+      margin-bottom: 1rem;
+    }
+    .landscape\:w-16 {
+      width: 4rem;
+    }
+    .landscape\:h-16 {
+      height: 4rem;
+    }
+    .landscape\:w-8 {
+      width: 2rem;
+    }
+    .landscape\:h-8 {
+      height: 2rem;
+    }
+    .landscape\:text-sm {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+  }
+}

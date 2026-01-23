@@ -27,7 +27,7 @@ export function ChatMessage({ message, isLatest }: ChatMessageProps) {
     >
       <div
         className={cn(
-          "max-w-[85%] md:max-w-[70%] relative group",
+          "max-w-[90%] sm:max-w-[85%] md:max-w-[75%] lg:max-w-[70%] xl:max-w-[65%] relative group",
           isUser ? "order-1" : "order-1"
         )}
       >

@@ -49,7 +49,7 @@ export function Sidebar({
               key={option.value}
               onClick={() => onModeChange(option.value)}
               className={`
-                group relative w-full p-3 rounded-2xl text-left
+                group relative w-full p-3.5 sm:p-3 min-h-[52px] rounded-2xl text-left
                 transition-all duration-300 ease-out
                 ${isSelected
                   ? "bg-white/15 shadow-lg shadow-black/10"
@@ -66,9 +66,9 @@ export function Sidebar({
 
               {/* Content */}
               <div className="relative flex items-center gap-3">
-                {/* Icon container */}
+                {/* Icon container - minimum 44px touch target */}
                 <div className={`
-                  flex items-center justify-center w-10 h-10 rounded-xl
+                  flex items-center justify-center w-11 h-11 sm:w-10 sm:h-10 rounded-xl
                   transition-all duration-300
                   ${isSelected
                     ? "bg-accent text-white shadow-md shadow-accent/30 scale-105"
