@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { getCombinedSystemPrompt, type Mode } from "../src/lib/prompts"
+import { getCombinedSystemPrompt, type Mode } from "./prompts"
 
 interface ChatMessage {
   role: "user" | "assistant"
