@@ -44,7 +44,7 @@ export function AppLayout({
   )
 
   return (
-    <div className="flex h-screen bg-slate-100">
+    <div className="flex h-full bg-slate-100 overflow-hidden overscroll-none">
       {/* Desktop Sidebar - hidden on mobile */}
       <aside className="hidden md:block md:w-72 lg:w-80 flex-shrink-0 py-2 pl-2">
         <div className="h-full rounded-3xl overflow-hidden">
@@ -53,7 +53,7 @@ export function AppLayout({
       </aside>
 
       {/* Mobile Header + Sheet */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#2a4a7f] to-[#1e3a6e]">
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>

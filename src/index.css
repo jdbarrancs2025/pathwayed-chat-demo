@@ -97,4 +97,27 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+  /* Fix for mobile viewport height - accounts for browser chrome */
+  html, body, #root {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Prevent iOS rubber-band scrolling on fixed containers */
+  html {
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Safe area utilities for mobile devices */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }

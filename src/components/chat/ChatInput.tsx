@@ -40,7 +40,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   }, [message])
 
   return (
-    <div className="p-4 md:p-6 bg-gradient-to-t from-slate-50 to-transparent">
+    <div className="p-4 pb-safe md:p-6 bg-gradient-to-t from-slate-50 to-transparent">
       <form
         onSubmit={handleSubmit}
         className="relative max-w-3xl mx-auto"

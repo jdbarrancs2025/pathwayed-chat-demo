@@ -32,7 +32,7 @@ export function ChatContainer({
   const isEmpty = messages.length === 0
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-slate-50/50 to-white">
+    <div className="flex flex-col h-full bg-gradient-to-b from-slate-50/50 to-white overflow-hidden">
       {/* Error Banner */}
       {error && (
         <div className="flex-shrink-0 px-4 pt-4">
@@ -57,7 +57,7 @@ export function ChatContainer({
       {/* Messages area */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto overscroll-contain"
       >
         {isEmpty ? (
           <WelcomeMessage onSuggestionClick={onSendMessage} />
