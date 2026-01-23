@@ -6,16 +6,22 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Sidebar, type Persona } from "@/components/Sidebar"
+import { Sidebar, type Mode } from "@/components/Sidebar"
 
 interface AppLayoutProps {
   children: React.ReactNode
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const [persona, setPersona] = useState<Persona>("student")
+  const [mode, setMode] = useState<Mode>("student-support")
   const [autoplayVoice, setAutoplayVoice] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const handleModeChange = (newMode: Mode) => {
+    setMode(newMode)
+    // Chat will reset in Phase 4 when this is wired up
+    console.log("Mode changed to:", newMode)
+  }
 
   const handleNewChat = () => {
     // Will be implemented in Phase 4
@@ -24,8 +30,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const sidebarContent = (
     <Sidebar
-      persona={persona}
-      onPersonaChange={setPersona}
+      mode={mode}
+      onModeChange={(newMode) => {
+        handleModeChange(newMode)
+        setSidebarOpen(false)
+      }}
       autoplayVoice={autoplayVoice}
       onAutoplayVoiceChange={setAutoplayVoice}
       onNewChat={() => {
