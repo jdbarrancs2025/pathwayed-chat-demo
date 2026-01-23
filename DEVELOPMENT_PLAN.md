@@ -35,16 +35,16 @@
 
 ## Phase 2: Layout & Sidebar
 
-- [ ] **Phase 2 Complete**
+- [x] **Phase 2 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 2.1 | Create `AppLayout` component (sidebar + main area) | ⬜ |
-| 2.2 | Create `Sidebar` component with logo at top | ⬜ |
-| 2.3 | Add persona toggle (Student/Teacher/Parent) using shadcn RadioGroup | ⬜ |
-| 2.4 | Add autoplay voice toggle using shadcn Switch (non-functional placeholder) | ⬜ |
-| 2.5 | Add "New Chat" button | ⬜ |
-| 2.6 | Implement responsive sidebar (hamburger menu on mobile) | ⬜ |
+| 2.1 | Create `AppLayout` component (sidebar + main area) | ✅ |
+| 2.2 | Create `Sidebar` component with logo at top | ✅ |
+| 2.3 | Add persona toggle (Student/Teacher/Parent) using shadcn RadioGroup | ✅ |
+| 2.4 | Add autoplay voice toggle using shadcn Switch (non-functional placeholder) | ✅ |
+| 2.5 | Add "New Chat" button | ✅ |
+| 2.6 | Implement responsive sidebar (hamburger menu on mobile) | ✅ |
 
 ---
 
