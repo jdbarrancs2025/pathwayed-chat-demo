@@ -6,6 +6,19 @@ const mathPlugin = createMathPlugin({
   singleDollarTextMath: true,
 })
 
+/**
+ * Normalize LaTeX math delimiters for Streamdown compatibility.
+ * Converts \(...\) to $...$ (inline) and \[...\] to $$...$$ (block).
+ * See: https://github.com/vercel/streamdown/issues/194
+ */
+function normalizeMathDelimiters(content: string): string {
+  return content
+    // Convert \[...\] to $$...$$ (block math) - must do first to avoid conflicts
+    .replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$')
+    // Convert \(...\) to $...$ (inline math)
+    .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
+}
+
 export interface Message {
   id: string
   role: "user" | "assistant"
@@ -59,7 +72,7 @@ export function ChatMessage({ message, isLatest }: ChatMessageProps) {
           ) : (
             <div className="text-[15px] leading-relaxed relative z-10 prose prose-slate prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
               <Streamdown plugins={{ math: mathPlugin }}>
-                {message.content}
+                {normalizeMathDelimiters(message.content)}
               </Streamdown>
             </div>
           )}
