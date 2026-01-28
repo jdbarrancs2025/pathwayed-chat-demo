@@ -158,24 +158,24 @@ Working demo with: Account Setup → Teacher Setup → Student Home → Student 
 
 # MILESTONE 2 — Parent Screens + Polish ($450)
 
-## Phase 9: Parent Screens
+## Phase 9: Parent Screens ✅
 
-- [ ] **Phase 9 Complete**
+- [x] **Phase 9 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 9.1 | Create **Screen P1: Parent View** (School Mode) — view only | ⬜ |
-| 9.2 | Add assigned skills list with completion status | ⬜ |
-| 9.3 | Add time spent display | ⬜ |
-| 9.4 | Add static "Teacher Notes" section | ⬜ |
-| 9.5 | Create **Screen P2: Parent Setup** (Home Mode) | ⬜ |
-| 9.6 | Add subject checkboxes (Math, Reading, Writing) | ⬜ |
-| 9.7 | Add focus area selection | ⬜ |
-| 9.8 | Add schedule selector (Daily, 3x per week, Weekends only) | ⬜ |
-| 9.9 | Add "Save & Continue" → navigates to S1 (Home Mode) | ⬜ |
-| 9.10 | Create **Screen P3: Parent Dashboard** (Home Mode) | ⬜ |
-| 9.11 | Add weekly stats (minutes practiced, subjects completed) | ⬜ |
-| 9.12 | Add "Change Goals" and "Change Schedule" buttons | ⬜ |
+| 9.1 | Create **Screen P1: Parent View** (School Mode) — view only | ✅ |
+| 9.2 | Add assigned skills list with completion status | ✅ |
+| 9.3 | Add time spent display | ✅ |
+| 9.4 | Add static "Teacher Notes" section | ✅ |
+| 9.5 | Create **Screen P2: Parent Setup** (Home Mode) | ✅ |
+| 9.6 | Add subject checkboxes (Math, Reading, Writing) | ✅ |
+| 9.7 | Add focus area selection | ✅ |
+| 9.8 | Add schedule selector (Daily, 3x per week, Weekends only) | ✅ |
+| 9.9 | Add "Save & Continue" → navigates to S1 (Home Mode) | ✅ |
+| 9.10 | Create **Screen P3: Parent Dashboard** (Home Mode) | ✅ |
+| 9.11 | Add weekly stats (minutes practiced, subjects completed) | ✅ |
+| 9.12 | Add "Change Goals" and "Change Schedule" buttons | ✅ |
 
 ---
 
