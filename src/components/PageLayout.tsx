@@ -50,56 +50,59 @@ export function PageLayout({
       )}
     >
       {/* Header */}
-      <header className="relative bg-gradient-to-r from-[#2a4a7f] to-[#1e3a6e] px-4 py-4 sm:px-6 sm:py-5">
-        {/* Subtle pattern overlay for depth */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
+      <header className="relative bg-gradient-to-br from-[#1e3a6e] via-[#2a4a7f] to-[#1a3460] px-4 py-5 sm:px-6 sm:py-6 overflow-hidden">
+        {/* Radial gradient overlay for premium glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.12),transparent_60%)]" />
+
+        {/* Decorative blur circles for depth */}
+        <div className="absolute -top-8 -left-8 w-32 h-32 bg-[#e85a24]/20 rounded-full blur-3xl" />
+        <div className="absolute -top-4 -right-12 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-16 left-1/3 w-48 h-48 bg-[#2a4a7f]/40 rounded-full blur-3xl" />
 
         <div className="relative mx-auto flex items-center justify-between">
           {/* Back button area */}
-          <div className="w-10 sm:w-12">
+          <div className="w-12 sm:w-14">
             {showBack && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleBack}
-                className="text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+                className="h-10 w-10 rounded-xl bg-white/5 text-white/90 hover:text-white hover:bg-white/15 backdrop-blur-sm border border-white/10 transition-all duration-200 hover:scale-105"
                 aria-label="Go back"
               >
-                <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
           </div>
 
           {/* Logo and title */}
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center gap-2.5">
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/10 shadow-lg shadow-black/5">
               <img
                 src={logoImg}
                 alt="PathwayEd"
-                className="h-8 w-8 sm:h-9 sm:w-9 object-contain drop-shadow-sm"
+                className="h-10 w-10 sm:h-11 sm:w-11 object-contain drop-shadow-md"
               />
-              <span className="text-white font-semibold text-lg sm:text-xl tracking-tight">
+              <span className="text-white font-bold text-xl sm:text-2xl tracking-tight drop-shadow-sm">
                 PathwayEd
               </span>
             </div>
             {title && (
-              <span className="text-white/80 text-xs sm:text-sm font-medium">
+              <span className="text-white/95 text-xs sm:text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
                 {title}
               </span>
             )}
           </div>
 
           {/* Spacer for balance */}
-          <div className="w-10 sm:w-12" />
+          <div className="w-12 sm:w-14" />
         </div>
 
-        {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#e85a24] to-transparent opacity-60" />
+        {/* Enhanced bottom accent line with glow */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <div className="h-1 bg-gradient-to-r from-transparent via-[#e85a24] to-transparent" />
+          <div className="absolute inset-0 h-2 bg-gradient-to-r from-transparent via-[#e85a24]/50 to-transparent blur-sm -translate-y-1" />
+        </div>
       </header>
 
       {/* Main content */}

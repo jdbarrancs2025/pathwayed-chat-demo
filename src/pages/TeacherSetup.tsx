@@ -92,7 +92,8 @@ export function TeacherSetup() {
     <PageLayout title="Teacher Setup" showBack backTo="/">
       <div className="space-y-8 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
         {/* Header */}
-        <div className="text-center">
+        <div className="text-center relative">
+          <div className="absolute inset-0 -top-4 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl -z-10" />
           <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
             Set Learning Goals
           </h1>
@@ -103,10 +104,13 @@ export function TeacherSetup() {
 
         {/* Focus Areas Section */}
         <section className="space-y-4">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-            <span className="h-px flex-1 bg-border" />
-            <span>Focus Areas</span>
-            <span className="h-px flex-1 bg-border" />
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-3">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-border" />
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e85a24]" />
+              Focus Areas
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border" />
           </h2>
 
           <div className="space-y-4">
@@ -183,35 +187,46 @@ export function TeacherSetup() {
 
         {/* Upload Assignment Section */}
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-            <span className="h-px flex-1 bg-border" />
-            <span>Assignment</span>
-            <span className="h-px flex-1 bg-border" />
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-3">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-border" />
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e85a24]" />
+              Assignment
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border" />
           </h2>
 
-          <Button
-            variant="outline"
-            disabled
-            className="w-full h-auto py-4 flex items-center justify-center gap-3 border-dashed border-2 opacity-60"
-          >
-            <Upload className="h-5 w-5 text-muted-foreground" />
-            <div className="text-left">
-              <span className="block font-medium text-muted-foreground">
-                Upload Assignment
-              </span>
-              <span className="text-xs text-muted-foreground/70">
-                Coming soon
-              </span>
-            </div>
-          </Button>
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-[#1e3a6e]/20 via-[#e85a24]/20 to-[#1e3a6e]/20 rounded-2xl opacity-50 blur-sm" />
+            <Button
+              variant="outline"
+              disabled
+              className="relative w-full h-auto py-5 flex items-center justify-center gap-4 border-dashed border-2 bg-white/80 backdrop-blur-sm rounded-xl hover:bg-white/90 transition-all"
+            >
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200/50">
+                <Upload className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="text-left">
+                <span className="block font-semibold text-muted-foreground">
+                  Upload Assignment
+                </span>
+                <span className="text-xs text-muted-foreground/70">
+                  Coming soon
+                </span>
+              </div>
+            </Button>
+          </div>
         </section>
 
         {/* Timeframe Section */}
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-            <span className="h-px flex-1 bg-border" />
-            <span>Timeframe</span>
-            <span className="h-px flex-1 bg-border" />
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-3">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-border" />
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e85a24]" />
+              Timeframe
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border" />
           </h2>
 
           <RadioGroup

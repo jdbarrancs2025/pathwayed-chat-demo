@@ -37,8 +37,14 @@ export function StudentHome() {
     <PageLayout title="Student Home">
       <div className="space-y-6 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
         {/* Dynamic greeting */}
-        <div className="text-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-primary leading-snug max-w-md mx-auto">
+        <div className="text-center relative">
+          {/* Decorative background elements */}
+          <div className="absolute -inset-4 -top-6 overflow-hidden rounded-3xl -z-10">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/3 to-transparent" />
+            <div className="absolute top-0 left-1/4 w-24 h-24 bg-[#e85a24]/5 rounded-full blur-2xl" />
+            <div className="absolute top-2 right-1/4 w-20 h-20 bg-primary/5 rounded-full blur-2xl" />
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-primary leading-snug max-w-md mx-auto py-2">
             {headerText}
           </h1>
         </div>
