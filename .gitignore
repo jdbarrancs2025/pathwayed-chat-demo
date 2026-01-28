@@ -23,5 +23,4 @@ npm-debug.log*
 
 # Bun
 bun.lockb
-bun.lock
 .vercel

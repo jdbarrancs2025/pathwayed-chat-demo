@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PathwayEd AI Chat Demo - A branded single-page web application demonstrating an AI-powered student support assistant for school administrators. Built for vendor fair demos (no auth, no database).
+PathwayEd Learning Demo - A branded web application demonstrating an AI-powered student support assistant for school administrators. Built for vendor fair demos (no auth, no database).
 
 ## Commands
 

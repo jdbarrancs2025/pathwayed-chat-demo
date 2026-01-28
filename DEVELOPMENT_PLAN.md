@@ -10,7 +10,7 @@
 
 | Milestone | Status | Phases |
 |-----------|--------|--------|
-| Milestone 1 — Core Demo ($500) | 🟡 In Progress | Phases 1-5 |
+| Milestone 1 — Core Demo ($500) | ✅ Complete | Phases 1-5 |
 | Milestone 2 — Voice & Polish ($300) | ⬜ Not Started | Phases 6-9 |
 
 ---
@@ -87,14 +87,14 @@
 
 ## Phase 5: Mobile Polish
 
-- [ ] **Phase 5 Complete**
+- [x] **Phase 5 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 5.1 | Test and fix responsive layout on tablet sizes | ⬜ |
-| 5.2 | Test and fix responsive layout on mobile sizes | ⬜ |
-| 5.3 | Ensure chat input stays fixed at bottom on mobile | ⬜ |
-| 5.4 | Test sidebar collapse/expand behavior | ⬜ |
+| 5.1 | Test and fix responsive layout on tablet sizes | ✅ |
+| 5.2 | Test and fix responsive layout on mobile sizes | ✅ |
+| 5.3 | Ensure chat input stays fixed at bottom on mobile | ✅ |
+| 5.4 | Test sidebar collapse/expand behavior | ✅ |
 
 ---
 
@@ -102,7 +102,7 @@
 
 Working chat demo with 4-mode system (Student Support, Writing Coach, Teacher Support, Parent Support), fully responsive, deployed locally for testing.
 
-- [ ] **Milestone 1 Complete — Ready for client review**
+- [x] **Milestone 1 Complete — Ready for client review**
 
 ---
 
