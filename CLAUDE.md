@@ -1,5 +1,6 @@
 # CLAUDE.md
 
+NEVER START A DEV SERVER, I WILL DO THAT
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
