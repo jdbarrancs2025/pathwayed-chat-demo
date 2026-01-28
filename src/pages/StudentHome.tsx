@@ -86,11 +86,11 @@ export function StudentHome() {
         <ProgressStats progress={state.progress} />
 
         {/* Parent/Teacher view link */}
-        <div className="pt-2">
+        <div className="pt-4 px-2">
           <Button
             variant="ghost"
             onClick={handleParentView}
-            className="w-full text-muted-foreground hover:text-primary"
+            className="w-full py-4 text-base font-medium text-muted-foreground hover:text-primary border border-slate-200 hover:border-accent"
           >
             {state.mode === 'school' ? 'Parent/Teacher View' : 'Parent Dashboard'}
           </Button>
