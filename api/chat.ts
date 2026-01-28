@@ -1,6 +1,6 @@
 import OpenAI from "openai"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { getCombinedSystemPrompt, type Mode } from "./prompts.js"
+import { getCombinedSystemPrompt, type Mode, type StudentContext } from "./prompts.js"
 
 interface ChatMessage {
   role: "user" | "assistant"
@@ -10,6 +10,7 @@ interface ChatMessage {
 interface ChatRequest {
   messages: ChatMessage[]
   mode: Mode
+  context?: StudentContext
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -29,7 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   })
 
   try {
-    const { messages, mode } = req.body as ChatRequest
+    const { messages, mode, context } = req.body as ChatRequest
 
     // Validate request body
     if (!messages || !Array.isArray(messages)) {
@@ -39,8 +40,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Mode is required" })
     }
 
-    // Build messages array with system prompt
-    const systemPrompt = getCombinedSystemPrompt(mode)
+    // Build messages array with system prompt (include context for student-support mode)
+    const systemPrompt = getCombinedSystemPrompt(mode, context)
     const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       { role: "system", content: systemPrompt },
       ...messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),

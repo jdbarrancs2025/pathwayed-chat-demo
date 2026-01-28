@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router'
-import { Calculator, BookOpen, PenTool } from 'lucide-react'
 import { PageLayout } from '@/components/PageLayout'
 import { Button } from '@/components/ui/button'
 import { useAppContext } from '@/context/AppContext'
+import {
+  SubjectButton,
+  TodaysFocusPanel,
+  ProgressStats,
+} from '@/components/student'
 import type { Subject } from '@/lib/types'
 
-const subjects: { id: Subject; label: string; icon: typeof Calculator; color: string }[] = [
-  { id: 'math', label: 'Math', icon: Calculator, color: 'bg-blue-500 hover:bg-blue-600' },
-  { id: 'reading', label: 'Reading', icon: BookOpen, color: 'bg-green-500 hover:bg-green-600' },
-  { id: 'writing', label: 'Writing', icon: PenTool, color: 'bg-purple-500 hover:bg-purple-600' },
-]
+const subjects: Subject[] = ['math', 'reading', 'writing']
 
 export function StudentHome() {
   const navigate = useNavigate()
@@ -27,36 +27,54 @@ export function StudentHome() {
     }
   }
 
-  return (
-    <PageLayout title="Choose a Subject">
-      <div className="flex flex-col items-center text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-          Hi there!
-        </h1>
-        <p className="text-muted-foreground mb-8 max-w-sm">
-          What would you like to work on today?
-        </p>
+  // Dynamic header based on mode
+  const headerText =
+    state.mode === 'school'
+      ? "Hi Jordan — here's what your teacher wants you to work on"
+      : "Hi Jordan — here's what to work on today"
 
-        <div className="w-full grid gap-4 mb-8">
-          {subjects.map(({ id, label, icon: Icon, color }) => (
-            <Button
-              key={id}
-              onClick={() => handleSubjectClick(id)}
-              className={`w-full h-auto py-5 flex items-center gap-4 text-white ${color}`}
-            >
-              <Icon className="h-7 w-7" />
-              <span className="text-xl font-semibold">{label}</span>
-            </Button>
+  return (
+    <PageLayout title="Student Home">
+      <div className="space-y-6 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        {/* Dynamic greeting */}
+        <div className="text-center">
+          <h1 className="text-xl sm:text-2xl font-bold text-primary leading-snug max-w-md mx-auto">
+            {headerText}
+          </h1>
+        </div>
+
+        {/* Subject buttons */}
+        <div className="space-y-3">
+          {subjects.map((subject) => (
+            <SubjectButton
+              key={subject}
+              subject={subject}
+              focusAreaCount={state.focusAreas[subject].length}
+              progressStatus={state.progress[subject]}
+              onClick={() => handleSubjectClick(subject)}
+            />
           ))}
         </div>
 
-        <Button
-          variant="ghost"
-          onClick={handleParentView}
-          className="text-muted-foreground"
-        >
-          Parent/Teacher View
-        </Button>
+        {/* Today's Focus panel */}
+        <TodaysFocusPanel
+          focusAreas={state.focusAreas}
+          progress={state.progress}
+        />
+
+        {/* Progress stats */}
+        <ProgressStats progress={state.progress} />
+
+        {/* Parent/Teacher view link */}
+        <div className="pt-2">
+          <Button
+            variant="ghost"
+            onClick={handleParentView}
+            className="w-full text-muted-foreground hover:text-primary"
+          >
+            {state.mode === 'school' ? 'Parent/Teacher View' : 'Parent Dashboard'}
+          </Button>
+        </div>
       </div>
     </PageLayout>
   )

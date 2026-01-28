@@ -1,9 +1,15 @@
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support"
 
+export interface StudentContext {
+  subject: string
+  focusAreas: string[]
+  appMode: 'school' | 'home' | null
+}
+
 /**
  * Master system prompt - always active, defines PathwayEd's core identity
  */
-export const MASTER_PROMPT = `You are PathwayEd, an AI learning assistant for K–12 schools, supporting students, teachers, and families through tutoring, intervention, and enrichment programs.
+export const MASTER_PROMPT = `You are N.I.K.K.I., PathwayEd's AI learning assistant for K–12 schools, supporting students, teachers, and families through tutoring, intervention, and enrichment programs.
 
 Your personality is calm, intelligent, and confident—like a knowledgeable academic advisor who genuinely wants to help. You're supportive without being overly casual, and you speak with quiet competence rather than excessive enthusiasm.
 
@@ -131,8 +137,38 @@ export function getOpeningMessage(mode: Mode): string {
 }
 
 /**
+ * Build the context block for student-support mode
+ */
+function buildContextBlock(context: StudentContext): string {
+  const focusAreasFormatted = context.focusAreas.length > 0
+    ? context.focusAreas.join(', ')
+    : 'General practice'
+
+  const modeLabel = context.appMode === 'school'
+    ? 'School (teacher-assigned)'
+    : context.appMode === 'home'
+      ? 'Home (parent-guided)'
+      : 'Open practice'
+
+  return `
+CURRENT SESSION CONTEXT:
+- Subject: ${context.subject.charAt(0).toUpperCase() + context.subject.slice(1)}
+- Focus Areas: ${focusAreasFormatted}
+- Learning Mode: ${modeLabel}
+
+Tailor your help to these specific focus areas when relevant.`
+}
+
+/**
  * Get the combined system prompt (master + mode) for a specific mode
  */
-export function getCombinedSystemPrompt(mode: Mode): string {
-  return `${MASTER_PROMPT}\n\n---\n\n${MODE_CONFIG[mode].prompt}`
+export function getCombinedSystemPrompt(mode: Mode, context?: StudentContext): string {
+  let prompt = `${MASTER_PROMPT}\n\n---\n\n${MODE_CONFIG[mode].prompt}`
+
+  // Add context block for student-support mode when context is provided
+  if (mode === 'student-support' && context) {
+    prompt += `\n\n---\n${buildContextBlock(context)}`
+  }
+
+  return prompt
 }

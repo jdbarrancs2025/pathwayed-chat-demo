@@ -44,10 +44,10 @@ export function WelcomeMessage({ onSuggestionClick }: WelcomeMessageProps) {
       {/* Welcome text */}
       <div className="text-center mb-6 sm:mb-8 md:mb-10 max-w-md landscape:mb-4">
         <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-2 sm:mb-3">
-          Hi there! I'm PathwayEd
+          Hi there! I'm N.I.K.K.I.
         </h2>
         <p className="text-slate-500 text-sm sm:text-base md:text-lg leading-relaxed landscape:text-sm">
-          Your friendly learning companion. I'm here to help students, teachers, and parents with anything education-related!
+          Your friendly learning companion from PathwayEd. I'm here to help you with your practice questions!
         </p>
       </div>
 

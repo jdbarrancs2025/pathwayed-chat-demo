@@ -12,7 +12,7 @@ import type { FocusAreas } from '@/lib/types'
 const focusAreaOptions = {
   math: [
     { value: 'fractions', label: 'Fractions' },
-    { value: 'word-problems', label: 'Word Problems' },
+    { value: 'geometry', label: 'Geometry' },
   ],
   reading: [
     { value: 'main-idea', label: 'Main Idea' },

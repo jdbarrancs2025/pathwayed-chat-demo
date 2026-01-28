@@ -17,7 +17,7 @@ export function AccountSetup() {
   }
 
   return (
-    <div className="min-h-dvh bg-white flex items-center justify-center px-4 py-8 overflow-auto">
+    <div className="h-dvh bg-white flex items-center justify-center px-4 py-8 overflow-y-auto">
       {/* Subtle background pattern */}
       <div
         className="fixed inset-0 opacity-[0.02] pointer-events-none"

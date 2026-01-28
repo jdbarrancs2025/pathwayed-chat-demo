@@ -104,7 +104,7 @@ export function ChatMessage({ message, isLatest }: ChatMessageProps) {
             isUser ? "text-right text-slate-400" : "text-left text-slate-400"
           )}
         >
-          {isUser ? "You" : "PathwayEd"}
+          {isUser ? "You" : "N.I.K.K.I."}
         </span>
       </div>
     </div>

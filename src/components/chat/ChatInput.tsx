@@ -83,7 +83,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask PathwayEd anything..."
+            placeholder="Ask N.I.K.K.I. anything..."
             disabled={disabled}
             rows={1}
             className={cn(

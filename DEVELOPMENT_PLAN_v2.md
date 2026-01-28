@@ -11,7 +11,7 @@
 | Milestone | Amount | Status | Phases |
 |-----------|--------|--------|--------|
 | Work Already Completed | $250 | ✅ Complete | Phases 1-5 (original) |
-| Milestone 1 — Core Screens + N.I.K.K.I. | $650 | ⬜ Not Started | Phases 6-8 |
+| Milestone 1 — Core Screens + N.I.K.K.I. | $650 | ✅ Complete | Phases 6-8 |
 | Milestone 2 — Parent Screens + Polish | $450 | ⬜ Not Started | Phases 9-11 |
 
 ---
@@ -126,25 +126,25 @@
 
 ---
 
-## Phase 8: Student Screens + N.I.K.K.I.
+## Phase 8: Student Screens + N.I.K.K.I. ✅
 
-- [ ] **Phase 8 Complete**
+- [x] **Phase 8 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 8.1 | Create **Screen S1: Student Home** layout | ⬜ |
-| 8.2 | Add dynamic header based on mode (school vs home) | ⬜ |
-| 8.3 | Create subject buttons (Math, Reading, Writing) with icons | ⬜ |
-| 8.4 | Create "Today's Focus" panel showing selected focus areas | ⬜ |
-| 8.5 | Add progress indicators (time spent, activities completed — static) | ⬜ |
-| 8.6 | Create **Screen S2: Student Subject** layout | ⬜ |
-| 8.7 | Add "Practice Today's Skill" section with example questions (static) | ⬜ |
-| 8.8 | Add "Homework Help — Ask N.I.K.K.I." section | ⬜ |
-| 8.9 | Move existing chat components into N.I.K.K.I. section | ⬜ |
-| 8.10 | Update system prompt to include subject/focus context | ⬜ |
-| 8.11 | Add "Mark Complete" button with visual feedback | ⬜ |
-| 8.12 | Add back navigation to S1 | ⬜ |
-| 8.13 | Test N.I.K.K.I. AI responses in context | ⬜ |
+| 8.1 | Create **Screen S1: Student Home** layout | ✅ |
+| 8.2 | Add dynamic header based on mode (school vs home) | ✅ |
+| 8.3 | Create subject buttons (Math, Reading, Writing) with icons | ✅ |
+| 8.4 | Create "Today's Focus" panel showing selected focus areas | ✅ |
+| 8.5 | Add progress indicators (time spent, activities completed — static) | ✅ |
+| 8.6 | Create **Screen S2: Student Subject** layout | ✅ |
+| 8.7 | Add "Practice Today's Skill" section with example questions (static) | ✅ |
+| 8.8 | Add "Homework Help — Ask N.I.K.K.I." section | ✅ |
+| 8.9 | Move existing chat components into N.I.K.K.I. section | ✅ |
+| 8.10 | Update system prompt to include subject/focus context | ✅ |
+| 8.11 | Add "Mark Complete" button with visual feedback | ✅ |
+| 8.12 | Add back navigation to S1 | ✅ |
+| 8.13 | Test N.I.K.K.I. AI responses in context | ✅ |
 
 ---
 
@@ -152,7 +152,7 @@
 
 Working demo with: Account Setup → Teacher Setup → Student Home → Student Subject with live N.I.K.K.I. AI homework help.
 
-- [ ] **Milestone 1 Complete — Ready for client review**
+- [x] **Milestone 1 Complete — Ready for client review**
 
 ---
 
