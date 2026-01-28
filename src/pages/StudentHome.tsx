@@ -47,6 +47,20 @@ export function StudentHome() {
           <h1 className="text-xl sm:text-2xl font-bold text-primary leading-snug max-w-md mx-auto py-2">
             {headerText}
           </h1>
+          <p className="text-xs text-muted-foreground mt-1 font-medium">
+            {state.mode === 'school'
+              ? 'Assigned by Teacher / Program'
+              : 'Practice Plan Set by Parent'}
+          </p>
+        </div>
+
+        {/* N.I.K.K.I. recommendation */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/10">
+          <span className="text-lg">💬</span>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-primary">N.I.K.K.I.</span> recommends starting with{' '}
+            <span className="font-semibold text-blue-600">Math</span> today
+          </p>
         </div>
 
         {/* Subject buttons */}

@@ -95,10 +95,10 @@ export function TeacherSetup() {
         <div className="text-center relative">
           <div className="absolute inset-0 -top-4 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl -z-10" />
           <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
-            Set Learning Goals
+            Assign Practice Focus for This Session
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
-            Choose the focus areas for your student's practice session
+            Choose what students should practice during this session
           </p>
         </div>
 

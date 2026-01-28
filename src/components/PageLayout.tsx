@@ -77,7 +77,10 @@ export function PageLayout({
 
           {/* Logo and title */}
           <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/10 shadow-lg shadow-black/5">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/10 shadow-lg shadow-black/5 cursor-pointer transition-all duration-200 hover:bg-white/15 active:bg-white/20 active:scale-[0.98] hover:scale-[1.02]"
+            >
               <img
                 src={logoImg}
                 alt="PathwayEd"
@@ -86,7 +89,7 @@ export function PageLayout({
               <span className="text-white font-bold text-xl sm:text-2xl tracking-tight drop-shadow-sm">
                 PathwayEd
               </span>
-            </div>
+            </button>
             {title && (
               <span className="text-white/95 text-xs sm:text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
                 {title}
