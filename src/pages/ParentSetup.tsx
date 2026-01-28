@@ -33,7 +33,7 @@ export function ParentSetup() {
               <Settings className="h-7 w-7 text-primary/60" />
             </div>
             <p className="text-sm text-muted-foreground">
-              Schedule and focus area configuration will be implemented in Phase 7
+              Schedule and focus area configuration will be implemented in Phase 9
             </p>
             {/* Decorative dots */}
             <div className="flex justify-center gap-1.5 mt-4">
