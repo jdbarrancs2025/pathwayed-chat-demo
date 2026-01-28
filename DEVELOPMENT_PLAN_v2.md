@@ -96,33 +96,33 @@
 
 # MILESTONE 1 — Core Screens + N.I.K.K.I. ($650)
 
-## Phase 6: Routing & App Structure
+## Phase 6: Routing & App Structure ✅
 
-- [ ] **Phase 6 Complete**
+- [x] **Phase 6 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 6.1 | Install and configure React Router | ⬜ |
-| 6.2 | Create route structure for all screens | ⬜ |
-| 6.3 | Create `AppContext` for global state (mode, focusAreas, progress) | ⬜ |
-| 6.4 | Create shared `PageLayout` component (header + content area) | ⬜ |
-| 6.5 | Create `BackButton` component for navigation | ⬜ |
+| 6.1 | Install and configure React Router | ✅ |
+| 6.2 | Create route structure for all screens | ✅ |
+| 6.3 | Create `AppContext` for global state (mode, focusAreas, progress) | ✅ |
+| 6.4 | Create shared `PageLayout` component (header + content area) | ✅ |
+| 6.5 | Create `BackButton` component for navigation | ✅ |
 
 ---
 
-## Phase 7: Setup & Flow Screens
+## Phase 7: Setup & Flow Screens ✅
 
-- [ ] **Phase 7 Complete**
+- [x] **Phase 7 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 7.1 | Create **Screen 0: Account Setup** — mode selection (School vs Home) | ⬜ |
-| 7.2 | Create **Screen T1: Teacher Setup** — focus area checkboxes | ⬜ |
-| 7.3 | Add subject sections to T1 (Math, Reading, Writing with sub-options) | ⬜ |
-| 7.4 | Add "Upload Assignment" button (UI only) | ⬜ |
-| 7.5 | Add timeframe selector (This week / Until test date) | ⬜ |
-| 7.6 | Add "Save & Continue" button → navigates to S1 | ⬜ |
-| 7.7 | Store teacher selections in AppContext | ⬜ |
+| 7.1 | Create **Screen 0: Account Setup** — mode selection (School vs Home) | ✅ |
+| 7.2 | Create **Screen T1: Teacher Setup** — focus area checkboxes | ✅ |
+| 7.3 | Add subject sections to T1 (Math, Reading, Writing with sub-options) | ✅ |
+| 7.4 | Add "Upload Assignment" button (UI only) | ✅ |
+| 7.5 | Add timeframe selector (This week / Until test date) | ✅ |
+| 7.6 | Add "Save & Continue" button → navigates to S1 | ✅ |
+| 7.7 | Store teacher selections in AppContext | ✅ |
 
 ---
 
