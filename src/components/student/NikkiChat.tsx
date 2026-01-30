@@ -7,6 +7,13 @@ import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import type { Subject, AppMode } from '@/lib/types'
 
+const FILLER_PHRASES = [
+  "Let me think about that!",
+  "Great question! Let me help.",
+  "Sure thing! Working on it.",
+  "Okay, let me figure this out!",
+]
+
 interface NikkiChatProps {
   subject: Subject
   focusAreas: string[]
@@ -18,7 +25,7 @@ export function NikkiChat({ subject, focusAreas, appMode }: NikkiChatProps) {
     context: { subject, focusAreas, appMode },
   })
 
-  const { speak, stop, unlockAudio, isSpeaking, isLoading: ttsLoading, error: ttsError } = useTextToSpeech()
+  const { speak, stop, unlockAudio, preloadFillers, playFiller, isSpeaking, isLoading: ttsLoading, error: ttsError } = useTextToSpeech()
 
   const [readAloud, setReadAloud] = useState(false)
 
@@ -26,6 +33,12 @@ export function NikkiChat({ subject, focusAreas, appMode }: NikkiChatProps) {
   const wasLoadingRef = useRef(false)
 
   useEffect(() => {
+    // Detect false → true: message just sent, play filler while waiting
+    if (!wasLoadingRef.current && isLoading && readAloud) {
+      playFiller()
+    }
+
+    // Detect true → false: streaming complete, play full response
     if (wasLoadingRef.current && !isLoading && readAloud) {
       const lastMessage = messages[messages.length - 1]
       if (lastMessage?.role === 'assistant' && lastMessage.content.trim()) {
@@ -34,13 +47,15 @@ export function NikkiChat({ subject, focusAreas, appMode }: NikkiChatProps) {
       }
     }
     wasLoadingRef.current = isLoading
-  }, [isLoading, messages, readAloud, speak])
+  }, [isLoading, messages, readAloud, speak, playFiller])
 
   const handleToggle = (checked: boolean) => {
     setReadAloud(checked)
     if (checked) {
       // Unlock iOS AudioContext on user gesture
       unlockAudio()
+      // Pre-cache filler phrases for instant playback
+      preloadFillers(FILLER_PHRASES)
     } else {
       stop()
     }

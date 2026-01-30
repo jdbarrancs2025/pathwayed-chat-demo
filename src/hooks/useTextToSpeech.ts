@@ -4,10 +4,15 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 let sharedAudioContext: AudioContext | null = null
 let isUnlocked = false
 
+// Module-level filler cache — persists across re-renders and hook re-initializations
+const fillerCache = new Map<string, AudioBuffer>()
+
 export interface UseTextToSpeechReturn {
   speak: (text: string) => Promise<void>
   stop: () => void
   unlockAudio: () => void
+  preloadFillers: (phrases: string[]) => void
+  playFiller: () => void
   isSpeaking: boolean
   isLoading: boolean
   error: string | null
@@ -170,6 +175,61 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
     unlockAudioContext()
   }, [])
 
+  const preloadFillers = useCallback((phrases: string[]) => {
+    const ctx = getOrCreateContext()
+    const uncached = phrases.filter((p) => !fillerCache.has(p))
+    if (uncached.length === 0) return
+
+    Promise.allSettled(
+      uncached.map(async (phrase) => {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: phrase }),
+        })
+        if (!res.ok) return
+        const arrayBuffer = await res.arrayBuffer()
+        const audioBuffer = await ctx.decodeAudioData(arrayBuffer)
+        fillerCache.set(phrase, audioBuffer)
+      })
+    )
+  }, [])
+
+  const playFiller = useCallback(() => {
+    if (fillerCache.size === 0) return
+
+    const keys = Array.from(fillerCache.keys())
+    const key = keys[Math.floor(Math.random() * keys.length)]
+    const buffer = fillerCache.get(key)
+    if (!buffer) return
+
+    // Stop any current playback before playing filler
+    if (sourceNodeRef.current) {
+      try {
+        sourceNodeRef.current.stop()
+        sourceNodeRef.current.disconnect()
+      } catch {
+        // Source may already have ended
+      }
+      sourceNodeRef.current = null
+    }
+
+    const ctx = getOrCreateContext()
+    const source = ctx.createBufferSource()
+    source.buffer = buffer
+    source.connect(ctx.destination)
+    sourceNodeRef.current = source
+
+    source.onended = () => {
+      // Only clear ref if this source is still the active one
+      if (sourceNodeRef.current === source) {
+        sourceNodeRef.current = null
+      }
+    }
+
+    source.start(0)
+  }, [])
+
   // Cleanup on unmount: abort fetch, stop playback
   useEffect(() => {
     return () => {
@@ -191,6 +251,8 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
     speak,
     stop,
     unlockAudio,
+    preloadFillers,
+    playFiller,
     isSpeaking,
     isLoading,
     error,
