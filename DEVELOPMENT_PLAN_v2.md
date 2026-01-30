@@ -181,19 +181,19 @@ Working demo with: Account Setup → Teacher Setup → Student Home → Student 
 
 ## Phase 10: Voice Features (N.I.K.K.I.)
 
-- [ ] **Phase 10 Complete**
+- [x] **Phase 10 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 10.1 | Create `useAudioRecorder` hook (MediaRecorder API) | ⬜ |
-| 10.2 | Create `WaveformVisualizer` component | ⬜ |
-| 10.3 | Implement mic button in N.I.K.K.I. chat input | ⬜ |
-| 10.4 | Create `/api/transcribe` serverless function (Whisper) | ⬜ |
-| 10.5 | Populate transcription into input (editable) | ⬜ |
-| 10.6 | Create `/api/tts` serverless function (OpenAI TTS) | ⬜ |
-| 10.7 | Create `useTextToSpeech` hook | ⬜ |
-| 10.8 | Add voice autoplay toggle to S2 screen | ⬜ |
-| 10.9 | Test voice features on iOS Safari + Chrome | ⬜ |
+| 10.1 | Create `useAudioRecorder` hook (MediaRecorder API) | ✅ |
+| 10.2 | Create `WaveformVisualizer` component | ✅ |
+| 10.3 | Implement mic button in N.I.K.K.I. chat input | ✅ |
+| 10.4 | Create `/api/transcribe` serverless function (Whisper) | ✅ |
+| 10.5 | Populate transcription into input (editable) | ✅ |
+| 10.6 | Create `/api/tts` serverless function (OpenAI TTS) | ✅ |
+| 10.7 | Create `useTextToSpeech` hook | ✅ |
+| 10.8 | Add voice autoplay toggle to S2 screen | ✅ |
+| 10.9 | Test voice features on iOS Safari + Chrome | ✅ |
 
 ---
 

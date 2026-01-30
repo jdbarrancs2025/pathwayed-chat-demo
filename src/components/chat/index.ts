@@ -1,5 +1,6 @@
 export { ChatContainer } from "./ChatContainer"
 export { ChatMessage } from "./ChatMessage"
 export { ChatInput } from "./ChatInput"
+export { WaveformVisualizer } from "./WaveformVisualizer"
 export { WelcomeMessage } from "./WelcomeMessage"
 export type { Message } from "./ChatMessage"
