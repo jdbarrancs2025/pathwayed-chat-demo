@@ -57,7 +57,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
 
   const isMountedRef = useRef(true)
   const abortControllerRef = useRef<AbortController | null>(null)
-  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null)
+  const activeSourcesRef = useRef<AudioBufferSourceNode[]>([])
 
   // Track mount state
   useEffect(() => {
@@ -74,16 +74,16 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       abortControllerRef.current = null
     }
 
-    // Stop current audio playback
-    if (sourceNodeRef.current) {
+    // Stop all active audio sources
+    for (const source of activeSourcesRef.current) {
       try {
-        sourceNodeRef.current.stop()
-        sourceNodeRef.current.disconnect()
+        source.stop()
+        source.disconnect()
       } catch {
         // Source may already have ended
       }
-      sourceNodeRef.current = null
     }
+    activeSourcesRef.current = []
 
     if (isMountedRef.current) {
       setIsSpeaking(false)
@@ -120,7 +120,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
         const response = await fetch('/api/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text, format: 'pcm' }),
           signal: abortController.signal,
         })
 
@@ -128,32 +128,91 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
           throw new Error('Text-to-speech failed')
         }
 
-        const arrayBuffer = await response.arrayBuffer()
+        const body = response.body
+        if (!body) {
+          throw new Error('No response body')
+        }
 
-        // Decode the audio data
-        const audioBuffer = await ctx.decodeAudioData(arrayBuffer)
+        const reader = body.getReader()
+        const PCM_SAMPLE_RATE = 24000
+        let leftover = new Uint8Array(0)
+        let nextStartTime = 0
+        let isFirstChunk = true
+        let lastSource: AudioBufferSourceNode | null = null
 
-        // Check if we were stopped/unmounted during the async operations
-        if (!isMountedRef.current || abortController.signal.aborted) return
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
 
-        // Create and play source node
-        const source = ctx.createBufferSource()
-        source.buffer = audioBuffer
-        source.connect(ctx.destination)
-        sourceNodeRef.current = source
+          if (abortController.signal.aborted) break
 
-        source.onended = () => {
-          sourceNodeRef.current = null
-          if (isMountedRef.current) {
-            setIsSpeaking(false)
+          // Combine leftover bytes with new chunk
+          let data: Uint8Array
+          if (leftover.length > 0) {
+            data = new Uint8Array(leftover.length + value.length)
+            data.set(leftover, 0)
+            data.set(value, leftover.length)
+          } else {
+            data = value
+          }
+
+          // Handle odd byte — carry to next iteration
+          const usableBytes = data.length & ~1 // Round down to even
+          if (usableBytes === 0) {
+            leftover = data
+            continue
+          }
+
+          leftover =
+            data.length > usableBytes ? data.slice(usableBytes) : new Uint8Array(0)
+
+          // Convert Int16 LE → Float32 using DataView for safe alignment
+          const sampleCount = usableBytes / 2
+          const view = new DataView(data.buffer, data.byteOffset, usableBytes)
+          const audioBuffer = ctx.createBuffer(1, sampleCount, PCM_SAMPLE_RATE)
+          const channelData = audioBuffer.getChannelData(0)
+
+          for (let i = 0; i < sampleCount; i++) {
+            channelData[i] = view.getInt16(i * 2, true) / 32768
+          }
+
+          // Schedule gapless playback
+          const source = ctx.createBufferSource()
+          source.buffer = audioBuffer
+          source.connect(ctx.destination)
+          activeSourcesRef.current.push(source)
+
+          // Snap forward if we've fallen behind
+          if (nextStartTime < ctx.currentTime) {
+            nextStartTime = ctx.currentTime
+          }
+
+          source.start(nextStartTime)
+          nextStartTime += audioBuffer.duration
+          lastSource = source
+
+          if (isFirstChunk) {
+            isFirstChunk = false
+            if (isMountedRef.current) {
+              setIsLoading(false)
+              setIsSpeaking(true)
+            }
           }
         }
 
-        source.start(0)
-
-        if (isMountedRef.current) {
-          setIsLoading(false)
-          setIsSpeaking(true)
+        // When the last source ends, mark speaking as done
+        if (lastSource) {
+          lastSource.onended = () => {
+            if (isMountedRef.current) {
+              setIsSpeaking(false)
+            }
+          }
+        } else {
+          // No audio was produced
+          if (isMountedRef.current) {
+            setIsLoading(false)
+            setIsSpeaking(false)
+          }
         }
       } catch (err) {
         // Silently ignore abort errors (user cancelled)
@@ -204,26 +263,27 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
     if (!buffer) return
 
     // Stop any current playback before playing filler
-    if (sourceNodeRef.current) {
+    for (const s of activeSourcesRef.current) {
       try {
-        sourceNodeRef.current.stop()
-        sourceNodeRef.current.disconnect()
+        s.stop()
+        s.disconnect()
       } catch {
         // Source may already have ended
       }
-      sourceNodeRef.current = null
     }
+    activeSourcesRef.current = []
 
     const ctx = getOrCreateContext()
     const source = ctx.createBufferSource()
     source.buffer = buffer
     source.connect(ctx.destination)
-    sourceNodeRef.current = source
+    activeSourcesRef.current.push(source)
 
     source.onended = () => {
-      // Only clear ref if this source is still the active one
-      if (sourceNodeRef.current === source) {
-        sourceNodeRef.current = null
+      // Only clear if this source is still in the active list
+      const idx = activeSourcesRef.current.indexOf(source)
+      if (idx !== -1) {
+        activeSourcesRef.current.splice(idx, 1)
       }
     }
 
@@ -236,10 +296,10 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }
-      if (sourceNodeRef.current) {
+      for (const source of activeSourcesRef.current) {
         try {
-          sourceNodeRef.current.stop()
-          sourceNodeRef.current.disconnect()
+          source.stop()
+          source.disconnect()
         } catch {
           // Source may already have ended
         }

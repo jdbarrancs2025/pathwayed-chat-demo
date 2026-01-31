@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node"
 
 interface TtsRequest {
   text: string
+  format?: "mp3" | "pcm"
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -18,7 +19,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const openai = new OpenAI({ apiKey })
 
   try {
-    const { text } = req.body as TtsRequest
+    const { text, format = "mp3" } = req.body as TtsRequest
 
     if (!text) {
       return res.status(400).json({ error: "text is required" })
@@ -27,6 +28,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // OpenAI TTS has a 4096 character limit
     const truncated = text.slice(0, 4096)
 
+    if (format === "pcm") {
+      // Streaming PCM path — pipe chunks to client as they arrive
+      const response = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: "nova",
+        input: truncated,
+        response_format: "pcm",
+      })
+
+      res.setHeader("Content-Type", "application/octet-stream")
+      res.setHeader("Cache-Control", "no-cache")
+      res.setHeader("Transfer-Encoding", "chunked")
+
+      const body = response.body as ReadableStream<Uint8Array> | null
+      if (!body) {
+        return res.status(500).json({ error: "No response body from OpenAI" })
+      }
+
+      const reader = body.getReader()
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          res.write(value)
+        }
+      } catch (streamError) {
+        if (!res.headersSent) {
+          return res.status(500).json({ error: "Stream interrupted" })
+        }
+        console.error("TTS stream error:", streamError)
+      } finally {
+        res.end()
+      }
+      return
+    }
+
+    // Buffered MP3 path (default) — used by filler preloading
     const response = await openai.audio.speech.create({
       model: "tts-1",
       voice: "nova",
@@ -42,6 +80,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).send(buffer)
   } catch (error) {
     console.error("TTS API error:", error)
-    return res.status(500).json({ error: "Text-to-speech failed" })
+    if (!res.headersSent) {
+      return res.status(500).json({ error: "Text-to-speech failed" })
+    }
   }
 }
