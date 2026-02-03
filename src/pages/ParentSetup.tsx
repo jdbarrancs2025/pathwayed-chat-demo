@@ -16,6 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useAppContext } from '@/context/AppContext'
+import { focusAreasByGrade } from '@/lib/focusAreas'
 import type { Subject, Schedule, FocusAreas, QuestionCount } from '@/lib/types'
 
 const subjectConfig = {
@@ -48,25 +49,6 @@ const subjectConfig = {
   },
 } as const
 
-const focusAreaOptions = {
-  math: [
-    { value: 'word-problems', label: 'Word Problems' },
-    { value: 'fractions', label: 'Fractions' },
-    { value: 'multiplication', label: 'Multiplication' },
-    { value: 'division', label: 'Division' },
-  ],
-  reading: [
-    { value: 'reading-comprehension', label: 'Reading Comprehension' },
-    { value: 'vocabulary', label: 'Vocabulary' },
-    { value: 'main-idea', label: 'Main Idea' },
-  ],
-  writing: [
-    { value: 'sentence-writing', label: 'Sentence Writing' },
-    { value: 'paragraph-writing', label: 'Paragraph Practice' },
-    { value: 'creative-writing', label: 'Creative Writing' },
-  ],
-} as const
-
 const scheduleOptions = [
   {
     value: 'daily' as Schedule,
@@ -90,7 +72,8 @@ const scheduleOptions = [
 
 export function ParentSetup() {
   const navigate = useNavigate()
-  const { setFocusAreas, setSchedule, setQuestionCount } = useAppContext()
+  const { state, setFocusAreas, setSchedule, setQuestionCount } = useAppContext()
+  const focusAreaOptions = focusAreasByGrade[state.gradeBand ?? '3-5']
 
   const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([])
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<FocusAreas>({

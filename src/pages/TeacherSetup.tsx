@@ -7,22 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useAppContext } from '@/context/AppContext'
+import { focusAreasByGrade } from '@/lib/focusAreas'
 import type { FocusAreas, QuestionCount } from '@/lib/types'
-
-const focusAreaOptions = {
-  math: [
-    { value: 'fractions', label: 'Fractions' },
-    { value: 'geometry', label: 'Geometry' },
-  ],
-  reading: [
-    { value: 'main-idea', label: 'Main Idea' },
-    { value: 'vocabulary', label: 'Vocabulary' },
-  ],
-  writing: [
-    { value: 'short-response', label: 'Short Response' },
-    { value: 'paragraph-writing', label: 'Paragraph Writing' },
-  ],
-} as const
 
 const subjectConfig = {
   math: {
@@ -51,11 +37,12 @@ const subjectConfig = {
   },
 } as const
 
-type SubjectKey = keyof typeof focusAreaOptions
+type SubjectKey = keyof typeof subjectConfig
 
 export function TeacherSetup() {
   const navigate = useNavigate()
-  const { setFocusAreas, setQuestionCount } = useAppContext()
+  const { state, setFocusAreas, setQuestionCount } = useAppContext()
+  const focusAreaOptions = focusAreasByGrade[state.gradeBand ?? '3-5']
 
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<FocusAreas>({
     math: [],
