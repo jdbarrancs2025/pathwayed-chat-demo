@@ -1,9 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
-import type { AppMode, AppState, FocusAreas, ProgressStatus, Schedule, Subject } from '@/lib/types'
+import type { AppMode, AppState, FocusAreas, GradeBand, ProgressStatus, QuestionCount, Schedule, Subject } from '@/lib/types'
 
 const defaultState: AppState = {
   mode: null,
+  gradeBand: null,
+  questionCount: 5,
   focusAreas: {
     math: [],
     reading: [],
@@ -20,6 +22,8 @@ const defaultState: AppState = {
 interface AppContextValue {
   state: AppState
   setMode: (mode: AppMode) => void
+  setGradeBand: (gradeBand: GradeBand) => void
+  setQuestionCount: (questionCount: QuestionCount) => void
   setFocusAreas: (focusAreas: FocusAreas) => void
   updateSubjectProgress: (subject: Subject, status: ProgressStatus) => void
   setSchedule: (schedule: Schedule | undefined) => void
@@ -37,6 +41,14 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const setMode = useCallback((mode: AppMode) => {
     setState((prev) => ({ ...prev, mode }))
+  }, [])
+
+  const setGradeBand = useCallback((gradeBand: GradeBand) => {
+    setState((prev) => ({ ...prev, gradeBand }))
+  }, [])
+
+  const setQuestionCount = useCallback((questionCount: QuestionCount) => {
+    setState((prev) => ({ ...prev, questionCount }))
   }, [])
 
   const setFocusAreas = useCallback((focusAreas: FocusAreas) => {
@@ -66,6 +78,8 @@ export function AppProvider({ children }: AppProviderProps) {
       value={{
         state,
         setMode,
+        setGradeBand,
+        setQuestionCount,
         setFocusAreas,
         updateSubjectProgress,
         setSchedule,

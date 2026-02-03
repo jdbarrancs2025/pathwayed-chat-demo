@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useAppContext } from '@/context/AppContext'
-import type { Subject, Schedule, FocusAreas } from '@/lib/types'
+import type { Subject, Schedule, FocusAreas, QuestionCount } from '@/lib/types'
 
 const subjectConfig = {
   math: {
@@ -90,7 +90,7 @@ const scheduleOptions = [
 
 export function ParentSetup() {
   const navigate = useNavigate()
-  const { setFocusAreas, setSchedule } = useAppContext()
+  const { setFocusAreas, setSchedule, setQuestionCount } = useAppContext()
 
   const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([])
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<FocusAreas>({
@@ -99,6 +99,7 @@ export function ParentSetup() {
     writing: [],
   })
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule>('daily')
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState<QuestionCount>(5)
 
   const toggleSubject = (subject: Subject) => {
     setSelectedSubjects((prev) => {
@@ -139,11 +140,12 @@ export function ParentSetup() {
     if (!isValid) return
     setFocusAreas(selectedFocusAreas)
     setSchedule(selectedSchedule)
+    setQuestionCount(selectedQuestionCount)
     navigate('/student')
   }
 
   return (
-    <PageLayout title="Parent Setup" showBack backTo="/">
+    <PageLayout title="Parent Setup" showBack backTo="/grade-select">
       <div className="space-y-8 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
         {/* Header */}
         <div className="text-center relative">
@@ -359,6 +361,70 @@ export function ParentSetup() {
                   <div className="flex-1">
                     <Label
                       htmlFor={option.value}
+                      className={`cursor-pointer font-semibold block ${
+                        isSelected ? 'text-primary' : 'text-slate-700'
+                      }`}
+                    >
+                      {option.label}
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {option.description}
+                    </p>
+                  </div>
+                  {isSelected && (
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                      <Check className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                </label>
+              )
+            })}
+          </RadioGroup>
+        </section>
+
+        {/* Step 4: Practice Questions */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-3">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-border" />
+            <span className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-primary text-white text-xs flex items-center justify-center font-bold">
+                4
+              </span>
+              Practice Questions
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border" />
+          </h2>
+
+          <RadioGroup
+            value={String(selectedQuestionCount)}
+            onValueChange={(value: string) =>
+              setSelectedQuestionCount(Number(value) as QuestionCount)
+            }
+            className="space-y-3"
+          >
+            {([
+              { value: 3, label: '3 questions', description: 'Quick practice' },
+              { value: 5, label: '5 questions', description: 'Standard' },
+              { value: 10, label: '10 questions', description: 'Extended practice' },
+            ] as const).map((option) => {
+              const isSelected = selectedQuestionCount === option.value
+              return (
+                <label
+                  key={option.value}
+                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                    isSelected
+                      ? 'border-primary bg-primary/5 shadow-sm ring-4 ring-primary/10'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
+                  }`}
+                >
+                  <RadioGroupItem
+                    value={String(option.value)}
+                    id={`pq-${option.value}`}
+                    className="sr-only"
+                  />
+                  <div className="flex-1">
+                    <Label
+                      htmlFor={`pq-${option.value}`}
                       className={`cursor-pointer font-semibold block ${
                         isSelected ? 'text-primary' : 'text-slate-700'
                       }`}

@@ -251,3 +251,255 @@ No database or localStorage required — demo resets on refresh is acceptable.
 | Milestone 1: Core screens + N.I.K.K.I. | $650 |
 | Milestone 2: Parent screens + polish + deployment | $450 |
 | **Total** | **$1,350** |
+
+# PathwayEd Learning Demo — PRD v2 Addition
+
+## Milestone 3: Grade Bands + Question-First Flow ($400)
+
+---
+
+## Overview
+
+This addition transforms the N.I.K.K.I. experience from an open chat to a question-first learning flow, where the AI leads with practice questions and guides students through their answers.
+
+---
+
+## New Feature: Grade Band Selection
+
+### Where It Appears
+
+After selecting School or Home mode (Screen 0), user selects a grade band before proceeding to setup.
+
+### Grade Band Options
+
+| Option | Label |
+|--------|-------|
+| 1 | Grades 3–5 |
+| 2 | Grades 6–8 |
+| 3 | Grades 9–12 |
+
+### UI Specification
+
+**Screen 0.5: Grade Band Selection**
+
+**Route:** `/grade-select`
+
+**Layout:**
+- Centered card (consistent with Account Setup)
+- Header: "What grade level?"
+- Subtext: "This helps N.I.K.K.I. adjust questions and explanations appropriately"
+- Three large buttons stacked vertically:
+  - "Grades 3–5 (Elementary)"
+  - "Grades 6–8 (Middle School)"
+  - "Grades 9–12 (High School)"
+
+**Behavior:**
+- Store selection in AppContext as `gradeBand: '3-5' | '6-8' | '9-12'`
+- Navigate to `/teacher-setup` (School Mode) or `/parent-setup` (Home Mode)
+
+---
+
+## Updated Feature: Question-First Flow
+
+### Concept
+
+Instead of N.I.K.K.I. waiting for student questions, the AI leads the learning session:
+
+1. N.I.K.K.I. presents a question
+2. Student types their answer in the chat input
+3. N.I.K.K.I. evaluates the answer
+4. If correct → praise + next question
+5. If incorrect → guide through step-by-step, then next question
+6. After X questions → session complete
+
+### Teacher/Parent Setup Changes
+
+Add a new field to Teacher Setup (T1) and Parent Setup (P2):
+
+**Number of Practice Questions**
+
+```
+How many questions should the student complete?
+○ 3 questions (Quick practice)
+● 5 questions (Standard)
+○ 10 questions (Extended practice)
+```
+
+Store in AppContext as `questionCount: 3 | 5 | 10`
+
+---
+
+## Updated N.I.K.K.I. System Prompt
+
+Replace the existing N.I.K.K.I. prompt with this question-first version:
+
+```
+You are N.I.K.K.I., PathwayEd's AI learning assistant. You help K–12 students practice and strengthen their skills through guided question-based learning.
+
+CURRENT SESSION CONTEXT:
+- Grade level: {gradeBand}
+- Subject: {subject}
+- Focus area: {focusArea}
+- Total questions: {questionCount}
+- Current question: {currentQuestion}
+
+YOUR ROLE:
+You lead the learning session by presenting questions one at a time. You do NOT wait for the student to ask you questions — you drive the session.
+
+SESSION FLOW:
+1. Present a question appropriate for the grade level and focus area
+2. Wait for the student's answer
+3. Evaluate their response:
+   - If CORRECT: Praise briefly, confirm why it's correct, then present the next question
+   - If INCORRECT: Don't give the answer immediately. Ask guiding questions to help them think through it. If they're still stuck after 2-3 exchanges, walk them through the solution, then move to the next question.
+4. Track progress conversationally: "Great! That's 2 of 5. Here's your next question..."
+5. When all questions are complete, congratulate them and summarize how they did
+
+QUESTION GUIDELINES:
+- Grades 3-5: Simple language, concrete examples, single-step problems
+- Grades 6-8: Moderate complexity, may require multiple steps
+- Grades 9-12: More abstract thinking, real-world applications
+
+TONE:
+- Encouraging and patient
+- Celebrate effort, not just correct answers
+- Never make the student feel bad for mistakes
+- Keep explanations concise and age-appropriate
+
+IMPORTANT:
+- Always start by presenting a question (never "How can I help you?")
+- Keep track of question count in your responses
+- When session is complete, clearly state "Session complete!" so the UI can respond
+
+BEGIN by presenting Question 1 of {questionCount}.
+```
+
+---
+
+## UI Updates for Question-First Flow
+
+### Question Progress Indicator
+
+Add a progress element to the Student Subject screen (S2), above the chat area:
+
+```
+┌─────────────────────────────────────────────────┐
+│ 📘 Math: Fractions                              │
+│                                                 │
+│ Question 2 of 5                                 │
+│ [████████░░░░░░░░░░░░] 40%                     │
+│                                                 │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ N.I.K.K.I.: Here's your next question...    │ │
+│ │                                             │ │
+│ │ Student: [answer]                           │ │
+│ └─────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+```
+
+**Implementation:**
+- Parse N.I.K.K.I.'s responses for question count (e.g., "That's 2 of 5" or "Question 3 of 5")
+- Update progress bar accordingly
+- Can use regex or simple string matching
+
+### Session Completion Card
+
+When N.I.K.K.I. says "Session complete!" (or similar), display a completion overlay/card:
+
+```
+┌─────────────────────────────────────────────────┐
+│                                                 │
+│              🎉 Session Complete!               │
+│                                                 │
+│         You finished 5 questions on            │
+│               Fractions                         │
+│                                                 │
+│        [Practice More]  [Back to Home]          │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+**Buttons:**
+- "Practice More" → resets session, N.I.K.K.I. starts fresh with new questions
+- "Back to Home" → navigates to `/student`
+
+---
+
+## Updated AppContext State
+
+```typescript
+interface AppState {
+  mode: 'school' | 'home' | null;
+  gradeBand: '3-5' | '6-8' | '9-12' | null;  // NEW
+  focusAreas: {
+    math: string[];
+    reading: string[];
+    writing: string[];
+  };
+  progress: {
+    math: 'not-started' | 'in-progress' | 'complete';
+    reading: 'not-started' | 'in-progress' | 'complete';
+    writing: 'not-started' | 'in-progress' | 'complete';
+  };
+  schedule?: 'daily' | '3x-week' | 'weekends';
+  questionCount: 3 | 5 | 10;  // NEW
+}
+```
+
+---
+
+## Updated Flow Diagram
+
+```
+┌─────────────────┐
+│  Account Setup  │
+│   (Screen 0)    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Grade Select   │  ← NEW
+│  (Screen 0.5)   │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    ▼         ▼
+┌───────┐  ┌───────┐
+│School │  │ Home  │
+│ Mode  │  │ Mode  │
+└───┬───┘  └───┬───┘
+    │          │
+    ▼          ▼
+┌───────┐  ┌───────┐
+│  T1   │  │  P2   │
+│Teacher│  │Parent │
+│ Setup │  │ Setup │
+│+QCount│  │+QCount│  ← UPDATED (add question count)
+└───┬───┘  └───┬───┘
+    │          │
+    └────┬─────┘
+         ▼
+    ┌─────────┐
+    │   S1    │
+    │ Student │
+    │  Home   │
+    └────┬────┘
+         │
+         ▼
+    ┌─────────┐
+    │   S2    │
+    │ Subject │
+    │+Progress│  ← UPDATED (question counter, completion card)
+    │+N.I.K.K.I│
+    └─────────┘
+```
+
+---
+
+## Out of Scope for This Milestone
+
+- Actual question bank / database of questions (AI generates them)
+- Scoring or grading system
+- Saving session history
+- Adaptive difficulty based on performance
+- Multiple attempts tracking across sessions

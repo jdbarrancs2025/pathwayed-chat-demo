@@ -6,6 +6,10 @@ export type ProgressStatus = 'not-started' | 'in-progress' | 'complete'
 
 export type Schedule = 'daily' | '3x-week' | 'weekends'
 
+export type GradeBand = '3-5' | '6-8' | '9-12'
+
+export type QuestionCount = 3 | 5 | 10
+
 export interface FocusAreas {
   math: string[]
   reading: string[]
@@ -20,6 +24,8 @@ export interface Progress {
 
 export interface AppState {
   mode: AppMode
+  gradeBand: GradeBand | null
+  questionCount: QuestionCount
   focusAreas: FocusAreas
   progress: Progress
   schedule?: Schedule

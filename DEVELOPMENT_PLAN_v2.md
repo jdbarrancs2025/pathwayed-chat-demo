@@ -267,6 +267,121 @@ Parent Views:
 • P1 (School Mode) — View only
 • P3 (Home Mode) — Dashboard + controls
 ```
+# PathwayEd Learning Demo — Development Plan v2 Addition
+
+## Milestone 3: Grade Bands + Question-First Flow ($400)
+
+**Timeline:** ~3-4 days  
+**Prerequisite:** Phases 1-11 complete
+
+---
+
+## Progress Tracker
+
+| Milestone | Amount | Status | Phases |
+|-----------|--------|--------|--------|
+| Work Already Completed | $250 | ✅ Complete | Phases 1-5 |
+| Milestone 1 — Core Screens + N.I.K.K.I. | $650 | ✅ Complete | Phases 6-8 |
+| Milestone 2 — Parent Screens + Polish | $450 | ✅ Complete | Phases 9-11 |
+| **Milestone 3 — Grade Bands + Question-First** | **$400** | ⬜ Not Started | **Phases 12-13** |
+
+---
+
+# MILESTONE 3 — Grade Bands + Question-First Flow ($400)
+
+## Phase 12: Grade Bands + Setup Updates
+
+- [x] **Phase 12 Complete**
+
+| Task | Description | Status |
+|------|-------------|--------|
+| 12.1 | Create **Screen 0.5: Grade Band Selection** page | ✅ |
+| 12.2 | Add route `/grade-select` between Account Setup and Teacher/Parent Setup | ✅ |
+| 12.3 | Create grade band buttons (Grades 3-5, 6-8, 9-12) | ✅ |
+| 12.4 | Update AppContext to include `gradeBand` state | ✅ |
+| 12.5 | Update navigation: Account Setup → Grade Select → Setup screens | ✅ |
+| 12.6 | Add "Number of Practice Questions" selector to Teacher Setup (T1) | ✅ |
+| 12.7 | Add "Number of Practice Questions" selector to Parent Setup (P2) | ✅ |
+| 12.8 | Update AppContext to include `questionCount` state | ✅ |
+| 12.9 | Pass `gradeBand` and `questionCount` to Student Subject screen | ✅ |
+
+---
+
+## Phase 13: Question-First Flow + UI
+
+- [ ] **Phase 13 Complete**
+
+| Task | Description | Status |
+|------|-------------|--------|
+| 13.1 | Rewrite N.I.K.K.I. system prompt for question-first behavior | ⬜ |
+| 13.2 | Include `gradeBand`, `subject`, `focusArea`, `questionCount` in prompt | ⬜ |
+| 13.3 | Test that N.I.K.K.I. opens with a question (not "How can I help?") | ⬜ |
+| 13.4 | Test that N.I.K.K.I. evaluates answers and guides through incorrect ones | ⬜ |
+| 13.5 | Test that N.I.K.K.I. tracks progress conversationally ("2 of 5") | ⬜ |
+| 13.6 | Create `QuestionProgress` component (progress bar + "Question X of Y") | ⬜ |
+| 13.7 | Add `QuestionProgress` to Student Subject screen (S2) above chat | ⬜ |
+| 13.8 | Parse N.I.K.K.I. responses to update progress indicator | ⬜ |
+| 13.9 | Create `SessionComplete` card/overlay component | ⬜ |
+| 13.10 | Detect "Session complete" in N.I.K.K.I. response and show completion card | ⬜ |
+| 13.11 | Add "Practice More" button → resets session with fresh questions | ⬜ |
+| 13.12 | Add "Back to Home" button → navigates to `/student` | ⬜ |
+| 13.13 | Update progress state when session completes | ⬜ |
+| 13.14 | Test full flow: Setup → Student Home → Subject → Complete session | ⬜ |
+| 13.15 | Test grade-appropriate question difficulty (3-5 vs 6-8 vs 9-12) | ⬜ |
+
+---
+
+### ✅ Milestone 3 Deliverable
+
+Question-first learning experience with:
+- Grade band selection informing N.I.K.K.I.'s language and difficulty
+- Teacher/Parent sets number of practice questions
+- N.I.K.K.I. leads with questions, evaluates answers, guides through mistakes
+- Visual progress indicator showing question count
+- Session completion card with options to practice more or return home
+
+- [ ] **Milestone 3 Complete — Ready for client review**
+
+---
+
+## Testing Checklist
+
+After completing Milestone 3:
+
+**Grade Bands**
+- [ ] Grade selection screen appears after Account Setup
+- [ ] All three grade options work (3-5, 6-8, 9-12)
+- [ ] Grade is stored in AppContext
+- [ ] Grade is passed to N.I.K.K.I. system prompt
+
+**Question Count**
+- [ ] Teacher Setup shows question count selector
+- [ ] Parent Setup shows question count selector
+- [ ] Question count (3, 5, or 10) is stored in AppContext
+- [ ] Question count is passed to N.I.K.K.I. system prompt
+
+**Question-First Flow**
+- [ ] N.I.K.K.I. opens with "Question 1 of X" (not open chat)
+- [ ] N.I.K.K.I. waits for student answer before continuing
+- [ ] Correct answers: praised + moves to next question
+- [ ] Incorrect answers: guided through step-by-step
+- [ ] Progress tracked conversationally ("That's 3 of 5")
+
+**Progress UI**
+- [ ] Progress bar displays on S2 screen
+- [ ] Progress updates as questions are completed
+- [ ] "Question X of Y" label is accurate
+
+**Session Completion**
+- [ ] Completion card appears when all questions done
+- [ ] "Practice More" resets and starts new session
+- [ ] "Back to Home" navigates correctly
+- [ ] Subject progress updates to 'complete'
+
+**Grade-Appropriate Content**
+- [ ] Grades 3-5: Simple language, basic problems
+- [ ] Grades 6-8: Moderate complexity
+- [ ] Grades 9-12: More challenging, abstract thinking
 
 ---
 
@@ -285,8 +400,9 @@ Parent Views:
 
 _Use this section to track blockers, decisions, or client feedback._
 
-- **Scope change approved:** Shifting from chat-first to learning workflow demo
-- **N.I.K.K.I.** is the branded name for the AI assistant
-- AI integration stays live for homework help, everything else is static
-- Client confirmed: "showing how schools guide practice, how students work, and how parents see progress"
+- Question-first flow is driven by prompt engineering, not application logic
+- N.I.K.K.I. generates questions dynamically (no question bank needed)
+- Progress parsing relies on consistent phrasing from N.I.K.K.I. — may need prompt tuning
+- "Session complete" detection also relies on N.I.K.K.I. using specific phrasing
+---
 

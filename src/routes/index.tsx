@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router'
 import { AccountSetup } from '@/pages/AccountSetup'
+import { GradeSelect } from '@/pages/GradeSelect'
 import { TeacherSetup } from '@/pages/TeacherSetup'
 import { ParentSetup } from '@/pages/ParentSetup'
 import { StudentHome } from '@/pages/StudentHome'
@@ -11,6 +12,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<AccountSetup />} />
+      <Route path="/grade-select" element={<GradeSelect />} />
       <Route path="/teacher-setup" element={<TeacherSetup />} />
       <Route path="/parent-setup" element={<ParentSetup />} />
       <Route path="/student" element={<StudentHome />} />

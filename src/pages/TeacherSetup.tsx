@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useAppContext } from '@/context/AppContext'
-import type { FocusAreas } from '@/lib/types'
+import type { FocusAreas, QuestionCount } from '@/lib/types'
 
 const focusAreaOptions = {
   math: [
@@ -55,7 +55,7 @@ type SubjectKey = keyof typeof focusAreaOptions
 
 export function TeacherSetup() {
   const navigate = useNavigate()
-  const { setFocusAreas } = useAppContext()
+  const { setFocusAreas, setQuestionCount } = useAppContext()
 
   const [selectedFocusAreas, setSelectedFocusAreas] = useState<FocusAreas>({
     math: [],
@@ -63,6 +63,7 @@ export function TeacherSetup() {
     writing: [],
   })
   const [timeframe, setTimeframe] = useState<'this-week' | 'until-test'>('this-week')
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState<QuestionCount>(5)
 
   const toggleFocusArea = (subject: SubjectKey, value: string) => {
     setSelectedFocusAreas((prev) => {
@@ -85,11 +86,12 @@ export function TeacherSetup() {
   const handleContinue = () => {
     if (!hasAnySelection) return
     setFocusAreas(selectedFocusAreas)
+    setQuestionCount(selectedQuestionCount)
     navigate('/student')
   }
 
   return (
-    <PageLayout title="Teacher Setup" showBack backTo="/">
+    <PageLayout title="Teacher Setup" showBack backTo="/grade-select">
       <div className="space-y-8 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
         {/* Header */}
         <div className="text-center relative">
@@ -293,6 +295,59 @@ export function TeacherSetup() {
                 </Label>
               </div>
             </label>
+          </RadioGroup>
+        </section>
+
+        {/* Practice Questions Section */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-3">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-border" />
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e85a24]" />
+              Practice Questions
+            </span>
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border" />
+          </h2>
+
+          <RadioGroup
+            value={String(selectedQuestionCount)}
+            onValueChange={(value: string) =>
+              setSelectedQuestionCount(Number(value) as QuestionCount)
+            }
+            className="space-y-3"
+          >
+            {([
+              { value: 3, label: '3 questions', description: 'Quick practice' },
+              { value: 5, label: '5 questions', description: 'Standard' },
+              { value: 10, label: '10 questions', description: 'Extended practice' },
+            ] as const).map((option) => {
+              const isSelected = selectedQuestionCount === option.value
+              return (
+                <label
+                  key={option.value}
+                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-150 ${
+                    isSelected
+                      ? 'border-primary bg-primary/5 shadow-sm'
+                      : 'border-border hover:border-primary/30 bg-white'
+                  }`}
+                >
+                  <RadioGroupItem value={String(option.value)} id={`q-${option.value}`} />
+                  <div className="flex-1">
+                    <Label
+                      htmlFor={`q-${option.value}`}
+                      className={`cursor-pointer font-medium ${
+                        isSelected ? 'text-primary' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {option.label}
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {option.description}
+                    </p>
+                  </div>
+                </label>
+              )
+            })}
           </RadioGroup>
         </section>
 

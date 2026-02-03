@@ -8,12 +8,12 @@ export function AccountSetup() {
 
   const handleSchoolMode = () => {
     setMode('school')
-    navigate('/teacher-setup')
+    navigate('/grade-select')
   }
 
   const handleHomeMode = () => {
     setMode('home')
-    navigate('/parent-setup')
+    navigate('/grade-select')
   }
 
   return (
