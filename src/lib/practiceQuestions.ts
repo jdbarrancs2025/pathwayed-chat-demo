@@ -139,16 +139,14 @@ export function getQuestionsForSubject(
 }
 
 /**
- * Get human-readable label for a focus area value
+ * Get human-readable label for a focus area value.
+ * Built from focusAreasByGrade so it stays in sync automatically.
  */
-export const focusAreaLabels: Record<string, string> = {
-  // Math
-  fractions: 'Fractions',
-  geometry: 'Geometry',
-  // Reading
-  'main-idea': 'Main Idea',
-  vocabulary: 'Vocabulary',
-  // Writing
-  'short-response': 'Short Response',
-  'paragraph-writing': 'Paragraph Writing',
-}
+import { focusAreasByGrade } from './focusAreas'
+
+export const focusAreaLabels: Record<string, string> = Object.values(focusAreasByGrade)
+  .flatMap((band) => [...band.math, ...band.reading, ...band.writing])
+  .reduce<Record<string, string>>((acc, { value, label }) => {
+    acc[value] = label
+    return acc
+  }, {})
