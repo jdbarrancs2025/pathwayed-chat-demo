@@ -321,7 +321,7 @@ export function ParentSetup() {
               return (
                 <label
                   key={option.value}
-                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                  className={`relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                     isSelected
                       ? 'border-primary bg-primary/5 shadow-sm ring-4 ring-primary/10'
                       : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
@@ -394,7 +394,7 @@ export function ParentSetup() {
               return (
                 <label
                   key={option.value}
-                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                  className={`relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                     isSelected
                       ? 'border-primary bg-primary/5 shadow-sm ring-4 ring-primary/10'
                       : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
