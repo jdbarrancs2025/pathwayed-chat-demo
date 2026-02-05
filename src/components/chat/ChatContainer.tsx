@@ -29,7 +29,7 @@ export function ChatContainer({
     }
   }, [messages])
 
-  const isEmpty = messages.length === 0
+  const isEmpty = messages.length === 0 && !isLoading
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-slate-50/50 to-white overflow-hidden">

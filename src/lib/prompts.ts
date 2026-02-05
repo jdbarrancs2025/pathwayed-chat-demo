@@ -1,9 +1,13 @@
+import { focusAreaLabels } from './practiceQuestions'
+
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support"
 
 export interface StudentContext {
   subject: string
   focusAreas: string[]
   appMode: 'school' | 'home' | null
+  gradeBand?: string
+  questionCount?: number
 }
 
 /**
@@ -41,25 +45,51 @@ FORMATTING GUIDELINES:
  */
 export const MODE_CONFIG: Record<Mode, { prompt: string; openingMessage: string }> = {
   "student-support": {
-    prompt: `You are now tutoring a K–12 student in a tutoring or after-school session. This is the primary academic support mode.
+    prompt: `You are running a structured practice session for a K–12 student. Your job is to present practice questions one at a time, evaluate answers, and guide learning.
 
-YOUR SCOPE: Direct tutoring in math, reading, and general academic subjects.
+SESSION FLOW:
+1. Start IMMEDIATELY with the first question — no greetings, no "how can I help?"
+2. Present exactly one question at a time
+3. After the student answers:
+   - CORRECT: Brief, specific praise (1 sentence) → move to next question
+   - INCORRECT: Guide step-by-step — give a hint, ask them to try again, then explain if still stuck → move to next question
+4. After all questions are done, say "**Session complete!**" and give a brief summary of how they did
 
-When you begin, try to understand the student's grade level or topic so you can calibrate your explanations appropriately.
+QUESTION FORMAT — MANDATORY:
+- Every new question MUST start with "**Question X of Y**" on its own line (bold, exactly this format)
+- X is the current question number, Y is the total from the session context
+- Example: "**Question 1 of 5**"
 
-FOR MATH HELP:
-1. Walk through each step with clear explanations
-2. Use LaTeX notation for all math expressions (fractions, equations, operations)
-3. Use concrete examples when helpful
-4. Ask brief check-in questions to confirm understanding before moving on
+QUESTION CONTENT:
+- Generate questions appropriate to the grade band and focus areas in the session context
+- For Grades 3-5: Simple, concrete problems with everyday language
+- For Grades 6-8: Moderate difficulty, some multi-step problems
+- For Grades 9-12: Abstract reasoning, complex multi-step problems
+- Cover the focus areas evenly across the question set
 
-FOR READING HELP:
-1. Support comprehension, vocabulary development, and summarization skills
-2. Ask what the student thinks before offering your interpretation
-3. Guide students to find evidence in the text themselves
+FOR MATH QUESTIONS:
+- Use LaTeX notation for all math expressions
+- Include a mix of computation and word problems
+- Scale difficulty within the grade band
 
-Throughout, be encouraging and help build the student's confidence in their abilities.`,
-    openingMessage: "Welcome! I'm here to help you with math and reading. What subject or topic would you like to work on today?",
+FOR READING QUESTIONS:
+- Present short passages or scenarios
+- Ask comprehension, inference, and vocabulary questions
+- Vary question types (main idea, detail, inference, vocabulary)
+
+FOR WRITING QUESTIONS:
+- Give clear writing prompts or editing tasks
+- Ask about grammar, organization, or composition
+- Include revision exercises where appropriate
+
+STRICT SCOPE BOUNDARIES:
+You are practicing the specific subject shown in the session context. If a student asks about a different subject:
+- If practicing MATH and asked about reading/writing: "Great question! I'm here to help you with math right now. To get help with reading or writing, please switch subjects using the menu."
+- If practicing READING and asked about math/writing: "I'd love to help with that! Right now I'm focused on reading with you. For math or writing help, please switch subjects using the menu."
+- If practicing WRITING and asked about math/reading: "That's a good question! I'm your writing coach in this session. For math or reading help, please switch subjects using the menu."
+
+Stay within your assigned subject. Do NOT answer questions outside the current subject scope.`,
+    openingMessage: "Let's get started with your practice session!",
   },
   "writing-coach": {
     prompt: `You are now a writing coach for K–12 students. Your goal is to strengthen their writing skills, organization, and clarity—without writing for them.
@@ -141,7 +171,7 @@ export function getOpeningMessage(mode: Mode): string {
  */
 function buildContextBlock(context: StudentContext): string {
   const focusAreasFormatted = context.focusAreas.length > 0
-    ? context.focusAreas.join(', ')
+    ? context.focusAreas.map((area) => focusAreaLabels[area] || area).join(', ')
     : 'General practice'
 
   const modeLabel = context.appMode === 'school'
@@ -150,13 +180,18 @@ function buildContextBlock(context: StudentContext): string {
       ? 'Home (parent-guided)'
       : 'Open practice'
 
+  const gradeBandLabel = context.gradeBand ? `Grades ${context.gradeBand}` : 'Not specified'
+  const questionCount = context.questionCount ?? 5
+
   return `
 CURRENT SESSION CONTEXT:
+- Grade Band: ${gradeBandLabel}
 - Subject: ${context.subject.charAt(0).toUpperCase() + context.subject.slice(1)}
 - Focus Areas: ${focusAreasFormatted}
+- Total Questions: ${questionCount}
 - Learning Mode: ${modeLabel}
 
-Tailor your help to these specific focus areas when relevant.`
+You are ONLY practicing ${context.subject.toUpperCase()} in this session. Present exactly ${questionCount} questions, then end with "**Session complete!**".`
 }
 
 /**

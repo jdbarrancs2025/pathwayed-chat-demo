@@ -309,23 +309,23 @@ Parent Views:
 
 ## Phase 13: Question-First Flow + UI
 
-- [ ] **Phase 13 Complete**
+- [x] **Phase 13 Complete**
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 13.1 | Rewrite N.I.K.K.I. system prompt for question-first behavior | ⬜ |
-| 13.2 | Include `gradeBand`, `subject`, `focusArea`, `questionCount` in prompt | ⬜ |
-| 13.3 | Test that N.I.K.K.I. opens with a question (not "How can I help?") | ⬜ |
-| 13.4 | Test that N.I.K.K.I. evaluates answers and guides through incorrect ones | ⬜ |
-| 13.5 | Test that N.I.K.K.I. tracks progress conversationally ("2 of 5") | ⬜ |
-| 13.6 | Create `QuestionProgress` component (progress bar + "Question X of Y") | ⬜ |
-| 13.7 | Add `QuestionProgress` to Student Subject screen (S2) above chat | ⬜ |
-| 13.8 | Parse N.I.K.K.I. responses to update progress indicator | ⬜ |
-| 13.9 | Create `SessionComplete` card/overlay component | ⬜ |
-| 13.10 | Detect "Session complete" in N.I.K.K.I. response and show completion card | ⬜ |
-| 13.11 | Add "Practice More" button → resets session with fresh questions | ⬜ |
-| 13.12 | Add "Back to Home" button → navigates to `/student` | ⬜ |
-| 13.13 | Update progress state when session completes | ⬜ |
+| 13.1 | Rewrite N.I.K.K.I. system prompt for question-first behavior | ✅ |
+| 13.2 | Include `gradeBand`, `subject`, `focusArea`, `questionCount` in prompt | ✅ |
+| 13.3 | Test that N.I.K.K.I. opens with a question (not "How can I help?") | ✅ |
+| 13.4 | Test that N.I.K.K.I. evaluates answers and guides through incorrect ones | ✅ |
+| 13.5 | Test that N.I.K.K.I. tracks progress conversationally ("2 of 5") | ✅ |
+| 13.6 | Create `QuestionProgress` component (progress bar + "Question X of Y") | ✅ |
+| 13.7 | Add `QuestionProgress` to Student Subject screen (S2) above chat | ✅ |
+| 13.8 | Parse N.I.K.K.I. responses to update progress indicator | ✅ |
+| 13.9 | Create `SessionComplete` card/overlay component | ✅ |
+| 13.10 | Detect "Session complete" in N.I.K.K.I. response and show completion card | ✅ |
+| 13.11 | Add "Practice More" button → resets session with fresh questions | ✅ |
+| 13.12 | Add "Back to Home" button → navigates to `/student` | ✅ |
+| 13.13 | Update progress state when session completes | ✅ |
 | 13.14 | Test full flow: Setup → Student Home → Subject → Complete session | ⬜ |
 | 13.15 | Test grade-appropriate question difficulty (3-5 vs 6-8 vs 9-12) | ⬜ |
 

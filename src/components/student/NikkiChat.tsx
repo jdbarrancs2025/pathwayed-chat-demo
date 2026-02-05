@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import { Volume2, VolumeX, Square, Loader2 } from 'lucide-react'
 import { ChatContainer } from '@/components/chat/ChatContainer'
 import { Switch } from '@/components/ui/switch'
-import { useNikkiChat } from '@/hooks/useNikkiChat'
 import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
-import type { Subject, AppMode } from '@/lib/types'
+import type { Message } from '@/components/chat/ChatMessage'
+import type { Subject } from '@/lib/types'
 
 const FILLER_PHRASES = [
   "Let me think about that!",
@@ -16,15 +16,14 @@ const FILLER_PHRASES = [
 
 interface NikkiChatProps {
   subject: Subject
-  focusAreas: string[]
-  appMode: AppMode
+  messages: Message[]
+  isLoading: boolean
+  error: string | null
+  sendMessage: (content: string) => Promise<void>
+  dismissError: () => void
 }
 
-export function NikkiChat({ subject, focusAreas, appMode }: NikkiChatProps) {
-  const { messages, isLoading, error, sendMessage, dismissError } = useNikkiChat({
-    context: { subject, focusAreas, appMode },
-  })
-
+export function NikkiChat({ messages, isLoading, error, sendMessage, dismissError }: NikkiChatProps) {
   const { speak, stop, unlockAudio, preloadFillers, playFiller, isSpeaking, isLoading: ttsLoading, error: ttsError } = useTextToSpeech()
 
   const [readAloud, setReadAloud] = useState(false)
@@ -71,10 +70,10 @@ export function NikkiChat({ subject, focusAreas, appMode }: NikkiChatProps) {
           {/* Left: Title */}
           <div className="min-w-0">
             <h2 className="font-semibold text-primary">
-              Homework Help — Ask N.I.K.K.I.
+              Practice Session — N.I.K.K.I.
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Get step-by-step help with your practice questions
+              Answer each question to complete your session
             </p>
           </div>
 

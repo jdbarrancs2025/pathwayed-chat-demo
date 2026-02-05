@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { useParams, Navigate, useNavigate } from 'react-router'
-import { ArrowLeft, Calculator, BookOpen, PenTool, Check } from 'lucide-react'
+import { ArrowLeft, Calculator, BookOpen, PenTool } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAppContext } from '@/context/AppContext'
-import { PracticeSection, NikkiChat } from '@/components/student'
-import { getQuestionsForSubject, focusAreaLabels } from '@/lib/practiceQuestions'
+import { NikkiChat, QuestionProgress, SessionComplete } from '@/components/student'
+import { useNikkiChat } from '@/hooks/useNikkiChat'
+import { focusAreaLabels } from '@/lib/practiceQuestions'
 import { cn } from '@/lib/utils'
 import logoImg from '@/assets/logo.png'
 import type { Subject } from '@/lib/types'
@@ -39,19 +41,45 @@ export function StudentSubject() {
   const navigate = useNavigate()
   const { state, updateSubjectProgress } = useAppContext()
 
-  // Validate subject parameter
-  if (!subject || !validSubjects.includes(subject as Subject)) {
-    return <Navigate to="/student" replace />
-  }
-
-  const validSubject = subject as Subject
+  // Compute a safe subject for hooks (hooks must not be called conditionally)
+  const isValidSubject = !!subject && validSubjects.includes(subject as Subject)
+  const validSubject = (isValidSubject ? subject : 'math') as Subject
   const config = subjectConfig[validSubject]
   const Icon = config.icon
   const focusAreas = state.focusAreas[validSubject]
-  const isComplete = state.progress[validSubject] === 'complete'
 
-  // Get practice questions based on subject and focus areas
-  const questions = getQuestionsForSubject(validSubject, focusAreas)
+  // Lift useNikkiChat to this level — single source of truth for chat state
+  const {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
+    dismissError,
+    currentQuestion,
+    totalQuestions,
+    isSessionComplete,
+    resetSession,
+  } = useNikkiChat({
+    context: {
+      subject: validSubject,
+      focusAreas,
+      appMode: state.mode,
+      gradeBand: state.gradeBand ?? undefined,
+      questionCount: state.questionCount,
+    },
+  })
+
+  // Auto-complete subject progress when session finishes
+  useEffect(() => {
+    if (isSessionComplete) {
+      updateSubjectProgress(validSubject, 'complete')
+    }
+  }, [isSessionComplete, validSubject, updateSubjectProgress])
+
+  // Redirect if invalid subject (after all hooks)
+  if (!isValidSubject) {
+    return <Navigate to="/student" replace />
+  }
 
   // Build subtitle from focus areas
   const focusSubtitle =
@@ -63,8 +91,13 @@ export function StudentSubject() {
     navigate('/student')
   }
 
-  const handleMarkComplete = () => {
-    updateSubjectProgress(validSubject, 'complete')
+  const handlePracticeMore = () => {
+    updateSubjectProgress(validSubject, 'in-progress')
+    resetSession()
+  }
+
+  const handleBackToHome = () => {
+    navigate('/student')
   }
 
   return (
@@ -129,41 +162,35 @@ export function StudentSubject() {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6 sm:py-8 space-y-6">
-          {/* Section A: Practice Questions */}
-          {questions && <PracticeSection questions={questions} />}
-
-          {/* Section B: N.I.K.K.I. Chat */}
-          <NikkiChat
+        <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6 sm:py-8 space-y-4">
+          {/* Question Progress */}
+          <QuestionProgress
+            currentQuestion={currentQuestion}
+            totalQuestions={totalQuestions}
             subject={validSubject}
-            focusAreas={focusAreas}
-            appMode={state.mode}
           />
 
-          {/* Section C: Mark Complete Button */}
-          <div className="pt-2 pb-4">
-            <Button
-              onClick={handleMarkComplete}
-              disabled={isComplete}
-              className={cn(
-                'w-full h-12 text-base font-semibold rounded-xl transition-all duration-200',
-                isComplete
-                  ? 'bg-green-500 hover:bg-green-500 cursor-default shadow-md'
-                  : 'shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30'
-              )}
-            >
-              {isComplete ? (
-                <span className="flex items-center gap-2">
-                  <Check className="h-5 w-5" />
-                  Completed!
-                </span>
-              ) : (
-                'Mark Complete'
-              )}
-            </Button>
-          </div>
+          {/* N.I.K.K.I. Chat */}
+          <NikkiChat
+            subject={validSubject}
+            messages={messages}
+            isLoading={isLoading}
+            error={error}
+            sendMessage={sendMessage}
+            dismissError={dismissError}
+          />
         </div>
       </main>
+
+      {/* Session Complete Overlay */}
+      {isSessionComplete && (
+        <SessionComplete
+          subject={validSubject}
+          totalQuestions={totalQuestions ?? state.questionCount}
+          onPracticeMore={handlePracticeMore}
+          onBackToHome={handleBackToHome}
+        />
+      )}
     </div>
   )
 }
