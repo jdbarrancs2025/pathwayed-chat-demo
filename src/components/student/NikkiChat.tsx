@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Volume2, VolumeX, Square, Loader2 } from 'lucide-react'
 import { ChatContainer } from '@/components/chat/ChatContainer'
 import { Switch } from '@/components/ui/switch'
@@ -29,7 +29,7 @@ export function NikkiChat({
   const { speak, stop, unlockAudio, isSpeaking, isLoading: ttsLoading, error: ttsError } = useTextToSpeech()
   const ttsActive = isSpeaking || ttsLoading
 
-  const [readAloud, setReadAloud] = useState(false)
+  const [readAloud, setReadAloud] = useState(true)
 
   // Detect streaming completion: isLoading transitions true → false
   const wasLoadingRef = useRef(false)
@@ -65,6 +65,13 @@ export function NikkiChat({
       stop()
     }
   }
+
+  // Wrap sendMessage so the user's tap/send gesture unlocks iOS AudioContext.
+  // This ensures TTS works from Question 1 onward (auto-start has no gesture).
+  const handleSendMessage = useCallback(async (content: string) => {
+    unlockAudio()
+    await sendMessage(content)
+  }, [unlockAudio, sendMessage])
 
   const handleReplayAssistantMessage = (content: string) => {
     const plainText = stripMarkdownForTTS(content)
@@ -145,7 +152,7 @@ export function NikkiChat({
         <ChatContainer
           subject={subject}
           messages={messages}
-          onSendMessage={sendMessage}
+          onSendMessage={handleSendMessage}
           isLoading={isLoading}
           error={error}
           onDismissError={dismissError}

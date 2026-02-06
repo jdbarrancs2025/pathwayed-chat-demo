@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react"
-import { Send, Mic, Square, Loader2 } from "lucide-react"
+import { Send, Mic, Square, Loader2, Calculator } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
 import { WaveformVisualizer } from "./WaveformVisualizer"
@@ -21,6 +21,7 @@ interface ChatInputProps {
 export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [isTranscribing, setIsTranscribing] = useState(false)
+  const [mathKeyboardOpen, setMathKeyboardOpen] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const {
@@ -136,7 +137,7 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
 
   const inputDisabled = disabled || isRecording || isTranscribing
   const sendDisabled = !message.trim() || disabled || isRecording || isTranscribing
-  const showMathKeyboard = subject === "math" && !isRecording && !isTranscribing
+  const isMathSubject = subject === "math" && !isRecording && !isTranscribing
 
   const focusInput = useCallback(() => {
     const textarea = textareaRef.current
@@ -234,13 +235,22 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
 
   return (
     <div className="p-3 pb-safe sm:p-4 md:p-5 lg:p-6 bg-gradient-to-t from-slate-50 to-transparent">
-      {showMathKeyboard && (
-        <MathKeyboard
-          onInsert={handleInsertMath}
-          onBackspace={handleBackspaceMath}
-          onClear={handleClearMath}
-          disabled={inputDisabled}
-        />
+      {isMathSubject && (
+        <div
+          className={cn(
+            "grid transition-[grid-template-rows] duration-300 ease-in-out",
+            mathKeyboardOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          )}
+        >
+          <div className="overflow-hidden">
+            <MathKeyboard
+              onInsert={handleInsertMath}
+              onBackspace={handleBackspaceMath}
+              onClear={handleClearMath}
+              disabled={inputDisabled}
+            />
+          </div>
+        </div>
       )}
       <form
         onSubmit={handleSubmit}
@@ -276,6 +286,24 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
               <Mic className="w-5 h-5" />
             )}
           </button>
+
+          {/* Math keyboard toggle — only for math sessions */}
+          {isMathSubject && (
+            <button
+              type="button"
+              onClick={() => setMathKeyboardOpen((prev) => !prev)}
+              className={cn(
+                "flex-shrink-0 w-12 h-12 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center",
+                "transition-all duration-200",
+                mathKeyboardOpen
+                  ? "bg-primary/10 text-primary hover:bg-primary/15"
+                  : "bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 hover:scale-105 active:scale-95"
+              )}
+              aria-label={mathKeyboardOpen ? "Hide math keyboard" : "Show math keyboard"}
+            >
+              <Calculator className="w-5 h-5" />
+            </button>
+          )}
 
           {/* Middle area: waveform when recording, spinner when transcribing, textarea otherwise */}
           {isRecording ? (
