@@ -3,21 +3,26 @@ import { X, AlertCircle } from "lucide-react"
 import { ChatMessage, type Message } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
 import { WelcomeMessage } from "./WelcomeMessage"
+import type { Subject } from "@/lib/types"
 
 interface ChatContainerProps {
+  subject?: Subject
   messages: Message[]
   onSendMessage: (message: string) => void
   isLoading?: boolean
   error?: string | null
   onDismissError?: () => void
+  onReplayAssistantMessage?: (content: string) => void
 }
 
 export function ChatContainer({
+  subject,
   messages,
   onSendMessage,
   isLoading,
   error,
   onDismissError,
+  onReplayAssistantMessage,
 }: ChatContainerProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -70,6 +75,11 @@ export function ChatContainer({
                   key={message.id}
                   message={message}
                   isLatest={index === messages.length - 1}
+                  onReplay={
+                    message.role === "assistant"
+                      ? () => onReplayAssistantMessage?.(message.content)
+                      : undefined
+                  }
                 />
               ))}
 
@@ -97,7 +107,11 @@ export function ChatContainer({
 
       {/* Input area - fixed at bottom */}
       <div className="flex-shrink-0 border-t border-slate-100">
-        <ChatInput onSendMessage={onSendMessage} disabled={isLoading} />
+        <ChatInput
+          subject={subject}
+          onSendMessage={onSendMessage}
+          disabled={isLoading}
+        />
       </div>
     </div>
   )

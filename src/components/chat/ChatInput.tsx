@@ -3,13 +3,22 @@ import { Send, Mic, Square, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
 import { WaveformVisualizer } from "./WaveformVisualizer"
+import { MathKeyboard } from "./MathKeyboard"
+import type { Subject } from "@/lib/types"
+
+function normalizeForSubmission(text: string): string {
+  return text
+    .replace(/×/g, "*")
+    .replace(/÷/g, "/")
+}
 
 interface ChatInputProps {
+  subject?: Subject
   onSendMessage: (message: string) => void
   disabled?: boolean
 }
 
-export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
+export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [isTranscribing, setIsTranscribing] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -30,7 +39,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (message.trim() && !disabled && !isRecording && !isTranscribing) {
-      onSendMessage(message.trim())
+      onSendMessage(normalizeForSubmission(message).trim())
       setMessage("")
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto"
@@ -127,9 +136,112 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
 
   const inputDisabled = disabled || isRecording || isTranscribing
   const sendDisabled = !message.trim() || disabled || isRecording || isTranscribing
+  const showMathKeyboard = subject === "math" && !isRecording && !isTranscribing
+
+  const focusInput = useCallback(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    textarea.focus()
+  }, [])
+
+  const insertAtCursor = useCallback((text: string) => {
+    const textarea = textareaRef.current
+    if (!textarea) {
+      setMessage((prev) => `${prev}${text}`)
+      return
+    }
+
+    const selectionStart = textarea.selectionStart ?? message.length
+    const selectionEnd = textarea.selectionEnd ?? message.length
+    const next = `${message.slice(0, selectionStart)}${text}${message.slice(selectionEnd)}`
+    setMessage(next)
+
+    requestAnimationFrame(() => {
+      const cursor = selectionStart + text.length
+      textarea.focus()
+      textarea.setSelectionRange(cursor, cursor)
+    })
+  }, [message])
+
+  const handleInsertMath = useCallback((text: string) => {
+    if (inputDisabled) return
+
+    if (text === "()") {
+      const textarea = textareaRef.current
+      if (!textarea) {
+        setMessage((prev) => `${prev}()`)
+        return
+      }
+
+      const selectionStart = textarea.selectionStart ?? message.length
+      const selectionEnd = textarea.selectionEnd ?? message.length
+      const selected = message.slice(selectionStart, selectionEnd)
+      const wrapped = `(${selected})`
+      const next = `${message.slice(0, selectionStart)}${wrapped}${message.slice(selectionEnd)}`
+      setMessage(next)
+
+      requestAnimationFrame(() => {
+        const cursor = selectionStart + wrapped.length
+        textarea.focus()
+        textarea.setSelectionRange(cursor, cursor)
+      })
+      return
+    }
+
+    insertAtCursor(text)
+  }, [inputDisabled, insertAtCursor, message])
+
+  const handleBackspaceMath = useCallback(() => {
+    if (inputDisabled || !message) return
+
+    const textarea = textareaRef.current
+    if (!textarea) {
+      setMessage((prev) => prev.slice(0, -1))
+      return
+    }
+
+    const selectionStart = textarea.selectionStart ?? message.length
+    const selectionEnd = textarea.selectionEnd ?? message.length
+
+    if (selectionStart !== selectionEnd) {
+      const next = `${message.slice(0, selectionStart)}${message.slice(selectionEnd)}`
+      setMessage(next)
+      requestAnimationFrame(() => {
+        textarea.focus()
+        textarea.setSelectionRange(selectionStart, selectionStart)
+      })
+      return
+    }
+
+    if (selectionStart === 0) return
+
+    const next = `${message.slice(0, selectionStart - 1)}${message.slice(selectionStart)}`
+    const cursor = selectionStart - 1
+    setMessage(next)
+
+    requestAnimationFrame(() => {
+      textarea.focus()
+      textarea.setSelectionRange(cursor, cursor)
+    })
+  }, [inputDisabled, message])
+
+  const handleClearMath = useCallback(() => {
+    if (inputDisabled) return
+    setMessage("")
+    requestAnimationFrame(focusInput)
+  }, [focusInput, inputDisabled])
 
   return (
     <div className="p-3 pb-safe sm:p-4 md:p-5 lg:p-6 bg-gradient-to-t from-slate-50 to-transparent">
+      {showMathKeyboard && (
+        <MathKeyboard
+          onInsert={handleInsertMath}
+          onBackspace={handleBackspaceMath}
+          onClear={handleClearMath}
+          disabled={inputDisabled}
+        />
+      )}
       <form
         onSubmit={handleSubmit}
         className="relative max-w-3xl mx-auto"

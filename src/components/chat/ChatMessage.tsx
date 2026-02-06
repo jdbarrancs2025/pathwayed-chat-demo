@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Streamdown } from "streamdown"
 import { createMathPlugin } from "@streamdown/math"
+import { Volume2 } from "lucide-react"
 
 const mathPlugin = createMathPlugin({
   singleDollarTextMath: true,
@@ -28,9 +29,10 @@ export interface Message {
 interface ChatMessageProps {
   message: Message
   isLatest?: boolean
+  onReplay?: () => void
 }
 
-export function ChatMessage({ message, isLatest }: ChatMessageProps) {
+export function ChatMessage({ message, isLatest, onReplay }: ChatMessageProps) {
   const isUser = message.role === "user"
 
   return (
@@ -54,6 +56,7 @@ export function ChatMessage({ message, isLatest }: ChatMessageProps) {
         <div
           className={cn(
             "px-5 py-3 rounded-3xl relative transition-all duration-200",
+            !isUser && onReplay && "pr-20",
             isUser
               ? "bg-gradient-to-br from-accent to-[#d14d1a] text-white rounded-br-lg shadow-lg shadow-accent/20"
               : "bg-white border-2 border-slate-100 text-slate-700 rounded-bl-lg shadow-md shadow-slate-200/50"
@@ -75,6 +78,18 @@ export function ChatMessage({ message, isLatest }: ChatMessageProps) {
                 {normalizeMathDelimiters(message.content)}
               </Streamdown>
             </div>
+          )}
+
+          {!isUser && onReplay && message.content.trim() && (
+            <button
+              type="button"
+              onClick={onReplay}
+              className="absolute top-2.5 right-2.5 h-7 px-2 rounded-lg border border-slate-200 bg-white/95 text-slate-500 hover:text-primary hover:border-primary/30 hover:bg-white transition-colors inline-flex items-center gap-1.5 z-20"
+              aria-label="Repeat explanation"
+            >
+              <Volume2 className="h-3.5 w-3.5" />
+              <span className="text-[11px] font-medium">Repeat</span>
+            </button>
           )}
         </div>
 

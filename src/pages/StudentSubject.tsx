@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Navigate, useNavigate } from 'react-router'
 import { ArrowLeft, Calculator, BookOpen, PenTool } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -40,6 +40,8 @@ export function StudentSubject() {
   const { subject } = useParams<{ subject: string }>()
   const navigate = useNavigate()
   const { state, updateSubjectProgress } = useAppContext()
+  const [isTtsActive, setIsTtsActive] = useState(false)
+  const [showCompletionOverlay, setShowCompletionOverlay] = useState(false)
 
   // Compute a safe subject for hooks (hooks must not be called conditionally)
   const isValidSubject = !!subject && validSubjects.includes(subject as Subject)
@@ -76,6 +78,29 @@ export function StudentSubject() {
     }
   }, [isSessionComplete, validSubject, updateSubjectProgress])
 
+  useEffect(() => {
+    if (!isSessionComplete) return
+
+    let revealTimer: number | undefined
+    let fallbackTimer: number | undefined
+
+    if (!isLoading && !isTtsActive) {
+      revealTimer = window.setTimeout(() => {
+        setShowCompletionOverlay(true)
+      }, 700)
+    } else {
+      // Fallback in case a browser misses an audio end event.
+      fallbackTimer = window.setTimeout(() => {
+        setShowCompletionOverlay(true)
+      }, 12000)
+    }
+
+    return () => {
+      if (revealTimer) window.clearTimeout(revealTimer)
+      if (fallbackTimer) window.clearTimeout(fallbackTimer)
+    }
+  }, [isSessionComplete, isLoading, isTtsActive])
+
   // Redirect if invalid subject (after all hooks)
   if (!isValidSubject) {
     return <Navigate to="/student" replace />
@@ -92,6 +117,7 @@ export function StudentSubject() {
   }
 
   const handlePracticeMore = () => {
+    setShowCompletionOverlay(false)
     updateSubjectProgress(validSubject, 'in-progress')
     resetSession()
   }
@@ -178,12 +204,13 @@ export function StudentSubject() {
             error={error}
             sendMessage={sendMessage}
             dismissError={dismissError}
+            onTtsActiveChange={setIsTtsActive}
           />
         </div>
       </main>
 
       {/* Session Complete Overlay */}
-      {isSessionComplete && (
+      {showCompletionOverlay && (
         <SessionComplete
           subject={validSubject}
           totalQuestions={totalQuestions ?? state.questionCount}

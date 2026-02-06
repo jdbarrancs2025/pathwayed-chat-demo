@@ -7,13 +7,6 @@ import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import type { Message } from '@/components/chat/ChatMessage'
 import type { Subject } from '@/lib/types'
 
-const FILLER_PHRASES = [
-  "Let me think about that!",
-  "Great question! Let me help.",
-  "Sure thing! Working on it.",
-  "Okay, let me figure this out!",
-]
-
 interface NikkiChatProps {
   subject: Subject
   messages: Message[]
@@ -21,10 +14,20 @@ interface NikkiChatProps {
   error: string | null
   sendMessage: (content: string) => Promise<void>
   dismissError: () => void
+  onTtsActiveChange?: (active: boolean) => void
 }
 
-export function NikkiChat({ messages, isLoading, error, sendMessage, dismissError }: NikkiChatProps) {
-  const { speak, stop, unlockAudio, preloadFillers, playFiller, isSpeaking, isLoading: ttsLoading, error: ttsError } = useTextToSpeech()
+export function NikkiChat({
+  subject,
+  messages,
+  isLoading,
+  error,
+  sendMessage,
+  dismissError,
+  onTtsActiveChange,
+}: NikkiChatProps) {
+  const { speak, stop, unlockAudio, isSpeaking, isLoading: ttsLoading, error: ttsError } = useTextToSpeech()
+  const ttsActive = isSpeaking || ttsLoading
 
   const [readAloud, setReadAloud] = useState(false)
 
@@ -32,35 +35,45 @@ export function NikkiChat({ messages, isLoading, error, sendMessage, dismissErro
   const wasLoadingRef = useRef(false)
 
   useEffect(() => {
-    // Detect false → true: message just sent, play filler while waiting
-    if (!wasLoadingRef.current && isLoading && readAloud) {
-      playFiller()
-    }
-
     // Detect true → false: streaming complete, play full response
     if (wasLoadingRef.current && !isLoading && readAloud) {
       const lastMessage = messages[messages.length - 1]
       if (lastMessage?.role === 'assistant' && lastMessage.content.trim()) {
         const plainText = stripMarkdownForTTS(lastMessage.content)
-        if (plainText) speak(plainText)
+        if (plainText) void speak(plainText)
       }
     }
     wasLoadingRef.current = isLoading
-  }, [isLoading, messages, readAloud, speak, playFiller])
+  }, [isLoading, messages, readAloud, speak])
+
+  useEffect(() => {
+    onTtsActiveChange?.(ttsActive)
+  }, [ttsActive, onTtsActiveChange])
+
+  useEffect(() => {
+    return () => {
+      onTtsActiveChange?.(false)
+    }
+  }, [onTtsActiveChange])
 
   const handleToggle = (checked: boolean) => {
     setReadAloud(checked)
     if (checked) {
       // Unlock iOS AudioContext on user gesture
       unlockAudio()
-      // Pre-cache filler phrases for instant playback
-      preloadFillers(FILLER_PHRASES)
     } else {
       stop()
     }
   }
 
-  const ttsActive = isSpeaking || ttsLoading
+  const handleReplayAssistantMessage = (content: string) => {
+    const plainText = stripMarkdownForTTS(content)
+    if (!plainText) return
+
+    // User gesture ensures iOS audio can resume for replay taps.
+    unlockAudio()
+    void speak(plainText)
+  }
 
   return (
     <div className="bg-white rounded-2xl border-2 border-slate-100 shadow-sm overflow-hidden">
@@ -130,11 +143,13 @@ export function NikkiChat({ messages, isLoading, error, sendMessage, dismissErro
       {/* Chat container with constrained height */}
       <div className="h-[400px]">
         <ChatContainer
+          subject={subject}
           messages={messages}
           onSendMessage={sendMessage}
           isLoading={isLoading}
           error={error}
           onDismissError={dismissError}
+          onReplayAssistantMessage={handleReplayAssistantMessage}
         />
       </div>
     </div>
