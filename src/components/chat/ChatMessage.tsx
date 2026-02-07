@@ -8,6 +8,48 @@ const mathPlugin = createMathPlugin({
 })
 
 /**
+ * Catch bare LaTeX commands the AI outputs without $ delimiters.
+ * Splits content by existing math regions so we only fix non-math text.
+ */
+function sanitizeBareLatex(content: string): string {
+  // Split on existing math delimiters: $$...$$, $...$, \[...\], \(...\)
+  const mathRegion = /(\$\$[\s\S]*?\$\$|\$[^$]*?\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\))/g
+  const parts = content.split(mathRegion)
+
+  // Standalone commands (no braces needed)
+  const standalone = [
+    'times', 'div', 'pm', 'leq', 'geq', 'angle', 'triangle',
+    'cong', 'sim', 'parallel', 'perp', 'cdot', 'neq', 'approx',
+    'infty', 'pi',
+  ]
+  const standaloneRe = new RegExp(
+    `\\\\(${standalone.join('|')})(?![a-zA-Z])`,
+    'g',
+  )
+
+  // Argument-requiring commands (must have {})
+  const argRe = /\\(frac|sqrt)(\{[^}]*\}(?:\{[^}]*\})?)/g
+
+  return parts
+    .map((part) => {
+      // If this part is an existing math region, leave it alone
+      if (
+        (part.startsWith('$') && part.endsWith('$')) ||
+        (part.startsWith('\\(') && part.endsWith('\\)')) ||
+        (part.startsWith('\\[') && part.endsWith('\\]'))
+      ) {
+        return part
+      }
+      // Wrap standalone bare commands
+      part = part.replace(standaloneRe, (_match, cmd) => `$\\${cmd}$`)
+      // Wrap argument-requiring bare commands
+      part = part.replace(argRe, (_match, cmd, args) => `$\\${cmd}${args}$`)
+      return part
+    })
+    .join('')
+}
+
+/**
  * Normalize LaTeX math delimiters for Streamdown compatibility.
  * Converts \(...\) to $...$ (inline) and \[...\] to $$...$$ (block).
  * See: https://github.com/vercel/streamdown/issues/194
@@ -75,7 +117,7 @@ export function ChatMessage({ message, isLatest, onReplay }: ChatMessageProps) {
           ) : (
             <div className="text-[15px] leading-relaxed relative z-10 prose prose-slate prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
               <Streamdown plugins={{ math: mathPlugin }}>
-                {normalizeMathDelimiters(message.content)}
+                {normalizeMathDelimiters(sanitizeBareLatex(message.content))}
               </Streamdown>
             </div>
           )}

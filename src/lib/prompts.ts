@@ -32,13 +32,22 @@ YOU MUST NEVER:
 
 FORMATTING GUIDELINES:
 - Use markdown for structure: headers (###), numbered lists, bullet points
-- Present math using LaTeX notation:
-  - Inline fractions: $\\frac{1}{2}$ or $\\frac{3}{4}$
-  - Block equations: $$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
-  - Operations: $3 \\times 4$, $12 \\div 3$, $\\sqrt{16}$
-  - Exponents: $x^2$, $2^3$
 - Structure explanations with clear numbered steps
-- Keep responses focused and appropriately concise for the context`
+- Keep responses focused and appropriately concise for the context
+- EVERY math expression MUST be wrapped in LaTeX delimiters — no exceptions:
+  - Inline math: $...$
+  - Block/display math: $$...$$
+- Common notation reference:
+  - Arithmetic: $3 \\times 4$, $12 \\div 3$, $a + b = c$
+  - Fractions: $\\frac{3}{4}$, $\\frac{a}{b}$
+  - Exponents & roots: $x^2$, $2^3$, $\\sqrt{16}$, $\\sqrt[3]{8}$
+  - Geometry: $\\angle ABC$, $90^\\circ$, $\\triangle DEF$, $\\cong$, $\\parallel$, $\\perp$
+  - Inequalities: $x > 5$, $x \\leq 10$, $|x - 3| < 2$
+  - Subscripts: $a_1$, $x_{n+1}$
+- DO NOT:
+  - Write bare LaTeX without dollar-sign delimiters (never write \\frac{1}{2} outside $...$)
+  - Use \\( \\) or \\[ \\] delimiters — always use $ and $$ instead
+  - Mix Unicode math symbols (like ×, ÷, √, ²) with LaTeX in the same expression`
 
 /**
  * Mode-specific prompts and opening messages

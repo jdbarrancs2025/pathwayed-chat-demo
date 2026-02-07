@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Delete, Eraser } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -12,6 +13,8 @@ interface MathKeyboardProps {
   onClear: () => void
   disabled?: boolean
 }
+
+type KeyboardTab = "standard" | "scientific"
 
 const fractionKeys: MathKey[] = [
   { label: "1/2", value: "1/2" },
@@ -29,6 +32,24 @@ const symbolKeys: MathKey[] = [
   { label: "÷", value: "/" },
   { label: "=", value: "=" },
   { label: "( )", value: "()" },
+]
+
+const scientificRow1: MathKey[] = [
+  { label: "√", value: "√" },
+  { label: "°", value: "°" },
+  { label: "^", value: "^" },
+  { label: "π", value: "π" },
+  { label: "%", value: "%" },
+  { label: "²", value: "²" },
+]
+
+const scientificRow2: MathKey[] = [
+  { label: "³", value: "³" },
+  { label: "<", value: "<" },
+  { label: ">", value: ">" },
+  { label: "≤", value: "≤" },
+  { label: "≥", value: "≥" },
+  { label: "≠", value: "≠" },
 ]
 
 const numberKeys: MathKey[] = [
@@ -77,30 +98,88 @@ export function MathKeyboard({
   onClear,
   disabled,
 }: MathKeyboardProps) {
+  const [activeTab, setActiveTab] = useState<KeyboardTab>("standard")
+
   return (
     <div className="mb-2 rounded-2xl border border-slate-200 bg-slate-50/80 p-2 sm:p-3">
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-        {fractionKeys.map((keyDef) => (
-          <KeyButton
-            key={`fraction-${keyDef.label}`}
-            keyDef={keyDef}
-            onInsert={onInsert}
-            disabled={disabled}
-          />
-        ))}
+      {/* Tab toggle */}
+      <div className="flex gap-1 mb-2 p-0.5 rounded-lg bg-slate-100 w-fit">
+        <button
+          type="button"
+          onClick={() => setActiveTab("standard")}
+          className={cn(
+            "px-3 py-1 rounded-md text-xs font-semibold transition-colors",
+            activeTab === "standard"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
+          )}
+        >
+          Standard
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("scientific")}
+          className={cn(
+            "px-3 py-1 rounded-md text-xs font-semibold transition-colors",
+            activeTab === "scientific"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
+          )}
+        >
+          Scientific
+        </button>
       </div>
 
-      <div className="mt-1.5 grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-        {symbolKeys.map((keyDef) => (
-          <KeyButton
-            key={`symbol-${keyDef.label}`}
-            keyDef={keyDef}
-            onInsert={onInsert}
-            disabled={disabled}
-          />
-        ))}
-      </div>
+      {/* Tab content */}
+      {activeTab === "standard" ? (
+        <>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+            {fractionKeys.map((keyDef) => (
+              <KeyButton
+                key={`fraction-${keyDef.label}`}
+                keyDef={keyDef}
+                onInsert={onInsert}
+                disabled={disabled}
+              />
+            ))}
+          </div>
+          <div className="mt-1.5 grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+            {symbolKeys.map((keyDef) => (
+              <KeyButton
+                key={`symbol-${keyDef.label}`}
+                keyDef={keyDef}
+                onInsert={onInsert}
+                disabled={disabled}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+            {scientificRow1.map((keyDef) => (
+              <KeyButton
+                key={`sci1-${keyDef.label}`}
+                keyDef={keyDef}
+                onInsert={onInsert}
+                disabled={disabled}
+              />
+            ))}
+          </div>
+          <div className="mt-1.5 grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+            {scientificRow2.map((keyDef) => (
+              <KeyButton
+                key={`sci2-${keyDef.label}`}
+                keyDef={keyDef}
+                onInsert={onInsert}
+                disabled={disabled}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
+      {/* Number row + actions (shared) */}
       <div className="mt-1.5 grid grid-cols-3 sm:grid-cols-6 gap-1.5">
         {numberKeys.map((keyDef) => (
           <KeyButton
