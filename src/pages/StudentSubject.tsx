@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, Navigate, useNavigate } from 'react-router'
 import { ArrowLeft, Calculator, BookOpen, PenTool } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -78,27 +78,31 @@ export function StudentSubject() {
     }
   }, [isSessionComplete, validSubject, updateSubjectProgress])
 
+  // Track whether TTS was observed active after session completion
+  const seenTtsActiveRef = useRef(false)
+
+  useEffect(() => {
+    if (isSessionComplete && isTtsActive) {
+      seenTtsActiveRef.current = true
+    }
+    if (!isSessionComplete) {
+      seenTtsActiveRef.current = false
+    }
+  }, [isSessionComplete, isTtsActive])
+
   useEffect(() => {
     if (!isSessionComplete) return
+    if (isLoading || isTtsActive) return
 
-    let revealTimer: number | undefined
-    let fallbackTimer: number | undefined
+    // TTS played and finished → show overlay quickly
+    // TTS hasn't started yet → wait a grace period (covers race condition + readAloud off)
+    const delay = seenTtsActiveRef.current ? 600 : 2000
 
-    if (!isLoading && !isTtsActive) {
-      revealTimer = window.setTimeout(() => {
-        setShowCompletionOverlay(true)
-      }, 700)
-    } else {
-      // Fallback in case a browser misses an audio end event.
-      fallbackTimer = window.setTimeout(() => {
-        setShowCompletionOverlay(true)
-      }, 12000)
-    }
+    const timer = window.setTimeout(() => {
+      setShowCompletionOverlay(true)
+    }, delay)
 
-    return () => {
-      if (revealTimer) window.clearTimeout(revealTimer)
-      if (fallbackTimer) window.clearTimeout(fallbackTimer)
-    }
+    return () => window.clearTimeout(timer)
   }, [isSessionComplete, isLoading, isTtsActive])
 
   // Redirect if invalid subject (after all hooks)

@@ -50,7 +50,7 @@ export function SessionComplete({ subject, totalQuestions, onPracticeMore, onBac
           <Button
             variant="outline"
             onClick={onBackToHome}
-            className="w-full h-12 rounded-xl font-semibold border-2 border-slate-200 text-slate-600 hover:bg-slate-50"
+            className="w-full h-12 rounded-xl font-semibold border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-700"
           >
             Back to Home
           </Button>
