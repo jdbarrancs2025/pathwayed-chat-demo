@@ -37,6 +37,7 @@ FORMATTING GUIDELINES:
 - EVERY math expression MUST be wrapped in LaTeX delimiters — no exceptions:
   - Inline math: $...$
   - Block/display math: $$...$$
+  - Delimiters must be balanced and non-nested
 - Common notation reference:
   - Arithmetic: $3 \\times 4$, $12 \\div 3$, $a + b = c$
   - Fractions: $\\frac{3}{4}$, $\\frac{a}{b}$
@@ -47,6 +48,9 @@ FORMATTING GUIDELINES:
 - DO NOT:
   - Write bare LaTeX without dollar-sign delimiters (never write \\frac{1}{2} outside $...$)
   - Use \\( \\) or \\[ \\] delimiters — always use $ and $$ instead
+  - Nest math delimiters (never place $...$ inside $$...$$, \\( \\), or \\[ \\])
+  - Mix delimiter families in one expression (for example: \\[$x$\\])
+  - Emit malformed delimiters (for example: $$$..., \\[$...$\\], or $ =$$)
   - Mix Unicode math symbols (like ×, ÷, √, ²) with LaTeX in the same expression`
 
 /**
