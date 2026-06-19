@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PathwayEd Learning Demo - A branded web application demonstrating an AI-powered student support assistant for school administrators. Built for vendor fair demos (no auth, no database).
+PathwayEd - An AI-powered K–12 tutoring web application. Originally built as a vendor-fair demo, it is now moving toward a real student pilot: the N.I.K.K.I. tutor runs on Claude (Sonnet 4.6), backed by Supabase for persistence (saved sessions and per-student access codes) and gated by parent consent.
 
 ## Commands
 
