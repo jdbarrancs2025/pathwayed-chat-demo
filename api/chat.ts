@@ -1,4 +1,4 @@
-import OpenAI from "openai"
+import Anthropic from "@anthropic-ai/sdk"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { getCombinedSystemPrompt, type Mode, type StudentContext } from "./prompts.js"
 
@@ -20,12 +20,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Validate API key
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return res.status(500).json({ error: "OpenAI API key not configured" })
+    return res.status(500).json({ error: "Anthropic API key not configured" })
   }
 
-  const openai = new OpenAI({
+  const anthropic = new Anthropic({
     apiKey,
   })
 
@@ -40,32 +40,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Mode is required" })
     }
 
-    // Build messages array with system prompt (include context for student-support mode)
+    // Build the system prompt (include context for student-support mode).
+    // Claude takes the system prompt in a dedicated top-level field — only
+    // user/assistant turns go in the messages array.
     const systemPrompt = getCombinedSystemPrompt(mode, context)
-    const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      { role: "system", content: systemPrompt },
-      ...messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
-    ]
-
-    // Call OpenAI API with streaming using the SDK
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: openaiMessages,
-      stream: true,
-      max_tokens: 1024,
-      temperature: 0.7,
-    })
+    const anthropicMessages: Anthropic.MessageParam[] = messages.map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content,
+    }))
 
     // Set up SSE headers
     res.setHeader("Content-Type", "text/event-stream")
     res.setHeader("Cache-Control", "no-cache")
     res.setHeader("Connection", "keep-alive")
 
-    // Stream the response using for-await pattern
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content
-      if (content) {
-        res.write(`data: ${JSON.stringify({ content })}\n\n`)
+    // Stream from Claude (Sonnet 4.6, no extended thinking) and translate the
+    // text deltas into the existing `data: {content}` / `data: [DONE]` SSE shape
+    // so the frontend and useNikkiChat hook are untouched.
+    const stream = anthropic.messages.stream({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      temperature: 0.7,
+      system: systemPrompt,
+      messages: anthropicMessages,
+    })
+
+    for await (const event of stream) {
+      if (
+        event.type === "content_block_delta" &&
+        event.delta.type === "text_delta"
+      ) {
+        const content = event.delta.text
+        if (content) {
+          res.write(`data: ${JSON.stringify({ content })}\n\n`)
+        }
       }
     }
 
