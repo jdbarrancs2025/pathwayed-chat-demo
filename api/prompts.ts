@@ -1,4 +1,4 @@
-export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support"
+export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support" | "kid-tutor"
 
 export interface StudentContext {
   subject: string
@@ -6,6 +6,9 @@ export interface StudentContext {
   appMode: 'school' | 'home' | null
   gradeBand?: string
   questionCount?: number
+  childName?: string
+  grade?: string
+  level?: string
 }
 
 /**
@@ -181,6 +184,17 @@ You help parents SUPPORT learning, not DO the learning. If asked for homework an
 
 Focus on routines, encouragement strategies, and parent-child learning interactions.`,
   },
+  "kid-tutor": {
+    prompt: `You are running a one-on-one tutoring session with a K–12 child. Teach, don't tell.
+
+How you teach:
+- Guide, do not give. Help the student reach answers with hints, small steps, and good questions. Never hand over the full answer to homework or a test.
+- One small step per reply. Keep replies short, friendly, and focused on a single idea, like a real back-and-forth.
+- When the student shares written or drawn work or a photo, read it carefully, point out what is going well, and gently guide the next step. If you cannot read something, say so kindly and ask them to tell you.
+- Celebrate effort and be gentle about mistakes.
+
+Tone: friendly, calm, curious, and never condescending. You are on the student's side.`,
+  },
 }
 
 /**
@@ -212,14 +226,55 @@ You are ONLY practicing ${context.subject.toUpperCase()} in this session. Presen
 }
 
 /**
+ * Subject-specific tutoring guidance for the kid session (mirrors the prototype).
+ */
+const SUBJECT_GUIDES: Record<string, { name: string; guide: string }> = {
+  math: { name: 'Math', guide: 'work through the steps together and let them do the actual figuring' },
+  reading: { name: 'Reading', guide: 'ask about the text, help them find evidence, and build understanding' },
+  writing: { name: 'Writing', guide: 'help them plan and improve their own words, and never write it for them' },
+  science: { name: 'Science', guide: 'use everyday examples, ask why things happen, and spark curiosity' },
+  homework: { name: 'Homework', guide: 'figure out what the assignment is asking, then guide them through it with hints and a little practice' },
+}
+
+function workingDescription(grade?: string, level?: string): string {
+  const base = grade === 'K' ? 'kindergarten' : grade ? `grade ${grade}` : 'their current grade'
+  if (level === 'ahead') return `${base}, working a grade ahead`
+  if (level === 'advanced') return `${base}, working on an advanced challenge above grade level`
+  return base
+}
+
+/**
+ * Build the child- and subject-aware context block for the kid tutoring session.
+ */
+function buildKidContextBlock(context: StudentContext): string {
+  const name = context.childName?.trim() || 'the student'
+  const wd = workingDescription(context.grade, context.level)
+  const sg = SUBJECT_GUIDES[context.subject]
+  const focus =
+    context.subject === 'homework'
+      ? 'You are helping with the homework or assignment they share, in any subject.'
+      : sg
+        ? `You are helping with ${sg.name}.`
+        : 'You are helping them learn.'
+  const guideLine = sg ? ` For this, ${sg.guide}.` : ''
+
+  return `CURRENT SESSION:
+- Student: ${name}, in ${wd}
+- ${focus}${guideLine}
+
+Address ${name} warmly by name, and keep everything appropriate for ${wd}.`
+}
+
+/**
  * Get the combined system prompt (master + mode) for a specific mode
  */
 export function getCombinedSystemPrompt(mode: Mode, context?: StudentContext): string {
   let prompt = `${MASTER_PROMPT}\n\n---\n\n${MODE_CONFIG[mode].prompt}`
 
-  // Add context block for student-support mode when context is provided
   if (mode === 'student-support' && context) {
     prompt += `\n\n---\n${buildContextBlock(context)}`
+  } else if (mode === 'kid-tutor' && context) {
+    prompt += `\n\n---\n${buildKidContextBlock(context)}`
   }
 
   return prompt

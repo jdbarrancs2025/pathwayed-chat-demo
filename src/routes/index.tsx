@@ -5,6 +5,10 @@ import { ChooseNikki } from '@/pages/ChooseNikki'
 import { YourChildren } from '@/pages/YourChildren'
 import { AddChild } from '@/pages/AddChild'
 import { StudentPicker } from '@/pages/StudentPicker'
+import { KidHome } from '@/pages/KidHome'
+import { Session } from '@/pages/Session'
+import { ParentArea } from '@/pages/ParentArea'
+import { Settings } from '@/pages/Settings'
 import { AccountSetup } from '@/pages/AccountSetup'
 import { GradeSelect } from '@/pages/GradeSelect'
 import { TeacherSetup } from '@/pages/TeacherSetup'
@@ -24,6 +28,10 @@ export function AppRoutes() {
       <Route path="/children/new" element={<AddChild />} />
       <Route path="/children/:id/edit" element={<AddChild />} />
       <Route path="/students" element={<StudentPicker />} />
+      <Route path="/students/:id" element={<KidHome />} />
+      <Route path="/students/:id/session/:subject" element={<Session />} />
+      <Route path="/parent" element={<ParentArea />} />
+      <Route path="/settings" element={<Settings />} />
       <Route path="/account-setup" element={<AccountSetup />} />
       <Route path="/grade-select" element={<GradeSelect />} />
       <Route path="/teacher-setup" element={<TeacherSetup />} />
