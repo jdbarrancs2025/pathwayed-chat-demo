@@ -1,0 +1,169 @@
+/* JARVIS-style energy orb — ported from design/prototype.html.
+   Scoped under .nikki-orb; keyframes are prefixed to avoid colliding with
+   Tailwind's `spin` and any other global animations. */
+
+.nikki-orb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nikki-orb .jarvis {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.nikki-orb .jspin-cw,
+.nikki-orb .jspin-ccw,
+.nikki-orb .jarcA,
+.nikki-orb .jarcB,
+.nikki-orb .jswirl,
+.nikki-orb .jglow,
+.nikki-orb .jcore {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+}
+.nikki-orb .jspin-cw {
+  animation: nikki-orb-spin 26s linear infinite;
+}
+.nikki-orb .jspin-ccw {
+  animation: nikki-orb-spin 34s linear infinite reverse;
+}
+.nikki-orb .jarcA {
+  animation: nikki-orb-spin 16s linear infinite;
+}
+.nikki-orb .jarcB {
+  animation: nikki-orb-spin 22s linear infinite reverse;
+}
+.nikki-orb .jswirl {
+  animation: nikki-orb-spin 9s linear infinite;
+}
+.nikki-orb .jglow {
+  animation: nikki-orb-glow 3.4s ease-in-out infinite;
+}
+.nikki-orb .jcore {
+  animation: nikki-orb-core 3.4s ease-in-out infinite;
+}
+.nikki-orb .jping {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  animation: nikki-orb-ping 2.6s ease-out infinite;
+}
+.nikki-orb .jping2 {
+  animation-delay: 1.3s;
+}
+
+/* Thinking state */
+.nikki-orb.thinking {
+  animation: nikki-orb-pulse 1.8s ease-in-out infinite;
+}
+.nikki-orb.thinking .jarcA {
+  animation-duration: 8s;
+}
+.nikki-orb.thinking .jarcB {
+  animation-duration: 11s;
+}
+.nikki-orb.thinking .jspin-cw {
+  animation-duration: 14s;
+}
+.nikki-orb.thinking .jspin-ccw {
+  animation-duration: 18s;
+}
+.nikki-orb.thinking .jglow,
+.nikki-orb.thinking .jcore {
+  animation-duration: 1.5s;
+}
+.nikki-orb.thinking .jping {
+  animation-duration: 1.8s;
+}
+
+/* Speaking state */
+.nikki-orb.speaking {
+  animation: nikki-orb-pulse 0.7s ease-in-out infinite;
+}
+.nikki-orb.speaking .jarcA {
+  animation-duration: 5s;
+}
+.nikki-orb.speaking .jarcB {
+  animation-duration: 7s;
+}
+.nikki-orb.speaking .jswirl {
+  animation-duration: 4s;
+}
+.nikki-orb.speaking .jspin-cw {
+  animation-duration: 9s;
+}
+.nikki-orb.speaking .jspin-ccw {
+  animation-duration: 12s;
+}
+.nikki-orb.speaking .jglow,
+.nikki-orb.speaking .jcore {
+  animation-duration: 0.42s;
+}
+.nikki-orb.speaking .jping {
+  animation-duration: 1.1s;
+}
+
+@keyframes nikki-orb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes nikki-orb-glow {
+  0%,
+  100% {
+    opacity: 0.38;
+    transform: scale(0.88);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.2);
+  }
+}
+@keyframes nikki-orb-core {
+  0%,
+  100% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.26);
+  }
+}
+@keyframes nikki-orb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes nikki-orb-ping {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nikki-orb .jspin-cw,
+  .nikki-orb .jspin-ccw,
+  .nikki-orb .jarcA,
+  .nikki-orb .jarcB,
+  .nikki-orb .jswirl,
+  .nikki-orb .jglow,
+  .nikki-orb .jcore,
+  .nikki-orb .jping,
+  .nikki-orb.thinking,
+  .nikki-orb.speaking {
+    animation: none !important;
+  }
+}

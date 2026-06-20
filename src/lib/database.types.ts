@@ -39,18 +39,27 @@ export interface Database {
       consents: {
         Row: {
           id: string
-          user_id: string
-          created_at: string
+          parent_id: string
+          parent_name: string | null
+          method: string
+          consent_version: string
+          consented_at: string
         }
         Insert: {
           id?: string
-          user_id: string
-          created_at?: string
+          parent_id: string
+          parent_name?: string | null
+          method: string
+          consent_version: string
+          consented_at?: string
         }
         Update: {
           id?: string
-          user_id?: string
-          created_at?: string
+          parent_id?: string
+          parent_name?: string | null
+          method?: string
+          consent_version?: string
+          consented_at?: string
         }
         Relationships: []
       }
