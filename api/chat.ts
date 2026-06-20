@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { getCombinedSystemPrompt, buildFlashcardsPrompt, type Mode, type StudentContext } from "./prompts.js"
+import { getCombinedSystemPrompt, type Mode, type StudentContext } from "./prompts.js"
 
 interface ChatMessage {
   role: "user" | "assistant"
@@ -17,7 +17,6 @@ interface ChatRequest {
   mode: Mode
   context?: StudentContext
   image?: ImageInput
-  task?: "flashcards"
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -37,21 +36,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   })
 
   try {
-    const { messages, mode, context, image, task } = req.body as ChatRequest
+    const { messages, mode, context, image } = req.body as ChatRequest
 
     // Validate request body
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "Messages array is required" })
     }
-    if (!mode && task !== "flashcards") {
+    if (!mode) {
       return res.status(400).json({ error: "Mode is required" })
     }
 
     // Claude takes the system prompt in a dedicated top-level field — only
-    // user/assistant turns go in the messages array. The Flashcards tool uses
-    // a dedicated JSON prompt; everything else uses the tutor prompt.
-    const systemPrompt =
-      task === "flashcards" ? buildFlashcardsPrompt(context) : getCombinedSystemPrompt(mode, context)
+    // user/assistant turns go in the messages array.
+    const systemPrompt = getCombinedSystemPrompt(mode, context)
 
     const anthropicMessages: Anthropic.MessageParam[] = messages.map((m) => ({
       role: m.role as "user" | "assistant",
@@ -87,7 +84,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // so the frontend and useNikkiChat hook are untouched.
     const stream = anthropic.messages.stream({
       model: "claude-sonnet-4-6",
-      max_tokens: task === "flashcards" ? 2000 : 1024,
+      max_tokens: 1024,
       temperature: 0.7,
       system: systemPrompt,
       messages: anthropicMessages,

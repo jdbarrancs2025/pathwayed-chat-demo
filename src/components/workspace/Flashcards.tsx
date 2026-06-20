@@ -21,6 +21,7 @@ export function Flashcards({ childName, grade, level }: { childName: string; gra
   const fileRef = useRef<HTMLInputElement>(null)
 
   const say = (text: string) => {
+    // TODO(Prompt 12): play via the ElevenLabs voice; browser speechSynthesis is the fallback for now.
     if (!('speechSynthesis' in window)) return
     window.speechSynthesis.cancel()
     const u = new SpeechSynthesisUtterance(text)
@@ -160,8 +161,8 @@ export function Flashcards({ childName, grade, level }: { childName: string; gra
   return (
     <>
       <p className="wshint">
-        Flashcards for sight words and vocabulary. Type a word list or topic, or take a picture or upload a photo or
-        PDF of words, and Nikki will turn it into a set.
+        Flashcards for sight words and vocabulary. Type a word list or topic, let Nikki choose for you, or upload a
+        photo or PDF of words or an assignment — Nikki turns it into a set.
       </p>
       <div className="field" style={{ marginTop: 0 }}>
         <label htmlFor="flash-topic">Words or topic (optional)</label>
@@ -179,7 +180,7 @@ export function Flashcards({ childName, grade, level }: { childName: string; gra
         disabled={busy}
         onClick={() => run(() => generateFromTopic(ctx, topic), "I couldn't make cards just now. Try again in a moment.")}
       >
-        {busy ? 'Making your cards…' : 'Make flashcards'}
+        {busy ? 'Making your cards…' : topic.trim() ? 'Make flashcards' : 'Let Nikki choose'}
       </button>
       <div className="oranote">or</div>
       <button type="button" className="btn btn-soft" onClick={() => fileRef.current?.click()}>
