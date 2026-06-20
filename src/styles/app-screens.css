@@ -766,6 +766,111 @@
   background: #fbeee9;
 }
 
+/* Shared components for the .shell screens (parent area, settings) */
+.shell .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 15px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15.5px;
+  width: 100%;
+  font-family: var(--body);
+  transition: box-shadow 0.16s, background 0.15s, opacity 0.15s;
+}
+.shell .btn:active {
+  transform: translateY(1px);
+}
+.shell .btn-primary {
+  background: var(--orange);
+  color: #fff;
+}
+.shell .btn-navy {
+  background: var(--navy);
+  color: #fff;
+}
+.shell .btn-soft {
+  background: #f4eee4;
+  color: var(--navy);
+}
+.shell .btn-soft:hover {
+  background: #efe7da;
+}
+.shell .btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.shell .link {
+  background: none;
+  color: var(--navy);
+  font-weight: 700;
+  width: auto;
+  padding: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-family: var(--body);
+  font-size: 14.5px;
+  cursor: pointer;
+}
+.shell .field {
+  margin: 16px 0;
+  text-align: left;
+}
+.shell .field label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+.shell .input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.6px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--ink);
+}
+.shell .input:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 4px rgba(0, 48, 120, 0.08);
+}
+.shell .panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.shell .panel h3 {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+.shell .stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-top: 1px solid var(--line-2);
+  font-size: 14px;
+}
+.shell .stat-row:first-of-type {
+  border-top: none;
+}
+.shell .banner {
+  font-size: 12.5px;
+  color: var(--muted);
+  background: #eef2fa;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 16px;
+  text-align: center;
+}
+
 /* Nikki call stage */
 .callstage {
   display: flex;

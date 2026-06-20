@@ -1,17 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
-import { supabase } from '@/lib/supabase'
-import { NikkiOrb } from '@/components/NikkiOrb'
-
-type NikkiId = 'orb' | 'p1' | 'p2' | 'p3'
-
-const OPTIONS: { id: NikkiId; label: string; src?: string }[] = [
-  { id: 'orb', label: 'Energy orb' },
-  { id: 'p1', label: 'Nikki', src: '/nikki1.jpg' },
-  { id: 'p2', label: 'Nikki', src: '/nikki2.jpg' },
-  { id: 'p3', label: 'Nikki', src: '/nikki3.jpg' },
-]
+import { setNikkiChoice } from '@/lib/profile'
+import { NikkiChoiceGrid, type NikkiId } from '@/components/NikkiChoiceGrid'
 
 export function ChooseNikki() {
   const { user } = useAuth()
@@ -22,9 +13,7 @@ export function ChooseNikki() {
   const handleContinue = async () => {
     if (saving) return
     setSaving(true)
-    if (user) {
-      await supabase.from('profiles').update({ nikki: selected }).eq('id', user.id)
-    }
+    if (user) await setNikkiChoice(user.id, selected)
     navigate('/children', { replace: true })
   }
 
@@ -78,60 +67,7 @@ export function ChooseNikki() {
           Pick how Nikki looks while your child learns. You can change this any time in Settings.
         </p>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 12,
-            marginTop: 6,
-          }}
-        >
-          {OPTIONS.map((opt) => {
-            const on = selected === opt.id
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setSelected(opt.id)}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 9,
-                  padding: '16px 10px',
-                  border: on ? '1.6px solid #CC543C' : '1.6px solid #ECE4D8',
-                  borderRadius: 20,
-                  background: on ? '#FBEEE9' : '#fff',
-                  fontWeight: 700,
-                  fontSize: 13,
-                  color: '#1C2230',
-                  cursor: 'pointer',
-                }}
-              >
-                {opt.id === 'orb' ? (
-                  <NikkiOrb size={66} />
-                ) : (
-                  <span
-                    style={{
-                      width: 66,
-                      height: 66,
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      boxShadow: '0 4px 12px rgba(28,34,48,.18)',
-                    }}
-                  >
-                    <img
-                      src={opt.src}
-                      alt="Nikki"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    />
-                  </span>
-                )}
-                <span>{opt.label}</span>
-              </button>
-            )
-          })}
-        </div>
+        <NikkiChoiceGrid value={selected} onChange={setSelected} />
 
         <button
           type="button"

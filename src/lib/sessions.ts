@@ -65,6 +65,23 @@ export async function listSavedSubjects(studentId: string): Promise<string[]> {
     .map((row) => row.subject)
 }
 
+export interface FeedbackSummary {
+  count: number
+  recent: { rating: string; subject: string } | null
+}
+
+/** Feedback rollup for a student: how many sessions rated and the most recent result. */
+export async function getFeedbackSummary(studentId: string): Promise<FeedbackSummary> {
+  const { data, error } = await supabase
+    .from('feedback')
+    .select('rating, subject, created_at')
+    .eq('student_id', studentId)
+    .order('created_at', { ascending: false })
+  if (error || !data) return { count: 0, recent: null }
+  const recent = data.length ? { rating: data[0].rating, subject: data[0].subject } : null
+  return { count: data.length, recent }
+}
+
 /** Record end-of-session feedback. */
 export async function saveFeedback(
   studentId: string,
