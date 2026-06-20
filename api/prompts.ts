@@ -265,6 +265,28 @@ function buildKidContextBlock(context: StudentContext): string {
 Address ${name} warmly by name, and keep everything appropriate for ${wd}.`
 }
 
+function isElementaryGrade(grade?: string): boolean {
+  if (!grade) return false
+  if (grade === 'K') return true
+  const n = parseInt(grade, 10)
+  return !Number.isNaN(n) && n <= 5
+}
+
+/**
+ * Standalone system prompt for generating word-study flashcards as JSON.
+ * Used by the workspace Flashcards tool (task: "flashcards") — kept separate
+ * from the tutor prompt so the model returns clean JSON, not markdown.
+ */
+export function buildFlashcardsPrompt(context?: StudentContext): string {
+  const wd = workingDescription(context?.grade, context?.level)
+  const band = isElementaryGrade(context?.grade)
+    ? 'This is an elementary student in grade K to 5: use sight words and simple vocabulary with very simple meanings and example sentences.'
+    : 'This is a student in grade 6 to 12: use clear, accurate definitions and natural example sentences.'
+  return `You create word-study flashcards for a student in ${wd}. ${band}
+
+If given a photo or a list, find the words or terms to study. Respond with ONLY a JSON array of objects, each {"front":"the word or term","back":"a kid-friendly meaning and a short example sentence using it"}, up to 16 cards. Be accurate and age-appropriate, and never include anything inappropriate for a child. Output JSON only — no markdown, no code fences, no extra text.`
+}
+
 /**
  * Get the combined system prompt (master + mode) for a specific mode
  */

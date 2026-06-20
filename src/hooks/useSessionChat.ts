@@ -151,5 +151,72 @@ export function useSessionChat(opts: UseSessionChatOptions) {
     [isLoading, persist],
   )
 
-  return { messages, isLoading, error, sendMessage }
+  const sendImageTurn = useCallback(
+    async ({
+      placeholder,
+      prompt,
+      imageB64,
+      mediaType,
+    }: {
+      placeholder: string
+      prompt: string
+      imageB64: string
+      mediaType: string
+    }) => {
+      if (isLoading) return
+
+      const userMsg: ChatMessage = { id: `user-${Date.now()}`, role: 'user', content: placeholder }
+      const assistantId = `assistant-${Date.now()}`
+      const convo = [...messagesRef.current, userMsg]
+      setMessages([...convo, { id: assistantId, role: 'assistant', content: '' }])
+      setIsLoading(true)
+      setError(null)
+
+      // Send the real instruction (not the visible placeholder) plus the image.
+      const firstUser = convo.findIndex((m) => m.role === 'user')
+      const apiMessages = convo
+        .slice(firstUser === -1 ? convo.length : firstUser)
+        .map((m) => ({ role: m.role, content: m.content }))
+      if (apiMessages.length) apiMessages[apiMessages.length - 1] = { role: 'user', content: prompt }
+
+      const o = optsRef.current
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: apiMessages,
+            mode: 'kid-tutor',
+            context: {
+              subject: o.subject,
+              focusAreas: [],
+              appMode: null,
+              childName: o.childName,
+              grade: o.grade,
+              level: o.level,
+            },
+            image: { data: imageB64, mediaType },
+          }),
+        })
+        if (!response.ok) throw new Error('Failed to get response')
+
+        const reply = await streamInto(response, assistantId, setMessages)
+        persist([...convo, { id: assistantId, role: 'assistant' as const, content: reply }])
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong.')
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? { ...m, content: 'I had trouble seeing that one. Could you tell me what it says, or try again?' }
+              : m,
+          ),
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [isLoading, persist],
+  )
+
+  return { messages, isLoading, error, sendMessage, sendImageTurn }
 }

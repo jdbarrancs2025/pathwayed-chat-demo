@@ -82,7 +82,7 @@ export function Session() {
 function SessionView({ student, subject, nikki }: { student: Student; subject: string; nikki: string }) {
   const navigate = useNavigate()
   const [greeting] = useState(() => makeGreeting(student.first_name, subject))
-  const { messages, isLoading, sendMessage } = useSessionChat({
+  const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
     studentId: student.id,
     subject,
     childName: student.first_name,
@@ -216,7 +216,20 @@ function SessionView({ student, subject, nikki }: { student: Student; subject: s
           </div>
         </div>
 
-        <SessionWorkspace />
+        <SessionWorkspace
+          subject={subject}
+          childName={student.first_name}
+          grade={student.grade}
+          level={student.level}
+          onSendText={(t) => {
+            setPane('chat')
+            void sendMessage(t)
+          }}
+          onSendImage={(turn) => {
+            setPane('chat')
+            void sendImageTurn(turn)
+          }}
+        />
       </div>
     </div>
   )
