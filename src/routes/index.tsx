@@ -1,4 +1,7 @@
 import { Routes, Route } from 'react-router'
+import { Welcome } from '@/pages/Welcome'
+import { Consent } from '@/pages/Consent'
+import { StudentPicker } from '@/pages/StudentPicker'
 import { AccountSetup } from '@/pages/AccountSetup'
 import { GradeSelect } from '@/pages/GradeSelect'
 import { TeacherSetup } from '@/pages/TeacherSetup'
@@ -11,7 +14,10 @@ import { ParentDashboard } from '@/pages/ParentDashboard'
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<AccountSetup />} />
+      <Route path="/" element={<Welcome />} />
+      <Route path="/consent" element={<Consent />} />
+      <Route path="/students" element={<StudentPicker />} />
+      <Route path="/account-setup" element={<AccountSetup />} />
       <Route path="/grade-select" element={<GradeSelect />} />
       <Route path="/teacher-setup" element={<TeacherSetup />} />
       <Route path="/parent-setup" element={<ParentSetup />} />

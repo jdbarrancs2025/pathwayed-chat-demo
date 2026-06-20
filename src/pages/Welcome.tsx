@@ -1,0 +1,173 @@
+import { useEffect, useState, type ReactElement } from 'react'
+import { useNavigate } from 'react-router'
+import { useAuth, type OAuthProvider } from '@/context/AuthContext'
+import { getConsentStatus } from '@/lib/consent'
+import logoImg from '@/assets/logo.png'
+
+const iconStyle = { width: 20, height: 20, flexShrink: 0 } as const
+
+const GoogleIcon: ReactElement = (
+  <svg viewBox="0 0 48 48" style={iconStyle}>
+    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z" />
+    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+    <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 34.9 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.6l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C39.9 36.7 44 31 44 24c0-1.3-.1-2.3-.4-3.5z" />
+  </svg>
+)
+
+const MicrosoftIcon: ReactElement = (
+  <svg viewBox="0 0 48 48" style={iconStyle}>
+    <path fill="#F25022" d="M6 6h17v17H6z" />
+    <path fill="#7FBA00" d="M25 6h17v17H25z" />
+    <path fill="#00A4EF" d="M6 25h17v17H6z" />
+    <path fill="#FFB900" d="M25 25h17v17H25z" />
+  </svg>
+)
+
+const AppleIcon: ReactElement = (
+  <svg viewBox="0 0 24 24" fill="#000" style={iconStyle}>
+    <path d="M16.4 12.7c0-2.2 1.8-3.3 1.9-3.3-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.8-.8-1.5 0-2.8.8-3.6 2.2-1.5 2.6-.4 6.5 1.1 8.6.7 1 1.6 2.2 2.7 2.1 1.1 0 1.5-.7 2.8-.7 1.3 0 1.6.7 2.8.7 1.1 0 1.9-1 2.6-2 .8-1.2 1.2-2.3 1.2-2.4-.1 0-2.2-.9-2.2-3.5zM14.3 6.3c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.5 1.3-.5.6-1 1.6-.9 2.6 1 .1 1.9-.5 2.5-1.2z" />
+  </svg>
+)
+
+const PROVIDERS: { id: OAuthProvider; label: string; icon: ReactElement }[] = [
+  { id: 'google', label: 'Continue with Google', icon: GoogleIcon },
+  { id: 'azure', label: 'Continue with Microsoft', icon: MicrosoftIcon },
+  { id: 'apple', label: 'Continue with Apple', icon: AppleIcon },
+]
+
+export function Welcome() {
+  const { user, loading, signInWith } = useAuth()
+  const navigate = useNavigate()
+  const [redirecting, setRedirecting] = useState(false)
+
+  // Once signed in (incl. returning from the OAuth redirect), send the parent
+  // to consent if it's not on record yet, otherwise to the student picker.
+  useEffect(() => {
+    if (loading || !user) return
+    let active = true
+    setRedirecting(true)
+    getConsentStatus(user.id).then((hasConsent) => {
+      if (!active) return
+      navigate(hasConsent ? '/students' : '/consent', { replace: true })
+    })
+    return () => {
+      active = false
+    }
+  }, [user, loading, navigate])
+
+  if (loading || user || redirecting) {
+    return (
+      <div
+        style={{
+          minHeight: '100dvh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#FBF8F3',
+          color: '#5A6172',
+          fontSize: 14.5,
+        }}
+      >
+        Signing you in…
+      </div>
+    )
+  }
+
+  return (
+    <div
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '26px 22px',
+        background: '#FBF8F3',
+        color: '#1C2230',
+      }}
+    >
+      <div
+        style={{
+          background: '#FFFFFF',
+          border: '1px solid #ECE4D8',
+          borderRadius: 20,
+          boxShadow: '0 1px 2px rgba(28,34,48,.04),0 10px 30px rgba(28,34,48,.07)',
+          width: '100%',
+          maxWidth: 480,
+          padding: 34,
+          textAlign: 'center',
+        }}
+      >
+        <img
+          src={logoImg}
+          alt="PathwayEd"
+          style={{ width: 'min(300px,74%)', height: 'auto', display: 'block', margin: '2px auto 0' }}
+        />
+
+        <p
+          style={{
+            color: '#CC543C',
+            fontWeight: 700,
+            fontSize: 12,
+            letterSpacing: '.1em',
+            textTransform: 'uppercase',
+            marginTop: 18,
+          }}
+        >
+          Welcome
+        </p>
+
+        <h1
+          style={{
+            fontFamily: '"Baloo 2", "Trebuchet MS", system-ui, sans-serif',
+            color: '#003078',
+            fontSize: 25,
+            fontWeight: 700,
+            letterSpacing: '-.01em',
+            margin: '5px 0 8px',
+          }}
+        >
+          Learning that meets your child where they are
+        </h1>
+
+        <p style={{ color: '#5A6172', fontSize: 14.5, margin: '0 0 22px' }}>
+          A friendly tutor named Nikki helps with math, reading, writing, and science,
+          guiding kids to the answer instead of just giving it.
+        </p>
+
+        <div style={{ textAlign: 'left' }}>
+          {PROVIDERS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => signInWith(p.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 11,
+                width: '100%',
+                padding: '14px 18px',
+                border: '1.6px solid #ECE4D8',
+                borderRadius: 999,
+                background: '#FFFFFF',
+                fontWeight: 600,
+                fontSize: 15,
+                marginBottom: 11,
+                color: '#1C2230',
+                cursor: 'pointer',
+              }}
+            >
+              {p.icon}
+              <span>{p.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <p style={{ color: '#5A6172', fontSize: 12, margin: '10px 0 0' }}>
+          A parent or guardian signs in. You will add your children next.
+        </p>
+      </div>
+    </div>
+  )
+}
