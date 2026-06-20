@@ -25,7 +25,7 @@ export function ChooseNikki() {
     if (user) {
       await supabase.from('profiles').update({ nikki: selected }).eq('id', user.id)
     }
-    navigate('/students', { replace: true })
+    navigate('/children', { replace: true })
   }
 
   return (

@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router'
 import { Welcome } from '@/pages/Welcome'
 import { Consent } from '@/pages/Consent'
 import { ChooseNikki } from '@/pages/ChooseNikki'
+import { YourChildren } from '@/pages/YourChildren'
+import { AddChild } from '@/pages/AddChild'
 import { StudentPicker } from '@/pages/StudentPicker'
 import { AccountSetup } from '@/pages/AccountSetup'
 import { GradeSelect } from '@/pages/GradeSelect'
@@ -18,6 +20,9 @@ export function AppRoutes() {
       <Route path="/" element={<Welcome />} />
       <Route path="/consent" element={<Consent />} />
       <Route path="/choose-nikki" element={<ChooseNikki />} />
+      <Route path="/children" element={<YourChildren />} />
+      <Route path="/children/new" element={<AddChild />} />
+      <Route path="/children/:id/edit" element={<AddChild />} />
       <Route path="/students" element={<StudentPicker />} />
       <Route path="/account-setup" element={<AccountSetup />} />
       <Route path="/grade-select" element={<GradeSelect />} />

@@ -63,6 +63,30 @@ export interface Database {
         }
         Relationships: []
       }
+      students: {
+        Row: {
+          id: string
+          parent_id: string
+          first_name: string
+          grade: string
+          level: string
+        }
+        Insert: {
+          id?: string
+          parent_id: string
+          first_name: string
+          grade: string
+          level: string
+        }
+        Update: {
+          id?: string
+          parent_id?: string
+          first_name?: string
+          grade?: string
+          level?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
