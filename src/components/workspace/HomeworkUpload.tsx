@@ -29,7 +29,7 @@ export function HomeworkUpload({ onSendImage }: { onSendImage: (turn: ImageTurn)
     onSendImage({
       placeholder: '(I uploaded my homework)',
       prompt:
-        'This is a photo of my homework. Please look at it, tell me what the assignment is, and help me work through it step by step and with a little practice, without just giving me the answers.',
+        'This is a photo of my homework. First say hi and tell me what you see — what the assignment is asking. Then help me work through it step by step with hints and a little practice. Never just give me the answers.',
       imageB64: data,
       mediaType,
     })

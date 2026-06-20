@@ -87,6 +87,57 @@ export interface Database {
         }
         Relationships: []
       }
+      sessions: {
+        Row: {
+          id: string
+          student_id: string
+          subject: string
+          messages: Json
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          subject: string
+          messages: Json
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          subject?: string
+          messages?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      feedback: {
+        Row: {
+          id: string
+          student_id: string
+          subject: string
+          rating: string
+          note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          subject: string
+          rating: string
+          note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          subject?: string
+          rating?: string
+          note?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>

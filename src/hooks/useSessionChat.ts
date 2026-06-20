@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { loadTranscript, saveTranscript, type StoredMessage } from '@/lib/sessionStore'
+import { saveTranscript, type StoredMessage } from '@/lib/sessions'
 
 export interface ChatMessage extends StoredMessage {
   id: string
@@ -11,7 +11,8 @@ interface UseSessionChatOptions {
   childName: string
   grade: string
   level: string
-  greeting: string
+  /** Resolved opening transcript: the saved messages, or a single greeting. */
+  initialMessages: ChatMessage[]
 }
 
 /** Stream an SSE response from /api/chat into the assistant message, returning the final text. */
@@ -63,16 +64,12 @@ async function streamInto(
 
 /**
  * Conversational tutor chat for the session, over the phase-1 Anthropic engine
- * (/api/chat, claude-sonnet-4-6) using the child- and subject-aware kid-tutor
- * prompt. Opens with Nikki's greeting and persists the transcript locally.
+ * (/api/chat, claude-sonnet-4-6) with the child- and subject-aware kid-tutor
+ * prompt. Opens from the resolved transcript and upserts it to Supabase per turn.
  */
 export function useSessionChat(opts: UseSessionChatOptions) {
   const { studentId, subject } = opts
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const saved = loadTranscript(studentId, subject)
-    if (saved.length) return saved.map((m, i) => ({ ...m, id: `saved-${i}` }))
-    return [{ id: 'greeting', role: 'assistant', content: opts.greeting }]
-  })
+  const [messages, setMessages] = useState<ChatMessage[]>(opts.initialMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -82,9 +79,8 @@ export function useSessionChat(opts: UseSessionChatOptions) {
   messagesRef.current = messages
 
   const persist = useCallback(
-    (msgs: ChatMessage[]) => {
-      saveTranscript(studentId, subject, msgs.map(({ role, content }) => ({ role, content })))
-    },
+    (msgs: ChatMessage[]) =>
+      saveTranscript(studentId, subject, msgs.map(({ role, content }) => ({ role, content }))),
     [studentId, subject],
   )
 
@@ -100,13 +96,10 @@ export function useSessionChat(opts: UseSessionChatOptions) {
       setIsLoading(true)
       setError(null)
 
-      // Anthropic requires the first message to be a user turn — drop the
-      // greeting / any leading assistant messages from what we send.
       const firstUser = convo.findIndex((m) => m.role === 'user')
-      const apiMessages = convo.slice(firstUser === -1 ? convo.length : firstUser).map((m) => ({
-        role: m.role,
-        content: m.content,
-      }))
+      const apiMessages = convo
+        .slice(firstUser === -1 ? convo.length : firstUser)
+        .map((m) => ({ role: m.role, content: m.content }))
 
       const o = optsRef.current
       try {
@@ -129,8 +122,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
         if (!response.ok) throw new Error('Failed to get response')
 
         const reply = await streamInto(response, assistantId, setMessages)
-        const finalMsgs = [...convo, { id: assistantId, role: 'assistant' as const, content: reply }]
-        persist(finalMsgs)
+        await persist([...convo, { id: assistantId, role: 'assistant', content: reply }])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong.')
         setMessages((prev) =>
@@ -201,7 +193,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
         if (!response.ok) throw new Error('Failed to get response')
 
         const reply = await streamInto(response, assistantId, setMessages)
-        persist([...convo, { id: assistantId, role: 'assistant' as const, content: reply }])
+        await persist([...convo, { id: assistantId, role: 'assistant', content: reply }])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong.')
         setMessages((prev) =>

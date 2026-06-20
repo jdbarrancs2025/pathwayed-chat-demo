@@ -714,6 +714,58 @@
   margin: 0 auto 12px;
 }
 
+/* End-of-session feedback overlay */
+.session .feedback-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 22px;
+  background: rgba(251, 248, 243, 0.96);
+  overflow-y: auto;
+}
+.session .feedback-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  padding: 34px;
+  text-align: center;
+}
+.session .rate {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+.session .rate button {
+  flex: 1;
+  padding: 16px 8px;
+  border: 1.6px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+  transition: 0.15s;
+  font-family: var(--body);
+  color: var(--ink);
+  cursor: pointer;
+}
+.session .rate .face {
+  font-size: 26px;
+}
+.session .rate button.on {
+  border-color: var(--orange);
+  background: #fbeee9;
+}
+
 /* Nikki call stage */
 .callstage {
   display: flex;

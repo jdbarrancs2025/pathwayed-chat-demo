@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, gradeLabel, levelLabel, type Student } from '@/lib/students'
 import { SUBJECTS, HOMEWORK } from '@/lib/subjects'
-import { hasSavedSession } from '@/lib/sessionStore'
+import { listSavedSubjects } from '@/lib/sessions'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
 
@@ -10,18 +10,20 @@ export function KidHome() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [student, setStudent] = useState<Student | null>(null)
+  const [savedSubjects, setSavedSubjects] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
     let active = true
-    getStudent(id).then((s) => {
+    Promise.all([getStudent(id), listSavedSubjects(id)]).then(([s, subjects]) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
         return
       }
       setStudent(s)
+      setSavedSubjects(new Set(subjects))
       setLoading(false)
     })
     return () => {
@@ -52,7 +54,7 @@ export function KidHome() {
         <div className="subjects">
           {SUBJECTS.map((s) => (
             <button key={s.id} className="subject" onClick={() => open(s.id)}>
-              {hasSavedSession(student.id, s.id) && <span className="resume">Continue</span>}
+              {savedSubjects.has(s.id) && <span className="resume">Continue</span>}
               <div
                 className="ico"
                 style={{ background: s.accent }}
@@ -65,7 +67,7 @@ export function KidHome() {
         </div>
 
         <button className="bigcard" onClick={() => open('homework')}>
-          {hasSavedSession(student.id, 'homework') && <span className="resume">Continue</span>}
+          {savedSubjects.has('homework') && <span className="resume">Continue</span>}
           <div
             className="ico"
             style={{ background: HOMEWORK.accent }}

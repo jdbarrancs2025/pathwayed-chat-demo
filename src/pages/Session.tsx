@@ -3,10 +3,12 @@ import { useNavigate, useParams } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { getStudent, type Student } from '@/lib/students'
 import { getNikkiChoice } from '@/lib/profile'
+import { loadTranscript, saveFeedback } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
-import { useSessionChat } from '@/hooks/useSessionChat'
+import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
+import { SessionFeedback } from '@/components/SessionFeedback'
 import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
@@ -34,13 +36,17 @@ function makeGreeting(name: string, subject: string): string {
   return `Hi ${name}! I'm Nikki. I'm glad you're here. What are we working on in ${subjectDisplayName(subject).toLowerCase()} today? You can ask me a question, or use the workspace on the right to show me your work.`
 }
 
+interface ReadyState {
+  student: Student
+  nikki: string
+  initialMessages: ChatMessage[]
+}
+
 export function Session() {
   const { id, subject } = useParams<{ id: string; subject: string }>()
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [student, setStudent] = useState<Student | null>(null)
-  const [nikki, setNikki] = useState('orb')
-  const [loading, setLoading] = useState(true)
+  const [ready, setReady] = useState<ReadyState | null>(null)
 
   useEffect(() => {
     if (!id || !subject || !VALID_SUBJECTS.has(subject)) {
@@ -51,22 +57,24 @@ export function Session() {
     Promise.all([
       getStudent(id),
       user ? getNikkiChoice(user.id) : Promise.resolve('orb'),
-    ]).then(([s, n]) => {
+      loadTranscript(id, subject),
+    ]).then(([s, n, saved]) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
         return
       }
-      setStudent(s)
-      setNikki(n)
-      setLoading(false)
+      const initialMessages: ChatMessage[] = saved.length
+        ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
+        : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject) }]
+      setReady({ student: s, nikki: n, initialMessages })
     })
     return () => {
       active = false
     }
   }, [id, subject, user, navigate])
 
-  if (loading || !student || !subject) {
+  if (!ready || !subject) {
     return (
       <div className="session">
         <div className="feed">
@@ -76,25 +84,43 @@ export function Session() {
     )
   }
 
-  return <SessionView student={student} subject={subject} nikki={nikki} />
+  return (
+    <SessionView
+      student={ready.student}
+      subject={subject}
+      nikki={ready.nikki}
+      initialMessages={ready.initialMessages}
+    />
+  )
 }
 
-function SessionView({ student, subject, nikki }: { student: Student; subject: string; nikki: string }) {
+function SessionView({
+  student,
+  subject,
+  nikki,
+  initialMessages,
+}: {
+  student: Student
+  subject: string
+  nikki: string
+  initialMessages: ChatMessage[]
+}) {
   const navigate = useNavigate()
-  const [greeting] = useState(() => makeGreeting(student.first_name, subject))
   const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
     studentId: student.id,
     subject,
     childName: student.first_name,
     grade: student.grade,
     level: student.level,
-    greeting,
+    initialMessages,
   })
 
   const [pane, setPane] = useState<'chat' | 'work'>('chat')
   const [readAloud, setReadAloud] = useState(false)
   const [speaking, setSpeaking] = useState(false)
   const [draft, setDraft] = useState('')
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [savingFeedback, setSavingFeedback] = useState(false)
   const spokenRef = useRef<string | null>(null)
   const feedRef = useRef<HTMLDivElement>(null)
 
@@ -103,7 +129,6 @@ function SessionView({ student, subject, nikki }: { student: Student; subject: s
     if (f) f.scrollTop = f.scrollHeight
   }, [messages, isLoading])
 
-  // Speak newly completed assistant replies while read-aloud is on.
   useEffect(() => {
     if (!readAloud || isLoading) return
     const last = messages[messages.length - 1]
@@ -136,6 +161,12 @@ function SessionView({ student, subject, nikki }: { student: Student; subject: s
 
   const finish = () => {
     stopSpeak(setSpeaking)
+    setShowFeedback(true)
+  }
+
+  const submitFeedback = async (rating: string, note: string) => {
+    setSavingFeedback(true)
+    await saveFeedback(student.id, subject, rating, note)
     navigate(`/students/${student.id}`)
   }
 
@@ -231,6 +262,16 @@ function SessionView({ student, subject, nikki }: { student: Student; subject: s
           }}
         />
       </div>
+
+      {showFeedback && (
+        <SessionFeedback
+          childName={student.first_name}
+          nikki={nikki}
+          saving={savingFeedback}
+          onDone={(rating, note) => void submitFeedback(rating, note)}
+          onKeepLearning={() => setShowFeedback(false)}
+        />
+      )}
     </div>
   )
 }
