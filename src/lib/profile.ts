@@ -18,3 +18,12 @@ export async function setNikkiChoice(parentId: string, nikki: string): Promise<v
 export async function updateDisplayName(parentId: string, name: string): Promise<void> {
   await supabase.from('profiles').update({ display_name: name }).eq('id', parentId)
 }
+
+export async function getSubscriptionStatus(parentId: string): Promise<string | null> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('subscription_status')
+    .eq('id', parentId)
+    .maybeSingle()
+  return data?.subscription_status ?? null
+}

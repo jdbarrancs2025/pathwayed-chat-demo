@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { avColor, deleteStudent, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
 import { getDisplayName, getNikkiChoice, setNikkiChoice, updateDisplayName } from '@/lib/profile'
 import { NikkiChoiceGrid, type NikkiId } from '@/components/NikkiChoiceGrid'
+import { BillingPanel } from '@/components/BillingPanel'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
 
@@ -151,6 +152,9 @@ export function Settings() {
             + Add a child
           </button>
         </div>
+
+        {/* Billing */}
+        {user && <BillingPanel students={children} userId={user.id} email={user.email ?? ''} />}
 
         {/* Nikki */}
         <div className="panel">

@@ -23,16 +23,31 @@ export interface Database {
           id: string
           display_name: string | null
           nikki: string | null
+          subscription_status: string | null
+          plan: string | null
+          billing_period: string | null
+          stripe_customer_id: string | null
+          extra_kids: number | null
         }
         Insert: {
           id: string
           display_name?: string | null
           nikki?: string | null
+          subscription_status?: string | null
+          plan?: string | null
+          billing_period?: string | null
+          stripe_customer_id?: string | null
+          extra_kids?: number | null
         }
         Update: {
           id?: string
           display_name?: string | null
           nikki?: string | null
+          subscription_status?: string | null
+          plan?: string | null
+          billing_period?: string | null
+          stripe_customer_id?: string | null
+          extra_kids?: number | null
         }
         Relationships: []
       }
