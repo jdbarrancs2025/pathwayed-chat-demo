@@ -328,7 +328,7 @@ export function Welcome() {
         {mode === 'signin' && (
           <>
             <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
-              New to PathwayEd?{' '}
+              New here?{' '}
               <button type="button" onClick={() => switchMode('signup')} style={linkButtonStyle}>
                 Create an account
               </button>
