@@ -26,6 +26,20 @@ const linkButtonStyle: React.CSSProperties = {
   cursor: 'pointer',
 }
 
+function tabStyle(active: boolean): React.CSSProperties {
+  return {
+    flex: 1,
+    padding: '10px',
+    borderRadius: 9,
+    fontWeight: 700,
+    fontSize: 14,
+    cursor: 'pointer',
+    border: 'none',
+    background: active ? '#003078' : 'transparent',
+    color: active ? '#fff' : '#5A6172',
+  }
+}
+
 function friendlyAuthError(raw: string, mode: 'signin' | 'signup'): string {
   const m = raw.toLowerCase()
   if (m.includes('invalid login credentials')) return "That email or password doesn't look right."
@@ -267,6 +281,15 @@ export function Welcome() {
           <span style={{ flex: 1, height: 1, background: '#ECE4D8' }} />
         </div>
 
+        <div style={{ display: 'flex', gap: 6, background: '#F4EEE4', padding: 4, borderRadius: 12, marginBottom: 14 }}>
+          <button type="button" onClick={() => switchMode('signin')} style={tabStyle(mode !== 'signup')}>
+            Sign in
+          </button>
+          <button type="button" onClick={() => switchMode('signup')} style={tabStyle(mode === 'signup')}>
+            Create account
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
           <input
             type="email"
@@ -287,6 +310,11 @@ export function Welcome() {
               onChange={(e) => setPassword(e.target.value)}
               style={{ ...inputStyle, marginTop: 10 }}
             />
+          )}
+          {mode === 'signup' && (
+            <p style={{ color: '#5A6172', fontSize: 12.5, margin: '8px 2px 0' }}>
+              Use at least 6 characters.
+            </p>
           )}
 
           {formError && (
@@ -326,25 +354,9 @@ export function Welcome() {
         </form>
 
         {mode === 'signin' && (
-          <>
-            <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
-              New here?{' '}
-              <button type="button" onClick={() => switchMode('signup')} style={linkButtonStyle}>
-                Create an account
-              </button>
-            </p>
-            <p style={{ margin: '6px 0 0' }}>
-              <button type="button" onClick={() => switchMode('forgot')} style={linkButtonStyle}>
-                Forgot password?
-              </button>
-            </p>
-          </>
-        )}
-        {mode === 'signup' && (
-          <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
-            Already have an account?{' '}
-            <button type="button" onClick={() => switchMode('signin')} style={linkButtonStyle}>
-              Sign in
+          <p style={{ margin: '12px 0 0' }}>
+            <button type="button" onClick={() => switchMode('forgot')} style={linkButtonStyle}>
+              Forgot password?
             </button>
           </p>
         )}
