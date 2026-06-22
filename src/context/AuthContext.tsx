@@ -18,6 +18,11 @@ interface AuthContextValue {
   session: Session | null
   loading: boolean
   signInWith: (provider: OAuthProvider) => Promise<void>
+  signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>
+  signUpWithEmail: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: string | null; needsConfirmation: boolean }>
   signOut: () => Promise<void>
 }
 
@@ -43,12 +48,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe()
   }, [])
 
-  // Supabase OAuth only — no passwords are ever collected or stored.
+  // Passwords are handled entirely by Supabase Auth — we never collect or store them.
   const signInWith = useCallback(async (provider: OAuthProvider) => {
     await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: window.location.origin },
     })
+  }, [])
+
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return { error: error?.message ?? null }
+  }, [])
+
+  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    if (error) return { error: error.message, needsConfirmation: false }
+    // With email-enumeration protection on, signing up an existing address
+    // returns no error but an empty identities array.
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      return { error: 'already registered', needsConfirmation: false }
+    }
+    return { error: null, needsConfirmation: !data.session }
   }, [])
 
   const signOut = useCallback(async () => {
@@ -62,6 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         loading,
         signInWith,
+        signInWithPassword,
+        signUpWithEmail,
         signOut,
       }}
     >

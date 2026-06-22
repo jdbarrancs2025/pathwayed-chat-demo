@@ -6,6 +6,30 @@ import logoImg from '@/assets/logo.png'
 
 const iconStyle = { width: 20, height: 20, flexShrink: 0 } as const
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '13px 15px',
+  border: '1.6px solid #ECE4D8',
+  borderRadius: 14,
+  background: '#fff',
+  fontSize: 16,
+  color: '#1C2230',
+}
+
+function friendlyAuthError(raw: string, mode: 'signin' | 'signup'): string {
+  const m = raw.toLowerCase()
+  if (m.includes('invalid login credentials')) return "That email or password doesn't look right."
+  if (m.includes('already registered') || m.includes('already been registered') || m.includes('already exists'))
+    return 'An account with this email already exists — try signing in instead.'
+  if (m.includes('password should be at least') || m.includes('at least 6'))
+    return 'Please use a password with at least 6 characters.'
+  if (m.includes('invalid email') || m.includes('unable to validate email'))
+    return 'Please enter a valid email address.'
+  return mode === 'signin'
+    ? "We couldn't sign you in. Please try again."
+    : "We couldn't create your account. Please try again."
+}
+
 const GoogleIcon: ReactElement = (
   <svg viewBox="0 0 48 48" style={iconStyle}>
     <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z" />
@@ -37,9 +61,47 @@ const PROVIDERS: { id: OAuthProvider; label: string; icon: ReactElement }[] = [
 ]
 
 export function Welcome() {
-  const { user, loading, signInWith } = useAuth()
+  const { user, loading, signInWith, signInWithPassword, signUpWithEmail } = useAuth()
   const navigate = useNavigate()
   const [redirecting, setRedirecting] = useState(false)
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [formError, setFormError] = useState('')
+  const [formMessage, setFormMessage] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (submitting) return
+    const em = email.trim()
+    if (!em || !password) {
+      setFormError('Please enter your email and password.')
+      return
+    }
+    setSubmitting(true)
+    setFormError('')
+    setFormMessage('')
+    if (mode === 'signin') {
+      const { error } = await signInWithPassword(em, password)
+      if (error) {
+        setFormError(friendlyAuthError(error, 'signin'))
+        setSubmitting(false)
+      }
+      // success → the redirect effect takes over (same consent check as SSO)
+    } else {
+      const { error, needsConfirmation } = await signUpWithEmail(em, password)
+      if (error) {
+        setFormError(friendlyAuthError(error, 'signup'))
+        setSubmitting(false)
+      } else if (needsConfirmation) {
+        setFormMessage('Check your email to confirm your account, then sign in.')
+        setSubmitting(false)
+        setMode('signin')
+      }
+      // success with a session → the redirect effect takes over
+    }
+  }
 
   // Once signed in (incl. returning from the OAuth redirect), send the parent
   // to consent if it's not on record yet, otherwise to the student picker.
@@ -164,7 +226,86 @@ export function Welcome() {
           ))}
         </div>
 
-        <p style={{ color: '#5A6172', fontSize: 12, margin: '10px 0 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '16px 0' }}>
+          <span style={{ flex: 1, height: 1, background: '#ECE4D8' }} />
+          <span style={{ color: '#9aa1ad', fontSize: 12, fontWeight: 600 }}>or</span>
+          <span style={{ flex: 1, height: 1, background: '#ECE4D8' }} />
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
+          <input
+            type="email"
+            autoComplete="email"
+            aria-label="Email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={inputStyle}
+          />
+          <input
+            type="password"
+            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+            aria-label="Password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ ...inputStyle, marginTop: 10 }}
+          />
+
+          {formError && (
+            <p style={{ color: '#C0492F', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{formError}</p>
+          )}
+          {formMessage && (
+            <p style={{ color: '#003078', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{formMessage}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              padding: '14px 18px',
+              borderRadius: 999,
+              fontWeight: 700,
+              fontSize: 15.5,
+              marginTop: 12,
+              background: '#CC543C',
+              color: '#fff',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              opacity: submitting ? 0.5 : 1,
+            }}
+          >
+            {submitting ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+          </button>
+        </form>
+
+        <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
+          {mode === 'signin' ? 'New to PathwayEd?' : 'Already have an account?'}{' '}
+          <button
+            type="button"
+            onClick={() => {
+              setMode(mode === 'signin' ? 'signup' : 'signin')
+              setFormError('')
+              setFormMessage('')
+            }}
+            style={{
+              background: 'none',
+              color: '#003078',
+              fontWeight: 700,
+              fontSize: 13.5,
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
+              cursor: 'pointer',
+            }}
+          >
+            {mode === 'signin' ? 'Create an account' : 'Sign in'}
+          </button>
+        </p>
+
+        <p style={{ color: '#5A6172', fontSize: 12, margin: '16px 0 0' }}>
           A parent or guardian signs in. You will add your children next.
         </p>
       </div>
