@@ -16,6 +16,16 @@ const inputStyle: React.CSSProperties = {
   color: '#1C2230',
 }
 
+const linkButtonStyle: React.CSSProperties = {
+  background: 'none',
+  color: '#003078',
+  fontWeight: 700,
+  fontSize: 13.5,
+  textDecoration: 'underline',
+  textUnderlineOffset: 3,
+  cursor: 'pointer',
+}
+
 function friendlyAuthError(raw: string, mode: 'signin' | 'signup'): string {
   const m = raw.toLowerCase()
   if (m.includes('invalid login credentials')) return "That email or password doesn't look right."
@@ -64,27 +74,49 @@ const PROVIDERS: { id: OAuthProvider; label: string; icon: ReactElement }[] = [
 ]
 
 export function Welcome() {
-  const { user, loading, signInWith, signInWithPassword, signUpWithEmail } = useAuth()
+  const { user, loading, signInWith, signInWithPassword, signUpWithEmail, resetPasswordForEmail } = useAuth()
   const navigate = useNavigate()
   const [redirecting, setRedirecting] = useState(false)
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
   const [formMessage, setFormMessage] = useState('')
 
+  const switchMode = (next: 'signin' | 'signup' | 'forgot') => {
+    setMode(next)
+    setFormError('')
+    setFormMessage('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (submitting) return
     const em = email.trim()
-    if (!em || !password) {
+    if (!em) {
+      setFormError('Please enter your email.')
+      return
+    }
+    if (mode !== 'forgot' && !password) {
       setFormError('Please enter your email and password.')
       return
     }
     setSubmitting(true)
     setFormError('')
     setFormMessage('')
+
+    if (mode === 'forgot') {
+      const { error } = await resetPasswordForEmail(em)
+      setSubmitting(false)
+      if (error) {
+        setFormError("We couldn't send the reset email. Please try again.")
+      } else {
+        setFormMessage('If an account exists for that email, a reset link is on the way.')
+      }
+      return
+    }
+
     if (mode === 'signin') {
       const { error } = await signInWithPassword(em, password)
       if (error) {
@@ -245,15 +277,17 @@ export function Welcome() {
             onChange={(e) => setEmail(e.target.value)}
             style={inputStyle}
           />
-          <input
-            type="password"
-            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-            aria-label="Password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
+          {mode !== 'forgot' && (
+            <input
+              type="password"
+              autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+              aria-label="Password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ ...inputStyle, marginTop: 10 }}
+            />
+          )}
 
           {formError && (
             <p style={{ color: '#C0492F', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{formError}</p>
@@ -281,32 +315,46 @@ export function Welcome() {
               opacity: submitting ? 0.5 : 1,
             }}
           >
-            {submitting ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+            {submitting
+              ? 'Please wait…'
+              : mode === 'forgot'
+                ? 'Send reset link'
+                : mode === 'signin'
+                  ? 'Sign in'
+                  : 'Create account'}
           </button>
         </form>
 
-        <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
-          {mode === 'signin' ? 'New to PathwayEd?' : 'Already have an account?'}{' '}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === 'signin' ? 'signup' : 'signin')
-              setFormError('')
-              setFormMessage('')
-            }}
-            style={{
-              background: 'none',
-              color: '#003078',
-              fontWeight: 700,
-              fontSize: 13.5,
-              textDecoration: 'underline',
-              textUnderlineOffset: 3,
-              cursor: 'pointer',
-            }}
-          >
-            {mode === 'signin' ? 'Create an account' : 'Sign in'}
-          </button>
-        </p>
+        {mode === 'signin' && (
+          <>
+            <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
+              New to PathwayEd?{' '}
+              <button type="button" onClick={() => switchMode('signup')} style={linkButtonStyle}>
+                Create an account
+              </button>
+            </p>
+            <p style={{ margin: '6px 0 0' }}>
+              <button type="button" onClick={() => switchMode('forgot')} style={linkButtonStyle}>
+                Forgot password?
+              </button>
+            </p>
+          </>
+        )}
+        {mode === 'signup' && (
+          <p style={{ color: '#5A6172', fontSize: 13.5, margin: '12px 0 0' }}>
+            Already have an account?{' '}
+            <button type="button" onClick={() => switchMode('signin')} style={linkButtonStyle}>
+              Sign in
+            </button>
+          </p>
+        )}
+        {mode === 'forgot' && (
+          <p style={{ margin: '12px 0 0' }}>
+            <button type="button" onClick={() => switchMode('signin')} style={linkButtonStyle}>
+              Back to sign in
+            </button>
+          </p>
+        )}
 
         <p style={{ color: '#5A6172', fontSize: 12, margin: '16px 0 0' }}>
           A parent or guardian signs in. You will add your children next.

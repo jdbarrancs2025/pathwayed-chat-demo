@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router'
 import { Welcome } from '@/pages/Welcome'
+import { ResetPassword } from '@/pages/ResetPassword'
 import { Consent } from '@/pages/Consent'
 import { ChooseNikki } from '@/pages/ChooseNikki'
 import { YourChildren } from '@/pages/YourChildren'
@@ -22,6 +23,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Welcome />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/consent" element={<Consent />} />
       <Route path="/choose-nikki" element={<ChooseNikki />} />
       <Route path="/children" element={<YourChildren />} />

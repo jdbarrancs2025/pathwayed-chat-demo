@@ -23,6 +23,8 @@ interface AuthContextValue {
     email: string,
     password: string,
   ) => Promise<{ error: string | null; needsConfirmation: boolean }>
+  resetPasswordForEmail: (email: string) => Promise<{ error: string | null }>
+  updatePassword: (password: string) => Promise<{ error: string | null; userId: string | null }>
   signOut: () => Promise<void>
 }
 
@@ -72,6 +74,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null, needsConfirmation: !data.session }
   }, [])
 
+  const resetPasswordForEmail = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    return { error: error?.message ?? null }
+  }, [])
+
+  const updatePassword = useCallback(async (password: string) => {
+    const { data, error } = await supabase.auth.updateUser({ password })
+    return { error: error?.message ?? null, userId: data.user?.id ?? null }
+  }, [])
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
   }, [])
@@ -85,6 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWith,
         signInWithPassword,
         signUpWithEmail,
+        resetPasswordForEmail,
+        updatePassword,
         signOut,
       }}
     >
