@@ -138,7 +138,11 @@ export function Settings() {
                       {gradeLabel(child.grade)} · {levelLabel(child.level)}
                     </div>
                   </div>
-                  <button type="button" style={linkStyle} onClick={() => navigate(`/children/${child.id}/edit`)}>
+                  <button
+                    type="button"
+                    style={linkStyle}
+                    onClick={() => navigate(`/children/${child.id}/edit`, { state: { returnTo: '/settings' } })}
+                  >
                     Edit
                   </button>
                   <button type="button" style={{ ...linkStyle, color: '#C0492F', marginLeft: 12 }} onClick={() => removeChild(child.id)}>
@@ -148,7 +152,11 @@ export function Settings() {
               ))
             )}
           </div>
-          <button className="btn btn-soft" style={{ marginTop: 6 }} onClick={() => navigate('/children/new')}>
+          <button
+            className="btn btn-soft"
+            style={{ marginTop: 6 }}
+            onClick={() => navigate('/children/new', { state: { returnTo: '/settings' } })}
+          >
             + Add a child
           </button>
         </div>

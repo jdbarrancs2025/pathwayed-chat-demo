@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import {
   GRADES,
@@ -51,6 +51,12 @@ export function AddChild() {
   const editing = !!id
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  // Where to go after saving/cancelling. Settings launches this flow with
+  // returnTo:'/settings' so account management returns to Settings; the
+  // first-time onboarding entry has no state and continues to '/children'
+  // (the "add another or continue" step → student picker).
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo ?? '/children'
 
   const [name, setName] = useState('')
   const [grade, setGrade] = useState('')
@@ -72,7 +78,7 @@ export function AddChild() {
     getStudent(id).then((student) => {
       if (!active) return
       if (!student) {
-        navigate('/children', { replace: true })
+        navigate(returnTo, { replace: true })
         return
       }
       setName(student.first_name)
@@ -83,7 +89,7 @@ export function AddChild() {
     return () => {
       active = false
     }
-  }, [editing, id, navigate])
+  }, [editing, id, navigate, returnTo])
 
   // When adding a child, learn the parent's subscription and current child count
   // so we can tell whether this child exceeds their plan's included seats.
@@ -139,7 +145,7 @@ export function AddChild() {
         setSaving(false)
         return
       }
-      navigate('/children', { replace: true })
+      navigate(returnTo, { replace: true })
       return
     }
 
@@ -163,7 +169,7 @@ export function AddChild() {
       setConfirmBilling(false)
       return
     }
-    navigate('/children', { replace: true })
+    navigate(returnTo, { replace: true })
   }
 
   return (
@@ -351,7 +357,7 @@ export function AddChild() {
             <button
               type="button"
               disabled={saving}
-              onClick={() => (confirmBilling ? setConfirmBilling(false) : navigate('/children'))}
+              onClick={() => (confirmBilling ? setConfirmBilling(false) : navigate(returnTo))}
               style={{
                 display: 'block',
                 margin: '12px auto 0',

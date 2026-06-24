@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { avColor, gradeLabel, initials, listStudents, type Student } from '@/lib/students'
+import { TopMenu } from '@/components/TopMenu'
 
 /**
  * "Who's learning today?" picker. Lists the parent's children; tapping one
@@ -38,6 +39,7 @@ export function StudentPicker() {
       }}
     >
       <div style={{ flex: 1, width: '100%', maxWidth: 720, margin: '0 auto', padding: '24px 22px 40px' }}>
+        <TopMenu />
         <h1
           style={{
             fontFamily: '"Baloo 2", "Trebuchet MS", system-ui, sans-serif',
