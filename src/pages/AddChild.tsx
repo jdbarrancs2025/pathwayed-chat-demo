@@ -7,9 +7,19 @@ import {
   createStudent,
   getStudent,
   gradeLabel,
+  listStudents,
   updateStudent,
   type StudentLevel,
 } from '@/lib/students'
+import { getSubscription, type Subscription } from '@/lib/profile'
+import {
+  ADDON_PRICE,
+  PLANS,
+  formatMoney,
+  intervalSuffix,
+  updateSeats,
+  type BillingPeriod,
+} from '@/lib/billing'
 
 const card: React.CSSProperties = {
   background: '#FFFFFF',
@@ -50,6 +60,11 @@ export function AddChild() {
   const [errMsg, setErrMsg] = useState('')
   const [loading, setLoading] = useState(editing)
   const [saving, setSaving] = useState(false)
+  // Billing state (only relevant when adding, not editing).
+  const [sub, setSub] = useState<Subscription | null>(null)
+  const [childCount, setChildCount] = useState(0)
+  const [billingLoaded, setBillingLoaded] = useState(editing)
+  const [confirmBilling, setConfirmBilling] = useState(false)
 
   useEffect(() => {
     if (!editing || !id) return
@@ -70,6 +85,29 @@ export function AddChild() {
     }
   }, [editing, id, navigate])
 
+  // When adding a child, learn the parent's subscription and current child count
+  // so we can tell whether this child exceeds their plan's included seats.
+  useEffect(() => {
+    if (editing || !user) return
+    let active = true
+    Promise.all([getSubscription(user.id), listStudents(user.id)]).then(([s, kids]) => {
+      if (!active) return
+      setSub(s)
+      setChildCount(kids.length)
+      setBillingLoaded(true)
+    })
+    return () => {
+      active = false
+    }
+  }, [editing, user])
+
+  const includedSeats = PLANS.find((p) => p.id === sub?.plan)?.included ?? 1
+  const hasSubscription = sub?.status === 'active' || sub?.status === 'trialing'
+  // This add is billable only with an active/trialing sub and a count over seats.
+  const willBill = !editing && hasSubscription && childCount + 1 > includedSeats
+  const period: BillingPeriod = sub?.billingPeriod === 'annual' ? 'annual' : 'monthly'
+  const addCost = `${formatMoney(ADDON_PRICE[period])}${intervalSuffix(period)}`
+
   const handleSave = async () => {
     if (saving || !user) return
     const trimmed = name.trim()
@@ -82,16 +120,47 @@ export function AddChild() {
       return
     }
     setErrMsg('')
+
+    // If this child is billable, require an explicit confirmation of the cost
+    // first — never charge silently.
+    if (willBill && !confirmBilling) {
+      setConfirmBilling(true)
+      return
+    }
+
     setSaving(true)
 
     const input = { first_name: trimmed, grade, level }
-    const { error } = editing && id
-      ? await updateStudent(id, input)
-      : await createStudent(user.id, input)
 
+    if (editing && id) {
+      const { error } = await updateStudent(id, input)
+      if (error) {
+        setErrMsg('Sorry — something went wrong saving. Please try again.')
+        setSaving(false)
+        return
+      }
+      navigate('/children', { replace: true })
+      return
+    }
+
+    // Adding a child. Bill the extra seat first (with proration) so we never add
+    // an unpaid child; the seat change is idempotent, so a retry won't double-charge.
+    if (willBill) {
+      try {
+        await updateSeats(user.id, childCount + 1)
+      } catch {
+        setErrMsg("Sorry — we couldn't update your billing. Please try again.")
+        setSaving(false)
+        setConfirmBilling(false)
+        return
+      }
+    }
+
+    const { error } = await createStudent(user.id, input)
     if (error) {
       setErrMsg('Sorry — something went wrong saving. Please try again.')
       setSaving(false)
+      setConfirmBilling(false)
       return
     }
     navigate('/children', { replace: true })
@@ -212,6 +281,34 @@ export function AddChild() {
               })}
             </div>
 
+            {/* Heads-up when this child goes beyond the plan's included seats. */}
+            {willBill && !confirmBilling && (
+              <p style={{ color: '#5A6172', fontSize: 13.5, margin: '4px 2px 0' }}>
+                This child is beyond your plan’s included seats, so it adds{' '}
+                <b style={{ color: '#1C2230' }}>{addCost}</b>, prorated for this period.
+              </p>
+            )}
+
+            {/* Explicit confirmation before any charge. */}
+            {willBill && confirmBilling && (
+              <div
+                style={{
+                  border: '1.6px solid #CC543C',
+                  background: '#FBEEE9',
+                  borderRadius: 14,
+                  padding: '13px 15px',
+                  margin: '12px 0 0',
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>Confirm extra child</div>
+                <p style={{ fontSize: 13.5, color: '#5A6172', margin: '4px 0 0' }}>
+                  Adding a child adds <b style={{ color: '#1C2230' }}>{addCost}</b>, prorated for this
+                  period. Continue?
+                </p>
+              </div>
+            )}
+
             <div
               style={{
                 color: '#C0492F',
@@ -227,7 +324,7 @@ export function AddChild() {
             <button
               type="button"
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || (!editing && !billingLoaded)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -239,15 +336,22 @@ export function AddChild() {
                 fontSize: 15.5,
                 background: '#CC543C',
                 color: '#fff',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                opacity: saving ? 0.45 : 1,
+                cursor: saving || (!editing && !billingLoaded) ? 'not-allowed' : 'pointer',
+                opacity: saving || (!editing && !billingLoaded) ? 0.45 : 1,
               }}
             >
-              {editing ? 'Save changes' : 'Save child'}
+              {saving
+                ? 'Saving…'
+                : editing
+                  ? 'Save changes'
+                  : confirmBilling
+                    ? `Confirm & add child (${addCost})`
+                    : 'Save child'}
             </button>
             <button
               type="button"
-              onClick={() => navigate('/children')}
+              disabled={saving}
+              onClick={() => (confirmBilling ? setConfirmBilling(false) : navigate('/children'))}
               style={{
                 display: 'block',
                 margin: '12px auto 0',
@@ -257,10 +361,11 @@ export function AddChild() {
                 fontSize: 14.5,
                 textDecoration: 'underline',
                 textUnderlineOffset: 3,
-                cursor: 'pointer',
+                cursor: saving ? 'not-allowed' : 'pointer',
+                opacity: saving ? 0.45 : 1,
               }}
             >
-              Cancel
+              {confirmBilling ? 'Not now' : 'Cancel'}
             </button>
           </>
         )}

@@ -71,6 +71,23 @@ export async function startCheckout(input: CheckoutInput): Promise<void> {
   window.location.href = url
 }
 
+/**
+ * Adjust the per-child add-on quantity on the parent's existing subscription to
+ * match a new total child count. The server prorates the change. Use this when
+ * a parent with an active/trialing subscription adds a child beyond their plan's
+ * included seats. Returns the resulting billable extra-kid count.
+ */
+export async function updateSeats(userId: string, totalKids: number): Promise<number> {
+  const res = await fetch('/api/update-seats', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, totalKids }),
+  })
+  if (!res.ok) throw new Error('Could not update your subscription')
+  const { extraKids } = (await res.json()) as { extraKids?: number }
+  return extraKids ?? 0
+}
+
 /** Open the Stripe customer portal for the parent. */
 export async function openPortal(userId: string): Promise<void> {
   const res = await fetch('/api/create-portal', {
