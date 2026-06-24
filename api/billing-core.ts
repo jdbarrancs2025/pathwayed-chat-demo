@@ -23,6 +23,10 @@ const ADDON_PRICE_ENV: Record<BillingPeriod, string> = {
   annual: "STRIPE_PRICE_ADDON_KID_ANNUAL",
 }
 
+/** All plan ids and billing periods, for exhaustive iteration. */
+export const PLAN_IDS: readonly PlanId[] = ["elementary", "middle", "high"]
+export const BILLING_PERIODS: readonly BillingPeriod[] = ["monthly", "annual"]
+
 export function isPlanId(value: unknown): value is PlanId {
   return value === "elementary" || value === "middle" || value === "high"
 }
@@ -48,4 +52,48 @@ export function planPriceEnv(plan: PlanId, period: BillingPeriod): string {
 /** Env var name holding the add-on price id — same interval as the plan. */
 export function addonPriceEnv(period: BillingPeriod): string {
   return ADDON_PRICE_ENV[period]
+}
+
+/** A base plan resolved from a Stripe price id. */
+export interface PlanPeriod {
+  plan: PlanId
+  period: BillingPeriod
+}
+
+/**
+ * Reverse-map a Stripe base price id back to its plan + billing period by
+ * matching it against the configured STRIPE_PRICE_<PLAN>_<PERIOD> env values.
+ * This is the source-of-truth mapping the webhook uses to sync the stored plan
+ * when a customer switches plans in the Stripe portal.
+ *
+ * `env` is the price-id-bearing environment (process.env in production; a stub
+ * in tests). Returns null if the id matches no known base plan — e.g. it's the
+ * add-on price, or a price that isn't configured here — so callers can warn and
+ * leave the stored value untouched rather than writing garbage.
+ */
+export function planForPriceId(
+  priceId: string | null | undefined,
+  env: Record<string, string | undefined>,
+): PlanPeriod | null {
+  if (!priceId) return null
+  for (const plan of PLAN_IDS) {
+    for (const period of BILLING_PERIODS) {
+      if (env[planPriceEnv(plan, period)] === priceId) {
+        return { plan, period }
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * True if a Stripe price id is the per-child add-on price (either interval).
+ * Used to read the extra-kid quantity from a subscription's line items.
+ */
+export function isAddonPriceId(
+  priceId: string | null | undefined,
+  env: Record<string, string | undefined>,
+): boolean {
+  if (!priceId) return false
+  return BILLING_PERIODS.some((period) => env[addonPriceEnv(period)] === priceId)
 }

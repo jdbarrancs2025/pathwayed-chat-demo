@@ -4,8 +4,10 @@ import {
   addonPriceEnv,
   extraKids,
   includedSeats,
+  isAddonPriceId,
   isBillingPeriod,
   isPlanId,
+  planForPriceId,
   planPriceEnv,
   type BillingPeriod,
   type PlanId,
@@ -13,6 +15,20 @@ import {
 
 const PLANS: PlanId[] = ["elementary", "middle", "high"]
 const PERIODS: BillingPeriod[] = ["monthly", "annual"]
+
+// A synthetic env mapping every plan/period (and the add-on) to a fake price id,
+// mirroring how Vercel holds the real STRIPE_PRICE_* values.
+function fakeEnv(): Record<string, string> {
+  const env: Record<string, string> = {}
+  for (const plan of PLANS) {
+    for (const period of PERIODS) {
+      env[planPriceEnv(plan, period)] = `price_${plan}_${period}`
+    }
+  }
+  env[addonPriceEnv("monthly")] = "price_addon_monthly"
+  env[addonPriceEnv("annual")] = "price_addon_annual"
+  return env
+}
 
 describe("includedSeats", () => {
   it("matches the documented seat counts (1 / 2 / 2)", () => {
@@ -79,6 +95,59 @@ describe("price env mapping — add-on interval matches the plan interval", () =
     expect(planPriceEnv("high", "annual")).toBe("STRIPE_PRICE_HIGH_ANNUAL")
     expect(addonPriceEnv("monthly")).toBe("STRIPE_PRICE_ADDON_KID_MONTHLY")
     expect(addonPriceEnv("annual")).toBe("STRIPE_PRICE_ADDON_KID_ANNUAL")
+  })
+})
+
+describe("planForPriceId — reverse map a Stripe price id to plan + period", () => {
+  const env = fakeEnv()
+
+  it("maps every plan + period base price id back to the right plan and period", () => {
+    for (const plan of PLANS) {
+      for (const period of PERIODS) {
+        const priceId = env[planPriceEnv(plan, period)]
+        expect(planForPriceId(priceId, env)).toEqual({ plan, period })
+      }
+    }
+  })
+
+  it("returns null for the add-on price id (not a base plan)", () => {
+    expect(planForPriceId(env[addonPriceEnv("monthly")], env)).toBeNull()
+    expect(planForPriceId(env[addonPriceEnv("annual")], env)).toBeNull()
+  })
+
+  it("returns null for an unknown / unconfigured price id", () => {
+    expect(planForPriceId("price_does_not_exist", env)).toBeNull()
+    expect(planForPriceId("", env)).toBeNull()
+    expect(planForPriceId(null, env)).toBeNull()
+    expect(planForPriceId(undefined, env)).toBeNull()
+  })
+
+  it("does not match when the env var for that plan is unset", () => {
+    const partial = { ...env }
+    delete partial[planPriceEnv("middle", "annual")]
+    expect(planForPriceId("price_middle_annual", partial)).toBeNull()
+    // Other plans still resolve.
+    expect(planForPriceId(env[planPriceEnv("high", "monthly")], partial)).toEqual({
+      plan: "high",
+      period: "monthly",
+    })
+  })
+})
+
+describe("isAddonPriceId — recognize the per-child add-on price", () => {
+  const env = fakeEnv()
+
+  it("is true for either interval's add-on price id", () => {
+    expect(isAddonPriceId(env[addonPriceEnv("monthly")], env)).toBe(true)
+    expect(isAddonPriceId(env[addonPriceEnv("annual")], env)).toBe(true)
+  })
+
+  it("is false for base plan price ids and unknown / empty ids", () => {
+    expect(isAddonPriceId(env[planPriceEnv("elementary", "monthly")], env)).toBe(false)
+    expect(isAddonPriceId("price_does_not_exist", env)).toBe(false)
+    expect(isAddonPriceId("", env)).toBe(false)
+    expect(isAddonPriceId(null, env)).toBe(false)
+    expect(isAddonPriceId(undefined, env)).toBe(false)
   })
 })
 
