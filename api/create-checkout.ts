@@ -1,20 +1,14 @@
 import Stripe from "stripe"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-
-type PlanId = "elementary" | "middle" | "high"
-type BillingPeriod = "monthly" | "annual"
-
-// Price ids are read from env per plan + interval — never hardcoded.
-const PLANS: Record<PlanId, { included: number; monthly: string; annual: string }> = {
-  elementary: { included: 1, monthly: "STRIPE_PRICE_ELEMENTARY_MONTHLY", annual: "STRIPE_PRICE_ELEMENTARY_ANNUAL" },
-  middle: { included: 2, monthly: "STRIPE_PRICE_MIDDLE_MONTHLY", annual: "STRIPE_PRICE_MIDDLE_ANNUAL" },
-  high: { included: 2, monthly: "STRIPE_PRICE_HIGH_MONTHLY", annual: "STRIPE_PRICE_HIGH_ANNUAL" },
-}
-
-const ADDON_ENV: Record<BillingPeriod, string> = {
-  monthly: "STRIPE_PRICE_ADDON_KID_MONTHLY",
-  annual: "STRIPE_PRICE_ADDON_KID_ANNUAL",
-}
+import {
+  addonPriceEnv,
+  extraKids as computeExtraKids,
+  isBillingPeriod,
+  isPlanId,
+  planPriceEnv,
+  type BillingPeriod,
+  type PlanId,
+} from "./billing-core.js"
 
 interface CheckoutRequest {
   plan: PlanId
@@ -37,21 +31,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { plan, billingPeriod, totalKids, email, userId } = req.body as CheckoutRequest
 
-    if (!(plan in PLANS) || (billingPeriod !== "monthly" && billingPeriod !== "annual")) {
+    if (!isPlanId(plan) || !isBillingPeriod(billingPeriod)) {
       return res.status(400).json({ error: "Invalid plan or billing period" })
     }
 
-    const planDef = PLANS[plan]
-    const basePriceId = process.env[planDef[billingPeriod]]
+    const basePriceId = process.env[planPriceEnv(plan, billingPeriod)]
     if (!basePriceId) {
       return res.status(500).json({ error: "Plan price is not configured" })
     }
 
-    const extraKids = Math.max(0, (Number(totalKids) || 0) - planDef.included)
+    const extraKids = computeExtraKids(plan, totalKids)
 
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [{ price: basePriceId, quantity: 1 }]
     if (extraKids > 0) {
-      const addonPriceId = process.env[ADDON_ENV[billingPeriod]]
+      const addonPriceId = process.env[addonPriceEnv(billingPeriod)]
       if (!addonPriceId) {
         return res.status(500).json({ error: "Add-on price is not configured" })
       }
