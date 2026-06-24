@@ -27,3 +27,24 @@ export async function getSubscriptionStatus(parentId: string): Promise<string | 
     .maybeSingle()
   return data?.subscription_status ?? null
 }
+
+export interface Subscription {
+  status: string | null
+  plan: string | null
+  billingPeriod: string | null
+  extraKids: number
+}
+
+export async function getSubscription(parentId: string): Promise<Subscription> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('subscription_status, plan, billing_period, extra_kids')
+    .eq('id', parentId)
+    .maybeSingle()
+  return {
+    status: data?.subscription_status ?? null,
+    plan: data?.plan ?? null,
+    billingPeriod: data?.billing_period ?? null,
+    extraKids: data?.extra_kids ?? 0,
+  }
+}
