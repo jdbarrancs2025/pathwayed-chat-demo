@@ -42,16 +42,26 @@ function tabStyle(active: boolean): React.CSSProperties {
 
 function friendlyAuthError(raw: string, mode: 'signin' | 'signup'): string {
   const m = raw.toLowerCase()
-  if (m.includes('invalid login credentials')) return "That email or password doesn't look right."
+  if (m.includes('invalid login credentials')) return 'Wrong email or password.'
+  if (m.includes('email not confirmed'))
+    return 'Please confirm your email address (check your inbox), then sign in.'
+  if (
+    m.includes('email logins are disabled') ||
+    m.includes('email signups are disabled') ||
+    m.includes('signups not allowed') ||
+    m.includes('logins are disabled')
+  )
+    return 'Email and password sign-in is turned off for this project right now.'
   if (m.includes('already registered') || m.includes('already been registered') || m.includes('already exists'))
-    return 'An account with this email already exists — try signing in instead.'
+    return 'An account with this email already exists — switch to the Sign in tab.'
   if (m.includes('password should be at least') || m.includes('at least 6'))
     return 'Please use a password with at least 6 characters.'
   if (m.includes('invalid email') || m.includes('unable to validate email'))
     return 'Please enter a valid email address.'
-  return mode === 'signin'
-    ? "We couldn't sign you in. Please try again."
-    : "We couldn't create your account. Please try again."
+  if (m.includes('invalid api key') || m.includes('api key'))
+    return 'Sign-in is misconfigured (API key). Please contact support.'
+  // Unknown error — surface the real message so the failure is diagnosable.
+  return `${mode === 'signin' ? "We couldn't sign you in" : "We couldn't create your account"}: ${raw}`
 }
 
 const GoogleIcon: ReactElement = (

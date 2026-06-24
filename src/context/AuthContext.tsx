@@ -60,12 +60,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithPassword = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      // Surface the real cause for diagnosis instead of swallowing it.
+      console.error('[auth] signInWithPassword failed', {
+        code: error.code,
+        status: error.status,
+        message: error.message,
+      })
+    }
     return { error: error?.message ?? null }
   }, [])
 
   const signUpWithEmail = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) return { error: error.message, needsConfirmation: false }
+    if (error) {
+      console.error('[auth] signUp failed', {
+        code: error.code,
+        status: error.status,
+        message: error.message,
+      })
+      return { error: error.message, needsConfirmation: false }
+    }
     // With email-enumeration protection on, signing up an existing address
     // returns no error but an empty identities array.
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
