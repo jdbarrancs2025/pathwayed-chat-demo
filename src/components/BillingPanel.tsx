@@ -22,6 +22,14 @@ function statusBadge(status: string): { label: string; bg: string; color: string
   return { label: status, bg: '#F4EEE4', color: '#5A6172' }
 }
 
+/** Friendly date like "January 3, 2026", or null if the ISO string is missing/invalid. */
+function formatFriendlyDate(iso: string | null): string | null {
+  if (!iso) return null
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return null
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
 const badgeStyle = (bg: string, color: string): React.CSSProperties => ({
   background: bg,
   color,
@@ -126,6 +134,15 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
     const extraKids = sub?.extraKids ?? 0
     const total = planDef ? totalPrice(planDef.id, period, extraKids) : null
 
+    // trial_end is only meaningful while trialing (a stale value can linger after conversion).
+    const trialEndsLabel = status === 'trialing' ? formatFriendlyDate(sub?.trialEnd ?? null) : null
+    const renewsLabel = status === 'active' ? formatFriendlyDate(sub?.currentPeriodEnd ?? null) : null
+    const dateLine = trialEndsLabel
+      ? `Free trial ends ${trialEndsLabel}`
+      : renewsLabel
+        ? `Renews ${renewsLabel}`
+        : null
+
     return (
       <div className="panel" style={{ padding: '16px 18px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
@@ -144,6 +161,9 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
                 ? ` · includes ${extraKids} extra ${extraKids === 1 ? 'child' : 'children'}`
                 : ''}
             </div>
+          )}
+          {dateLine && (
+            <div style={{ fontSize: 13.5, color: '#5A6172', marginTop: 2 }}>{dateLine}</div>
           )}
         </div>
         <button className="btn btn-soft" style={{ marginTop: 12 }} disabled={busy} onClick={portal}>
