@@ -84,7 +84,7 @@ export function ResetPassword() {
         <img
           src={logoImg}
           alt="PathwayEd"
-          style={{ width: 'min(300px,74%)', height: 'auto', display: 'block', margin: '2px auto 0' }}
+          style={{ width: 'min(420px,86%)', height: 'auto', display: 'block', margin: '2px auto 0' }}
         />
         <p
           style={{

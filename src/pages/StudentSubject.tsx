@@ -165,7 +165,7 @@ export function StudentSubject() {
               <img
                 src={logoImg}
                 alt="PathwayEd"
-                className="h-10 w-10 sm:h-11 sm:w-11 object-contain drop-shadow-md"
+                className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-md"
               />
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white drop-shadow-sm" />

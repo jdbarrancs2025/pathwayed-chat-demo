@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { HeaderMenu } from '@/components/HeaderMenu'
 import { cn } from '@/lib/utils'
 import logoImg from '@/assets/logo.png'
 
@@ -84,7 +85,7 @@ export function PageLayout({
               <img
                 src={logoImg}
                 alt="PathwayEd"
-                className="h-10 w-10 sm:h-11 sm:w-11 object-contain drop-shadow-md"
+                className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-md"
               />
               <span className="text-white font-bold text-xl sm:text-2xl tracking-tight drop-shadow-sm">
                 PathwayEd
@@ -97,8 +98,10 @@ export function PageLayout({
             )}
           </div>
 
-          {/* Spacer for balance */}
-          <div className="w-12 sm:w-14" />
+          {/* App menu */}
+          <div className="w-12 sm:w-14 flex justify-end">
+            <HeaderMenu />
+          </div>
         </div>
 
         {/* Enhanced bottom accent line with glow */}

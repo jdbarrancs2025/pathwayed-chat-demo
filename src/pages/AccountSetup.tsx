@@ -32,7 +32,7 @@ export function AccountSetup() {
           <img
             src={logoImg}
             alt="PathwayEd"
-            className="mx-auto h-20 w-20 sm:h-24 sm:w-24 object-contain drop-shadow-md animate-in zoom-in duration-300"
+            className="mx-auto h-32 w-32 sm:h-36 sm:w-36 object-contain drop-shadow-md animate-in zoom-in duration-300"
           />
           <h2 className="mt-3 text-xl sm:text-2xl font-bold text-primary tracking-tight">
             PathwayEd
