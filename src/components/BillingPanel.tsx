@@ -85,6 +85,24 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
     }
   }, [userId])
 
+  // When the user navigates to Stripe and then hits BACK, the page is restored
+  // from the browser's bfcache with the component still mounted — so the
+  // double-click guards (inFlight ref + busy state) are left stuck in their
+  // "in flight" state and the button stays disabled. 'pageshow' fires on that
+  // restore (event.persisted === true); clear the guards so the button is
+  // usable again. This only runs on a bfcache restore, after the Stripe
+  // navigation has already happened, so it can't cause a double submit.
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        inFlight.current = false
+        setBusy(false)
+      }
+    }
+    window.addEventListener('pageshow', onPageShow)
+    return () => window.removeEventListener('pageshow', onPageShow)
+  }, [])
+
   const portal = async () => {
     if (inFlight.current) return
     inFlight.current = true
