@@ -9,7 +9,7 @@ import {
   planPriceEnv,
   type BillingPeriod,
   type PlanId,
-} from "./billing-core"
+} from "./billing-core.js"
 
 const PLANS: PlanId[] = ["elementary", "middle", "high"]
 const PERIODS: BillingPeriod[] = ["monthly", "annual"]
