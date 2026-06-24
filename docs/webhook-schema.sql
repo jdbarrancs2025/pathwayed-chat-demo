@@ -16,3 +16,11 @@ create table if not exists public.stripe_events (
 -- The webhook writes with the service-role (sb_secret_) key, which bypasses
 -- RLS. Enabling RLS with no policies locks the table to the service role only.
 alter table public.stripe_events enable row level security;
+
+-- 2) Subscription dates on profiles -----------------------------------------
+-- The webhook writes the trial end and current period (renewal) end so the
+-- Billing summary can show a real trial/renewal date. YOU MUST RUN THIS before
+-- those dates will appear — until then the webhook logs a warning and the date
+-- columns simply stay empty (everything else keeps working).
+alter table public.profiles add column if not exists trial_end timestamptz;
+alter table public.profiles add column if not exists current_period_end timestamptz;

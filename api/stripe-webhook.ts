@@ -22,6 +22,32 @@ interface ProfileFields {
   billing_period?: string
   stripe_customer_id?: string
   extra_kids?: number
+  trial_end?: string
+  current_period_end?: string
+}
+
+/** Convert a Stripe unix timestamp (seconds) to an ISO string, or undefined. */
+function unixToIso(seconds: number | null | undefined): string | undefined {
+  return typeof seconds === "number" ? new Date(seconds * 1000).toISOString() : undefined
+}
+
+function readTrialEnd(sub: Stripe.Subscription): number | null {
+  const s = sub as unknown as { trial_end?: number | null }
+  return typeof s.trial_end === "number" ? s.trial_end : null
+}
+
+/**
+ * Read the current period end. Older Stripe API versions expose it on the
+ * subscription; newer ones moved it onto the subscription item — handle both.
+ */
+function readCurrentPeriodEnd(sub: Stripe.Subscription): number | null {
+  const s = sub as unknown as {
+    current_period_end?: number | null
+    items?: { data?: Array<{ current_period_end?: number | null }> }
+  }
+  if (typeof s.current_period_end === "number") return s.current_period_end
+  const item = s.items?.data?.[0]
+  return typeof item?.current_period_end === "number" ? item.current_period_end : null
 }
 
 async function updateProfile(
@@ -84,9 +110,13 @@ async function handleCheckoutCompleted(
   const md = session.metadata ?? {}
 
   let status: string | undefined
+  let trialEnd: string | undefined
+  let periodEnd: string | undefined
   if (typeof session.subscription === "string") {
     const sub = await stripe.subscriptions.retrieve(session.subscription)
     status = sub.status
+    trialEnd = unixToIso(readTrialEnd(sub))
+    periodEnd = unixToIso(readCurrentPeriodEnd(sub))
   }
 
   console.log("[stripe-webhook] checkout.session.completed", {
@@ -106,6 +136,8 @@ async function handleCheckoutCompleted(
       billing_period: md.billing_period,
       stripe_customer_id: customerId,
       extra_kids: md.extra_kids !== undefined ? Number(md.extra_kids) : undefined,
+      trial_end: trialEnd,
+      current_period_end: periodEnd,
     },
   )
 }
@@ -136,6 +168,8 @@ async function handleSubscriptionEvent(
       billing_period: md.billing_period,
       stripe_customer_id: customerId,
       extra_kids: md.extra_kids !== undefined ? Number(md.extra_kids) : undefined,
+      trial_end: unixToIso(readTrialEnd(sub)),
+      current_period_end: unixToIso(readCurrentPeriodEnd(sub)),
     },
   )
 }
