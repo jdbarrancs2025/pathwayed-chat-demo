@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Student } from '@/lib/students'
 import { getSubscriptionStatus } from '@/lib/profile'
 import { PLANS, openPortal, startCheckout, suggestPlan, type BillingPeriod, type PlanId } from '@/lib/billing'
@@ -42,6 +42,8 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
   const [totalKids, setTotalKids] = useState(() => Math.max(1, students.length))
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  // Synchronous guard: `busy` state updates too late to block a rapid second click.
+  const inFlight = useRef(false)
 
   useEffect(() => {
     let active = true
@@ -58,19 +60,23 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
   const extra = Math.max(0, totalKids - included)
 
   const subscribe = async () => {
-    if (busy) return
+    if (inFlight.current) return
+    inFlight.current = true
     setBusy(true)
     setError('')
     try {
+      // On success this navigates to Stripe, so the page unloads — no reset needed.
       await startCheckout({ plan, billingPeriod, totalKids, email, userId })
     } catch {
       setError('Could not start checkout. Please try again.')
       setBusy(false)
+      inFlight.current = false
     }
   }
 
   const portal = async () => {
-    if (busy) return
+    if (inFlight.current) return
+    inFlight.current = true
     setBusy(true)
     setError('')
     try {
@@ -78,6 +84,7 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
     } catch {
       setError('Could not open the billing portal.')
       setBusy(false)
+      inFlight.current = false
     }
   }
 

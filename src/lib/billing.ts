@@ -1,5 +1,3 @@
-import { loadStripe, type Stripe } from '@stripe/stripe-js'
-
 export type PlanId = 'elementary' | 'middle' | 'high'
 export type BillingPeriod = 'monthly' | 'annual'
 
@@ -18,13 +16,6 @@ export function suggestPlan(grades: string[]): PlanId {
   return 'elementary'
 }
 
-// Publishable key only — the secret key never reaches the client.
-let stripePromise: Promise<Stripe | null> | null = null
-function getStripe(): Promise<Stripe | null> {
-  if (!stripePromise) stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-  return stripePromise
-}
-
 interface CheckoutInput {
   plan: PlanId
   billingPeriod: BillingPeriod
@@ -33,7 +24,11 @@ interface CheckoutInput {
   userId: string
 }
 
-/** Create a Checkout session server-side and hand off to Stripe's hosted page. */
+/**
+ * Create a Checkout session server-side, then redirect to Stripe's hosted page.
+ * The server returns a full Stripe Checkout URL, so we just navigate to it —
+ * no Stripe.js / redirectToCheckout needed (card entry happens on Stripe).
+ */
 export async function startCheckout(input: CheckoutInput): Promise<void> {
   const res = await fetch('/api/create-checkout', {
     method: 'POST',
@@ -41,18 +36,9 @@ export async function startCheckout(input: CheckoutInput): Promise<void> {
     body: JSON.stringify(input),
   })
   if (!res.ok) throw new Error('Checkout failed')
-  const { id, url } = (await res.json()) as { id?: string; url?: string }
-
-  const stripe = await getStripe()
-  if (stripe && id) {
-    const { error } = await stripe.redirectToCheckout({ sessionId: id })
-    if (!error) return
-  }
-  if (url) {
-    window.location.href = url
-    return
-  }
-  throw new Error('No checkout URL returned')
+  const { url } = (await res.json()) as { url?: string }
+  if (!url) throw new Error('No checkout URL returned')
+  window.location.href = url
 }
 
 /** Open the Stripe customer portal for the parent. */
