@@ -1,6 +1,12 @@
 import Stripe from "stripe"
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import {
+  isAddonPriceId,
+  planForPriceId,
+  type BillingPeriod,
+  type PlanId,
+} from "./billing-core.js"
 
 // Stripe needs the raw, unparsed request body to verify the signature.
 export const config = { api: { bodyParser: false } }
@@ -142,20 +148,86 @@ async function handleCheckoutCompleted(
   )
 }
 
+interface DerivedPlan {
+  plan?: PlanId
+  billingPeriod?: BillingPeriod
+  extraKids?: number
+}
+
+/**
+ * Derive the real plan, billing period, and extra-kid count from a
+ * subscription's actual line items — the source of truth. The base plan item's
+ * price id reverse-maps to plan + period; the add-on item's quantity is the
+ * extra-kid count. This is what keeps the stored plan correct after a customer
+ * switches plans in the Stripe portal (metadata alone goes stale).
+ *
+ * Returns only the fields it could positively determine. If no base plan price
+ * matches our env (e.g. unrecognized/unconfigured price), plan/period are left
+ * undefined so the caller leaves the stored values untouched rather than writing
+ * garbage. extraKids is set to 0 only when a base plan was identified and no
+ * add-on line is present (a genuine "no extra kids"), never on a failed match.
+ */
+function derivePlanFromLineItems(sub: Stripe.Subscription, env: NodeJS.ProcessEnv): DerivedPlan {
+  let plan: PlanId | undefined
+  let billingPeriod: BillingPeriod | undefined
+  let addonQuantity: number | undefined
+  const unmatched: string[] = []
+
+  for (const item of sub.items?.data ?? []) {
+    const priceId = item.price?.id
+    if (!priceId) continue
+    const match = planForPriceId(priceId, env)
+    if (match) {
+      plan = match.plan
+      billingPeriod = match.period
+    } else if (isAddonPriceId(priceId, env)) {
+      addonQuantity = item.quantity ?? 0
+    } else {
+      unmatched.push(priceId)
+    }
+  }
+
+  if (unmatched.length > 0) {
+    console.warn(
+      `[stripe-webhook] subscription ${sub.id}: unrecognized price id(s) [${unmatched.join(", ")}] ` +
+        `did not match any configured STRIPE_PRICE_* env — leaving stored plan/period unchanged for these`,
+    )
+  }
+  if (!plan) {
+    console.warn(
+      `[stripe-webhook] subscription ${sub.id}: no base plan price matched a configured env var; ` +
+        `leaving stored plan, billing_period and extra_kids untouched`,
+    )
+  }
+
+  // Only trust an extra-kid count once we've identified the base plan. With a
+  // known plan and no add-on line, the count is genuinely 0.
+  const extraKids = plan ? (addonQuantity ?? 0) : undefined
+
+  return { plan, billingPeriod, extraKids }
+}
+
 async function handleSubscriptionEvent(
   supabase: SupabaseClient,
   sub: Stripe.Subscription,
   eventType: string,
+  env: NodeJS.ProcessEnv,
 ): Promise<void> {
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id
   const md = sub.metadata ?? {}
   const status = eventType === "customer.subscription.deleted" ? "canceled" : sub.status
 
+  // Source of truth = the subscription's line items, not metadata (which goes
+  // stale on a portal-driven plan switch). Fall back to nothing — if a field
+  // can't be derived it stays undefined and updateProfile leaves it as-is.
+  const derived = derivePlanFromLineItems(sub, env)
+
   console.log(`[stripe-webhook] ${eventType}`, {
     user_id: md.user_id,
     customerId,
-    plan: md.plan,
-    billing_period: md.billing_period,
+    plan: derived.plan,
+    billing_period: derived.billingPeriod,
+    extra_kids: derived.extraKids,
     status,
   })
 
@@ -164,10 +236,10 @@ async function handleSubscriptionEvent(
     { userId: md.user_id, customerId },
     {
       subscription_status: status,
-      plan: md.plan,
-      billing_period: md.billing_period,
+      plan: derived.plan,
+      billing_period: derived.billingPeriod,
       stripe_customer_id: customerId,
-      extra_kids: md.extra_kids !== undefined ? Number(md.extra_kids) : undefined,
+      extra_kids: derived.extraKids,
       trial_end: unixToIso(readTrialEnd(sub)),
       current_period_end: unixToIso(readCurrentPeriodEnd(sub)),
     },
@@ -223,7 +295,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case "customer.subscription.created":
       case "customer.subscription.updated":
       case "customer.subscription.deleted":
-        await handleSubscriptionEvent(supabase, event.data.object as Stripe.Subscription, event.type)
+        await handleSubscriptionEvent(
+          supabase,
+          event.data.object as Stripe.Subscription,
+          event.type,
+          process.env,
+        )
         break
       default:
         console.log("[stripe-webhook] ignoring unhandled event type:", event.type)
