@@ -88,5 +88,20 @@
       "Leaves the child with something to think about or try",
       "Encouraging and age-appropriate"
     ]
+  },
+  {
+    "id": "k2-reading-bd-reversal",
+    "grade": "1",
+    "subject": "reading",
+    "childName": "Theo",
+    "level": "on",
+    "studentMessage": "I read the word 'dog' but it came out 'bog'. The first letter is a b... or a d? I always mix them up.",
+    "rubric": [
+      "Recognizes the b/d letter reversal as the cause",
+      "Confirms the single letter's sound rather than re-teaching the whole word",
+      "Gives a concrete anchor/cue to tell b and d apart",
+      "Does not just read the word for the child",
+      "Warm and reassuring about a common mix-up"
+    ]
   }
 ]

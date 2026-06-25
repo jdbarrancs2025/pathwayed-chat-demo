@@ -43,5 +43,20 @@
       "Does not give the final answer (9)",
       "Warm and simple for an early learner"
     ]
+  },
+  {
+    "id": "g2-math-subtract-smaller-from-larger",
+    "grade": "2",
+    "subject": "math",
+    "childName": "Maya",
+    "level": "on",
+    "studentMessage": "For 32 minus 17 I did 7 minus 2 is 5, and 3 minus 1 is 2, so I got 25.",
+    "rubric": [
+      "Diagnoses the 'always subtract smaller from larger per column' misconception",
+      "Confirms with a question about taking 7 from 2 in the ones place",
+      "Guides regrouping with a concrete model rather than stating the rule",
+      "Does not give the final answer (15)",
+      "Gentle and encouraging about the mistake"
+    ]
   }
 ]

@@ -207,7 +207,44 @@ async function main() {
     reportPath,
     JSON.stringify({ model: TUTOR_MODEL, judge: JUDGE_MODEL, overall, tally, results }, null, 2),
   )
-  console.log(`\nFull report written to ${reportPath}`)
+  writeFileSync(join(here, "last-report.md"), renderMarkdown(results, overall, tally, totalCriteria))
+  console.log(`\nFull report written to ${reportPath} and ${join(here, "last-report.md")}`)
+}
+
+/** A human-readable markdown report (committed as eval/last-report.md). */
+function renderMarkdown(
+  results: ScenarioResult[],
+  overall: number,
+  tally: Record<Verdict, number>,
+  totalCriteria: number,
+): string {
+  const lines: string[] = []
+  lines.push(`# Nikki eval report`)
+  lines.push("")
+  lines.push(`- Tutor model: \`${TUTOR_MODEL}\` · Judge model: \`${JUDGE_MODEL}\``)
+  lines.push(`- Scenarios: ${results.length} · Criteria scored: ${totalCriteria}`)
+  lines.push(`- Pass: ${tally.pass} · Partial: ${tally.partial} · Fail: ${tally.fail}`)
+  lines.push(`- **Overall score: ${Math.round(overall * 100)}%**`)
+  lines.push("")
+  for (const r of results) {
+    lines.push(`## ${r.id} — ${r.subject}, grade ${r.grade} — ${Math.round(r.score * 100)}%`)
+    lines.push("")
+    lines.push(`**Student:** ${r.studentMessage}`)
+    lines.push("")
+    for (const c of r.criteria) {
+      lines.push(`- \`${verdictMark[c.verdict]}\` ${c.criterion} — ${c.reason}`)
+    }
+    lines.push("")
+    lines.push("<details><summary>Nikki's response</summary>")
+    lines.push("")
+    lines.push("```")
+    lines.push(r.nikkiResponse)
+    lines.push("```")
+    lines.push("")
+    lines.push("</details>")
+    lines.push("")
+  }
+  return lines.join("\n")
 }
 
 main().catch((err) => {

@@ -37,6 +37,11 @@ DECODING IS SOUNDING OUT, NOT GUESSING.
   start with?"
 - Pictures and context are for MEANING after decoding, never for figuring out
   what the word says.
+- Don't just READ the word for the child either — that skips the learning. Guide
+  them to decode it themselves with the smallest hint (a sound, a blend). The one
+  exception is a truly irregular word (e.g. "said", "was"): teach the tricky part
+  explicitly in kid terms, but never hand over the whole word as a shortcut to
+  avoid the work.
 
 PHONEMIC AWARENESS (hearing sounds, no letters needed):
 - Play with the sounds in spoken words: first sound, last sound, blending sounds
@@ -109,7 +114,9 @@ Let the student do the actual figuring; you guide the thinking.
   means a bigger fraction") with a quick concrete counterexample rather than
   just stating the rule.
 - Wrap every math expression in LaTeX as the master rules require.
-- Never give the final numeric answer — leave the last step for the student.`
+- Never give the final numeric answer — leave the last step for the student. If
+  you demonstrate a method, use DIFFERENT numbers, not the student's own problem,
+  and stop before the final result so they compute it themselves.`
 }
 
 // --- Science -----------------------------------------------------------------
