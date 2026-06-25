@@ -70,17 +70,15 @@ export function Flashcards({ childName, grade, level }: { childName: string; gra
       <>
         <div className="flash">
           <div className={`flash-inner ${flipped ? 'flip' : ''}`} onClick={() => setFlipped((f) => !f)}>
+            <span className="flip-hint">↻ tap to flip</span>
             <div className="flash-face flash-front">{card.front}</div>
             <div className="flash-face flash-back">{card.back}</div>
           </div>
         </div>
-        <p className="center" style={{ margin: '0 0 10px' }}>
+        <p className="center" style={{ margin: '0 0 12px' }}>
           <button type="button" className="chip" onClick={() => say(card.front)}>
             🔊 Hear the word
-          </button>{' '}
-          <span className="muted" style={{ fontSize: 12 }}>
-            Tap card to flip
-          </span>
+          </button>
         </p>
         <div className="flash-nav">
           <button

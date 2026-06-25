@@ -52,9 +52,11 @@ export function SessionWorkspace({
         </div>
       )}
       <div className="wsbody">
-        {active === 'note' && <Notepad subject={subject} onSendText={onSendText} onSendImage={onSendImage} />}
-        {active === 'cards' && <Flashcards childName={childName} grade={grade} level={level} />}
-        {active === 'home' && <HomeworkUpload onSendImage={onSendImage} />}
+        <div className="wsbody-inner">
+          {active === 'note' && <Notepad subject={subject} onSendText={onSendText} onSendImage={onSendImage} />}
+          {active === 'cards' && <Flashcards childName={childName} grade={grade} level={level} />}
+          {active === 'home' && <HomeworkUpload onSendImage={onSendImage} />}
+        </div>
       </div>
     </div>
   )
