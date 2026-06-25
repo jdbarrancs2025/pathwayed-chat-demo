@@ -433,6 +433,16 @@
   color: #fff;
   border-bottom-right-radius: 6px;
 }
+/* Rendered math (KaTeX) inside a bubble inherits the bubble's text color and
+   sits on its own line for display math. */
+.msg .katex {
+  color: inherit;
+  font-size: 1.12em;
+}
+.msg .katex-display {
+  margin: 4px 0;
+  text-align: left;
+}
 .typing {
   align-self: flex-start;
   display: flex;
@@ -769,6 +779,51 @@
 }
 
 /* MathLive structured math editor (MODE A) */
+/* Discoverable quick-insert buttons so a child can make a fraction/power/root
+   without knowing the keyboard shortcuts. */
+.session .mathquick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.session .mq {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 1.6px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.session .mq:hover {
+  background: #f7f2ea;
+}
+.session .mq-ico {
+  font-size: 17px;
+  font-weight: 800;
+}
+.session .frac-ico {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-size: 12px;
+  font-weight: 800;
+}
+.session .frac-ico b:first-child {
+  border-bottom: 1.6px solid currentColor;
+  padding: 0 2px 1px;
+}
+.session .frac-ico b:last-child {
+  padding: 1px 2px 0;
+}
 .session .mathfield-host {
   margin: 2px 0 4px;
 }

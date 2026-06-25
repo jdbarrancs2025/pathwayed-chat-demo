@@ -9,6 +9,7 @@ import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
+import { MathText } from '@/components/MathText'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
 
@@ -214,7 +215,7 @@ function SessionView({
           <div className="feed" ref={feedRef}>
             {visibleMessages.map((m) => (
               <div key={m.id} className={`msg ${m.role === 'assistant' ? 'nikki' : 'me'}`}>
-                {m.content}
+                <MathText content={m.content} />
               </div>
             ))}
             {showTyping && (

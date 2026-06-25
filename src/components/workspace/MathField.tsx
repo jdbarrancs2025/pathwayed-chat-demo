@@ -6,6 +6,8 @@ export interface MathFieldHandle {
   getLatex: () => string
   /** Reset the field to empty. */
   clear: () => void
+  /** Insert a LaTeX snippet at the cursor (supports #@ selection / #? placeholder). */
+  insert: (latex: string) => void
 }
 
 /**
@@ -27,6 +29,9 @@ export const MathField = forwardRef<MathFieldHandle>(function MathField(_props, 
       getLatex: () => fieldRef.current?.value ?? '',
       clear: () => {
         if (fieldRef.current) fieldRef.current.value = ''
+      },
+      insert: (latex: string) => {
+        fieldRef.current?.insert(latex, { focus: true })
       },
     }),
     [],

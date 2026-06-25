@@ -59,7 +59,10 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
     if (mode === 'editor') {
       const latex = (mathRef.current?.getLatex() ?? '').trim()
       if (latex) {
-        onSendText(latex)
+        // Wrap in display-math delimiters so the student's bubble renders the
+        // expression as a real fraction/power/root (MathText/KaTeX), not raw
+        // LaTeX. Nikki still reads the LaTeX precisely.
+        onSendText(`$$${latex}$$`)
         mathRef.current?.clear()
       }
       return
@@ -219,7 +222,45 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
       </div>
 
       {mode === 'editor' ? (
-        <MathField ref={mathRef} />
+        <>
+          <div className="mathquick">
+            <button
+              type="button"
+              className="mq"
+              aria-label="Insert a fraction"
+              onClick={() => mathRef.current?.insert('\\frac{#@}{#?}')}
+            >
+              <span className="frac-ico" aria-hidden="true">
+                <b>a</b>
+                <b>b</b>
+              </span>
+              Fraction
+            </button>
+            <button
+              type="button"
+              className="mq"
+              aria-label="Insert a power or exponent"
+              onClick={() => mathRef.current?.insert('#@^{#?}')}
+            >
+              <span className="mq-ico" aria-hidden="true">
+                x<sup>2</sup>
+              </span>
+              Power
+            </button>
+            <button
+              type="button"
+              className="mq"
+              aria-label="Insert a square root"
+              onClick={() => mathRef.current?.insert('\\sqrt{#@}')}
+            >
+              <span className="mq-ico" aria-hidden="true">
+                √x
+              </span>
+              Root
+            </button>
+          </div>
+          <MathField ref={mathRef} />
+        </>
       ) : mode === 'type' ? (
         <textarea
           ref={taRef}
