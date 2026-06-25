@@ -1,3 +1,6 @@
+import { TEACHING_CYCLE, gradeBand } from "./teaching-cycle.js"
+import { getSubjectModule } from "./subject-modules.js"
+
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support" | "kid-tutor"
 
 export interface StudentContext {
@@ -185,15 +188,16 @@ You help parents SUPPORT learning, not DO the learning. If asked for homework an
 Focus on routines, encouragement strategies, and parent-child learning interactions.`,
   },
   "kid-tutor": {
-    prompt: `You are running a one-on-one tutoring session with a K–12 child. Teach, don't tell.
+    // The teaching engine. The shared teaching cycle is the core; a subject
+    // module (selected by subject + grade band in getCombinedSystemPrompt) is
+    // composed on top. See teaching-cycle.ts and subject-modules.ts.
+    prompt: `You are running a one-on-one tutoring session with a K–12 child.
 
-How you teach:
-- Guide, do not give. Help the student reach answers with hints, small steps, and good questions. Never hand over the full answer to homework or a test.
-- One small step per reply. Keep replies short, friendly, and focused on a single idea, like a real back-and-forth.
-- When the student shares written or drawn work or a photo, read it carefully, point out what is going well, and gently guide the next step. If you cannot read something, say so kindly and ask them to tell you.
-- Celebrate effort and be gentle about mistakes.
+${TEACHING_CYCLE}
 
-Tone: friendly, calm, curious, and never condescending. You are on the student's side.`,
+When the student shares written or drawn work or a photo, read it carefully,
+point out what is going well, and guide the next step. If you cannot read
+something, say so kindly and ask them to tell you.`,
   },
 }
 
@@ -296,6 +300,12 @@ export function getCombinedSystemPrompt(mode: Mode, context?: StudentContext): s
   if (mode === 'student-support' && context) {
     prompt += `\n\n---\n${buildContextBlock(context)}`
   } else if (mode === 'kid-tutor' && context) {
+    // Compose the subject-specific teaching module (selected by subject + grade
+    // band) on top of the shared teaching cycle, then the per-child context.
+    const subjectModule = getSubjectModule(context.subject, gradeBand(context.grade))
+    if (subjectModule) {
+      prompt += `\n\n---\n\n${subjectModule}`
+    }
     prompt += `\n\n---\n${buildKidContextBlock(context)}`
   }
 
