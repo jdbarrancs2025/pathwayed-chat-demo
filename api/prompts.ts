@@ -1,5 +1,6 @@
 import { TEACHING_CYCLE, gradeBand } from "./teaching-cycle.js"
 import { getSubjectModule } from "./subject-modules.js"
+import { getMisconceptionGuidance } from "./misconceptions.js"
 
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support" | "kid-tutor"
 
@@ -301,10 +302,16 @@ export function getCombinedSystemPrompt(mode: Mode, context?: StudentContext): s
     prompt += `\n\n---\n${buildContextBlock(context)}`
   } else if (mode === 'kid-tutor' && context) {
     // Compose the subject-specific teaching module (selected by subject + grade
-    // band) on top of the shared teaching cycle, then the per-child context.
-    const subjectModule = getSubjectModule(context.subject, gradeBand(context.grade))
+    // band) on top of the shared teaching cycle, then the misconception library
+    // for this subject + band, then the per-child context.
+    const band = gradeBand(context.grade)
+    const subjectModule = getSubjectModule(context.subject, band)
     if (subjectModule) {
       prompt += `\n\n---\n\n${subjectModule}`
+    }
+    const misconceptions = getMisconceptionGuidance(context.subject, band)
+    if (misconceptions) {
+      prompt += `\n\n---\n\n${misconceptions}`
     }
     prompt += `\n\n---\n${buildKidContextBlock(context)}`
   }
