@@ -1,0 +1,92 @@
+[
+  {
+    "id": "k2-reading-picture-guess",
+    "grade": "1",
+    "subject": "reading",
+    "childName": "Mia",
+    "level": "on",
+    "studentMessage": "I'm reading and there's a word I don't know. There's a picture of a dog next to it, so is the word 'dog'?",
+    "rubric": [
+      "Redirects away from guessing the word from the picture (rejects three-cueing)",
+      "Guides decoding by letters and sounds instead",
+      "Does not simply tell the child the word",
+      "Ends with a concrete next move (a sound or step to try)",
+      "Warm and simple language for a young child"
+    ]
+  },
+  {
+    "id": "k2-reading-blend-cvc",
+    "grade": "K",
+    "subject": "reading",
+    "childName": "Leo",
+    "level": "on",
+    "studentMessage": "The letters are s, u, n. I see /s/ /u/ /n/ but I don't get what the word is.",
+    "rubric": [
+      "Diagnoses that the child has the sounds but needs to blend them",
+      "Guides blending the sounds together rather than stating the word",
+      "Gives a concrete blending move (e.g. say the sounds faster/connected)",
+      "Does not give the final word outright",
+      "Encouraging tone for an early reader"
+    ]
+  },
+  {
+    "id": "k2-reading-context-guess-misconception",
+    "grade": "2",
+    "subject": "reading",
+    "childName": "Ava",
+    "level": "on",
+    "studentMessage": "I just look at the first letter and then guess a word that would make sense in the sentence. That's how I read tricky words.",
+    "rubric": [
+      "Identifies guessing-from-first-letter-and-context as the wrong strategy (three-cueing misconception)",
+      "Teaches reading all the letters/sounds left to right and blending",
+      "Addresses the misconception directly rather than ignoring it",
+      "Leaves the child with a better strategy to try",
+      "Stays warm and not shaming"
+    ]
+  },
+  {
+    "id": "k2-reading-phonemic-first-sound",
+    "grade": "K",
+    "subject": "reading",
+    "childName": "Sam",
+    "level": "on",
+    "studentMessage": "What is the first sound in the word 'map'? I think it might be 'em' like the letter name.",
+    "rubric": [
+      "Recognizes the confusion between letter NAME (em) and letter SOUND (/m/)",
+      "Works on the first sound orally (phonemic awareness)",
+      "Guides the child to the sound rather than just announcing it",
+      "Gives a next move to try the sound",
+      "Simple, playful, age-appropriate"
+    ]
+  },
+  {
+    "id": "k2-reading-sight-word",
+    "grade": "1",
+    "subject": "reading",
+    "childName": "Noah",
+    "level": "on",
+    "studentMessage": "The word is 'said'. I tried to sound it out s-a-i-d but it sounded wrong and I gave up.",
+    "rubric": [
+      "Praises that sounding out was the right instinct",
+      "Explains the tricky part of the word in a kid-friendly way rather than just giving it",
+      "Does not tell the child to guess from a picture or context",
+      "Gives the child a concrete next step",
+      "Warm and reassuring after the child gave up"
+    ]
+  },
+  {
+    "id": "k2-reading-comprehension-after-decode",
+    "grade": "2",
+    "subject": "reading",
+    "childName": "Ivy",
+    "level": "ahead",
+    "studentMessage": "I read the sentence 'The wet dog shook by the door.' but I don't know why the dog is wet.",
+    "rubric": [
+      "Treats this as comprehension (meaning), since the words are already decoded",
+      "Asks a question or points to text evidence rather than just explaining",
+      "Builds understanding step by step",
+      "Leaves the child with something to think about or try",
+      "Encouraging and age-appropriate"
+    ]
+  }
+]

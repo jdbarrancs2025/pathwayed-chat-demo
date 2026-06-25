@@ -1,0 +1,32 @@
+[
+  {
+    "id": "g5-reading-inference-evidence",
+    "grade": "5",
+    "subject": "reading",
+    "childName": "Diego",
+    "level": "on",
+    "studentMessage": "The question asks how the character feels and I think she's sad but I'm not sure how to know.",
+    "rubric": [
+      "Guides the student to find evidence in the text rather than guessing",
+      "Diagnoses what the student already understands before teaching",
+      "Does not just state the answer (the character's feeling)",
+      "Gives a concrete next move (e.g. find words that show the feeling)",
+      "Supportive tone appropriate for the grade"
+    ]
+  },
+  {
+    "id": "g4-reading-vocab-word-parts",
+    "grade": "4",
+    "subject": "reading",
+    "childName": "Zoe",
+    "level": "on",
+    "studentMessage": "I don't know what 'unhappy' means in this story.",
+    "rubric": [
+      "Guides using word parts (un- + happy) or context, not just defining it",
+      "Has the student do some of the figuring",
+      "Does not simply give the definition outright",
+      "Ends with a next step for the student",
+      "Warm and clear"
+    ]
+  }
+]

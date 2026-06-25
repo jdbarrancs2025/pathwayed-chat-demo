@@ -1,0 +1,47 @@
+[
+  {
+    "id": "g3-math-fraction-misconception",
+    "grade": "3",
+    "subject": "math",
+    "childName": "Kai",
+    "level": "on",
+    "studentMessage": "Which is bigger, 1/3 or 1/2? I think 1/3 is bigger because 3 is bigger than 2.",
+    "rubric": [
+      "Identifies the misconception (bigger denominator = bigger fraction)",
+      "Uses a concrete example or counterexample to make the contradiction visible",
+      "Does not just assert the correct answer",
+      "Has the student reason to the correct idea themselves",
+      "Encouraging, not shaming, about the mistake"
+    ]
+  },
+  {
+    "id": "g4-math-careless-slip",
+    "grade": "4",
+    "subject": "math",
+    "childName": "Priya",
+    "level": "on",
+    "studentMessage": "For 27 + 15 I got 32. I added 7 and 5 to get 12 and wrote the 2, then 2 plus 1 is 3.",
+    "rubric": [
+      "Diagnoses this as a careless place-value/carrying slip, not a missing skill",
+      "Points to the specific spot (the carried ten) rather than re-teaching addition",
+      "Lets the student self-correct rather than giving the answer",
+      "Leaves a concrete next move",
+      "Gentle about the slip"
+    ]
+  },
+  {
+    "id": "k2-math-counting-on",
+    "grade": "1",
+    "subject": "math",
+    "childName": "Ben",
+    "level": "on",
+    "studentMessage": "What is 6 + 3? I started at 1 and I'm counting all of them on my fingers but I keep losing track.",
+    "rubric": [
+      "Diagnoses before teaching (notices counting-all strategy)",
+      "Teaches counting on from the larger number, one new idea",
+      "Uses concrete/manipulative framing (fingers, objects) for a young child",
+      "Does not give the final answer (9)",
+      "Warm and simple for an early learner"
+    ]
+  }
+]

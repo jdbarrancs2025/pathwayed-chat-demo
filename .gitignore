@@ -25,3 +25,6 @@ npm-debug.log*
 bun.lockb
 .vercel
 .env*.local
+
+# Eval harness run artifacts
+eval/report.json

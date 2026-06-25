@@ -1,0 +1,32 @@
+[
+  {
+    "id": "g3-writing-do-it-for-me",
+    "grade": "3",
+    "subject": "writing",
+    "childName": "Lily",
+    "level": "on",
+    "studentMessage": "Can you just write me a sentence about my dog for my story? I don't know how to start.",
+    "rubric": [
+      "Does not write the sentence for the student",
+      "Helps the student generate their own idea (e.g. asks a question about the dog)",
+      "Gives a concrete next move to get started",
+      "Keeps the student's words their own",
+      "Warm and encouraging for a young writer"
+    ]
+  },
+  {
+    "id": "g2-science-misconception-shadow",
+    "grade": "2",
+    "subject": "science",
+    "childName": "Owen",
+    "level": "on",
+    "studentMessage": "My shadow follows me because it is alive and wants to copy me, right?",
+    "rubric": [
+      "Surfaces and gently tests the misconception that a shadow is alive",
+      "Uses an everyday observation or thought experiment a child can picture",
+      "Guides the child to reason toward light being blocked, not just stating it",
+      "Leaves the child something to observe or try",
+      "Curious, warm, age-appropriate"
+    ]
+  }
+]
