@@ -767,6 +767,28 @@
   touch-action: none;
   display: block;
 }
+
+/* MathLive structured math editor (MODE A) */
+.session .mathfield-host {
+  margin: 2px 0 4px;
+}
+.session math-field {
+  display: block;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 14px;
+  font-size: 24px;
+  border: 1.6px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  color: var(--ink);
+  --hue: 14; /* MathLive accent → brand orange family */
+}
+.session math-field:focus-within {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 4px rgba(0, 48, 120, 0.08);
+}
 .session .flash {
   perspective: 1200px;
   height: clamp(240px, 36vh, 420px);

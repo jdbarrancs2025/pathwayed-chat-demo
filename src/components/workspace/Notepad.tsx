@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { MathKeys } from '@/components/workspace/MathKeys'
+import { MathField, type MathFieldHandle } from '@/components/workspace/MathField'
 import { fileToDataURL, splitDataUrl, type ImageTurn } from '@/lib/image'
 
 interface NotepadProps {
@@ -8,33 +8,42 @@ interface NotepadProps {
   onSendImage: (turn: ImageTurn) => void
 }
 
+type Mode = 'type' | 'draw' | 'editor'
+
+/** Paint a white graph-paper grid into the canvas (math handwriting mode). */
+function paintGrid(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  ctx.save()
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, w, h)
+  ctx.strokeStyle = '#dce6f2'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  const step = 28
+  for (let x = step; x < w; x += step) {
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, h)
+  }
+  for (let y = step; y < h; y += step) {
+    ctx.moveTo(0, y)
+    ctx.lineTo(w, y)
+  }
+  ctx.stroke()
+  ctx.restore()
+}
+
 export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
   const mathy = subject === 'math' || subject === 'science'
-  const [mode, setMode] = useState<'type' | 'draw'>(mathy ? 'draw' : 'type')
+  // Math: structured editor (MODE A) vs handwriting grid (MODE B).
+  // Non-math: unchanged type vs draw/photo.
+  const [mode, setMode] = useState<Mode>(mathy ? 'editor' : 'type')
   const [typed, setTyped] = useState('')
   const [noteImg, setNoteImg] = useState<string | null>(null)
   const [error, setError] = useState('')
   const taRef = useRef<HTMLTextAreaElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const mathRef = useRef<MathFieldHandle>(null)
   const hasInkRef = useRef(false)
-
-  const insert = (sym: string) => {
-    const ta = taRef.current
-    if (!ta) {
-      setTyped((t) => t + sym)
-      return
-    }
-    const start = ta.selectionStart
-    const end = ta.selectionEnd
-    const next = typed.slice(0, start) + sym + typed.slice(end)
-    setTyped(next)
-    requestAnimationFrame(() => {
-      ta.focus()
-      const pos = start + sym.length
-      ta.setSelectionRange(pos, pos)
-    })
-  }
 
   const upload = async (file: File | undefined) => {
     if (!file) return
@@ -47,6 +56,14 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
   }
 
   const check = () => {
+    if (mode === 'editor') {
+      const latex = (mathRef.current?.getLatex() ?? '').trim()
+      if (latex) {
+        onSendText(latex)
+        mathRef.current?.clear()
+      }
+      return
+    }
     if (mode === 'draw') {
       if (noteImg) {
         const { data, mediaType } = splitDataUrl(noteImg)
@@ -94,6 +111,8 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
       canvas.height = rect.height * dpr
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.scale(dpr, dpr)
+      // Math handwriting gets graph-paper so the captured image reads as grid work.
+      if (mathy) paintGrid(ctx, rect.width, rect.height)
       ctx.lineWidth = 2.6
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
@@ -147,7 +166,7 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
       canvas.removeEventListener('touchmove', move)
       canvas.removeEventListener('touchend', up)
     }
-  }, [mode, noteImg])
+  }, [mode, noteImg, mathy])
 
   const clearCanvas = () => {
     const canvas = canvasRef.current
@@ -157,37 +176,58 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.restore()
+      if (mathy) {
+        const rect = canvas.getBoundingClientRect()
+        paintGrid(ctx, rect.width, rect.height)
+      }
     }
     hasInkRef.current = false
   }
 
+  const hint =
+    mode === 'editor'
+      ? 'Build your math with the editor — tap the keyboard for fractions, powers, and roots. Then tap Ask Nikki to check it.'
+      : mode === 'draw'
+        ? mathy
+          ? 'Write your math by hand on the grid, or upload a photo. Then tap Ask Nikki to check it.'
+          : 'Write your work by hand, or upload a photo of problems you did on paper. Then tap Ask Nikki to check it.'
+        : 'Type your answer here, then tap Ask Nikki to check it.'
+
   return (
     <>
-      <p className="wshint">
-        {mode === 'draw'
-          ? 'Write your work by hand, or upload a photo of problems you did on paper. Then tap Ask Nikki to check it.'
-          : 'Type your answer here, then tap Ask Nikki to check it.'}
-      </p>
+      <p className="wshint">{hint}</p>
       <div className="seg">
-        <button type="button" className={`seg-b ${mode === 'type' ? 'on' : ''}`} onClick={() => setMode('type')}>
-          Type
-        </button>
-        <button type="button" className={`seg-b ${mode === 'draw' ? 'on' : ''}`} onClick={() => setMode('draw')}>
-          Draw or photo
-        </button>
+        {mathy ? (
+          <>
+            <button type="button" className={`seg-b ${mode === 'editor' ? 'on' : ''}`} onClick={() => setMode('editor')}>
+              Math editor
+            </button>
+            <button type="button" className={`seg-b ${mode === 'draw' ? 'on' : ''}`} onClick={() => setMode('draw')}>
+              Write by hand
+            </button>
+          </>
+        ) : (
+          <>
+            <button type="button" className={`seg-b ${mode === 'type' ? 'on' : ''}`} onClick={() => setMode('type')}>
+              Type
+            </button>
+            <button type="button" className={`seg-b ${mode === 'draw' ? 'on' : ''}`} onClick={() => setMode('draw')}>
+              Draw or photo
+            </button>
+          </>
+        )}
       </div>
 
-      {mode === 'type' ? (
-        <>
-          {mathy && <MathKeys onInsert={insert} />}
-          <textarea
-            ref={taRef}
-            className="bigtype"
-            placeholder="Start writing here..."
-            value={typed}
-            onChange={(e) => setTyped(e.target.value)}
-          />
-        </>
+      {mode === 'editor' ? (
+        <MathField ref={mathRef} />
+      ) : mode === 'type' ? (
+        <textarea
+          ref={taRef}
+          className="bigtype"
+          placeholder="Start writing here..."
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+        />
       ) : noteImg ? (
         <>
           <button type="button" className="btn btn-soft" style={{ marginBottom: 10 }} onClick={() => fileRef.current?.click()}>
@@ -197,7 +237,7 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
             <img src={noteImg} alt="Your work" />
           </div>
           <button type="button" className="link" style={{ display: 'block', margin: '10px auto 0' }} onClick={() => setNoteImg(null)}>
-            Remove photo and draw instead
+            Remove photo and {mathy ? 'write instead' : 'draw instead'}
           </button>
         </>
       ) : (
