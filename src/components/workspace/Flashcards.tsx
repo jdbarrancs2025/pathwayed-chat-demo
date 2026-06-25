@@ -8,6 +8,7 @@ import {
 } from '@/lib/flashcards'
 import { fileToDataURL, splitDataUrl } from '@/lib/image'
 import { extractPdfText } from '@/lib/pdf'
+import { speakWithNikki } from '@/lib/voice'
 
 export function Flashcards({ childName, grade, level }: { childName: string; grade: string; level: string }) {
   const ctx: CardContext = { childName, grade, level }
@@ -21,13 +22,8 @@ export function Flashcards({ childName, grade, level }: { childName: string; gra
   const fileRef = useRef<HTMLInputElement>(null)
 
   const say = (text: string) => {
-    // TODO(Prompt 12): play via the ElevenLabs voice; browser speechSynthesis is the fallback for now.
-    if (!('speechSynthesis' in window)) return
-    window.speechSynthesis.cancel()
-    const u = new SpeechSynthesisUtterance(text)
-    u.rate = 1
-    u.pitch = 1.05
-    window.speechSynthesis.speak(u)
+    // Nikki's ElevenLabs voice, with browser speechSynthesis as the fallback.
+    void speakWithNikki(text)
   }
 
   const run = async (fn: () => Promise<Flashcard[]>, failMsg: string): Promise<Flashcard[]> => {

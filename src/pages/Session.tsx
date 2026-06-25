@@ -9,23 +9,22 @@ import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
+import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
 
+// Speak in Nikki's ElevenLabs voice (falls back to the browser voice on
+// failure). setSpeaking drives the avatar's speaking ring while audio plays.
 function speak(text: string, setSpeaking: (v: boolean) => void) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-  window.speechSynthesis.cancel()
-  const utterance = new SpeechSynthesisUtterance(text.replace(/[*#`_>]/g, '').trim())
-  utterance.rate = 1
-  utterance.pitch = 1.05
-  utterance.onstart = () => setSpeaking(true)
-  utterance.onend = () => setSpeaking(false)
-  window.speechSynthesis.speak(utterance)
+  void speakWithNikki(text, {
+    onStart: () => setSpeaking(true),
+    onEnd: () => setSpeaking(false),
+  })
 }
 
 function stopSpeak(setSpeaking: (v: boolean) => void) {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel()
+  stopNikkiSpeech()
   setSpeaking(false)
 }
 
