@@ -292,8 +292,10 @@
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  min-height: 0;
   width: 100%;
   background: var(--paper);
+  overflow: hidden; /* the page never scrolls; each pane scrolls on its own */
 }
 .shead {
   display: flex;
@@ -366,18 +368,19 @@
   color: #fff;
 }
 .work {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
-  min-height: 0;
+  min-height: 0; /* let the panes (and their scroll areas) size correctly */
   width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
+  overflow: hidden;
 }
 .chatpane {
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0; /* allow the feed to scroll instead of growing the pane */
+  height: 100%;
   border-right: 1px solid var(--line);
 }
 .wspane {
@@ -386,12 +389,24 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0; /* allow the workspace body to scroll on its own */
+  height: 100%;
   background: #fff;
+}
+
+/* On very wide monitors, center the two-pane block. margin-inline only — never
+   touches the vertical sizing, so the panes still fill the height. */
+@media (min-width: 1601px) {
+  .work {
+    max-width: 1600px;
+    margin-inline: auto;
+  }
 }
 
 /* Chat feed */
 .feed {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0; /* required so this scrolls instead of stretching the pane */
   overflow-y: auto;
   padding: 20px 16px 8px;
   display: flex;
@@ -523,7 +538,8 @@
   color: #fff;
 }
 .wsbody {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0; /* required so the workspace scrolls instead of overflowing */
   overflow-y: auto;
   padding: clamp(16px, 2.4vw, 30px);
 }
@@ -1006,19 +1022,21 @@
   align-items: center;
   gap: 7px;
   padding: 24px 12px 18px;
-  background: radial-gradient(120% 100% at 50% 0, #0c2a52 0, #061325 68%, #03080f 100%);
-  border-bottom: 1px solid #0a1f3d;
+  /* Soft light tint (cool → warm → paper) so the orb reads as glowing tech on a
+     bright background rather than sitting on a dark slab. */
+  background: radial-gradient(120% 100% at 50% 0, #eef2fb 0, #f5f1ea 68%, var(--paper) 100%);
+  border-bottom: 1px solid var(--line);
 }
 .callname {
   font-family: var(--disp);
   font-weight: 700;
-  color: #eaf0fa;
+  color: var(--navy);
   font-size: 16px;
   letter-spacing: 0.04em;
 }
 .navstatus {
   font-size: 12px;
-  color: #93a8c8;
+  color: var(--muted);
   letter-spacing: 0.06em;
 }
 .callphoto {
