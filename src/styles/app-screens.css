@@ -347,6 +347,12 @@
   border-color: var(--orange);
   color: #fff;
 }
+/* Muted voice — obvious "off" state for the speaker toggle. */
+.iconbtn.muted {
+  background: #fbe3de;
+  border-color: #e7b6ab;
+  color: #c0492f;
+}
 .panetabs {
   display: none;
   gap: 6px;

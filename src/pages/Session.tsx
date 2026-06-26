@@ -11,6 +11,7 @@ import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
 import { MathText } from '@/components/MathText'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
+import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
@@ -27,6 +28,15 @@ function speak(text: string, setSpeaking: (v: boolean) => void) {
 function stopSpeak(setSpeaking: (v: boolean) => void) {
   stopNikkiSpeech()
   setSpeaking(false)
+}
+
+/** Id of the last assistant message, or null — used to avoid auto-speaking a
+ *  message that's already on screen when the session mounts. */
+function lastAssistantId(msgs: ChatMessage[]): string | null {
+  for (let i = msgs.length - 1; i >= 0; i--) {
+    if (msgs[i].role === 'assistant') return msgs[i].id
+  }
+  return null
 }
 
 function makeGreeting(name: string, subject: string): string {
@@ -116,12 +126,14 @@ function SessionView({
   })
 
   const [pane, setPane] = useState<'chat' | 'work'>('chat')
-  const [readAloud, setReadAloud] = useState(false)
+  // Nikki auto-speaks her responses by default; this mutes that (in-session).
+  const [muted, setMuted] = useState(false)
   const [speaking, setSpeaking] = useState(false)
   const [draft, setDraft] = useState('')
   const [showFeedback, setShowFeedback] = useState(false)
   const [savingFeedback, setSavingFeedback] = useState(false)
-  const spokenRef = useRef<string | null>(null)
+  // Seed with the last message already on screen so resuming doesn't replay it.
+  const spokenRef = useRef<string | null>(lastAssistantId(initialMessages))
   const feedRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -129,25 +141,30 @@ function SessionView({
     if (f) f.scrollTop = f.scrollHeight
   }, [messages, isLoading])
 
+  // Auto-speak each new completed Nikki response (unless muted). speakWithNikki
+  // stops any prior audio first, so a newer message interrupts an older one.
+  // Math/LaTeX is converted to speech-friendly text (no "backslash frac").
   useEffect(() => {
-    if (!readAloud || isLoading) return
+    if (muted || isLoading) return
     const last = messages[messages.length - 1]
     if (last && last.role === 'assistant' && last.content && last.id !== 'greeting' && spokenRef.current !== last.id) {
       spokenRef.current = last.id
-      speak(last.content, setSpeaking)
+      const spoken = stripMarkdownForTTS(last.content)
+      if (spoken) speak(spoken, setSpeaking)
     }
-  }, [readAloud, isLoading, messages])
+  }, [muted, isLoading, messages])
 
   useEffect(() => () => stopSpeak(setSpeaking), [])
 
-  const toggleReadAloud = () => {
-    setReadAloud((v) => {
-      const next = !v
+  const toggleMute = () => {
+    setMuted((m) => {
+      const next = !m
       if (next) {
-        const last = [...messages].reverse().find((m) => m.role === 'assistant')
-        spokenRef.current = last ? last.id : null
-      } else {
+        // Muting: stop any speech in progress.
         stopSpeak(setSpeaking)
+      } else {
+        // Unmuting: don't replay the message already on screen — only new ones.
+        spokenRef.current = lastAssistantId(messages)
       }
       return next
     })
@@ -184,14 +201,23 @@ function SessionView({
           <div className="s2">{student.first_name}</div>
         </div>
         <button
-          className={`iconbtn ${readAloud ? 'on' : ''}`}
-          title="Read aloud"
-          aria-pressed={readAloud}
-          onClick={toggleReadAloud}
+          className={`iconbtn ${muted ? 'muted' : ''}`}
+          title={muted ? "Unmute Nikki's voice" : "Mute Nikki's voice"}
+          aria-label={muted ? "Unmute Nikki's voice" : "Mute Nikki's voice"}
+          aria-pressed={muted}
+          onClick={toggleMute}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" />
-          </svg>
+          {muted ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 5 6 9H2v6h4l5 4z" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M11 5 6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" />
+            </svg>
+          )}
         </button>
         <button className="iconbtn" title="Finish" onClick={finish}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
