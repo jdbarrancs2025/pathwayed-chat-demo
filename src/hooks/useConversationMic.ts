@@ -12,9 +12,19 @@ function detectMimeType(): string {
 }
 const MIME = typeof window !== 'undefined' ? detectMimeType() : ''
 
-// Voice-activity tuning. These are reasonable defaults; real-device tuning may help.
-const SPEECH_RMS = 0.02 // volume above this counts as speech
-const SILENCE_MS = 1100 // a pause this long ends an utterance
+// ── Voice-activity tuning (re-tune these two as needed) ──────────────────────
+// SPEECH_RMS: how loud audio must be to count as the child talking.
+//   LOWER  = more sensitive (picks up softer/quieter voices), but more prone to
+//            triggering on background noise.
+//   HIGHER = needs a louder voice.
+//   Tuned low here for a QUIET room with a soft-spoken child.
+const SPEECH_RMS = 0.011
+// SILENCE_MS: how long a pause must last to end the child's turn.
+//   HIGHER = waits longer before ending a turn (more forgiving of mid-sentence
+//            pauses — good for kids who pause to think), but slower to respond.
+//   LOWER  = ends turns faster, but can cut a child off mid-sentence.
+const SILENCE_MS = 1300
+// ─────────────────────────────────────────────────────────────────────────────
 const MIN_SPEECH_MS = 300 // ignore blips shorter than this
 const MAX_UTTERANCE_MS = 14000 // hard cap so it always flushes
 const MIN_BLOB_BYTES = 1500 // drop near-empty segments
