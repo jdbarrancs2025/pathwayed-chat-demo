@@ -17,8 +17,8 @@ const MIME = typeof window !== 'undefined' ? detectMimeType() : ''
 //   LOWER  = more sensitive (picks up softer/quieter voices), but more prone to
 //            triggering on background noise.
 //   HIGHER = needs a louder voice.
-//   Tuned low here for a QUIET room with a soft-spoken child.
-const SPEECH_RMS = 0.011
+//   Tuned very low here for a QUIET room with a very soft-spoken child.
+const SPEECH_RMS = 0.008
 // SILENCE_MS: how long a pause must last to end the child's turn.
 //   HIGHER = waits longer before ending a turn (more forgiving of mid-sentence
 //            pauses — good for kids who pause to think), but slower to respond.
