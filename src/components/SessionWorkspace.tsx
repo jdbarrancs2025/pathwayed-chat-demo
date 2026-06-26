@@ -6,11 +6,18 @@ import type { ImageTurn } from '@/lib/image'
 
 type Tool = 'note' | 'cards' | 'home'
 
-/** Subject-specific tool set (matches the prototype's wsTools). */
+/** Subject-specific tool set. */
 function toolsFor(subject: string): Tool[] {
   if (subject === 'homework') return ['home']
-  if (subject === 'reading' || subject === 'science') return ['note', 'cards']
+  // Reading: Flashcards is primary; the note tool is a simple write + snap-a-page.
+  if (subject === 'reading') return ['cards', 'note']
+  if (subject === 'science') return ['note', 'cards']
   return ['note']
+}
+
+/** The note tool is labelled per subject (a full notepad vs. a simple writing area). */
+function noteLabel(subject: string): string {
+  return subject === 'reading' ? '✏️ Write / Snap a page' : '✏️ Notepad'
 }
 
 const TAB_LABEL: Record<Tool, string> = {
@@ -46,7 +53,7 @@ export function SessionWorkspace({
         <div className="wstabs">
           {tools.map((t) => (
             <button key={t} type="button" className={active === t ? 'on' : ''} onClick={() => setTab(t)}>
-              {TAB_LABEL[t]}
+              {t === 'note' ? noteLabel(subject) : TAB_LABEL[t]}
             </button>
           ))}
         </div>

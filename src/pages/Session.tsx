@@ -7,6 +7,7 @@ import { loadTranscript, saveFeedback } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
 import { useAudioRecorder } from '@/hooks/useAudioRecorder'
+import { useConversationMic } from '@/hooks/useConversationMic'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
@@ -138,11 +139,30 @@ function SessionView({
   const spokenRef = useRef<string | null>(lastAssistantId(initialMessages))
   const feedRef = useRef<HTMLDivElement>(null)
 
-  // Voice input (speak instead of type) — records, transcribes via Whisper, then
-  // sends the text exactly like a typed message.
+  // Voice input. Reading uses continuous "conversation mode" (tap once, stays
+  // listening); other subjects use tap-to-talk. Both transcribe via Whisper and
+  // send the text exactly like a typed message.
+  const isReading = subject === 'reading'
   const recorder = useAudioRecorder()
   const [transcribing, setTranscribing] = useState(false)
   const [micError, setMicError] = useState('')
+
+  const handleUtterance = (blob: Blob, mime: string) => {
+    setTranscribing(true)
+    setMicError('')
+    transcribeAudio(blob, mime)
+      .then((text) => {
+        if (text) void sendMessage(text)
+      })
+      .catch(() => setMicError("Sorry, I couldn't hear that. Try again or type your message."))
+      .finally(() => setTranscribing(false))
+  }
+
+  // Conversation mode pauses capturing while Nikki is thinking/speaking (turn-taking).
+  const convoMic = useConversationMic({
+    onUtterance: handleUtterance,
+    isPaused: () => speaking || isLoading || transcribing,
+  })
 
   useEffect(() => {
     const f = feedRef.current
@@ -192,11 +212,21 @@ function SessionView({
   useEffect(() => {
     if (recorder.state === 'error' && recorder.error) setMicError(recorder.error)
   }, [recorder.state, recorder.error])
+  useEffect(() => {
+    if (convoMic.error) setMicError(convoMic.error)
+  }, [convoMic.error])
 
   const toggleMic = () => {
     setMicError('')
-    if (recorder.state === 'recording') recorder.stopRecording()
-    else void recorder.startRecording()
+    if (isReading) {
+      // Conversation mode: tap once to start listening, tap again to stop.
+      if (convoMic.active) convoMic.stop()
+      else void convoMic.start()
+    } else if (recorder.state === 'recording') {
+      recorder.stopRecording()
+    } else {
+      void recorder.startRecording()
+    }
   }
 
   const toggleMute = () => {
@@ -221,6 +251,7 @@ function SessionView({
 
   const finish = () => {
     stopSpeak(setSpeaking)
+    convoMic.stop()
     setShowFeedback(true)
   }
 
@@ -231,7 +262,9 @@ function SessionView({
   }
 
   const callState: CallState = isLoading ? 'thinking' : speaking ? 'speaking' : 'idle'
-  const recording = recorder.state === 'recording' || recorder.state === 'requesting'
+  const recording = isReading
+    ? convoMic.active
+    : recorder.state === 'recording' || recorder.state === 'requesting'
 
   const visibleMessages = messages.filter((m) => m.content.length > 0)
   const last = messages[messages.length - 1]
@@ -302,17 +335,19 @@ function SessionView({
                 ? micError
                 : transcribing
                   ? 'Transcribing…'
-                  : 'Listening… tap the mic to stop'}
+                  : isReading
+                    ? '🎙️ Listening — say it out loud. Tap the mic to stop.'
+                    : 'Listening… tap the mic to stop'}
             </div>
           )}
           <div className="composer">
             <button
               type="button"
               className={`mic ${recording ? 'rec' : ''}`}
-              title={recording ? 'Stop recording' : 'Speak to Nikki'}
-              aria-label={recording ? 'Stop recording' : 'Speak to Nikki'}
+              title={recording ? (isReading ? 'Stop listening' : 'Stop recording') : isReading ? 'Start talking with Nikki' : 'Speak to Nikki'}
+              aria-label={recording ? (isReading ? 'Stop listening' : 'Stop recording') : isReading ? 'Start talking with Nikki' : 'Speak to Nikki'}
               aria-pressed={recording}
-              disabled={transcribing || isLoading}
+              disabled={!isReading && (transcribing || isLoading)}
               onClick={toggleMic}
             >
               {transcribing ? (

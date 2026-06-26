@@ -33,8 +33,10 @@ function paintGrid(ctx: CanvasRenderingContext2D, w: number, h: number) {
 
 export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
   const mathy = subject === 'math' || subject === 'science'
+  const isReading = subject === 'reading'
   // Math: structured editor (MODE A) vs handwriting grid (MODE B).
-  // Non-math: unchanged type vs draw/photo.
+  // Reading: a simple write box + snap-a-page (no draw / no math editor).
+  // Other non-math: unchanged type vs draw/photo.
   const [mode, setMode] = useState<Mode>(mathy ? 'editor' : 'type')
   const [typed, setTyped] = useState('')
   const [noteImg, setNoteImg] = useState<string | null>(null)
@@ -56,6 +58,7 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
   }
 
   const check = () => {
+    // Structured math editor.
     if (mode === 'editor') {
       const latex = (mathRef.current?.getLatex() ?? '').trim()
       if (latex) {
@@ -67,34 +70,39 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
       }
       return
     }
-    if (mode === 'draw') {
-      if (noteImg) {
-        const { data, mediaType } = splitDataUrl(noteImg)
-        onSendImage({
-          placeholder: '(I shared a photo of my work)',
-          prompt:
-            'Here is a photo of the work I did by hand. Please read it, tell me what looks good, and help me with the next step.',
-          imageB64: data,
-          mediaType,
-        })
-      } else if (hasInkRef.current && canvasRef.current) {
-        const { data, mediaType } = splitDataUrl(canvasRef.current.toDataURL('image/png'))
-        onSendImage({
-          placeholder: '(I shared my handwritten work)',
-          prompt:
-            'Here is the work I wrote by hand. Please read it, tell me what looks good, and help me with the next step.',
-          imageB64: data,
-          mediaType,
-        })
-      }
+    // A snapped/uploaded photo takes priority (reading "page", or math work).
+    if (noteImg) {
+      const { data, mediaType } = splitDataUrl(noteImg)
+      onSendImage({
+        placeholder: isReading ? '(I shared a photo of my book page)' : '(I shared a photo of my work)',
+        prompt: isReading
+          ? 'Here is a photo of the page I am reading. Please help me read and understand it, and ask me about it.'
+          : 'Here is a photo of the work I did by hand. Please read it, tell me what looks good, and help me with the next step.',
+        imageB64: data,
+        mediaType,
+      })
+      setNoteImg(null)
+      return
+    }
+    // Handwritten canvas work (math/other draw mode).
+    if (mode === 'draw' && hasInkRef.current && canvasRef.current) {
+      const { data, mediaType } = splitDataUrl(canvasRef.current.toDataURL('image/png'))
+      onSendImage({
+        placeholder: '(I shared my handwritten work)',
+        prompt:
+          'Here is the work I wrote by hand. Please read it, tell me what looks good, and help me with the next step.',
+        imageB64: data,
+        mediaType,
+      })
+      return
+    }
+    // Typed text.
+    const t = typed.trim()
+    if (t) {
+      onSendText(t)
+      setTyped('')
     } else {
-      const t = typed.trim()
-      if (t) {
-        onSendText(t)
-        setTyped('')
-      } else {
-        taRef.current?.focus()
-      }
+      taRef.current?.focus()
     }
   }
 
@@ -185,6 +193,48 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
       }
     }
     hasInkRef.current = false
+  }
+
+  // Reading: a simple writing area + snap-a-page photo. No draw, no math editor.
+  if (isReading) {
+    return (
+      <>
+        <p className="wshint">Type your answer, or snap a photo of the page you’re reading.</p>
+        {noteImg ? (
+          <>
+            <div className="preview">
+              <img src={noteImg} alt="Book page" />
+            </div>
+            <button type="button" className="btn btn-soft" style={{ marginTop: 10 }} onClick={() => setNoteImg(null)}>
+              Choose a different photo
+            </button>
+          </>
+        ) : (
+          <textarea
+            ref={taRef}
+            className="bigtype compact"
+            placeholder="Write your answer or spelling here..."
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+          />
+        )}
+        <button type="button" className="btn btn-soft" style={{ marginTop: 10 }} onClick={() => fileRef.current?.click()}>
+          📷 Snap a page of your book
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: 'none' }}
+          onChange={(e) => upload(e.target.files?.[0])}
+        />
+        <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={check}>
+          Ask Nikki to check it
+        </button>
+        {error && <div className="err">{error}</div>}
+      </>
+    )
   }
 
   const hint =

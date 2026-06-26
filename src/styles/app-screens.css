@@ -811,6 +811,10 @@
   outline: none;
   border-color: var(--navy);
 }
+/* Reading's simple write box — smaller and friendlier than the math notepad. */
+.session .bigtype.compact {
+  min-height: clamp(120px, 20vh, 200px);
+}
 .session .mathbar {
   display: flex;
   flex-wrap: wrap;
