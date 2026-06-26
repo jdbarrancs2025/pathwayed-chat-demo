@@ -6,12 +6,14 @@ import { getNikkiChoice } from '@/lib/profile'
 import { loadTranscript, saveFeedback } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
+import { useAudioRecorder } from '@/hooks/useAudioRecorder'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
 import { MathText } from '@/components/MathText'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
+import { transcribeAudio } from '@/lib/transcribe'
 import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
@@ -136,6 +138,12 @@ function SessionView({
   const spokenRef = useRef<string | null>(lastAssistantId(initialMessages))
   const feedRef = useRef<HTMLDivElement>(null)
 
+  // Voice input (speak instead of type) — records, transcribes via Whisper, then
+  // sends the text exactly like a typed message.
+  const recorder = useAudioRecorder()
+  const [transcribing, setTranscribing] = useState(false)
+  const [micError, setMicError] = useState('')
+
   useEffect(() => {
     const f = feedRef.current
     if (f) f.scrollTop = f.scrollHeight
@@ -155,6 +163,41 @@ function SessionView({
   }, [muted, isLoading, messages])
 
   useEffect(() => () => stopSpeak(setSpeaking), [])
+
+  // When a recording finishes, transcribe it and send it like a typed message.
+  useEffect(() => {
+    if (!recorder.audioBlob || !recorder.mimeType) return
+    let cancelled = false
+    setTranscribing(true)
+    setMicError('')
+    transcribeAudio(recorder.audioBlob, recorder.mimeType)
+      .then((text) => {
+        if (cancelled) return
+        if (text) void sendMessage(text)
+        else setMicError("I didn't catch that — try again or type your message.")
+      })
+      .catch(() => {
+        if (!cancelled) setMicError("Sorry, I couldn't hear that. Try again or type your message.")
+      })
+      .finally(() => {
+        if (!cancelled) setTranscribing(false)
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recorder.audioBlob, recorder.mimeType])
+
+  // Surface a friendly message if mic permission is denied / unavailable.
+  useEffect(() => {
+    if (recorder.state === 'error' && recorder.error) setMicError(recorder.error)
+  }, [recorder.state, recorder.error])
+
+  const toggleMic = () => {
+    setMicError('')
+    if (recorder.state === 'recording') recorder.stopRecording()
+    else void recorder.startRecording()
+  }
 
   const toggleMute = () => {
     setMuted((m) => {
@@ -188,6 +231,7 @@ function SessionView({
   }
 
   const callState: CallState = isLoading ? 'thinking' : speaking ? 'speaking' : 'idle'
+  const recording = recorder.state === 'recording' || recorder.state === 'requesting'
 
   const visibleMessages = messages.filter((m) => m.content.length > 0)
   const last = messages[messages.length - 1]
@@ -252,7 +296,40 @@ function SessionView({
               </div>
             )}
           </div>
+          {(recording || transcribing || micError) && (
+            <div className={`mic-status ${micError ? 'err' : ''}`}>
+              {micError
+                ? micError
+                : transcribing
+                  ? 'Transcribing…'
+                  : 'Listening… tap the mic to stop'}
+            </div>
+          )}
           <div className="composer">
+            <button
+              type="button"
+              className={`mic ${recording ? 'rec' : ''}`}
+              title={recording ? 'Stop recording' : 'Speak to Nikki'}
+              aria-label={recording ? 'Stop recording' : 'Speak to Nikki'}
+              aria-pressed={recording}
+              disabled={transcribing || isLoading}
+              onClick={toggleMic}
+            >
+              {transcribing ? (
+                <span className="mic-spin" aria-hidden="true" />
+              ) : recording ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+              )}
+            </button>
             <textarea
               rows={1}
               placeholder="Type to Nikki..."

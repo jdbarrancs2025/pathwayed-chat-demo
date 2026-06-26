@@ -15,10 +15,41 @@ export interface SpeakOptions {
 // cacheKey -> object URL of the fetched audio, for the session.
 const audioCache = new Map<string, string>()
 let current: HTMLAudioElement | null = null
+// Bumped on every stop/new utterance so an in-flight sentence sequence can tell
+// it has been superseded and bail out.
+let playToken = 0
 
 /** Strip markdown so the voice doesn't read out asterisks, hashes, etc. */
 function cleanForSpeech(text: string): string {
   return text.replace(/[*#`_>]/g, "").trim()
+}
+
+/**
+ * Break text into speakable chunks (roughly one sentence each) so playback of
+ * the first chunk can start while later chunks are still being generated — this
+ * is what cuts the lag before Nikki starts talking. Over-long sentences are
+ * split on spaces so the first chunk stays short.
+ */
+function splitForSpeech(text: string): string[] {
+  const sentences = text.match(/[^.!?\n]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) ?? []
+  if (sentences.length === 0) return text.trim() ? [text.trim()] : []
+  const MAX = 200
+  const out: string[] = []
+  for (const s of sentences) {
+    if (s.length <= MAX) {
+      out.push(s)
+      continue
+    }
+    let rest = s
+    while (rest.length > MAX) {
+      let cut = rest.lastIndexOf(" ", MAX)
+      if (cut < 60) cut = MAX
+      out.push(rest.slice(0, cut).trim())
+      rest = rest.slice(cut).trim()
+    }
+    if (rest) out.push(rest)
+  }
+  return out
 }
 
 async function fetchAudioUrl(text: string, voiceId?: string): Promise<string> {
@@ -55,6 +86,7 @@ function fallbackSpeak(text: string, opts: SpeakOptions): void {
 
 /** Stop any in-progress Nikki speech (ElevenLabs audio or fallback). */
 export function stopNikkiSpeech(): void {
+  playToken++ // invalidate any running sentence sequence
   if (current) {
     try {
       current.pause()
@@ -69,43 +101,78 @@ export function stopNikkiSpeech(): void {
   }
 }
 
+/** Play one prefetched audio URL to completion. Resolves true once it ends (or
+ *  errors mid-play); resolves false if playback was blocked before starting. */
+function playChunk(url: string, onFirstPlay: () => void): Promise<boolean> {
+  return new Promise((resolve) => {
+    const audio = new Audio(url)
+    current = audio
+    const finish = () => {
+      if (current === audio) current = null
+      resolve(true)
+    }
+    audio.onended = finish
+    audio.onerror = finish
+    audio.play().then(onFirstPlay, () => {
+      if (current === audio) current = null
+      resolve(false)
+    })
+  })
+}
+
 /**
- * Speak `text` in Nikki's voice. Prefers ElevenLabs; falls back to the browser
- * voice if the fetch or playback fails. `onStart`/`onEnd` let the caller animate
- * the speaking state for whichever path actually plays.
+ * Speak `text` in Nikki's voice. Splits into sentences and starts playing the
+ * first as soon as its audio is ready, prefetching the next while the current
+ * one plays — so the time-to-first-audio is just the first short sentence, not
+ * the whole reply. Falls back to the browser voice if ElevenLabs is unavailable
+ * or autoplay is blocked. `onStart` fires when the first audio actually plays;
+ * `onEnd` when the last finishes (or on fallback completion).
  */
 export async function speakWithNikki(text: string, opts: SpeakOptions = {}): Promise<void> {
   const clean = cleanForSpeech(text)
   if (!clean) return
 
-  stopNikkiSpeech()
+  stopNikkiSpeech() // stop prior audio and take a fresh token
+  const token = playToken
+  const chunks = splitForSpeech(clean)
+  if (chunks.length === 0) return
 
-  let url: string
-  try {
-    url = await fetchAudioUrl(clean, opts.voiceId)
-  } catch {
-    // Couldn't get ElevenLabs audio (e.g. missing key) — use the browser voice.
-    fallbackSpeak(clean, opts)
-    return
+  // Fetch helper that never rejects (null on failure), so prefetch promises
+  // can't raise unhandled rejections if the sequence is abandoned.
+  const fetchSafe = (t: string) => fetchAudioUrl(t, opts.voiceId).then((u) => u, () => null)
+
+  let nextUrl = fetchSafe(chunks[0])
+  let started = false
+
+  for (let i = 0; i < chunks.length; i++) {
+    if (token !== playToken) return // superseded by a newer utterance / stop
+    const url = await nextUrl
+    // Kick off the next sentence's fetch while this one plays.
+    nextUrl = i + 1 < chunks.length ? fetchSafe(chunks[i + 1]) : Promise.resolve(null)
+    if (token !== playToken) return
+
+    if (!url) {
+      if (!started) {
+        // Couldn't get the very first chunk — fall back to the browser voice.
+        if (token === playToken) fallbackSpeak(clean, opts)
+        return
+      }
+      continue // a later chunk failed; skip it and keep going
+    }
+
+    const played = await playChunk(url, () => {
+      if (!started) {
+        started = true
+        opts.onStart?.()
+      }
+    })
+    if (!played && !started) {
+      // Autoplay was blocked on the first chunk — fall back to the browser voice.
+      if (token === playToken) fallbackSpeak(clean, opts)
+      return
+    }
+    if (token !== playToken) return
   }
 
-  const audio = new Audio(url)
-  current = audio
-  audio.onplay = () => opts.onStart?.()
-  audio.onended = () => {
-    if (current === audio) current = null
-    opts.onEnd?.()
-  }
-  audio.onerror = () => {
-    if (current === audio) current = null
-    opts.onEnd?.()
-  }
-
-  try {
-    await audio.play()
-  } catch {
-    // Playback was blocked/failed before starting — fall back to browser voice.
-    if (current === audio) current = null
-    fallbackSpeak(clean, opts)
-  }
+  if (token === playToken) opts.onEnd?.()
 }

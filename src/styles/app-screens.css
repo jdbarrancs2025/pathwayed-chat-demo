@@ -366,12 +366,14 @@
   border-radius: 10px;
   font-weight: 700;
   font-size: 13.5px;
-  color: var(--muted);
-  background: #f4eee4;
+  color: #39435a;
+  background: #e3e9f2;
+  border: 1px solid #cdd8e8;
 }
 .panetabs button.on {
   background: var(--navy);
   color: #fff;
+  border-color: var(--navy);
 }
 .work {
   flex: 1 1 auto;
@@ -523,6 +525,72 @@
   cursor: not-allowed;
 }
 
+/* Voice input (mic) */
+.composer .mic {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #e3e9f2;
+  color: var(--navy);
+  border: 1.6px solid #cdd8e8;
+  transition: background 0.14s;
+}
+.composer .mic:hover {
+  background: #d3ddec;
+}
+.composer .mic[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.composer .mic.rec {
+  background: var(--orange);
+  color: #fff;
+  border-color: var(--orange);
+  animation: mic-pulse 1.1s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(204, 84, 60, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(204, 84, 60, 0);
+  }
+}
+.mic-spin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid #cdd8e8;
+  border-top-color: var(--navy);
+  animation: mic-spin-kf 0.7s linear infinite;
+}
+@keyframes mic-spin-kf {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.mic-status {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  padding: 8px 14px 0;
+  text-align: center;
+}
+.mic-status.err {
+  color: #c0492f;
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer .mic.rec,
+  .mic-spin {
+    animation: none !important;
+  }
+}
+
 /* Workspace scaffold */
 .wstabs {
   display: flex;
@@ -542,16 +610,18 @@
   border-radius: 12px;
   font-weight: 700;
   font-size: 15px;
-  color: var(--muted);
-  background: #f4eee4;
+  color: #39435a;
+  background: #e3e9f2;
+  border: 1px solid #cdd8e8;
   transition: background 0.14s, color 0.14s;
 }
 .wstabs button:hover {
-  background: #efe7da;
+  background: #d3ddec;
 }
 .wstabs button.on {
   background: var(--navy);
   color: #fff;
+  border-color: var(--navy);
 }
 .wsbody {
   flex: 1 1 auto;
@@ -677,14 +747,15 @@
   min-height: 44px;
   padding: 10px 18px;
   border-radius: 999px;
-  background: #f4eee4;
+  background: #e3e9f2;
+  border: 1px solid #cdd8e8;
   font-weight: 700;
   font-size: 15px;
   color: var(--navy);
   cursor: pointer;
 }
 .session .chip:hover {
-  background: #efe7da;
+  background: #d3ddec;
 }
 .session .note-tools {
   display: flex;
@@ -698,7 +769,8 @@
 .session .seg {
   display: flex;
   gap: 6px;
-  background: #f4eee4;
+  background: #e3e9f2;
+  border: 1px solid #cdd8e8;
   padding: 4px;
   border-radius: 12px;
   margin-bottom: 12px;
@@ -710,12 +782,18 @@
   border-radius: 9px;
   font-weight: 700;
   font-size: 15px;
-  color: var(--muted);
+  color: #39435a;
+}
+.session .seg-b:hover {
+  color: var(--navy);
 }
 .session .seg-b.on {
-  background: #fff;
-  color: var(--navy);
-  box-shadow: var(--shadow);
+  background: var(--navy);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 48, 120, 0.25);
+}
+.session .seg-b.on:hover {
+  color: #fff;
 }
 .session .bigtype {
   width: 100%;
