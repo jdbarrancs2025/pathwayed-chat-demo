@@ -12,6 +12,7 @@ import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
 import { MathText } from '@/components/MathText'
+import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import { transcribeAudio } from '@/lib/transcribe'
@@ -318,7 +319,11 @@ function SessionView({
           <div className="feed" ref={feedRef}>
             {visibleMessages.map((m) => (
               <div key={m.id} className={`msg ${m.role === 'assistant' ? 'nikki' : 'me'}`}>
-                <MathText content={m.content} />
+                {m.role === 'assistant' ? (
+                  <NikkiMarkdown content={m.content} />
+                ) : (
+                  <MathText content={m.content} />
+                )}
               </div>
             ))}
             {showTyping && (
