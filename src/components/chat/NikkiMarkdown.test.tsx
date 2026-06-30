@@ -85,4 +85,39 @@ describe('NikkiMarkdown', () => {
     expect(html).toContain('class="katex"')
     expect(html).not.toContain('<math')
   })
+
+  // Render guard: a prose phrase wrapped in $...$ must keep its spaces, not be
+  // KaTeX-rendered in math mode (which collapses them to "Whichisbigger").
+  it('does not math-render a prose phrase wrapped in $...$ (keeps spaces)', () => {
+    const html = render('$Which is bigger, 1/2 or 2/4$?')
+    const text = html.replace(/<[^>]+>/g, '')
+    expect(text).toContain('Which is bigger, 1/2 or 2/4')
+    expect(text).not.toContain('Whichisbigger')
+    expect(html).not.toContain('katex-error')
+  })
+
+  it('keeps a stray "$5" literal while still rendering the real fraction', () => {
+    const html = render('It costs $5, and half is $\\frac{1}{2}$.')
+    const text = html.replace(/<[^>]+>/g, '')
+    expect(text).toContain('It costs $5, and half is') // $5 literal, spaces intact
+    expect(html).toContain('class="katex"') // the \frac still renders
+    expect(html).not.toContain('katex-error')
+  })
+
+  it('renders both spans on a line with two separate $\\frac$ and flanking text', () => {
+    const html = render('Which is bigger, $\\frac{1}{2}$ or $\\frac{2}{4}$?')
+    const text = html.replace(/<[^>]+>/g, '')
+    expect(text).toContain('Which is bigger,')
+    expect(text).toContain('or')
+    expect(html).toContain('class="katex"')
+    expect(html).not.toContain('katex-error')
+    expect(html).not.toContain('\\frac') // no raw leak
+  })
+
+  // A real math span with spaces but LaTeX commands must still render as math.
+  it('still renders legitimate math with spaces (\\sin x \\cos y)', () => {
+    const html = render('Recall $\\sin x \\cos y$ here.')
+    expect(html).toContain('class="katex"')
+    expect(html).not.toContain('katex-error')
+  })
 })

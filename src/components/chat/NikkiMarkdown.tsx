@@ -20,6 +20,16 @@ function renderKatexHtml(tex: string, displayMode: boolean): string {
   }
 }
 
+// Render guard: a $...$ span whose content reads like prose (two or more ordinary
+// spaced words and NO LaTeX command) is almost always the model mistakenly
+// wrapping a phrase. KaTeX would render it in math mode, which collapses the
+// spaces ("Which is bigger" -> "Whichisbigger"). Detect that and show the span as
+// literal text instead. The LaTeX-command check keeps real math like
+// `\text{apple pie}` or `\sin x \cos y` rendering normally.
+function looksLikeProse(tex: string): boolean {
+  return /[A-Za-z]{2,}\s+[A-Za-z]{2,}/.test(tex) && !/\\[a-zA-Z]/.test(tex)
+}
+
 // remark-math turns `$...$` / `$$...$$` into a <code> whose className includes
 // `language-math` (and `math-display` for block math). Override the code
 // component so math goes through HTML-only KaTeX and everything else stays code.
@@ -27,6 +37,10 @@ function CodeOrMath({ className, children }: ComponentPropsWithoutRef<'code'> & 
   const cls = typeof className === 'string' ? className : ''
   if (cls.includes('language-math') || cls.includes('math-inline') || cls.includes('math-display')) {
     const tex = String(children ?? '')
+    // Prose mistakenly wrapped in $...$ -> show as text (spaces preserved), not math.
+    if (looksLikeProse(tex)) {
+      return <span>{tex}</span>
+    }
     const html = renderKatexHtml(tex, cls.includes('math-display'))
     // Fall back to the raw tex (not an empty node) if KaTeX can't parse it.
     return html ? (
