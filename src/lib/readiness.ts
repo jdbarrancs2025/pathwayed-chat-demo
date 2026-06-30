@@ -669,16 +669,35 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
         .eq('student_id', studentId),
       supabase.from('student_skill_mastery').select('updated_at').eq('student_id', studentId),
     ])
+    // Never let an RLS denial look like "no data" — a read error is not the
+    // same as an empty result (it's why mastery came back empty for a non-owner).
+    if (readinessRes.error) console.error('readiness_scores read failed', readinessRes.error)
+    if (masteryRes.error) console.error('student_skill_mastery read failed', masteryRes.error)
+
     const readinessRows = readinessRes.data ?? []
+    const masteryUpdatedAt = (masteryRes.data ?? []).map((m) => m.updated_at)
     const stale = isReadinessStale({
       readiness: readinessRows.map((r) => ({
         readiness_type: r.readiness_type,
         updated_at: r.updated_at,
         engine_version: r.engine_version,
       })),
-      masteryUpdatedAt: (masteryRes.data ?? []).map((m) => m.updated_at),
+      masteryUpdatedAt,
       currentEngineVersion: ENGINE_VERSION,
     })
+
+    // TEMP DIAGNOSTIC — remove after diagnosis. Distinguishes empty-vs-error and
+    // shows the staleness decision on the dashboard path.
+    console.error('[SAT diag] ensureFreshReadiness', {
+      studentId,
+      readinessRows: readinessRows.length,
+      readinessErr: readinessRes.error?.message ?? null,
+      masteryRows: masteryUpdatedAt.length,
+      masteryErr: masteryRes.error?.message ?? null,
+      types: readinessRows.map((r) => r.readiness_type),
+      stale,
+    })
+
     if (!stale) return buildReadinessView(readinessRows)
 
     await recordReadiness(studentId)
