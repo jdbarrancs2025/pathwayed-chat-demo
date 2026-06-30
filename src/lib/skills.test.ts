@@ -15,23 +15,25 @@ describe('ratingToAccuracy', () => {
   })
 })
 
-describe('nextMastery (recency-weighted running accuracy)', () => {
-  it('seeds mastery to the session accuracy on the first attempt', () => {
-    expect(nextMastery(null, 100)).toEqual({ accuracy: 100, mastery_percentage: 100, attempts: 1 })
+describe('nextMastery (recency-weighted accuracy, attempts-ramped mastery)', () => {
+  it('one great session => accuracy 100, attempts 1, mastery 25 (ramp = 1/4)', () => {
+    expect(nextMastery(null, 100)).toEqual({ accuracy: 100, mastery_percentage: 25, attempts: 1 })
   })
-  it('weights the latest session at RECENCY_WEIGHT (0.4) over prior mastery', () => {
-    // 100*0.6 + 40*0.4 = 76
-    expect(nextMastery({ mastery_percentage: 100, attempts: 1 }, 40)).toEqual({
-      accuracy: 40,
-      mastery_percentage: 76,
-      attempts: 2,
-    })
-  })
-  it('clamps and rounds into 0..100 and increments attempts', () => {
-    const r = nextMastery({ mastery_percentage: 50, attempts: 3 }, 70)
+
+  it('four consecutive great sessions ramp mastery to 100', () => {
+    let r = nextMastery(null, 100)
+    for (let i = 0; i < 3; i++) r = nextMastery({ accuracy: r.accuracy, attempts: r.attempts }, 100)
     expect(r.attempts).toBe(4)
-    expect(r.mastery_percentage).toBe(58) // 50*0.6 + 70*0.4 = 58
-    expect(r.accuracy).toBe(70)
+    expect(r.accuracy).toBe(100)
+    expect(r.mastery_percentage).toBe(100) // 100 * min(1, 4/4)
+  })
+
+  it('great then confusing => accuracy ~76, mastery ~38 at attempts 2', () => {
+    const first = nextMastery(null, 100)
+    const r = nextMastery({ accuracy: first.accuracy, attempts: first.attempts }, 40)
+    expect(r.attempts).toBe(2)
+    expect(r.accuracy).toBe(76) // 100*0.6 + 40*0.4
+    expect(r.mastery_percentage).toBe(38) // round(76 * min(1, 2/4)) = round(38)
   })
 })
 

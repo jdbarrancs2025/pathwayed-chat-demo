@@ -97,9 +97,11 @@ export function detectPracticedSlugs(subject: string, grade: string, messages: S
 // Mastery formula (Phase 1: recency-weighted running accuracy)
 // ---------------------------------------------------------------------------
 
-// There is no graded-answer signal yet, so the child's end-of-session self-rating
-// ("how did that go?": great/ok/confusing) stands in for accuracy. Documented
-// placeholder — Phase 2 should replace it with graded practice / assessment.
+// The end-of-session self-rating ("how did that go?": great/ok/confusing) is an
+// explicit CONFIDENCE / SENTIMENT proxy — NOT graded accuracy. There is no
+// graded-answer signal yet, so it stands in as the per-session signal that feeds
+// the running accuracy. Documented placeholder; Phase 2 should replace it with
+// graded practice / assessment.
 export function ratingToAccuracy(rating: string): number {
   switch (rating) {
     case 'great':
@@ -113,13 +115,19 @@ export function ratingToAccuracy(rating: string): number {
   }
 }
 
-// Weight on the latest session in the running average. Higher = more reactive to
-// the most recent practice; lower = smoother / more history-weighted.
+// Weight on the latest session signal in the running accuracy average. Higher =
+// more reactive to the most recent practice; lower = smoother / more history-
+// weighted.
 const RECENCY_WEIGHT = 0.4
 
+// Attempts needed before mastery can reach 100% of accuracy. Mastery ramps
+// linearly with attempts up to this cap, so a single strong session never reads
+// as "mastered" — practice has to accumulate. Tunable (3-5).
+const MASTERY_FULL_CREDIT_ATTEMPTS = 4
+
 export interface MasteryComputation {
-  accuracy: number // most recent session accuracy (0..100)
-  mastery_percentage: number // recency-weighted running accuracy (0..100)
+  accuracy: number // recency-weighted running average of the session signal (0..100)
+  mastery_percentage: number // accuracy scaled by an attempts-based ramp (0..100)
   attempts: number
 }
 
@@ -128,21 +136,24 @@ function clamp(n: number): number {
 }
 
 /**
- * Phase-1 mastery update. `accuracy` stores the most recent session's accuracy;
- * `mastery_percentage` is a recency-weighted running average (EWMA) that weights
- * the latest session at RECENCY_WEIGHT and prior mastery at the rest, so recent
- * practice moves the needle without erasing history. The first-ever practice
- * seeds mastery to the session accuracy. No ML.
+ * Phase-1 mastery update. `accuracy` is a recency-weighted running average of
+ * the per-session signal: the first session seeds it to the signal, later
+ * sessions blend prior_accuracy*(1-RECENCY_WEIGHT) + signal*RECENCY_WEIGHT, so
+ * recent practice moves the needle without erasing history. `mastery_percentage`
+ * then RAMPS that accuracy with attempts — round(accuracy * min(1, attempts/K))
+ * — so mastery only approaches accuracy after K sessions of practice; one strong
+ * session never reads as mastered. No ML.
  */
 export function nextMastery(
-  prior: { mastery_percentage: number; attempts: number } | null,
-  sessionAccuracy: number,
+  prior: { accuracy: number; attempts: number } | null,
+  sessionSignal: number,
 ): MasteryComputation {
   const attempts = (prior?.attempts ?? 0) + 1
-  const mastery = prior
-    ? prior.mastery_percentage * (1 - RECENCY_WEIGHT) + sessionAccuracy * RECENCY_WEIGHT
-    : sessionAccuracy
-  return { accuracy: clamp(sessionAccuracy), mastery_percentage: clamp(mastery), attempts }
+  const accuracy = clamp(
+    prior ? prior.accuracy * (1 - RECENCY_WEIGHT) + sessionSignal * RECENCY_WEIGHT : sessionSignal,
+  )
+  const ramp = Math.min(1, attempts / MASTERY_FULL_CREDIT_ATTEMPTS)
+  return { accuracy, mastery_percentage: clamp(accuracy * ramp), attempts }
 }
 
 // ---------------------------------------------------------------------------
@@ -206,24 +217,24 @@ export async function recordSessionMastery(params: {
     return []
   }
 
-  // Prior mastery for these skills in one round-trip, to compute the recency
-  // update. (RLS scopes this to the parent's own children.)
+  // Prior accuracy/attempts for these skills in one round-trip, to compute the
+  // recency + ramp update. (RLS scopes this to the parent's own children.)
   const { data: priorRows } = await supabase
     .from('student_skill_mastery')
-    .select('skill_id, mastery_percentage, attempts')
+    .select('skill_id, accuracy, attempts')
     .eq('student_id', studentId)
     .in('skill_id', skillIds)
-  const priorById = new Map<string, { mastery_percentage: number; attempts: number }>()
+  const priorById = new Map<string, { accuracy: number; attempts: number }>()
   for (const r of priorRows ?? []) {
-    priorById.set(r.skill_id, { mastery_percentage: Number(r.mastery_percentage), attempts: r.attempts })
+    priorById.set(r.skill_id, { accuracy: Number(r.accuracy), attempts: r.attempts })
   }
 
-  const sessionAccuracy = ratingToAccuracy(rating)
+  const sessionSignal = ratingToAccuracy(rating)
   const now = new Date().toISOString()
 
   const updates: MasteryUpdate[] = []
   const rows = [...idBySlug].map(([slug, skill_id]) => {
-    const comp = nextMastery(priorById.get(skill_id) ?? null, sessionAccuracy)
+    const comp = nextMastery(priorById.get(skill_id) ?? null, sessionSignal)
     updates.push({ skill_id, slug, attempts: comp.attempts, accuracy: comp.accuracy, mastery_percentage: comp.mastery_percentage })
     return {
       student_id: studentId,
