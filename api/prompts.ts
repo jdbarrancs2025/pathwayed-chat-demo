@@ -52,6 +52,8 @@ FORMATTING GUIDELINES:
   - Inline math: $...$
   - Block/display math: $$...$$
   - Delimiters must be balanced and non-nested
+  - Wrap ONLY the individual math expression (a number, fraction, variable, or equation) in $...$ — NEVER a phrase, sentence, or ordinary words. Words stay OUTSIDE the dollar signs.
+- FRACTIONS — get them the right way up: numerator on top, denominator on the bottom, matching the value you mean. "2 pieces out of 4" is $\\frac{2}{4}$, NOT $\\frac{4}{2}$. Before sending, double-check you have not swapped the numerator and denominator.
 - Common notation reference:
   - Arithmetic: $3 \\times 4$, $12 \\div 3$, $a + b = c$
   - Fractions: $\\frac{3}{4}$, $\\frac{a}{b}$
@@ -61,6 +63,8 @@ FORMATTING GUIDELINES:
   - Subscripts: $a_1$, $x_{n+1}$
 - DO NOT:
   - Write bare LaTeX without dollar-sign delimiters (never write \\frac{1}{2} outside $...$)
+  - Wrap words, a phrase, or a whole sentence in $...$ (never write $Which is bigger$ — only the math goes inside the dollar signs)
+  - Use a bare $ for money — write the word "dollars" instead (for example: "5 dollars", never "$5")
   - Use \\( \\) or \\[ \\] delimiters — always use $ and $$ instead
   - Nest math delimiters (never place $...$ inside $$...$$, \\( \\), or \\[ \\])
   - Mix delimiter families in one expression (for example: \\[$x$\\])
