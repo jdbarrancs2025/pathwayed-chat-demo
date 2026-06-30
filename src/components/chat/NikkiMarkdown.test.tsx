@@ -51,4 +51,38 @@ describe('NikkiMarkdown', () => {
     const html = render('Be careful <script>alert(1)</script> here.')
     expect(html).not.toContain('<script>')
   })
+
+  // Regression for the "1221" bug: math must render as HTML-only KaTeX (no
+  // MathML twin), so it shows a single fraction, not a doubled/garbled one.
+  it('renders inline fractions as html-only KaTeX with no MathML twin', () => {
+    const html = render('So $\\frac{1}{2}$ is bigger than $\\frac{2}{4}$? Lets check.')
+
+    // KaTeX html rendered…
+    expect(html).toContain('class="katex"')
+    // …but NO MathML twin (the source of the doubling).
+    expect(html).not.toContain('<math')
+    expect(html).not.toContain('katex-mathml')
+
+    // Visible text (tags stripped) contains each fraction's digits exactly once
+    // — "12"/"24", not "1221"/"2442".
+    const text = html.replace(/<[^>]+>/g, '')
+    expect(text).not.toContain('1221')
+    expect(text).not.toContain('2442')
+
+    // The raw LaTeX must not leak as literal text either.
+    expect(html).not.toContain('\\frac')
+  })
+
+  it('renders bare \\frac (no $ delimiters) via formatMathForDisplay + KaTeX', () => {
+    const html = render('Hold up \\frac{1}{2} of the pizza.')
+    expect(html).toContain('class="katex"')
+    expect(html).not.toContain('<math')
+    expect(html).not.toContain('\\frac')
+  })
+
+  it('renders display math ($$...$$) as html-only KaTeX', () => {
+    const html = render('Here it is:\n\n$$\\frac{3}{4}$$')
+    expect(html).toContain('class="katex"')
+    expect(html).not.toContain('<math')
+  })
 })
