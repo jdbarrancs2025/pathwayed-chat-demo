@@ -187,12 +187,76 @@ async function saveSessionSkills(
 }
 
 /**
+ * SHARED CORE for both the tutoring-session and practice paths: given a per-skill
+ * 0-100 signal, recency+ramp-update each mastery row via nextMastery (ONE attempt
+ * increment per skill per call), upsert on (student_id, skill_id), then recompute
+ * readiness/SAT. Keeping both paths on this one function means the mastery ramp,
+ * the SAT attempts gate, and readiness behave identically no matter how the
+ * signal was produced (self-rating vs. real scored accuracy). Best-effort:
+ * returns [] on an empty input or an upsert error, never throws into the caller.
+ */
+async function commitMasterySignals(
+  studentId: string,
+  entries: { skill_id: string; slug: string; signal: number }[],
+): Promise<MasteryUpdate[]> {
+  if (!entries.length) return []
+
+  // Prior accuracy/attempts in one round-trip (RLS scopes to the parent's child).
+  const { data: priorRows } = await supabase
+    .from('student_skill_mastery')
+    .select('skill_id, accuracy, attempts')
+    .eq('student_id', studentId)
+    .in(
+      'skill_id',
+      entries.map((e) => e.skill_id),
+    )
+  const priorById = new Map<string, { accuracy: number; attempts: number }>()
+  for (const r of priorRows ?? []) {
+    priorById.set(r.skill_id, { accuracy: Number(r.accuracy), attempts: r.attempts })
+  }
+
+  const now = new Date().toISOString()
+  const updates: MasteryUpdate[] = []
+  const rows = entries.map((e) => {
+    // One call = one attempts increment (a session/practice run), regardless of
+    // how many questions or transcript turns produced the signal.
+    const comp = nextMastery(priorById.get(e.skill_id) ?? null, e.signal)
+    updates.push({ skill_id: e.skill_id, slug: e.slug, attempts: comp.attempts, accuracy: comp.accuracy, mastery_percentage: comp.mastery_percentage })
+    return {
+      student_id: studentId,
+      skill_id: e.skill_id,
+      mastery_percentage: comp.mastery_percentage,
+      accuracy: comp.accuracy,
+      attempts: comp.attempts,
+      last_practiced: now,
+    }
+  })
+
+  const { error } = await supabase
+    .from('student_skill_mastery')
+    .upsert(rows, { onConflict: 'student_id,skill_id' })
+  if (error) {
+    console.error('student_skill_mastery upsert failed', error)
+    return []
+  }
+
+  // Recompute readiness / Pathway Score / SAT from the full mastery set (now
+  // including this update). Best-effort — must never block the kid's flow.
+  try {
+    await recordReadiness(studentId)
+  } catch (err) {
+    console.error('readiness recompute failed', err)
+  }
+
+  return updates
+}
+
+/**
  * After a finished tutoring session: detect skills practiced, resolve them to
- * skill_ids, recency-update each mastery row (upsert on student_id,skill_id),
- * and record the summary onto the session row (skills_practiced +
- * mastery_updates). Best-effort and side-effect-only — returns the updates (also
- * used by the dashboard's recent-progress view). Never throws into the caller's
- * happy path; mastery is non-critical in Phase 1.
+ * skill_ids, recency-update each mastery row, and record the summary onto the
+ * session row (skills_practiced + mastery_updates). Best-effort and side-effect-
+ * only — returns the updates (also used by the dashboard's recent-progress view).
+ * Never throws into the caller's happy path; mastery is non-critical in Phase 1.
  */
 export async function recordSessionMastery(params: {
   studentId: string
@@ -212,61 +276,36 @@ export async function recordSessionMastery(params: {
   }
 
   const idBySlug = await resolveSkillIdsBySlug(slugs)
-  const skillIds = [...idBySlug.values()]
-  if (!skillIds.length) {
+  if (!idBySlug.size) {
     await saveSessionSkills(studentId, subject, slugs, [])
     return []
   }
 
-  // Prior accuracy/attempts for these skills in one round-trip, to compute the
-  // recency + ramp update. (RLS scopes this to the parent's own children.)
-  const { data: priorRows } = await supabase
-    .from('student_skill_mastery')
-    .select('skill_id, accuracy, attempts')
-    .eq('student_id', studentId)
-    .in('skill_id', skillIds)
-  const priorById = new Map<string, { accuracy: number; attempts: number }>()
-  for (const r of priorRows ?? []) {
-    priorById.set(r.skill_id, { accuracy: Number(r.accuracy), attempts: r.attempts })
-  }
-
+  // The whole session shares one self-rating signal across every practiced skill.
   const sessionSignal = ratingToAccuracy(rating)
-  const now = new Date().toISOString()
-
-  const updates: MasteryUpdate[] = []
-  const rows = [...idBySlug].map(([slug, skill_id]) => {
-    const comp = nextMastery(priorById.get(skill_id) ?? null, sessionSignal)
-    updates.push({ skill_id, slug, attempts: comp.attempts, accuracy: comp.accuracy, mastery_percentage: comp.mastery_percentage })
-    return {
-      student_id: studentId,
-      skill_id,
-      mastery_percentage: comp.mastery_percentage,
-      accuracy: comp.accuracy,
-      attempts: comp.attempts,
-      last_practiced: now,
-    }
-  })
-
-  const { error } = await supabase
-    .from('student_skill_mastery')
-    .upsert(rows, { onConflict: 'student_id,skill_id' })
-  if (error) {
-    console.error('student_skill_mastery upsert failed', error)
-    return []
-  }
+  const entries = [...idBySlug].map(([slug, skill_id]) => ({ skill_id, slug, signal: sessionSignal }))
+  const updates = await commitMasterySignals(studentId, entries)
 
   await saveSessionSkills(studentId, subject, slugs, updates)
-
-  // Academic OS Phase 2: recompute the student's readiness / Pathway Score from
-  // their full mastery set (now including this session) and upsert it. Best-
-  // effort — readiness is non-critical and must never block the kid's flow.
-  try {
-    await recordReadiness(studentId)
-  } catch (err) {
-    console.error('readiness recompute failed', err)
-  }
-
   return updates
+}
+
+/**
+ * Record ONE practice session's aggregate accuracy (0-100) for a SINGLE skill —
+ * the Stage-3 scored path. One practice session = ONE attempts increment (same
+ * as a tutoring session), so the mastery ramp and SAT gate behave consistently
+ * with the existing path; the granular per-question record lives in
+ * question_attempts. Reuses the exact same nextMastery + upsert + recordReadiness
+ * core, so a genuinely poor session lowers mastery. Best-effort.
+ */
+export async function recordPracticeResult(
+  studentId: string,
+  skillId: string,
+  accuracy: number,
+): Promise<MasteryUpdate | null> {
+  const signal = clamp(Math.round(accuracy))
+  const updates = await commitMasterySignals(studentId, [{ skill_id: skillId, slug: '', signal }])
+  return updates[0] ?? null
 }
 
 // ---------------------------------------------------------------------------

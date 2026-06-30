@@ -7,6 +7,7 @@ import { YourChildren } from '@/pages/YourChildren'
 import { AddChild } from '@/pages/AddChild'
 import { StudentPicker } from '@/pages/StudentPicker'
 import { KidHome } from '@/pages/KidHome'
+import { Practice } from '@/pages/Practice'
 import { Session } from '@/pages/Session'
 import { ParentArea } from '@/pages/ParentArea'
 import { Settings } from '@/pages/Settings'
@@ -30,6 +31,7 @@ export function AppRoutes() {
       <Route path="/students" element={<StudentPicker />} />
       <Route path="/students/:id" element={<KidHome />} />
       <Route path="/students/:id/session/:subject" element={<Session />} />
+      <Route path="/students/:id/practice/:skill" element={<Practice />} />
       <Route path="/parent" element={<ParentArea />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/account-setup" element={<AccountSetup />} />

@@ -80,6 +80,19 @@ export function KidHome() {
           </div>
         </button>
 
+        <button
+          className="bigcard practice-card"
+          onClick={() => navigate(`/students/${student.id}/practice/multiplication`)}
+        >
+          <div className="ico" style={{ background: 'var(--grow)' }}>
+            ✦
+          </div>
+          <div>
+            <h3>Practice problems</h3>
+            <p>Quick multiplication questions — answer, get instant feedback, grow your skills.</p>
+          </div>
+        </button>
+
         <StudentProgress studentId={student.id} grade={student.grade} onOpenSubject={open} />
 
         <div className="foot">

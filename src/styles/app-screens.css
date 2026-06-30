@@ -1571,6 +1571,111 @@
   padding: 3px 9px;
 }
 
+/* Practice (Question Engine Stage 3) — serve/score one question at a time.
+   Feedback is encouraging: correct = green, a wrong pick is a soft amber (never
+   a punishing red). */
+.practice-card .ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+}
+.practice-progress {
+  font-size: 13px;
+  margin: 14px 0 8px;
+}
+.practice-q {
+  padding: 18px;
+}
+.practice-stem {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.practice-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.practice-choice {
+  text-align: left;
+  font-size: 17px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.practice-choice:hover:not(:disabled) {
+  border-color: var(--navy);
+}
+.practice-choice:disabled {
+  cursor: default;
+}
+.practice-choice.correct {
+  border-color: var(--grow);
+  background: var(--grow-soft);
+  color: var(--navy);
+  font-weight: 700;
+}
+.practice-choice.chosen-wrong {
+  border-color: var(--orange);
+  background: #fff6ef;
+}
+.practice-choice.dim {
+  opacity: 0.5;
+}
+.practice-feedback {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.practice-verdict {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.practice-verdict.good {
+  color: var(--grow);
+}
+.practice-verdict.soft {
+  color: var(--navy);
+}
+.practice-solution {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.practice-summary {
+  text-align: center;
+  padding: 24px 18px;
+}
+.practice-score {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0 0 6px;
+}
+.practice-score .muted {
+  font-size: 22px;
+  font-weight: 600;
+}
+.practice-encourage {
+  font-size: 15px;
+  color: var(--ink);
+  margin: 0;
+}
+
 /* Nikki call stage */
 .callstage {
   display: flex;
