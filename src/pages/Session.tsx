@@ -13,6 +13,7 @@ import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
 import { MathText } from '@/components/MathText'
 import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
+import { recordSessionMastery } from '@/lib/skills'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import { transcribeAudio } from '@/lib/transcribe'
@@ -259,6 +260,20 @@ function SessionView({
   const submitFeedback = async (rating: string, note: string) => {
     setSavingFeedback(true)
     await saveFeedback(student.id, subject, rating, note)
+    // Academic OS Phase 1: record skill mastery from this finished session
+    // (client-side under RLS). Best-effort — a failure here must never block the
+    // child returning to their dashboard.
+    try {
+      await recordSessionMastery({
+        studentId: student.id,
+        subject,
+        grade: student.grade,
+        messages: messages.map(({ role, content }) => ({ role, content })),
+        rating,
+      })
+    } catch (err) {
+      console.error('mastery recording failed', err)
+    }
     navigate(`/students/${student.id}`)
   }
 
