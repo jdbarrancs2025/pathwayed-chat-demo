@@ -250,6 +250,48 @@ export interface Database {
         }
         Relationships: []
       }
+      // Academic OS Phase 2 (migration 0002): computed readiness / Pathway Score
+      // per student per type ('pathway' overall + 'math'/'reading'/'writing').
+      // Written client-side under RLS gated by owns_student(student_id).
+      readiness_scores: {
+        Row: {
+          id: string
+          student_id: string
+          readiness_type: string
+          score: number
+          strengths: Json
+          gaps: Json
+          next_skill_slug: string | null
+          recommendations: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          readiness_type: string
+          score?: number
+          strengths?: Json
+          gaps?: Json
+          next_skill_slug?: string | null
+          recommendations?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          readiness_type?: string
+          score?: number
+          strengths?: Json
+          gaps?: Json
+          next_skill_slug?: string | null
+          recommendations?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
