@@ -79,14 +79,24 @@ export function Practice() {
   }
 
   const handlePick = (choiceIndex: number) => {
-    // TEMP diagnostic — confirms the click handler fires (remove after verify).
-    console.debug('[practice] handlePick', { choiceIndex, alreadyAnswered: selected !== null })
+    // TEMP diagnostics (plain console.log so they're visible; remove after verify).
     const current = questions[index]
-    if (selected !== null || !current) return
+    console.log('[practice] handlePick', {
+      choiceIndex,
+      alreadyAnswered: selected !== null,
+      hasCurrent: !!current,
+      studentId: student.id,
+      questionId: current?.id,
+    })
+    if (selected !== null || !current) {
+      console.log('[practice] handlePick early-return (already answered or no question)')
+      return
+    }
     setSelected(choiceIndex)
     const { isCorrect, misconceptionToken } = scoreChoice(current.choices, choiceIndex)
     setResults((r) => [...r, { isCorrect }])
     // Append-only, fire-and-forget: a mid-session quit still records this answer.
+    console.log('[practice] calling recordQuestionAttempt')
     void recordQuestionAttempt({
       studentId: student.id,
       generatedQuestionId: current.id,
