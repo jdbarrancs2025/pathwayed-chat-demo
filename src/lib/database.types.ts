@@ -85,6 +85,10 @@ export interface Database {
           first_name: string
           grade: string
           level: string
+          // Academic OS Phase 1 (migration 0001): forward-compat learning
+          // preferences (modality, pace, …). Grade band is NOT stored — it is
+          // derived from `grade` via gradeBand() in api/teaching-cycle.ts.
+          learning_preferences: Json
         }
         Insert: {
           id?: string
@@ -92,6 +96,7 @@ export interface Database {
           first_name: string
           grade: string
           level: string
+          learning_preferences?: Json
         }
         Update: {
           id?: string
@@ -99,6 +104,7 @@ export interface Database {
           first_name?: string
           grade?: string
           level?: string
+          learning_preferences?: Json
         }
         Relationships: []
       }
@@ -109,6 +115,10 @@ export interface Database {
           subject: string
           messages: Json
           updated_at: string
+          // Academic OS Phase 1 (migration 0001): skills touched this session
+          // and the mastery deltas written, so a finished session self-describes.
+          skills_practiced: Json
+          mastery_updates: Json
         }
         Insert: {
           id?: string
@@ -116,6 +126,8 @@ export interface Database {
           subject: string
           messages: Json
           updated_at?: string
+          skills_practiced?: Json
+          mastery_updates?: Json
         }
         Update: {
           id?: string
@@ -123,6 +135,8 @@ export interface Database {
           subject?: string
           messages?: Json
           updated_at?: string
+          skills_practiced?: Json
+          mastery_updates?: Json
         }
         Relationships: []
       }
@@ -153,10 +167,97 @@ export interface Database {
         }
         Relationships: []
       }
+      // Academic OS Phase 1 (migration 0001): self-referential taxonomy
+      // (Subject -> Domain -> Skill -> MicroSkill). `slug` equals a focusAreas
+      // value on Skill rows so the resolver is a clean join.
+      skills: {
+        Row: {
+          id: string
+          level: Database['public']['Enums']['skill_level']
+          parent_id: string | null
+          subject: string
+          name: string
+          slug: string | null
+          grade_band: Database['public']['Enums']['grade_band'] | null
+          sat_alignment: string | null
+          prerequisite_skills: string[]
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          level: Database['public']['Enums']['skill_level']
+          parent_id?: string | null
+          subject: string
+          name: string
+          slug?: string | null
+          grade_band?: Database['public']['Enums']['grade_band'] | null
+          sat_alignment?: string | null
+          prerequisite_skills?: string[]
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          level?: Database['public']['Enums']['skill_level']
+          parent_id?: string | null
+          subject?: string
+          name?: string
+          slug?: string | null
+          grade_band?: Database['public']['Enums']['grade_band'] | null
+          sat_alignment?: string | null
+          prerequisite_skills?: string[]
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      // Academic OS Phase 1 (migration 0001): per-student mastery, written
+      // client-side under RLS gated by owns_student(parent_id).
+      student_skill_mastery: {
+        Row: {
+          id: string
+          student_id: string
+          skill_id: string
+          mastery_percentage: number
+          accuracy: number
+          attempts: number
+          last_practiced: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          skill_id: string
+          mastery_percentage?: number
+          accuracy?: number
+          attempts?: number
+          last_practiced?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          skill_id?: string
+          mastery_percentage?: number
+          accuracy?: number
+          attempts?: number
+          last_practiced?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
-    Enums: Record<string, never>
+    Enums: {
+      // Must match the canonical resolver gradeBand() in api/teaching-cycle.ts.
+      grade_band: 'k-2' | '3-5' | '6-8' | '9-12'
+      skill_level: 'subject' | 'domain' | 'skill' | 'microskill'
+    }
     CompositeTypes: Record<string, never>
   }
 }
