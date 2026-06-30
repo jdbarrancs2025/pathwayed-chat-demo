@@ -70,10 +70,10 @@ describe('buildMasteryView (dashboard read transform)', () => {
     { id: 's-frac', name: 'Understanding Fractions', subject: 'math', grade_band: '3-5' },
     { id: 's-mult', name: 'Multiplication', subject: 'math', grade_band: '3-5' },
     { id: 's-main', name: 'Main Idea', subject: 'reading', grade_band: '3-5' },
-    { id: 's-alg', name: 'Algebra', subject: 'math', grade_band: '6-8' }, // out of band
+    { id: 's-alg', name: 'Algebra', subject: 'math', grade_band: '6-8' }, // different band
   ]
 
-  it('groups by subject (display order), sorts by mastery desc, drops out-of-band', () => {
+  it('groups by subject (display order), sorts by mastery desc, keeps all bands', () => {
     const mastery = [
       { skill_id: 's-frac', mastery_percentage: 25, attempts: 1 },
       { skill_id: 's-mult', mastery_percentage: 60, attempts: 3 },
@@ -83,14 +83,39 @@ describe('buildMasteryView (dashboard read transform)', () => {
     const v = buildMasteryView(mastery, skills, '3-5')
     expect(v.hasAny).toBe(true)
     expect(v.bySubject.map((b) => b.subject)).toEqual(['math', 'reading'])
-    // math sorted by mastery desc: Multiplication (60) before Fractions (25)
+    // math sorted by mastery desc, INCLUDING the other-band Algebra (6-8):
+    // Algebra (90), Multiplication (60), Understanding Fractions (25).
     expect(v.bySubject[0].skills.map((s) => s.name)).toEqual([
+      'Algebra',
       'Multiplication',
       'Understanding Fractions',
     ])
-    // out-of-band Algebra (6-8) is excluded for a 3-5 student
-    expect(v.bySubject[0].skills.find((s) => s.name === 'Algebra')).toBeUndefined()
     expect(v.currentSubjects).toEqual(['math', 'reading'])
+  })
+
+  it('keeps practiced skills from a LOWER band than the student grade (the Peyton bug)', () => {
+    // Grade-9 student (band 9-12) whose practice is all in 6-8 / 3-5 skills.
+    const lowerBandSkills = [
+      { id: 's68', name: 'Algebra 1 Concepts', subject: 'math', grade_band: '6-8' },
+      { id: 's35', name: 'Main Idea', subject: 'reading', grade_band: '3-5' },
+    ]
+    const mastery = [
+      { skill_id: 's68', mastery_percentage: 71, attempts: 4 },
+      { skill_id: 's35', mastery_percentage: 75, attempts: 3 },
+    ]
+    const v = buildMasteryView(mastery, lowerBandSkills, '9-12')
+    expect(v.hasAny).toBe(true) // NOT "No progress yet"
+    expect(v.bySubject.map((b) => b.subject)).toEqual(['math', 'reading'])
+    expect(v.bySubject[0].skills[0].name).toBe('Algebra 1 Concepts')
+  })
+
+  it('still drops mastery rows that do not resolve to a skill', () => {
+    const v = buildMasteryView(
+      [{ skill_id: 'ghost', mastery_percentage: 80, attempts: 2 }],
+      skills,
+      '9-12',
+    )
+    expect(v.hasAny).toBe(false)
   })
 
   it('empty (day one): no rows -> hasAny false, current subjects fall back to band focus areas', () => {

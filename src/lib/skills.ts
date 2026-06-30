@@ -303,9 +303,13 @@ function bandFocusSubjects(band: GradeBand): string[] {
 }
 
 /**
- * Pure transform: mastery rows + their skills -> a per-subject, band-scoped view.
- * Rows whose skill is outside the student's grade band are dropped. Kept pure so
- * it is unit-testable without the database.
+ * Pure transform: mastery rows + their skills -> a per-subject view of ALL
+ * practiced skills. We organize by mastery, not grade: every practiced skill
+ * that resolves to a real skill row is shown, regardless of its grade band, so
+ * (e.g.) a grade-9 student practicing 6-8 skills still sees that work instead of
+ * "No progress yet." Only rows we can't resolve to a skill are dropped. Kept
+ * pure so it is unit-testable without the database. `band` is still used to pick
+ * the day-one fallback subjects when there's no practice yet.
  */
 export function buildMasteryView(
   masteryRows: { skill_id: string; mastery_percentage: number; attempts: number }[],
@@ -316,7 +320,7 @@ export function buildMasteryView(
   const rows: SkillMasteryRow[] = []
   for (const m of masteryRows) {
     const s = skillById.get(m.skill_id)
-    if (!s || s.grade_band !== band) continue // grade-band scope
+    if (!s) continue // skip rows that don't resolve to a skill (e.g. domain rows)
     rows.push({
       skill_id: m.skill_id,
       name: s.name,
