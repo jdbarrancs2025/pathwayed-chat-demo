@@ -145,13 +145,11 @@ export async function recordQuestionAttempt(a: QuestionAttemptInput): Promise<vo
     chosen_misconception_token: a.chosenMisconceptionToken,
     time_ms: timeMs,
   }
-  // TEMP unconditional diagnostics (remove after diagnosis): prove the insert is
-  // attempted and show exactly what it returns.
-  console.log('[attempt] inserting question_attempt', payload)
+  // Surface BOTH a returned error (e.g. RLS) and a thrown rejection — the
+  // fire-and-forget caller would otherwise swallow either silently.
   try {
-    const res = await supabase.from('question_attempts').insert(payload)
-    console.log('[attempt] insert returned', res)
-    if (res.error) console.error('question_attempt insert failed', { error: res.error, payload })
+    const { error } = await supabase.from('question_attempts').insert(payload)
+    if (error) console.error('question_attempt insert failed', { error, payload })
   } catch (err) {
     console.error('question_attempt insert threw', { err, payload })
   }
