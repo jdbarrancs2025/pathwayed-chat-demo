@@ -22,6 +22,27 @@ are).
 
 ---
 
+## Running locally (two terminals)
+
+The `vercel.json` SPA rewrite (`/((?!api/).*) -> /index.html`) intercepts Vite's
+in-memory module requests under `vercel dev` and serves `index.html` for them, so
+the frontend can't load through `vercel dev`. Instead, run the frontend on Vite
+and proxy `/api` to `vercel dev` (which serves the serverless functions). The
+proxy is configured in `vite.config.ts` (`server.proxy`, dev-only).
+
+- **Terminal 1 — API (serverless functions):** `vercel dev` → serves `/api/*` on
+  **http://localhost:3000**. (Its own frontend is broken by the rewrite — ignore
+  it; we only use it for `/api`.)
+- **Terminal 2 — frontend:** `bun dev` → Vite on **http://localhost:5173**, with
+  `/api/*` proxied to :3000.
+- **Browse http://localhost:5173.** `/api/chat` reaches the real Vercel function
+  via the proxy.
+
+Sanity check that the function is live: `curl -s -X GET http://localhost:3000/api/chat`
+returns `{"error":"Method not allowed"}` (the handler 405s GET).
+
+---
+
 ## Part A — Browser runbook (happy path)
 
 1. Go to **/students** and pick your grade 3–5 student → lands on **KidHome**
