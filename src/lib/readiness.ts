@@ -496,11 +496,36 @@ export async function recordReadiness(studentId: string): Promise<void> {
   // SAT readiness: project over the FULL SAT-aligned catalog (so untouched
   // skills count toward the trajectory ceiling and the missing list), left-
   // joined to this student's mastery (untouched -> attempts:0).
-  const { data: satCatalog } = await supabase
+  const { data: satCatalog, error: satCatalogError } = await supabase
     .from('skills')
     .select('id, slug, name, subject, sat_alignment')
     .eq('level', 'skill')
     .not('sat_alignment', 'is', null)
+  // Never silently swallow this read again — a failed SAT catalog read is why
+  // the 'sat' row goes missing while pathway/math still upsert.
+  if (satCatalogError) console.error('SAT catalog read failed', satCatalogError)
+
+  // --- TEMP DIAGNOSTIC (SAT row not persisting) — remove after diagnosis -----
+  // Distinguishes: query error (satCatalogError set) vs seed-not-applied
+  // (skillsWithSatAlignment === 0) vs filter mismatch (aligned > 0 but
+  // catalogLen === 0). Probes are head/count-only and don't alter the write.
+  {
+    const [aligned, skillLevel] = await Promise.all([
+      supabase.from('skills').select('id', { count: 'exact', head: true }).not('sat_alignment', 'is', null),
+      supabase.from('skills').select('id', { count: 'exact', head: true }).eq('level', 'skill'),
+    ])
+    console.error('[SAT diag] recordReadiness', {
+      studentId,
+      satCatalogError: satCatalogError?.message ?? null,
+      satCatalogLen: satCatalog?.length ?? null,
+      skillsWithSatAlignment: aligned.count,
+      skillsWithSatAlignmentErr: aligned.error?.message ?? null,
+      skillLevelRows: skillLevel.count,
+      skillLevelErr: skillLevel.error?.message ?? null,
+    })
+  }
+  // --------------------------------------------------------------------------
+
   const masteryById = new Map(masteryRows.map((m) => [m.skill_id, m]))
   const satRows: SatSkillRow[] = []
   for (const c of satCatalog ?? []) {
@@ -516,6 +541,9 @@ export async function recordReadiness(studentId: string): Promise<void> {
       last_practiced: m ? m.last_practiced : null,
     })
   }
+  // TEMP DIAGNOSTIC — remove after diagnosis.
+  console.error('[SAT diag] satRows built', { satRowsLen: satRows.length, willPushSatRow: satRows.length > 0 })
+
   if (satRows.length) {
     upserts.push(satReadinessRow(studentId, computeSatProjection(satRows, now)))
   }
@@ -597,7 +625,7 @@ export async function getReadiness(studentId: string): Promise<ReadinessView> {
 
 export interface ReadinessFreshnessInput {
   /** Existing readiness rows for the student (any/all readiness_type). */
-  readiness: { updated_at: string; engine_version: number }[]
+  readiness: { readiness_type: string; updated_at: string; engine_version: number }[]
   /** updated_at of every student_skill_mastery row for the student. */
   masteryUpdatedAt: string[]
   currentEngineVersion: number
@@ -606,13 +634,19 @@ export interface ReadinessFreshnessInput {
 /**
  * Pure staleness predicate. Readiness should be recomputed iff there is mastery
  * to compute from AND any of: (a) no readiness row exists, (b) some mastery row
- * is newer than the readiness, or (c) the stored engine_version is behind the
- * current one. Otherwise the stored readiness is current — no write needed.
+ * is newer than the readiness, (c) the stored engine_version is behind the
+ * current one, or (d) the SAT row is missing. Otherwise the stored readiness is
+ * current — no write needed.
  */
 export function isReadinessStale(input: ReadinessFreshnessInput): boolean {
   if (input.masteryUpdatedAt.length === 0) return false // nothing to compute from
   if (input.readiness.length === 0) return true // (a)
   if (input.readiness.some((r) => r.engine_version < input.currentEngineVersion)) return true // (c)
+  // (d) SAT readiness was added after some students were last recomputed: a
+  // student with mastery but no 'sat' row must recompute, independent of the
+  // engine_version (those rows are already at the current version, so (c) won't
+  // catch them). Self-heals existing students without another version bump.
+  if (!input.readiness.some((r) => r.readiness_type === 'sat')) return true // (d)
   // (b) any mastery written after the readiness was last computed.
   const readinessTimes = input.readiness.map((r) => Date.parse(r.updated_at)).filter((n) => !Number.isNaN(n))
   const masteryTimes = input.masteryUpdatedAt.map((s) => Date.parse(s)).filter((n) => !Number.isNaN(n))
@@ -637,7 +671,11 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
     ])
     const readinessRows = readinessRes.data ?? []
     const stale = isReadinessStale({
-      readiness: readinessRows.map((r) => ({ updated_at: r.updated_at, engine_version: r.engine_version })),
+      readiness: readinessRows.map((r) => ({
+        readiness_type: r.readiness_type,
+        updated_at: r.updated_at,
+        engine_version: r.engine_version,
+      })),
       masteryUpdatedAt: (masteryRes.data ?? []).map((m) => m.updated_at),
       currentEngineVersion: ENGINE_VERSION,
     })
