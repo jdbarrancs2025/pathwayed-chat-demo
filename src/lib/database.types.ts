@@ -297,6 +297,140 @@ export interface Database {
         }
         Relationships: []
       }
+      // Question Engine Stage 1 (migration 0004): hybrid content model. Shared,
+      // school-agnostic content; client sees only status='published' rows.
+      // Drafts are authored/reviewed via the service role.
+      question_templates: {
+        Row: {
+          id: string
+          code: string | null
+          skill_id: string
+          sat_alignment: string | null
+          difficulty: Database['public']['Enums']['question_difficulty']
+          kind: Database['public']['Enums']['question_kind']
+          generation_spec: Json
+          distractor_spec: Json
+          status: Database['public']['Enums']['question_status']
+          version: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code?: string | null
+          skill_id: string
+          sat_alignment?: string | null
+          difficulty: Database['public']['Enums']['question_difficulty']
+          kind: Database['public']['Enums']['question_kind']
+          generation_spec?: Json
+          distractor_spec?: Json
+          status?: Database['public']['Enums']['question_status']
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string | null
+          skill_id?: string
+          sat_alignment?: string | null
+          difficulty?: Database['public']['Enums']['question_difficulty']
+          kind?: Database['public']['Enums']['question_kind']
+          generation_spec?: Json
+          distractor_spec?: Json
+          status?: Database['public']['Enums']['question_status']
+          version?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      generated_questions: {
+        Row: {
+          id: string
+          template_id: string | null
+          skill_id: string
+          sat_alignment: string | null
+          difficulty: Database['public']['Enums']['question_difficulty']
+          stem: string
+          choices: Json
+          correct_answer: string
+          solution: string | null
+          status: Database['public']['Enums']['question_status']
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          template_id?: string | null
+          skill_id: string
+          sat_alignment?: string | null
+          difficulty: Database['public']['Enums']['question_difficulty']
+          stem: string
+          choices?: Json
+          correct_answer: string
+          solution?: string | null
+          status?: Database['public']['Enums']['question_status']
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          template_id?: string | null
+          skill_id?: string
+          sat_alignment?: string | null
+          difficulty?: Database['public']['Enums']['question_difficulty']
+          stem?: string
+          choices?: Json
+          correct_answer?: string
+          solution?: string | null
+          status?: Database['public']['Enums']['question_status']
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      // The real scored-performance signal. APPEND-ONLY (RLS allows select +
+      // insert only), owned via owns_student(student_id) like mastery.
+      question_attempts: {
+        Row: {
+          id: string
+          student_id: string
+          generated_question_id: string | null
+          skill_id: string
+          sat_alignment: string | null
+          is_correct: boolean
+          chosen_choice_index: number | null
+          chosen_misconception_token: string | null
+          time_ms: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          generated_question_id?: string | null
+          skill_id: string
+          sat_alignment?: string | null
+          is_correct: boolean
+          chosen_choice_index?: number | null
+          chosen_misconception_token?: string | null
+          time_ms?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          generated_question_id?: string | null
+          skill_id?: string
+          sat_alignment?: string | null
+          is_correct?: boolean
+          chosen_choice_index?: number | null
+          chosen_misconception_token?: string | null
+          time_ms?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -304,6 +438,10 @@ export interface Database {
       // Must match the canonical resolver gradeBand() in src/lib/gradeBand.ts.
       grade_band: 'k-2' | '3-5' | '6-8' | '9-12'
       skill_level: 'subject' | 'domain' | 'skill' | 'microskill'
+      // Question Engine Stage 1 (migration 0004).
+      question_difficulty: 'easy' | 'medium' | 'hard'
+      question_kind: 'template_math' | 'llm_generated'
+      question_status: 'draft' | 'reviewed' | 'published'
     }
     CompositeTypes: Record<string, never>
   }
