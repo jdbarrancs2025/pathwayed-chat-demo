@@ -3,7 +3,14 @@
    older theme in index.css. */
 
 .kid-screen {
-  min-height: 100dvh;
+  /* The global app shell locks html/body/#root to 100dvh with overflow:hidden
+     (index.css) so the in-session screen can manage its own internal scroll.
+     The content screens (kid home, settings, parent area, student picker) can be
+     taller than the viewport — especially on desktop — so this screen fills the
+     locked root and scrolls its OWN content instead of overflowing and clipping.
+     The centered max-width column (.shell) is unchanged. */
+  height: 100dvh;
+  overflow-y: auto;
   background: #fbf8f3;
   display: flex;
   flex-direction: column;
