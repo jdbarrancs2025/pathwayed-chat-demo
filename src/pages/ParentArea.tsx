@@ -168,20 +168,26 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             </div>
           )}
 
-          {pathway && pathway.strengths.length > 0 && (
+          {pathway && (
             <div className="pd-section">
               <div className="pd-label">Strengths</div>
-              <div className="subject-chips">
-                {pathway.strengths.map((sk) => (
-                  <span
-                    key={sk.slug}
-                    className="chip"
-                    style={{ color: accentFor(sk.subject), borderColor: accentFor(sk.subject) }}
-                  >
-                    {sk.name}
-                  </span>
-                ))}
-              </div>
+              {pathway.strengths.length > 0 ? (
+                <div className="subject-chips">
+                  {pathway.strengths.map((sk) => (
+                    <span
+                      key={sk.slug}
+                      className="chip"
+                      style={{ color: accentFor(sk.subject), borderColor: accentFor(sk.subject) }}
+                    >
+                      {sk.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-progress">
+                  Building toward strengths — keep practicing to unlock them.
+                </p>
+              )}
             </div>
           )}
 

@@ -26,6 +26,12 @@ const CONFIDENCE_ATTEMPTS = 3 // attempts for full attempts-weight (tunable)
 const RECENCY_HALFLIFE_DAYS = 30 // mastery weight halves every ~month of no practice
 const RECENCY_FLOOR = 0.25 // old practice still counts a little, never zero
 const TOP_N = 3 // strengths / gaps list size
+// A skill is a STRENGTH only at/above STRENGTH_MIN and a GAP only below GAP_MAX.
+// STRENGTH_MIN > GAP_MAX, so the two lists can never overlap and a weak "best
+// skill" (e.g. 44%) is correctly a gap, never a strength. The band between them
+// is a neutral "developing" range.
+const STRENGTH_MIN = 70
+const GAP_MAX = 60
 const DAY_MS = 86_400_000
 
 // Subjects we publish a per-subject sub-score for (seeded subjects). The overall
@@ -99,26 +105,25 @@ function computeBreakdown(rows: ReadinessSkillRow[], now: number): ReadinessBrea
   }
   const score = totalWeight > 0 ? clamp(Math.round(weighted / totalWeight), 0, 100) : 0
 
-  const strongFirst = [...rows].sort(
-    (a, b) => b.mastery_percentage - a.mastery_percentage || a.name.localeCompare(b.name),
-  )
-  // Weakest first; tie-break toward MORE attempts (a persistent weakness is
-  // higher-leverage to target than a brand-new skill).
-  const weakFirst = [...rows].sort(
-    (a, b) =>
-      a.mastery_percentage - b.mastery_percentage ||
-      b.attempts - a.attempts ||
-      a.name.localeCompare(b.name),
-  )
+  // Strengths: only skills at/above STRENGTH_MIN, strongest first. If nothing
+  // clears the bar, strengths is empty (the UI shows "building toward strengths"
+  // rather than promoting a weak skill).
+  const strengths = [...rows]
+    .filter((r) => r.mastery_percentage >= STRENGTH_MIN)
+    .sort((a, b) => b.mastery_percentage - a.mastery_percentage || a.name.localeCompare(b.name))
+    .slice(0, TOP_N)
+    .map(toRef)
 
-  const strengths = strongFirst.slice(0, TOP_N).map(toRef)
-  // Overlap guard: a skill must never be in BOTH lists (looks broken to a
-  // parent). With <= TOP_N practiced skills the top-N and bottom-N overlap, so
-  // gaps excludes anything already shown as a strength — an empty gaps array is
-  // the correct result for a student who only has strengths.
-  const strengthSlugs = new Set(strengths.map((s) => s.slug))
-  const gaps = weakFirst
-    .filter((r) => !strengthSlugs.has(r.slug))
+  // Gaps: only skills below GAP_MAX, weakest first; tie-break toward MORE
+  // attempts (a persistent weakness is higher-leverage than a brand-new skill).
+  const gaps = [...rows]
+    .filter((r) => r.mastery_percentage < GAP_MAX)
+    .sort(
+      (a, b) =>
+        a.mastery_percentage - b.mastery_percentage ||
+        b.attempts - a.attempts ||
+        a.name.localeCompare(b.name),
+    )
     .slice(0, TOP_N)
     .map(toRef)
 
@@ -126,7 +131,8 @@ function computeBreakdown(rows: ReadinessSkillRow[], now: number): ReadinessBrea
     score,
     strengths,
     gaps,
-    nextSkillSlug: weakFirst[0]?.slug ?? null,
+    // Next skill to practice = the weakest gap (none if nothing is below GAP_MAX).
+    nextSkillSlug: gaps[0]?.slug ?? null,
   }
 }
 
