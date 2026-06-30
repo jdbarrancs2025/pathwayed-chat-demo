@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { focusAreasByGrade } from '@/lib/focusAreas'
-import { gradeBand, type GradeBand } from '../../api/teaching-cycle'
+import { gradeBand, type GradeBand } from '@/lib/gradeBand'
 import type { StoredMessage } from '@/lib/sessions'
 import type { Json } from '@/lib/database.types'
 
@@ -17,8 +17,8 @@ import type { Json } from '@/lib/database.types'
  */
 
 // focusAreas only defines the 3-5/6-8/9-12 bands (no k-2). Narrow the canonical
-// 4-band type (api/teaching-cycle.ts — the single source of truth the rest of
-// the app uses) to the bands that actually have focus areas / seeded skills.
+// 4-band type (src/lib/gradeBand — the single source of truth, also re-exported
+// by api/teaching-cycle) to the bands that have focus areas / seeded skills.
 type FocusBand = Extract<GradeBand, '3-5' | '6-8' | '9-12'>
 type FocusSubject = 'math' | 'reading' | 'writing'
 

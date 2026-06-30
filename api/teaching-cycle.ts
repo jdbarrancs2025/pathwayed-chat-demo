@@ -4,38 +4,11 @@
 // and is composed on top of this core. Kept dependency-free so it can be unit-
 // tested and reused by the eval harness.
 
-/** Grade bands used to select subject-module depth. */
-export type GradeBand = "k-2" | "3-5" | "6-8" | "9-12"
-
-/**
- * Map a grade string ('K', '1'..'12') to a band. Defaults to 'k-2' for the
- * youngest/unknown so early-reader safeguards (e.g. no picture-guessing) apply
- * by default rather than being skipped.
- */
-export function gradeBand(grade?: string): GradeBand {
-  if (!grade) return "k-2"
-  if (grade === "K") return "k-2"
-  const n = parseInt(grade, 10)
-  if (Number.isNaN(n)) return "k-2"
-  if (n <= 2) return "k-2"
-  if (n <= 5) return "3-5"
-  if (n <= 8) return "6-8"
-  return "9-12"
-}
-
-/** Human label for a band, for prompts and reports. */
-export function gradeBandLabel(band: GradeBand): string {
-  switch (band) {
-    case "k-2":
-      return "K–2 (early reader)"
-    case "3-5":
-      return "Grades 3–5"
-    case "6-8":
-      return "Grades 6–8"
-    case "9-12":
-      return "Grades 9–12"
-  }
-}
+// The grade-band resolver now lives in the client-safe src/lib/gradeBand module
+// so the browser bundle can import it without reaching into api/ (which the Vite
+// dev server can't serve). Re-exported here so api/ importers keep their existing
+// `./teaching-cycle` import path — ONE canonical resolver, not a copy.
+export { gradeBand, gradeBandLabel, type GradeBand } from "../src/lib/gradeBand.js"
 
 /**
  * The teaching-cycle core. Runs on top of the master identity/safety prompt and

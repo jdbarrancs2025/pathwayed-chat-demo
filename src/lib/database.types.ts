@@ -87,7 +87,7 @@ export interface Database {
           level: string
           // Academic OS Phase 1 (migration 0001): forward-compat learning
           // preferences (modality, pace, …). Grade band is NOT stored — it is
-          // derived from `grade` via gradeBand() in api/teaching-cycle.ts.
+          // derived from `grade` via gradeBand() in src/lib/gradeBand.ts.
           learning_preferences: Json
         }
         Insert: {
@@ -254,7 +254,7 @@ export interface Database {
     Views: Record<string, never>
     Functions: Record<string, never>
     Enums: {
-      // Must match the canonical resolver gradeBand() in api/teaching-cycle.ts.
+      // Must match the canonical resolver gradeBand() in src/lib/gradeBand.ts.
       grade_band: 'k-2' | '3-5' | '6-8' | '9-12'
       skill_level: 'subject' | 'domain' | 'skill' | 'microskill'
     }
