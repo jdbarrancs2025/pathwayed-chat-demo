@@ -25,8 +25,25 @@ const here = dirname(fileURLToPath(import.meta.url))
 const seedsDir = join(here, '..', 'seeds')
 
 // --- SQL helpers -------------------------------------------------------------
+// Plain single-quoted literal — only for $-, backslash-, quote-free values
+// (uuids, slugs, enum tokens, numeric answers).
 const q = (s: string) => `'${s.replace(/'/g, "''")}'`
-const jsonb = (v: unknown) => `${q(JSON.stringify(v))}::jsonb`
+
+// Dollar-quoted literal for anything containing KaTeX ($...$ and backslashes
+// like \frac, \,, \times). A single-quoted literal is fragile here: SQL clients
+// mis-tokenize the inner `$x$` as a dollar-quote tag (breaking statement
+// boundaries) and backslash handling depends on standard_conforming_strings.
+// A dollar-quoted string with a tag NOT present in the content is immune to
+// both — backslashes/quotes/`$` are all literal. The tag is auto-grown until it
+// can't collide with the content.
+function dq(s: string): string {
+  let tag = 'q'
+  while (s.includes(`$${tag}$`)) tag += 'q'
+  return `$${tag}$${s}$${tag}$`
+}
+// jsonb literals carry the templates' KaTeX (stemTemplate) and backslashes, so
+// dollar-quote them too.
+const jsonb = (v: unknown) => `${dq(JSON.stringify(v))}::jsonb`
 
 /**
  * Decorrelate the generation seed from the cache index. mulberry32's FIRST
@@ -139,7 +156,7 @@ values
    (select id from public.question_templates where code = ${q(t.code)}),
    (select id from public.skills where slug = ${q(t.skillSlug)}),
    ${q(t.satAlignment)}, ${q(t.difficulty)},
-   ${q(gq.stem)}, ${jsonb(gq.choices)}, ${q(gq.correct_answer)}, ${gq.solution === null ? 'null' : q(gq.solution)}, 'published')
+   ${dq(gq.stem)}, ${jsonb(gq.choices)}, ${q(gq.correct_answer)}, ${gq.solution === null ? 'null' : dq(gq.solution)}, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
