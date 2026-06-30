@@ -268,6 +268,20 @@ function scoreBand(s: number): ScoreBand {
   return 'just-beginning'
 }
 
+/** Human band label for a Pathway/readiness score (for the dashboards). */
+export function pathwayBandLabel(score: number): string {
+  switch (scoreBand(score)) {
+    case 'strong':
+      return 'Strong'
+    case 'growing':
+      return 'Growing'
+    case 'getting-started':
+      return 'Getting started'
+    case 'just-beginning':
+      return 'Just beginning'
+  }
+}
+
 // Deterministic pick so the same data always yields the same message (no
 // per-render flicker) while different students/states get varied phrasing.
 function pick(templates: string[], seed: string): string {

@@ -1400,6 +1400,70 @@
   font-size: 18px;
   line-height: 1;
 }
+/* Parent dashboard — per-child panels (reuses .panel/.skill-row/.subject-chips). */
+.pd-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.pd-av {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--disp);
+  font-weight: 800;
+  font-size: 17px;
+  color: #fff;
+}
+.pd-id {
+  flex: 1;
+  min-width: 0;
+}
+.pd-name {
+  font-family: var(--disp);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--navy);
+}
+.pd-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+.pd-score {
+  flex-shrink: 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.pd-score-num {
+  font-family: var(--disp);
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--navy);
+}
+.pd-score-cap {
+  font-size: 11px;
+  color: var(--faint);
+  margin-top: 2px;
+}
+.pd-section {
+  margin-top: 14px;
+}
+.pd-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
 .subject-chips {
   display: flex;
   flex-wrap: wrap;

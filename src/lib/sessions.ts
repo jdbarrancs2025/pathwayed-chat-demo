@@ -53,6 +53,20 @@ export async function saveTranscript(
   )
 }
 
+/** The most recent session activity timestamp for a student, or null if none.
+ *  Read-only; RLS scopes it to the parent's own child. */
+export async function getLastActivity(studentId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('updated_at')
+    .eq('student_id', studentId)
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error || !data) return null
+  return data.updated_at
+}
+
 /** Subjects with a non-empty saved session — drives the kid-home Continue badge. */
 export async function listSavedSubjects(studentId: string): Promise<string[]> {
   const { data, error } = await supabase

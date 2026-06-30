@@ -2,53 +2,66 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { avColor, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
-import { getFeedbackSummary, listSavedSubjects, type FeedbackSummary } from '@/lib/sessions'
+import { getLastActivity } from '@/lib/sessions'
+import { getReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
+import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { getDisplayName } from '@/lib/profile'
-import { SUBJECTS, subjectDisplayName } from '@/lib/subjects'
+import { subjectDisplayName } from '@/lib/subjects'
+import { formatRelativeDay } from '@/lib/format'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
 
-const SUBJECT_IDS: string[] = SUBJECTS.map((s) => s.id)
-const dispFont = '"Baloo 2", "Trebuchet MS", system-ui, sans-serif'
+const SUBJECT_ACCENT: Record<string, string> = {
+  math: 'var(--math)',
+  reading: 'var(--reading)',
+  writing: 'var(--writing)',
+  science: 'var(--science)',
+}
+const accentFor = (s: string) => SUBJECT_ACCENT[s] ?? 'var(--grow)'
+const READINESS_SUBJECTS = ['math', 'reading', 'writing']
 
-interface ChildStat {
+interface ChildData {
   student: Student
-  subjectsStarted: number
-  feedback: FeedbackSummary
+  readiness: ReadinessView
+  mastery: StudentMasteryView
+  lastActivity: string | null
 }
 
-function ratingLabel(rating: string): string {
-  if (rating === 'great') return 'Great'
-  if (rating === 'ok') return 'Okay'
-  if (rating === 'confusing') return 'Confusing'
-  return rating
-}
-
+/**
+ * The real parent dashboard (/parent). For every child of the logged-in parent
+ * (students.parent_id = auth.uid()) it READS the engine outputs — readiness_scores
+ * (Pathway score, per-subject readiness, strengths, gaps) and student_skill_mastery
+ * (mastery by subject) — plus last activity. No recompute, no LLM, no mock data.
+ */
 export function ParentArea() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState('')
-  const [stats, setStats] = useState<ChildStat[]>([])
+  const [children, setChildren] = useState<ChildData[]>([])
   const [loading, setLoading] = useState(true)
+  // Captured at load time (not during render — keeps render pure) for the
+  // relative "last activity" labels.
+  const [now, setNow] = useState(0)
 
   useEffect(() => {
     if (!user) return
     let active = true
     void (async () => {
-      const [children, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
-      const withStats = await Promise.all(
-        children.map(async (student) => {
-          const [subjects, feedback] = await Promise.all([
-            listSavedSubjects(student.id),
-            getFeedbackSummary(student.id),
+      const [kids, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
+      const data = await Promise.all(
+        kids.map(async (student) => {
+          const [readiness, mastery, lastActivity] = await Promise.all([
+            getReadiness(student.id),
+            getStudentMastery(student.id, student.grade),
+            getLastActivity(student.id),
           ])
-          const subjectsStarted = subjects.filter((s) => SUBJECT_IDS.includes(s)).length
-          return { student, subjectsStarted, feedback }
+          return { student, readiness, mastery, lastActivity }
         }),
       )
       if (!active) return
       setName(displayName)
-      setStats(withStats)
+      setChildren(data)
+      setNow(Date.now())
       setLoading(false)
     })()
     return () => {
@@ -61,7 +74,7 @@ export function ParentArea() {
       <div className="shell">
         <TopMenu />
         <h1 className="greet" style={{ marginTop: 18 }}>
-          Parent area
+          Parent dashboard
         </h1>
         <p className="muted">{name ? `Signed in as ${name}.` : "Your children's progress."}</p>
 
@@ -70,61 +83,27 @@ export function ParentArea() {
             <div className="panel">
               <p className="muted">Loading…</p>
             </div>
-          ) : stats.length === 0 ? (
+          ) : children.length === 0 ? (
             <div className="panel">
-              <p className="muted">No children yet.</p>
+              <p className="muted">No children yet. Add one to get started.</p>
             </div>
           ) : (
-            stats.map((st, i) => (
-              <div className="panel" key={st.student.id}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                  <div
-                    style={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: 12,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: dispFont,
-                      fontWeight: 800,
-                      fontSize: 17,
-                      color: '#fff',
-                      flexShrink: 0,
-                      background: avColor(i),
-                    }}
-                  >
-                    {initials(st.student.first_name)}
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: dispFont, fontWeight: 700, color: '#003078', fontSize: 17 }}>
-                      {st.student.first_name}
-                    </div>
-                    <div style={{ fontSize: 13, color: '#5A6172' }}>
-                      {gradeLabel(st.student.grade)} · {levelLabel(st.student.level)}
-                    </div>
-                  </div>
-                </div>
-                <div className="stat-row">
-                  <span className="muted">Subjects started</span>
-                  <b>{st.subjectsStarted} of 4</b>
-                </div>
-                <div className="stat-row">
-                  <span className="muted">Sessions rated</span>
-                  <b>{st.feedback.count}</b>
-                </div>
-                <div className="stat-row">
-                  <span className="muted">Most recent</span>
-                  <b>
-                    {st.feedback.recent
-                      ? `${ratingLabel(st.feedback.recent.rating)} · ${subjectDisplayName(st.feedback.recent.subject)}`
-                      : 'No sessions yet'}
-                  </b>
-                </div>
-              </div>
-            ))
+            children.map((c, i) => <ChildPanel key={c.student.id} data={c} index={i} now={now} />)
           )}
         </div>
+
+        {/* Real data we don't have yet — labeled, never faked. */}
+        {children.length > 0 && (
+          <section className="panel placeholder">
+            <h3>
+              More insights <span className="soon">Coming soon</span>
+            </h3>
+            <p className="muted">
+              Weekly progress and growth over time (needs practice history we don't store yet),
+              homework activity, learning habits, and attendance will appear here in a later update.
+            </p>
+          </section>
+        )}
 
         <button className="btn btn-soft" onClick={() => navigate('/children/new')}>
           + Add a child
@@ -133,6 +112,138 @@ export function ParentArea() {
           Settings
         </button>
       </div>
+    </div>
+  )
+}
+
+function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
+  const { student, readiness, mastery, lastActivity } = data
+  const pathway = readiness.pathway
+  const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity
+
+  return (
+    <div className="panel">
+      <div className="pd-head">
+        <div className="pd-av" style={{ background: avColor(index) }}>
+          {initials(student.first_name)}
+        </div>
+        <div className="pd-id">
+          <div className="pd-name">{student.first_name}</div>
+          <div className="pd-sub">
+            {gradeLabel(student.grade)} · {levelLabel(student.level)}
+          </div>
+        </div>
+        {pathway && (
+          <div className="pd-score">
+            <span className="pd-score-num">{pathway.score}</span>
+            <span className="pd-score-cap">Pathway · {pathwayBandLabel(pathway.score)}</span>
+          </div>
+        )}
+      </div>
+
+      {!hasActivity ? (
+        <p className="empty-progress">
+          No activity yet — when {student.first_name} starts practicing, their progress will show
+          here.
+        </p>
+      ) : (
+        <>
+          {readiness.hasAny && (
+            <div className="pd-section">
+              <div className="pd-label">Readiness by subject</div>
+              {READINESS_SUBJECTS.filter((s) => readiness.bySubject[s]).map((s) => {
+                const score = readiness.bySubject[s].score
+                return (
+                  <div key={s} className="skill-row">
+                    <div className="skill-top">
+                      <span className="skill-name">{subjectDisplayName(s)}</span>
+                      <span className="skill-pct">{score}%</span>
+                    </div>
+                    <div className="bar">
+                      <i style={{ width: `${score}%`, background: accentFor(s) }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {pathway && pathway.strengths.length > 0 && (
+            <div className="pd-section">
+              <div className="pd-label">Strengths</div>
+              <div className="subject-chips">
+                {pathway.strengths.map((sk) => (
+                  <span
+                    key={sk.slug}
+                    className="chip"
+                    style={{ color: accentFor(sk.subject), borderColor: accentFor(sk.subject) }}
+                  >
+                    {sk.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {pathway && (
+            <div className="pd-section">
+              <div className="pd-label">Areas needing support</div>
+              {pathway.gaps.length > 0 ? (
+                <div className="subject-chips">
+                  {pathway.gaps.map((sk) => (
+                    <span
+                      key={sk.slug}
+                      className="chip"
+                      style={{ color: 'var(--orange)', borderColor: 'var(--orange)' }}
+                    >
+                      {sk.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty-progress">
+                  Nothing flagged — {student.first_name} is doing well across the board.
+                </p>
+              )}
+            </div>
+          )}
+
+          {mastery.hasAny && (
+            <div className="pd-section">
+              <div className="pd-label">Mastery by subject</div>
+              {mastery.bySubject.map((group) => (
+                <div key={group.subject} className="subj-group">
+                  <div className="subj-head">
+                    <span className="dot" style={{ background: accentFor(group.subject) }} />
+                    {subjectDisplayName(group.subject)}
+                  </div>
+                  {group.skills.map((sk) => (
+                    <div key={sk.skill_id} className="skill-row">
+                      <div className="skill-top">
+                        <span className="skill-name">{sk.name}</span>
+                        <span className="skill-pct">{sk.mastery_percentage}%</span>
+                      </div>
+                      <div className="bar">
+                        <i
+                          style={{
+                            width: `${sk.mastery_percentage}%`,
+                            background: accentFor(group.subject),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="stat-row">
+            <span className="muted">Last activity</span>
+            <b>{formatRelativeDay(lastActivity, now)}</b>
+          </div>
+        </>
+      )}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router'
+import { Routes, Route, Navigate } from 'react-router'
 import { Welcome } from '@/pages/Welcome'
 import { ResetPassword } from '@/pages/ResetPassword'
 import { Consent } from '@/pages/Consent'
@@ -16,8 +16,6 @@ import { TeacherSetup } from '@/pages/TeacherSetup'
 import { ParentSetup } from '@/pages/ParentSetup'
 import { StudentHome } from '@/pages/StudentHome'
 import { StudentSubject } from '@/pages/StudentSubject'
-import { ParentView } from '@/pages/ParentView'
-import { ParentDashboard } from '@/pages/ParentDashboard'
 
 export function AppRoutes() {
   return (
@@ -40,8 +38,12 @@ export function AppRoutes() {
       <Route path="/parent-setup" element={<ParentSetup />} />
       <Route path="/student" element={<StudentHome />} />
       <Route path="/student/:subject" element={<StudentSubject />} />
-      <Route path="/parent-view" element={<ParentView />} />
-      <Route path="/parent-dashboard" element={<ParentDashboard />} />
+      {/* Legacy mock parent screens (ParentDashboard, ParentView) retired — both
+          old routes now redirect to the one real dashboard. (/parent-view is
+          still linked from the untouched legacy StudentHome, so we redirect
+          rather than 404 it.) */}
+      <Route path="/parent-dashboard" element={<Navigate to="/parent" replace />} />
+      <Route path="/parent-view" element={<Navigate to="/parent" replace />} />
     </Routes>
   )
 }
