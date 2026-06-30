@@ -9,7 +9,7 @@ import {
   type SatProjectionPayload,
 } from '@/lib/readiness'
 import { subjectDisplayName } from '@/lib/subjects'
-import { SatReadinessCard } from '@/components/SatReadinessCard'
+import { SatReadiness } from '@/components/SatReadiness'
 
 /**
  * Academic OS Phase 1 — read-only student dashboard sections. Shows skill mastery
@@ -172,7 +172,7 @@ export function StudentProgress({
         </h3>
         <p className="muted">A grade-level readiness score is coming in a later phase.</p>
       </section>
-      <SatReadinessCard payload={sat} grade={grade} />
+      <SatReadiness payload={sat} grade={grade} variant="student" />
     </div>
   )
 }

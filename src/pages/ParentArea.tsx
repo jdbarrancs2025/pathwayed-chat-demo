@@ -3,12 +3,19 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { avColor, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
 import { getLastActivity } from '@/lib/sessions'
-import { ensureFreshReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
+import {
+  ensureFreshReadiness,
+  getSatPayload,
+  pathwayBandLabel,
+  type ReadinessView,
+  type SatProjectionPayload,
+} from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
 import { formatRelativeDay } from '@/lib/format'
 import { TopMenu } from '@/components/TopMenu'
+import { SatReadiness } from '@/components/SatReadiness'
 import '@/styles/app-screens.css'
 
 const SUBJECT_ACCENT: Record<string, string> = {
@@ -24,6 +31,7 @@ interface ChildData {
   student: Student
   readiness: ReadinessView
   mastery: StudentMasteryView
+  sat: SatProjectionPayload | null
   lastActivity: string | null
 }
 
@@ -55,7 +63,9 @@ export function ParentArea() {
             getStudentMastery(student.id, student.grade),
             getLastActivity(student.id),
           ])
-          return { student, readiness, mastery, lastActivity }
+          // After ensureFreshReadiness so the just-written 'sat' row is current.
+          const sat = await getSatPayload(student.id)
+          return { student, readiness, mastery, sat, lastActivity }
         }),
       )
       if (!active) return
@@ -117,7 +127,7 @@ export function ParentArea() {
 }
 
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
-  const { student, readiness, mastery, lastActivity } = data
+  const { student, readiness, mastery, sat, lastActivity } = data
   const pathway = readiness.pathway
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity
 
@@ -243,6 +253,8 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
               ))}
             </div>
           )}
+
+          <SatReadiness payload={sat} grade={student.grade} variant="parent" />
 
           <div className="stat-row">
             <span className="muted">Last activity</span>

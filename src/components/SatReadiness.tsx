@@ -1,8 +1,16 @@
 import type { SatProjectionPayload } from '@/lib/readiness'
 
 /**
- * Student-dashboard SAT Readiness card. Read-only: it renders the stored 'sat'
- * readiness_scores payload (no engine logic). Grade- AND gate-dependent:
+ * Shared SAT Readiness presentation for BOTH surfaces — the student dashboard
+ * card (variant 'student') and the parent dashboard per-child section (variant
+ * 'parent'). Read-only: it renders the stored 'sat' payload, no engine logic.
+ *
+ * Everything is shared except the wrapper element and the intro copy, so the
+ * framing — the ESTIMATE badge, the methodology line, and the
+ * "potential, not a prediction" disclaimer — CANNOT drift between the two
+ * surfaces (a school sees the parent view, so this matters).
+ *
+ * Grade- AND gate-dependent:
  *   - gate 'insufficient' (any grade): section %s + "building toward" copy,
  *     never a score or a fabricated range.
  *   - grade <= 8 (incl. K / unknown): foundation framing only, no SAT score.
@@ -10,13 +18,15 @@ import type { SatProjectionPayload } from '@/lib/readiness'
  *     readiness.
  *   - grade 11-12, gate ok: full SAT framing + ranges + top missing skills +
  *     timeline.
- * Ranges are always labeled an ESTIMATE with a visible methodology line; the
- * trajectory is a junior-year potential, never a prediction.
  */
 
+// Defined ONCE — the non-negotiable framing strings shared by both surfaces.
 const METHODOLOGY = 'Projected from demonstrated mastery, refined as your child practices.'
+const TRAJECTORY_DISCLAIMER =
+  'Junior-year potential is where they could land if they master weak and untouched skills — a potential, not a prediction.'
 
 type Band = 'foundation' | 'college' | 'sat'
+type Variant = 'student' | 'parent'
 
 function bandFor(grade: string): Band {
   const n = parseInt(grade, 10)
@@ -25,24 +35,55 @@ function bandFor(grade: string): Band {
   return 'sat' // 11-12
 }
 
-export function SatReadinessCard({
+// Intro copy varies by surface + state. Student strings are kept verbatim from
+// the original card so the student view renders identically post-refactor.
+const COPY: Record<Variant, Record<'empty' | 'foundation' | 'insufficient' | 'college' | 'sat', string>> = {
+  student: {
+    empty: 'As your child practices SAT-aligned skills, a readiness estimate will appear here.',
+    foundation:
+      "You're building skills that lead toward the SAT. Keep practicing — these are the foundations that get them there.",
+    insufficient: "A little more SAT-skill practice and we'll project a score range. Here's where things stand so far.",
+    college: 'On track toward college-level work. Below is an estimated SAT range from demonstrated mastery.',
+    sat: 'Here is an estimated SAT range from demonstrated mastery.',
+  },
+  parent: {
+    empty: 'As your child practices SAT-aligned skills, a readiness estimate will appear here.',
+    foundation:
+      'Your child is building foundational skills toward college readiness — no SAT estimate yet; that comes as they grow these skills.',
+    insufficient:
+      'A little more SAT-skill practice and an estimated score range will appear. Here is where things stand so far.',
+    college:
+      'On track toward college-level work. Below is an estimated SAT range projected from demonstrated mastery.',
+    sat: 'An estimated SAT range projected from demonstrated mastery.',
+  },
+}
+
+export function SatReadiness({
   payload,
   grade,
+  variant,
 }: {
   payload: SatProjectionPayload | null
   grade: string
+  variant: Variant
 }) {
   const band = bandFor(grade)
+  const heading = (text: string) =>
+    variant === 'parent' ? <div className="pd-label">{text}</div> : <h3>{text}</h3>
+  const wrap = (children: React.ReactNode) =>
+    variant === 'parent' ? (
+      <div className="pd-section">{children}</div>
+    ) : (
+      <section className="panel">{children}</section>
+    )
 
   // No row yet / unrecognised payload -> gentle empty state. Never a number.
   if (!payload) {
-    return (
-      <section className="panel">
-        <h3>SAT Readiness</h3>
-        <p className="muted sat-intro">
-          As your child practices SAT-aligned skills, a readiness estimate will appear here.
-        </p>
-      </section>
+    return wrap(
+      <>
+        {heading('SAT Readiness')}
+        <p className="muted sat-intro">{COPY[variant].empty}</p>
+      </>,
     )
   }
 
@@ -63,29 +104,20 @@ export function SatReadinessCard({
   const showRanges = gateOk && band !== 'foundation' && !!payload.today && !!payload.trajectory
   const showSatExtras = showRanges && band === 'sat'
 
-  const heading = band === 'college' ? 'College Readiness' : 'SAT Readiness'
-
-  const intro =
-    band === 'foundation'
-      ? "You're building skills that lead toward the SAT. Keep practicing — these are the foundations that get them there."
-      : !gateOk
-        ? "A little more SAT-skill practice and we'll project a score range. Here's where things stand so far."
-        : band === 'college'
-          ? 'On track toward college-level work. Below is an estimated SAT range from demonstrated mastery.'
-          : 'Here is an estimated SAT range from demonstrated mastery.'
+  const headingText = band === 'college' ? 'College Readiness' : 'SAT Readiness'
+  const introKey: 'foundation' | 'insufficient' | 'college' | 'sat' =
+    band === 'foundation' ? 'foundation' : !gateOk ? 'insufficient' : band
+  const intro = COPY[variant][introKey]
 
   const missing = showSatExtras
-    ? [
-        ...(payload.missingBySection?.math ?? []),
-        ...(payload.missingBySection?.['reading-writing'] ?? []),
-      ]
+    ? [...(payload.missingBySection?.math ?? []), ...(payload.missingBySection?.['reading-writing'] ?? [])]
         .filter((s) => s && typeof s.name === 'string')
         .slice(0, 4)
     : []
 
-  return (
-    <section className="panel">
-      <h3>{heading}</h3>
+  return wrap(
+    <>
+      {heading(headingText)}
       <p className="muted sat-intro">{intro}</p>
 
       {sections.length > 0 && (
@@ -120,10 +152,7 @@ export function SatReadinessCard({
               {payload.trajectory!.low}&ndash;{payload.trajectory!.high}
             </span>
           </div>
-          <p className="sat-note">
-            Junior-year potential is where they could land if they master weak and untouched
-            skills &mdash; a potential, not a prediction.
-          </p>
+          <p className="sat-note">{TRAJECTORY_DISCLAIMER}</p>
           <p className="sat-method">{METHODOLOGY}</p>
         </div>
       )}
@@ -140,6 +169,6 @@ export function SatReadinessCard({
       )}
 
       {showSatExtras && payload.timeline && <p className="sat-method">{payload.timeline}</p>}
-    </section>
+    </>,
   )
 }
