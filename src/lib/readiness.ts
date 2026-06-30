@@ -35,8 +35,9 @@ const GAP_MAX = 60
 
 // Bumped whenever the scoring/classification logic changes. Stored on each
 // readiness_scores row so a row computed by an older engine is detected as stale
-// and recomputed on next view. (v2 = the threshold-based strengths/gaps fix.)
-export const ENGINE_VERSION = 2
+// and recomputed on next view. (v2 = the threshold-based strengths/gaps fix;
+// v3 = adds the SAT readiness projection — existing rows self-heal on next view.)
+export const ENGINE_VERSION = 3
 const DAY_MS = 86_400_000
 
 // Subjects we publish a per-subject sub-score for (seeded subjects). The overall
@@ -154,6 +155,263 @@ export function computePathwayScore(rows: ReadinessSkillRow[], now: number): Pat
   return { pathway: computeBreakdown(rows, now), bySubject }
 }
 
+// ===========================================================================
+// SAT readiness engine (pure, NO-ML). Extends the Pathway engine: it reads the
+// same confidence-weighted mastery signal but groups by SAT taxonomy
+// (sat_alignment domain token -> SAT section) and projects a transparent,
+// LABELED-ESTIMATE score range. It is NOT a calibrated SAT predictor.
+// ===========================================================================
+
+export type SatSection = 'math' | 'reading-writing'
+
+/** A practiced-or-untouched SAT-aligned skill row fed to the SAT engine. */
+export interface SatSkillRow extends ReadinessSkillRow {
+  /** SAT domain token from skills.sat_alignment (e.g. 'algebra'). */
+  sat_alignment: string | null
+}
+
+export interface SatBand {
+  low: number
+  high: number
+}
+
+export interface SatDomainScore {
+  token: string
+  label: string
+  section: SatSection
+  /** Confidence-weighted mastery %, or null when the domain has no evidence. */
+  pct: number | null
+  attemptedSkills: number
+}
+
+export interface SatSectionPayload {
+  pct: number | null
+  /** 200-800 band; null when the low-data gate is closed. */
+  today: SatBand | null
+  trajectory: SatBand | null
+  domains: SatDomainScore[]
+}
+
+export interface SatProjectionPayload {
+  schemaVersion: number
+  gate: 'ok' | 'insufficient'
+  attemptedSatSkills: number
+  /** Blended overall SAT-readiness %, or null with no evidence. */
+  overallPct: number | null
+  sections: Record<SatSection, SatSectionPayload>
+  /** Combined 400-1600 range TODAY; null when the gate is closed. */
+  today: SatBand | null
+  /** Combined 400-1600 junior-year CEILING; null when the gate is closed. */
+  trajectory: SatBand | null
+  missingBySection: Record<SatSection, SkillRef[]>
+  nextSkillSlug: string | null
+  timeline: string
+}
+
+/** What the SAT engine returns: the stored payload plus the row scalars. */
+export interface SatEngineResult {
+  payload: SatProjectionPayload
+  /** 0..100 blended % for the readiness_scores.score column. */
+  score: number
+  strengths: SkillRef[]
+  gaps: SkillRef[]
+  nextSkillSlug: string | null
+}
+
+// The 8 digital-SAT domains -> section. Mirrors the domain rows seeded in
+// seeds/0002_taxonomy_sat_6-12.sql (their `description` carries the section
+// token). Static because the digital-SAT domain set is fixed.
+export const SAT_DOMAINS: { token: string; label: string; section: SatSection }[] = [
+  { token: 'algebra', label: 'Algebra', section: 'math' },
+  { token: 'advanced-math', label: 'Advanced Math', section: 'math' },
+  { token: 'problem-solving-data-analysis', label: 'Problem-Solving & Data Analysis', section: 'math' },
+  { token: 'geometry-trigonometry', label: 'Geometry & Trigonometry', section: 'math' },
+  { token: 'information-and-ideas', label: 'Information & Ideas', section: 'reading-writing' },
+  { token: 'craft-and-structure', label: 'Craft & Structure', section: 'reading-writing' },
+  { token: 'expression-of-ideas', label: 'Expression of Ideas', section: 'reading-writing' },
+  { token: 'standard-english-conventions', label: 'Standard English Conventions', section: 'reading-writing' },
+]
+const SECTION_BY_DOMAIN = new Map(SAT_DOMAINS.map((d) => [d.token, d.section] as const))
+const SAT_SECTIONS: SatSection[] = ['math', 'reading-writing']
+
+export const SAT_SCHEMA_VERSION = 1
+// Trajectory target: the mastery we assume weak/untouched SAT skills reach.
+const SAT_TARGET_MASTERY = 85
+// Low-data gate: need at least this many SAT-aligned skills with a real attempt
+// before we emit any projected range. Below it -> gate:'insufficient', no range.
+const SAT_MIN_SKILLS_FOR_PROJECTION = 4
+// Today-range half-width (per section, in SAT points) decays from MAX toward MIN
+// as evidence (summed confidence weight) grows: little data -> wide, lots -> tight.
+const SAT_HALF_WIDTH_MIN = 40
+const SAT_HALF_WIDTH_MAX = 130
+const SAT_EVIDENCE_SCALE = 3
+// Trajectory is hypothetical (a target, no evidence), so it uses a fixed,
+// deliberately rough half-width rather than the data-driven one.
+const SAT_TRAJ_HALF_WIDTH = 60
+const SAT_GAPS_CAP = 6
+const SAT_TIMELINE_NOTE =
+  'Projected ranges are transparent estimates from current mastery — a coaching signal, not a calibrated SAT predictor. The trajectory is a junior-year ceiling: where you could land if you bring weak and untouched SAT-aligned skills to about 85% mastery (not a trend from past scores — there is no score history).'
+
+/** Confidence-weighted mastery % over rows, or null when there's no evidence. */
+function weightedPct(rows: ReadinessSkillRow[], now: number): { pct: number | null; evidence: number } {
+  let weighted = 0
+  let totalWeight = 0
+  for (const r of rows) {
+    const w = attemptsWeight(r.attempts) * recencyWeight(r.last_practiced, now)
+    weighted += r.mastery_percentage * w
+    totalWeight += w
+  }
+  if (totalWeight <= 0) return { pct: null, evidence: 0 }
+  return { pct: clamp(Math.round(weighted / totalWeight), 0, 100), evidence: totalWeight }
+}
+
+/**
+ * Ceiling %: the equal-weighted mean of each skill's mastery RAISED to at least
+ * the target. Equal-weighted (not confidence-weighted) because this is a
+ * hypothetical "fully practiced & mastered" state, not current evidence; an
+ * untouched skill (mastery 0) lifts to the target here. Null if no skills.
+ */
+function ceilingPct(rows: SatSkillRow[]): number | null {
+  if (!rows.length) return null
+  let sum = 0
+  for (const r of rows) sum += Math.max(r.mastery_percentage, SAT_TARGET_MASTERY)
+  return clamp(Math.round(sum / rows.length), 0, 100)
+}
+
+/** Map a section % (0..100, or null=neutral) to a 200-800 band of given half-width. */
+function sectionBand(pct: number | null, halfWidth: number): SatBand {
+  const center = 200 + (clamp(pct ?? 50, 0, 100) / 100) * 600
+  return {
+    low: clamp(Math.round(center - halfWidth), 200, 800),
+    high: clamp(Math.round(center + halfWidth), 200, 800),
+  }
+}
+
+function todayHalfWidth(evidence: number): number {
+  return SAT_HALF_WIDTH_MIN + (SAT_HALF_WIDTH_MAX - SAT_HALF_WIDTH_MIN) * Math.exp(-evidence / SAT_EVIDENCE_SCALE)
+}
+
+const round10 = (n: number) => Math.round(n / 10) * 10
+
+/** Combine two section bands into a 400-1600 range, rounded to 10s. */
+function combineBands(a: SatBand, b: SatBand): SatBand {
+  return {
+    low: clamp(round10(a.low + b.low), 400, 1600),
+    high: clamp(round10(a.high + b.high), 400, 1600),
+  }
+}
+
+// Missing-skill ordering = highest leverage first: practiced weaknesses before
+// untouched skills, then weakest mastery, then most attempts (persistent).
+function missingCompare(a: SatSkillRow, b: SatSkillRow): number {
+  const ap = a.attempts > 0 ? 0 : 1
+  const bp = b.attempts > 0 ? 0 : 1
+  if (ap !== bp) return ap - bp
+  if (a.mastery_percentage !== b.mastery_percentage) return a.mastery_percentage - b.mastery_percentage
+  if (a.attempts !== b.attempts) return b.attempts - a.attempts
+  return a.name.localeCompare(b.name)
+}
+
+/**
+ * Pure SAT projection. `rows` should be every SAT-aligned skill the student
+ * could practice (the catalog), with mastery/attempts/last_practiced filled —
+ * untouched skills present with attempts:0. `now` (epoch ms) makes recency
+ * deterministic/testable. Rows whose sat_alignment isn't a known SAT domain are
+ * ignored.
+ *
+ *   today      = each section % -> 200-800 band (widened when data is thin) ->
+ *                summed to a 400-1600 RANGE. Heuristic, labeled estimate.
+ *   trajectory = the same, but each section lifted to its CEILING (weak/untouched
+ *                skills assumed at ~85%). This is a potential ceiling, NOT a trend
+ *                extrapolation — we have no score history.
+ *   gate       = 'insufficient' (and no ranges) until enough SAT skills have real
+ *                attempts; we never fabricate a range from almost no data.
+ */
+export function computeSatProjection(rows: SatSkillRow[], now: number): SatEngineResult {
+  const satRows = rows.filter((r) => r.sat_alignment && SECTION_BY_DOMAIN.has(r.sat_alignment))
+
+  const attemptedSatSkills = satRows.filter((r) => r.attempts >= 1).length
+  const gate: 'ok' | 'insufficient' =
+    attemptedSatSkills >= SAT_MIN_SKILLS_FOR_PROJECTION ? 'ok' : 'insufficient'
+
+  // 8 domain %s (today-style, confidence-weighted). Empty domains -> pct null.
+  const domainScores: SatDomainScore[] = SAT_DOMAINS.map((d) => {
+    const drows = satRows.filter((r) => r.sat_alignment === d.token)
+    return {
+      token: d.token,
+      label: d.label,
+      section: d.section,
+      pct: weightedPct(drows, now).pct,
+      attemptedSkills: drows.filter((r) => r.attempts >= 1).length,
+    }
+  })
+
+  // 2 section payloads. R/W blends only its domains that have evidence, so an
+  // empty domain (e.g. standard-english-conventions) never divides by zero.
+  const sections = {} as Record<SatSection, SatSectionPayload>
+  for (const section of SAT_SECTIONS) {
+    const srows = satRows.filter((r) => SECTION_BY_DOMAIN.get(r.sat_alignment as string) === section)
+    const { pct, evidence } = weightedPct(srows, now)
+    sections[section] = {
+      pct,
+      today: gate === 'ok' ? sectionBand(pct, todayHalfWidth(evidence)) : null,
+      trajectory: gate === 'ok' ? sectionBand(ceilingPct(srows), SAT_TRAJ_HALF_WIDTH) : null,
+      domains: domainScores.filter((d) => d.section === section),
+    }
+  }
+
+  const overall = weightedPct(satRows, now)
+  const today =
+    gate === 'ok' ? combineBands(sections.math.today as SatBand, sections['reading-writing'].today as SatBand) : null
+  let trajectory =
+    gate === 'ok'
+      ? combineBands(sections.math.trajectory as SatBand, sections['reading-writing'].trajectory as SatBand)
+      : null
+  // A ceiling is never below the current estimate: floor the trajectory at
+  // today's range. (Matters only when a whole section has no evidence and its
+  // wide neutral "today" band would otherwise exceed the narrow neutral ceiling.)
+  if (today && trajectory) {
+    trajectory = { low: Math.max(trajectory.low, today.low), high: Math.max(trajectory.high, today.high) }
+  }
+
+  // Missing = weak (below GAP_MAX) OR untouched (no attempts), grouped by section.
+  const missing = satRows.filter((r) => r.attempts === 0 || r.mastery_percentage < GAP_MAX).sort(missingCompare)
+  const missingBySection: Record<SatSection, SkillRef[]> = { math: [], 'reading-writing': [] }
+  for (const r of missing) {
+    const sec = SECTION_BY_DOMAIN.get(r.sat_alignment as string) as SatSection
+    missingBySection[sec].push(toRef(r))
+  }
+
+  const strengths = [...satRows]
+    .filter((r) => r.mastery_percentage >= STRENGTH_MIN)
+    .sort((a, b) => b.mastery_percentage - a.mastery_percentage || a.name.localeCompare(b.name))
+    .slice(0, TOP_N)
+    .map(toRef)
+
+  const nextSkillSlug = missing[0]?.slug ?? null
+
+  const payload: SatProjectionPayload = {
+    schemaVersion: SAT_SCHEMA_VERSION,
+    gate,
+    attemptedSatSkills,
+    overallPct: overall.pct,
+    sections,
+    today,
+    trajectory,
+    missingBySection,
+    nextSkillSlug,
+    timeline: SAT_TIMELINE_NOTE,
+  }
+
+  return {
+    payload,
+    score: overall.pct ?? 0,
+    strengths,
+    gaps: missing.slice(0, SAT_GAPS_CAP).map(toRef),
+    nextSkillSlug,
+  }
+}
+
 // ---------------------------------------------------------------------------
 // DB orchestration (client-side under RLS). Not pure; not unit-tested.
 // ---------------------------------------------------------------------------
@@ -168,6 +426,24 @@ function readinessRow(studentId: string, readinessType: string, b: ReadinessBrea
     next_skill_slug: b.nextSkillSlug,
     // Reserved for the future AI Coach; the engine does not populate it yet.
     recommendations: [] as unknown as Json,
+    engine_version: ENGINE_VERSION,
+  }
+}
+
+/**
+ * The single readiness_scores row for readiness_type='sat'. The 400-1600
+ * projection and ranges don't fit numeric(5,2), so the full SAT payload lives in
+ * `recommendations`; `score` holds the blended SAT-readiness % (0..100).
+ */
+function satReadinessRow(studentId: string, sat: SatEngineResult) {
+  return {
+    student_id: studentId,
+    readiness_type: 'sat',
+    score: sat.score,
+    strengths: sat.strengths as unknown as Json,
+    gaps: sat.gaps as unknown as Json,
+    next_skill_slug: sat.nextSkillSlug,
+    recommendations: sat.payload as unknown as Json,
     engine_version: ENGINE_VERSION,
   }
 }
@@ -210,11 +486,39 @@ export async function recordReadiness(studentId: string): Promise<void> {
   }
   if (!rows.length) return
 
-  const result = computePathwayScore(rows, Date.now())
+  const now = Date.now()
+  const result = computePathwayScore(rows, now)
   const upserts = [
     readinessRow(studentId, 'pathway', result.pathway),
     ...Object.entries(result.bySubject).map(([subject, b]) => readinessRow(studentId, subject, b)),
   ]
+
+  // SAT readiness: project over the FULL SAT-aligned catalog (so untouched
+  // skills count toward the trajectory ceiling and the missing list), left-
+  // joined to this student's mastery (untouched -> attempts:0).
+  const { data: satCatalog } = await supabase
+    .from('skills')
+    .select('id, slug, name, subject, sat_alignment')
+    .eq('level', 'skill')
+    .not('sat_alignment', 'is', null)
+  const masteryById = new Map(masteryRows.map((m) => [m.skill_id, m]))
+  const satRows: SatSkillRow[] = []
+  for (const c of satCatalog ?? []) {
+    if (!c.slug || !c.sat_alignment) continue
+    const m = masteryById.get(c.id)
+    satRows.push({
+      slug: c.slug,
+      name: c.name,
+      subject: c.subject,
+      sat_alignment: c.sat_alignment,
+      mastery_percentage: m ? Number(m.mastery_percentage) : 0,
+      attempts: m ? m.attempts : 0,
+      last_practiced: m ? m.last_practiced : null,
+    })
+  }
+  if (satRows.length) {
+    upserts.push(satReadinessRow(studentId, computeSatProjection(satRows, now)))
+  }
 
   const { error } = await supabase
     .from('readiness_scores')
@@ -256,8 +560,13 @@ interface ReadinessRowLite {
   next_skill_slug: string | null
 }
 
-/** Pure: shape raw readiness_scores rows into a view. */
-function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
+// Only these readiness_type values are subjects. Other types (notably 'sat')
+// must NEVER be treated as a subject — they have their own dedicated view and
+// must not leak into bySubject or Today's Plan (no "Practice Sat" item).
+const SUBJECT_TYPES = new Set<string>(SUBJECTS)
+
+/** Pure: shape raw readiness_scores rows into a view. Exported for testing. */
+export function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
   if (!rows.length) return { pathway: null, bySubject: {}, hasAny: false }
   let pathway: ReadinessRecord | null = null
   const bySubject: Record<string, ReadinessRecord> = {}
@@ -269,7 +578,8 @@ function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
       nextSkillSlug: r.next_skill_slug,
     }
     if (r.readiness_type === 'pathway') pathway = rec
-    else bySubject[r.readiness_type] = rec
+    else if (SUBJECT_TYPES.has(r.readiness_type)) bySubject[r.readiness_type] = rec
+    // else (e.g. 'sat'): ignored here; read directly by the SAT view.
   }
   return { pathway, bySubject, hasAny: true }
 }
