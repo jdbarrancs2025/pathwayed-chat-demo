@@ -8,7 +8,7 @@
 
 begin;
 
--- linear-equation-solve (algebra, easy) — seeds 1..20
+-- linear-equation-solve (algebra, easy) — questions 1..20
 insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
@@ -16,7 +16,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,7x + 1 = -62$, what is the value of $x$?', '[{"text":"-63","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-9","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"sign-error"},{"text":"-8","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-9', 'Start with $\,7x + 1 = -62$. Subtract the constant from both sides: $\,7x = -63$. Divide by $7$: $x = -9$.', 'published')
+   'If $\,6x + 4 = 52$, what is the value of $x$?', '[{"text":"8","is_correct":true},{"text":"-8","is_correct":false,"misconception_token":"sign-error"},{"text":"12","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"48","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '8', 'Start with $\,6x + 4 = 52$. Subtract the constant from both sides: $\,6x = 48$. Divide by $6$: $x = 8$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -34,7 +34,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,7x - 4 = -32$, what is the value of $x$?', '[{"text":"-4","is_correct":true},{"text":"-28","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-8","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"4","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '-4', 'Start with $\,7x - 4 = -32$. Subtract the constant from both sides: $\,7x = -28$. Divide by $7$: $x = -4$.', 'published')
+   'If $\,8x + 5 = 13$, what is the value of $x$?', '[{"text":"8","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"1","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-1","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '1', 'Start with $\,8x + 5 = 13$. Subtract the constant from both sides: $\,8x = 8$. Divide by $8$: $x = 1$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -52,7 +52,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,7x - 1 = -64$, what is the value of $x$?', '[{"text":"-63","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-10","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"9","is_correct":false,"misconception_token":"sign-error"},{"text":"-9","is_correct":true}]'::jsonb, '-9', 'Start with $\,7x - 1 = -64$. Subtract the constant from both sides: $\,7x = -63$. Divide by $7$: $x = -9$.', 'published')
+   'If $\,4x - 1 = -9$, what is the value of $x$?', '[{"text":"-3","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"2","is_correct":false,"misconception_token":"sign-error"},{"text":"-2","is_correct":true},{"text":"-8","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '-2', 'Start with $\,4x - 1 = -9$. Subtract the constant from both sides: $\,4x = -8$. Divide by $4$: $x = -2$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -70,7 +70,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,9x - 6 = -42$, what is the value of $x$?', '[{"text":"4","is_correct":false,"misconception_token":"sign-error"},{"text":"-36","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-10","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-4","is_correct":true}]'::jsonb, '-4', 'Start with $\,9x - 6 = -42$. Subtract the constant from both sides: $\,9x = -36$. Divide by $9$: $x = -4$.', 'published')
+   'If $\,8x + 9 = 49$, what is the value of $x$?', '[{"text":"-5","is_correct":false,"misconception_token":"sign-error"},{"text":"40","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"14","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"5","is_correct":true}]'::jsonb, '5', 'Start with $\,8x + 9 = 49$. Subtract the constant from both sides: $\,8x = 40$. Divide by $8$: $x = 5$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -88,7 +88,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,7x - 6 = 29$, what is the value of $x$?', '[{"text":"-1","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"35","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"5","is_correct":true},{"text":"-5","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '5', 'Start with $\,7x - 6 = 29$. Subtract the constant from both sides: $\,7x = 35$. Divide by $7$: $x = 5$.', 'published')
+   'If $\,3x - 3 = 18$, what is the value of $x$?', '[{"text":"21","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-7","is_correct":false,"misconception_token":"sign-error"},{"text":"4","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"7","is_correct":true}]'::jsonb, '7', 'Start with $\,3x - 3 = 18$. Subtract the constant from both sides: $\,3x = 21$. Divide by $3$: $x = 7$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -106,7 +106,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,6x + 3 = -51$, what is the value of $x$?', '[{"text":"9","is_correct":false,"misconception_token":"sign-error"},{"text":"-6","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-54","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-9","is_correct":true}]'::jsonb, '-9', 'Start with $\,6x + 3 = -51$. Subtract the constant from both sides: $\,6x = -54$. Divide by $6$: $x = -9$.', 'published')
+   'If $\,3x + 3 = -3$, what is the value of $x$?', '[{"text":"-6","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"1","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"2","is_correct":false,"misconception_token":"sign-error"},{"text":"-2","is_correct":true}]'::jsonb, '-2', 'Start with $\,3x + 3 = -3$. Subtract the constant from both sides: $\,3x = -6$. Divide by $3$: $x = -2$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -124,7 +124,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,2x + 9 = -7$, what is the value of $x$?', '[{"text":"1","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-8","is_correct":true},{"text":"-16","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"8","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '-8', 'Start with $\,2x + 9 = -7$. Subtract the constant from both sides: $\,2x = -16$. Divide by $2$: $x = -8$.', 'published')
+   'If $\,9x + 1 = -80$, what is the value of $x$?', '[{"text":"-81","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-8","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"9","is_correct":false,"misconception_token":"sign-error"},{"text":"-9","is_correct":true}]'::jsonb, '-9', 'Start with $\,9x + 1 = -80$. Subtract the constant from both sides: $\,9x = -81$. Divide by $9$: $x = -9$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -142,7 +142,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,3x - 4 = 5$, what is the value of $x$?', '[{"text":"-1","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"3","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-3","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '3', 'Start with $\,3x - 4 = 5$. Subtract the constant from both sides: $\,3x = 9$. Divide by $3$: $x = 3$.', 'published')
+   'If $\,7x + 5 = -44$, what is the value of $x$?', '[{"text":"-7","is_correct":true},{"text":"-49","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-2","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"7","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '-7', 'Start with $\,7x + 5 = -44$. Subtract the constant from both sides: $\,7x = -49$. Divide by $7$: $x = -7$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -160,7 +160,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,3x - 7 = 14$, what is the value of $x$?', '[{"text":"7","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-7","is_correct":false,"misconception_token":"sign-error"},{"text":"0","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '7', 'Start with $\,3x - 7 = 14$. Subtract the constant from both sides: $\,3x = 21$. Divide by $3$: $x = 7$.', 'published')
+   'If $\,7x + 4 = 39$, what is the value of $x$?', '[{"text":"35","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"5","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-5","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '5', 'Start with $\,7x + 4 = 39$. Subtract the constant from both sides: $\,7x = 35$. Divide by $7$: $x = 5$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -178,7 +178,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,6x + 4 = 52$, what is the value of $x$?', '[{"text":"-8","is_correct":false,"misconception_token":"sign-error"},{"text":"8","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"12","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '8', 'Start with $\,6x + 4 = 52$. Subtract the constant from both sides: $\,6x = 48$. Divide by $6$: $x = 8$.', 'published')
+   'If $\,8x - 4 = -60$, what is the value of $x$?', '[{"text":"-7","is_correct":true},{"text":"-56","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"7","is_correct":false,"misconception_token":"sign-error"},{"text":"-11","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-7', 'Start with $\,8x - 4 = -60$. Subtract the constant from both sides: $\,8x = -56$. Divide by $8$: $x = -7$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -196,7 +196,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,6x + 2 = 8$, what is the value of $x$?', '[{"text":"1","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"3","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-1","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '1', 'Start with $\,6x + 2 = 8$. Subtract the constant from both sides: $\,6x = 6$. Divide by $6$: $x = 1$.', 'published')
+   'If $\,9x + 2 = -52$, what is the value of $x$?', '[{"text":"-54","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-6","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"sign-error"},{"text":"-4","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-6', 'Start with $\,9x + 2 = -52$. Subtract the constant from both sides: $\,9x = -54$. Divide by $9$: $x = -6$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -214,7 +214,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,4x + 2 = -30$, what is the value of $x$?', '[{"text":"-32","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"8","is_correct":false,"misconception_token":"sign-error"},{"text":"-8","is_correct":true},{"text":"-6","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-8', 'Start with $\,4x + 2 = -30$. Subtract the constant from both sides: $\,4x = -32$. Divide by $4$: $x = -8$.', 'published')
+   'If $\,3x + 1 = -11$, what is the value of $x$?', '[{"text":"-3","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-4","is_correct":true},{"text":"-12","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"4","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '-4', 'Start with $\,3x + 1 = -11$. Subtract the constant from both sides: $\,3x = -12$. Divide by $3$: $x = -4$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -232,7 +232,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,6x - 8 = -26$, what is the value of $x$?', '[{"text":"-18","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"3","is_correct":false,"misconception_token":"sign-error"},{"text":"-11","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-3","is_correct":true}]'::jsonb, '-3', 'Start with $\,6x - 8 = -26$. Subtract the constant from both sides: $\,6x = -18$. Divide by $6$: $x = -3$.', 'published')
+   'If $\,6x - 8 = 22$, what is the value of $x$?', '[{"text":"30","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"5","is_correct":true},{"text":"-3","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-5","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '5', 'Start with $\,6x - 8 = 22$. Subtract the constant from both sides: $\,6x = 30$. Divide by $6$: $x = 5$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -250,7 +250,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,5x + 1 = -9$, what is the value of $x$?', '[{"text":"-1","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"2","is_correct":false,"misconception_token":"sign-error"},{"text":"-2","is_correct":true},{"text":"-10","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '-2', 'Start with $\,5x + 1 = -9$. Subtract the constant from both sides: $\,5x = -10$. Divide by $5$: $x = -2$.', 'published')
+   'If $\,7x + 6 = -22$, what is the value of $x$?', '[{"text":"-28","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-4","is_correct":true},{"text":"4","is_correct":false,"misconception_token":"sign-error"},{"text":"2","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-4', 'Start with $\,7x + 6 = -22$. Subtract the constant from both sides: $\,7x = -28$. Divide by $7$: $x = -4$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -268,7 +268,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,3x - 2 = -8$, what is the value of $x$?', '[{"text":"2","is_correct":false,"misconception_token":"sign-error"},{"text":"-4","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-2","is_correct":true},{"text":"-6","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '-2', 'Start with $\,3x - 2 = -8$. Subtract the constant from both sides: $\,3x = -6$. Divide by $3$: $x = -2$.', 'published')
+   'If $\,2x + 4 = 20$, what is the value of $x$?', '[{"text":"8","is_correct":true},{"text":"-8","is_correct":false,"misconception_token":"sign-error"},{"text":"12","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"16","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '8', 'Start with $\,2x + 4 = 20$. Subtract the constant from both sides: $\,2x = 16$. Divide by $2$: $x = 8$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -286,7 +286,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,7x + 5 = -44$, what is the value of $x$?', '[{"text":"7","is_correct":false,"misconception_token":"sign-error"},{"text":"-7","is_correct":true},{"text":"-2","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-49","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '-7', 'Start with $\,7x + 5 = -44$. Subtract the constant from both sides: $\,7x = -49$. Divide by $7$: $x = -7$.', 'published')
+   'If $\,5x + 8 = 23$, what is the value of $x$?', '[{"text":"-3","is_correct":false,"misconception_token":"sign-error"},{"text":"3","is_correct":true},{"text":"11","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"15","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '3', 'Start with $\,5x + 8 = 23$. Subtract the constant from both sides: $\,5x = 15$. Divide by $5$: $x = 3$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -304,7 +304,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,7x + 1 = -41$, what is the value of $x$?', '[{"text":"6","is_correct":false,"misconception_token":"sign-error"},{"text":"-42","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-5","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-6","is_correct":true}]'::jsonb, '-6', 'Start with $\,7x + 1 = -41$. Subtract the constant from both sides: $\,7x = -42$. Divide by $7$: $x = -6$.', 'published')
+   'If $\,3x - 7 = -10$, what is the value of $x$?', '[{"text":"-1","is_correct":true},{"text":"1","is_correct":false,"misconception_token":"sign-error"},{"text":"-8","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-3","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '-1', 'Start with $\,3x - 7 = -10$. Subtract the constant from both sides: $\,3x = -3$. Divide by $3$: $x = -1$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -322,7 +322,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,5x + 1 = 11$, what is the value of $x$?', '[{"text":"3","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"10","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-2","is_correct":false,"misconception_token":"sign-error"},{"text":"2","is_correct":true}]'::jsonb, '2', 'Start with $\,5x + 1 = 11$. Subtract the constant from both sides: $\,5x = 10$. Divide by $5$: $x = 2$.', 'published')
+   'If $\,7x + 4 = 53$, what is the value of $x$?', '[{"text":"49","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"7","is_correct":true},{"text":"-7","is_correct":false,"misconception_token":"sign-error"},{"text":"11","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '7', 'Start with $\,7x + 4 = 53$. Subtract the constant from both sides: $\,7x = 49$. Divide by $7$: $x = 7$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -340,7 +340,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,2x - 1 = -9$, what is the value of $x$?', '[{"text":"-8","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"-4","is_correct":true},{"text":"4","is_correct":false,"misconception_token":"sign-error"},{"text":"-5","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-4', 'Start with $\,2x - 1 = -9$. Subtract the constant from both sides: $\,2x = -8$. Divide by $2$: $x = -4$.', 'published')
+   'If $\,9x - 7 = -52$, what is the value of $x$?', '[{"text":"-45","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"5","is_correct":false,"misconception_token":"sign-error"},{"text":"-5","is_correct":true},{"text":"-12","is_correct":false,"misconception_token":"mishandled-constant"}]'::jsonb, '-5', 'Start with $\,9x - 7 = -52$. Subtract the constant from both sides: $\,9x = -45$. Divide by $9$: $x = -5$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -358,7 +358,7 @@ values
    (select id from public.question_templates where code = 'linear-equation-solve'),
    (select id from public.skills where slug = 'linear-thinking'),
    'algebra', 'easy',
-   'If $\,8x + 2 = -22$, what is the value of $x$?', '[{"text":"3","is_correct":false,"misconception_token":"sign-error"},{"text":"-3","is_correct":true},{"text":"-1","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-24","is_correct":false,"misconception_token":"forgot-to-divide"}]'::jsonb, '-3', 'Start with $\,8x + 2 = -22$. Subtract the constant from both sides: $\,8x = -24$. Divide by $8$: $x = -3$.', 'published')
+   'If $\,4x + 8 = 12$, what is the value of $x$?', '[{"text":"4","is_correct":false,"misconception_token":"forgot-to-divide"},{"text":"1","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"mishandled-constant"},{"text":"-1","is_correct":false,"misconception_token":"sign-error"}]'::jsonb, '1', 'Start with $\,4x + 8 = 12$. Subtract the constant from both sides: $\,4x = 4$. Divide by $4$: $x = 1$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -370,7 +370,7 @@ on conflict (id) do update set
   solution       = excluded.solution,
   status         = excluded.status;
 
--- percent-of (problem-solving-data-analysis, easy) — seeds 1..20
+-- percent-of (problem-solving-data-analysis, easy) — questions 1..20
 insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
@@ -378,7 +378,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $60\%$ of $20$?', '[{"text":"12","is_correct":true},{"text":"120","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"24","is_correct":false,"misconception_token":"halved-the-base"},{"text":"8","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '12', '$60\%$ of $20$ is $\frac{60}{100} \times 20 = 12$.', 'published')
+   'What is $25\%$ of $120$?', '[{"text":"300","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"30","is_correct":true},{"text":"90","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"60","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '30', '$25\%$ of $120$ is $\frac{25}{100} \times 120 = 30$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -396,7 +396,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $70\%$ of $80$?', '[{"text":"56","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"112","is_correct":false,"misconception_token":"halved-the-base"},{"text":"560","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '56', '$70\%$ of $80$ is $\frac{70}{100} \times 80 = 56$.', 'published')
+   'What is $80\%$ of $120$?', '[{"text":"96","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"960","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"192","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '96', '$80\%$ of $120$ is $\frac{80}{100} \times 120 = 96$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -414,7 +414,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $65\%$ of $20$?', '[{"text":"7","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"26","is_correct":false,"misconception_token":"halved-the-base"},{"text":"13","is_correct":true},{"text":"130","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '13', '$65\%$ of $20$ is $\frac{65}{100} \times 20 = 13$.', 'published')
+   'What is $25\%$ of $100$?', '[{"text":"75","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"25","is_correct":true},{"text":"50","is_correct":false,"misconception_token":"halved-the-base"},{"text":"250","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '25', '$25\%$ of $100$ is $\frac{25}{100} \times 100 = 25$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -432,7 +432,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $85\%$ of $80$?', '[{"text":"680","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"12","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"136","is_correct":false,"misconception_token":"halved-the-base"},{"text":"68","is_correct":true}]'::jsonb, '68', '$85\%$ of $80$ is $\frac{85}{100} \times 80 = 68$.', 'published')
+   'What is $70\%$ of $160$?', '[{"text":"1120","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"48","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"112","is_correct":true},{"text":"224","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '112', '$70\%$ of $160$ is $\frac{70}{100} \times 160 = 112$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -450,7 +450,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $65\%$ of $160$?', '[{"text":"56","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"208","is_correct":false,"misconception_token":"halved-the-base"},{"text":"1040","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"104","is_correct":true}]'::jsonb, '104', '$65\%$ of $160$ is $\frac{65}{100} \times 160 = 104$.', 'published')
+   'What is $20\%$ of $180$?', '[{"text":"72","is_correct":false,"misconception_token":"halved-the-base"},{"text":"144","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"36","is_correct":true},{"text":"360","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '36', '$20\%$ of $180$ is $\frac{20}{100} \times 180 = 36$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -468,7 +468,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $50\%$ of $20$?', '[{"text":"50","is_correct":false,"misconception_token":"answered-the-percent"},{"text":"100","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"10","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '10', '$50\%$ of $20$ is $\frac{50}{100} \times 20 = 10$.', 'published')
+   'What is $20\%$ of $100$?', '[{"text":"40","is_correct":false,"misconception_token":"halved-the-base"},{"text":"200","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"20","is_correct":true},{"text":"80","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '20', '$20\%$ of $100$ is $\frac{20}{100} \times 100 = 20$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -486,7 +486,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $5\%$ of $20$?', '[{"text":"1","is_correct":true},{"text":"10","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"19","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"2","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '1', '$5\%$ of $20$ is $\frac{5}{100} \times 20 = 1$.', 'published')
+   'What is $85\%$ of $20$?', '[{"text":"34","is_correct":false,"misconception_token":"halved-the-base"},{"text":"170","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"17","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '17', '$85\%$ of $20$ is $\frac{85}{100} \times 20 = 17$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -504,7 +504,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $15\%$ of $140$?', '[{"text":"21","is_correct":true},{"text":"42","is_correct":false,"misconception_token":"halved-the-base"},{"text":"119","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"210","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '21', '$15\%$ of $140$ is $\frac{15}{100} \times 140 = 21$.', 'published')
+   'What is $65\%$ of $40$?', '[{"text":"26","is_correct":true},{"text":"14","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"260","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"52","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '26', '$65\%$ of $40$ is $\frac{65}{100} \times 40 = 26$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -522,7 +522,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $20\%$ of $180$?', '[{"text":"72","is_correct":false,"misconception_token":"halved-the-base"},{"text":"360","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"144","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"36","is_correct":true}]'::jsonb, '36', '$20\%$ of $180$ is $\frac{20}{100} \times 180 = 36$.', 'published')
+   'What is $65\%$ of $160$?', '[{"text":"104","is_correct":true},{"text":"208","is_correct":false,"misconception_token":"halved-the-base"},{"text":"1040","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"56","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '104', '$65\%$ of $160$ is $\frac{65}{100} \times 160 = 104$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -540,7 +540,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $50\%$ of $200$?', '[{"text":"1000","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"100","is_correct":true},{"text":"50","is_correct":false,"misconception_token":"answered-the-percent"},{"text":"200","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '100', '$50\%$ of $200$ is $\frac{50}{100} \times 200 = 100$.', 'published')
+   'What is $70\%$ of $40$?', '[{"text":"28","is_correct":true},{"text":"56","is_correct":false,"misconception_token":"halved-the-base"},{"text":"12","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"280","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '28', '$70\%$ of $40$ is $\frac{70}{100} \times 40 = 28$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -558,7 +558,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $50\%$ of $120$?', '[{"text":"60","is_correct":true},{"text":"50","is_correct":false,"misconception_token":"answered-the-percent"},{"text":"600","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"120","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '60', '$50\%$ of $120$ is $\frac{50}{100} \times 120 = 60$.', 'published')
+   'What is $85\%$ of $60$?', '[{"text":"51","is_correct":true},{"text":"510","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"102","is_correct":false,"misconception_token":"halved-the-base"},{"text":"9","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '51', '$85\%$ of $60$ is $\frac{85}{100} \times 60 = 51$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -576,7 +576,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $30\%$ of $20$?', '[{"text":"60","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"6","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"halved-the-base"},{"text":"14","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '6', '$30\%$ of $20$ is $\frac{30}{100} \times 20 = 6$.', 'published')
+   'What is $25\%$ of $60$?', '[{"text":"15","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"halved-the-base"},{"text":"150","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"45","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '15', '$25\%$ of $60$ is $\frac{25}{100} \times 60 = 15$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -594,7 +594,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $55\%$ of $80$?', '[{"text":"440","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"36","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"88","is_correct":false,"misconception_token":"halved-the-base"},{"text":"44","is_correct":true}]'::jsonb, '44', '$55\%$ of $80$ is $\frac{55}{100} \times 80 = 44$.', 'published')
+   'What is $55\%$ of $160$?', '[{"text":"176","is_correct":false,"misconception_token":"halved-the-base"},{"text":"72","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"880","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"88","is_correct":true}]'::jsonb, '88', '$55\%$ of $160$ is $\frac{55}{100} \times 160 = 88$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -612,7 +612,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $45\%$ of $100$?', '[{"text":"90","is_correct":false,"misconception_token":"halved-the-base"},{"text":"45","is_correct":true},{"text":"450","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"55","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '45', '$45\%$ of $100$ is $\frac{45}{100} \times 100 = 45$.', 'published')
+   'What is $70\%$ of $80$?', '[{"text":"56","is_correct":true},{"text":"560","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"24","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"112","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '56', '$70\%$ of $80$ is $\frac{70}{100} \times 80 = 56$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -630,7 +630,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $25\%$ of $100$?', '[{"text":"75","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"25","is_correct":true},{"text":"50","is_correct":false,"misconception_token":"halved-the-base"},{"text":"250","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '25', '$25\%$ of $100$ is $\frac{25}{100} \times 100 = 25$.', 'published')
+   'What is $5\%$ of $200$?', '[{"text":"10","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"halved-the-base"},{"text":"100","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"190","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '10', '$5\%$ of $200$ is $\frac{5}{100} \times 200 = 10$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -648,7 +648,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $60\%$ of $40$?', '[{"text":"16","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"24","is_correct":true},{"text":"240","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"48","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '24', '$60\%$ of $40$ is $\frac{60}{100} \times 40 = 24$.', 'published')
+   'What is $45\%$ of $140$?', '[{"text":"630","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"77","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"63","is_correct":true},{"text":"126","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '63', '$45\%$ of $140$ is $\frac{45}{100} \times 140 = 63$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -666,7 +666,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $65\%$ of $40$?', '[{"text":"260","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"52","is_correct":false,"misconception_token":"halved-the-base"},{"text":"26","is_correct":true},{"text":"14","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '26', '$65\%$ of $40$ is $\frac{65}{100} \times 40 = 26$.', 'published')
+   'What is $15\%$ of $100$?', '[{"text":"150","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"85","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"30","is_correct":false,"misconception_token":"halved-the-base"},{"text":"15","is_correct":true}]'::jsonb, '15', '$15\%$ of $100$ is $\frac{15}{100} \times 100 = 15$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -684,7 +684,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $40\%$ of $140$?', '[{"text":"112","is_correct":false,"misconception_token":"halved-the-base"},{"text":"560","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"56","is_correct":true},{"text":"84","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '56', '$40\%$ of $140$ is $\frac{40}{100} \times 140 = 56$.', 'published')
+   'What is $70\%$ of $180$?', '[{"text":"126","is_correct":true},{"text":"1260","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"252","is_correct":false,"misconception_token":"halved-the-base"},{"text":"54","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '126', '$70\%$ of $180$ is $\frac{70}{100} \times 180 = 126$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -702,7 +702,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $10\%$ of $80$?', '[{"text":"8","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"halved-the-base"},{"text":"72","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"80","is_correct":false,"misconception_token":"decimal-place-error"}]'::jsonb, '8', '$10\%$ of $80$ is $\frac{10}{100} \times 80 = 8$.', 'published')
+   'What is $90\%$ of $60$?', '[{"text":"540","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"108","is_correct":false,"misconception_token":"halved-the-base"},{"text":"6","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"54","is_correct":true}]'::jsonb, '54', '$90\%$ of $60$ is $\frac{90}{100} \times 60 = 54$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -720,7 +720,7 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $70\%$ of $80$?', '[{"text":"560","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"112","is_correct":false,"misconception_token":"halved-the-base"},{"text":"56","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"complement-instead-of-percent"}]'::jsonb, '56', '$70\%$ of $80$ is $\frac{70}{100} \times 80 = 56$.', 'published')
+   'What is $25\%$ of $120$?', '[{"text":"30","is_correct":true},{"text":"90","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"300","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"60","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '30', '$25\%$ of $120$ is $\frac{25}{100} \times 120 = 30$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,

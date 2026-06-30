@@ -75,6 +75,12 @@ export const PERCENT_OF: MathTemplate = {
     answerFormat: 'integer',
     solutionTemplate: '${p}\\%$ of ${n}$ is $\\frac{{p}}{100} \\times {n} = {answer}$.',
   },
+  // KNOWN STAGE-2 LIMITATION (magnitude guessability): these distractors are
+  // fixed multiples of the answer — decimal-place-error is always exactly 10x
+  // (so always the largest option) and halved-the-base always 2x. A student can
+  // eliminate by magnitude without doing the math; real distractors cluster
+  // nearer the answer. Leave functional for now; improve when we build smarter,
+  // answer-relative distractor strategies (e.g. ±10–20%, near-miss arithmetic).
   distractorSpec: [
     { formula: 'p * n / 10', misconception_token: 'decimal-place-error' }, // 10x too big
     { formula: 'n - p * n / 100', misconception_token: 'complement-instead-of-percent' }, // "% off" vs "% of"

@@ -28,6 +28,19 @@ const seedsDir = join(here, '..', 'seeds')
 const q = (s: string) => `'${s.replace(/'/g, "''")}'`
 const jsonb = (v: unknown) => `${q(JSON.stringify(v))}::jsonb`
 
+/**
+ * Decorrelate the generation seed from the cache index. mulberry32's FIRST
+ * output is correlated for small consecutive seeds (1,2,3 clustered on the same
+ * coefficient draw), making the first cached questions look repetitive. Mixing
+ * the index by the golden-ratio constant spreads consecutive indices across the
+ * 32-bit seed space, so the FIRST handful varies, not just the full set. The
+ * generator stays a pure seed->question map; only the cache's seed choice
+ * changes. Cache identity stays the human index (1..N) below.
+ */
+function seedForIndex(index: number): number {
+  return Math.imul(index, 0x9e3779b1) >>> 0
+}
+
 /** Stable v5-style UUID from a string, so seeds re-run idempotently by id. */
 function deterministicId(input: string): string {
   const b = createHash('sha1').update(input).digest().subarray(0, 16)
@@ -90,10 +103,11 @@ on conflict (code) do update set
 let questionsSql = QUESTIONS_HEADER
 let count = 0
 for (const t of MATH_TEMPLATES) {
-  questionsSql += `\n-- ${t.code} (${t.satAlignment}, ${t.difficulty}) — seeds 1..${QUESTIONS_PER_TEMPLATE}\n`
-  for (let seed = 1; seed <= QUESTIONS_PER_TEMPLATE; seed++) {
-    const gq = generateQuestion(t.generationSpec, t.distractorSpec, seed)
-    const id = deterministicId(`${t.code}:${seed}`)
+  questionsSql += `\n-- ${t.code} (${t.satAlignment}, ${t.difficulty}) — questions 1..${QUESTIONS_PER_TEMPLATE}\n`
+  for (let index = 1; index <= QUESTIONS_PER_TEMPLATE; index++) {
+    const gq = generateQuestion(t.generationSpec, t.distractorSpec, seedForIndex(index))
+    // Cache identity is the stable human index, not the mixed seed.
+    const id = deterministicId(`${t.code}:${index}`)
     questionsSql += `insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
@@ -126,9 +140,9 @@ console.log(`Wrote seeds/0003 (${MATH_TEMPLATES.length} templates) and seeds/000
 if (process.argv.includes('--samples')) {
   for (const t of MATH_TEMPLATES) {
     console.log(`\n================ ${t.code} (${t.satAlignment}) ================`)
-    for (let seed = 1; seed <= 6; seed++) {
-      const gq = generateQuestion(t.generationSpec, t.distractorSpec, seed)
-      console.log(`\n  [seed ${seed}] ${gq.stem}`)
+    for (let index = 1; index <= 6; index++) {
+      const gq = generateQuestion(t.generationSpec, t.distractorSpec, seedForIndex(index))
+      console.log(`\n  [#${index}] ${gq.stem}`)
       for (const c of gq.choices) {
         console.log(`     ${c.is_correct ? '*' : ' '} ${c.text}${c.misconception_token ? `   (${c.misconception_token})` : ''}`)
       }
