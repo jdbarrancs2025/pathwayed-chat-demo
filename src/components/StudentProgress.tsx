@@ -4,9 +4,12 @@ import {
   buildCoachMessage,
   buildTodaysPlan,
   ensureFreshReadiness,
+  getSatPayload,
   type ReadinessView,
+  type SatProjectionPayload,
 } from '@/lib/readiness'
 import { subjectDisplayName } from '@/lib/subjects'
+import { SatReadinessCard } from '@/components/SatReadinessCard'
 
 /**
  * Academic OS Phase 1 — read-only student dashboard sections. Shows skill mastery
@@ -47,6 +50,7 @@ export function StudentProgress({
 }) {
   const [view, setView] = useState<StudentMasteryView | null>(null)
   const [readiness, setReadiness] = useState<ReadinessView | null>(null)
+  const [sat, setSat] = useState<SatProjectionPayload | null>(null)
 
   useEffect(() => {
     let active = true
@@ -60,9 +64,16 @@ export function StudentProgress({
 
   useEffect(() => {
     let active = true
-    ensureFreshReadiness(studentId).then((r) => {
-      if (active) setReadiness(r)
-    })
+    // Read the SAT payload AFTER ensureFreshReadiness so it reflects any
+    // just-written recompute (the 'sat' row is excluded from the view above).
+    ensureFreshReadiness(studentId)
+      .then((r) => {
+        if (active) setReadiness(r)
+        return getSatPayload(studentId)
+      })
+      .then((p) => {
+        if (active) setSat(p)
+      })
     return () => {
       active = false
     }
@@ -161,12 +172,7 @@ export function StudentProgress({
         </h3>
         <p className="muted">A grade-level readiness score is coming in a later phase.</p>
       </section>
-      <section className="panel placeholder">
-        <h3>
-          SAT Readiness <span className="soon">Phase 3</span>
-        </h3>
-        <p className="muted">SAT alignment and readiness will arrive in Phase 3.</p>
-      </section>
+      <SatReadinessCard payload={sat} grade={grade} />
     </div>
   )
 }

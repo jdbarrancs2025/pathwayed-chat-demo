@@ -599,6 +599,69 @@ export async function getReadiness(studentId: string): Promise<ReadinessView> {
   return buildReadinessView(data)
 }
 
+function isBand(v: unknown): v is SatBand {
+  return !!v && typeof v === 'object' && typeof (v as SatBand).low === 'number' && typeof (v as SatBand).high === 'number'
+}
+
+function isSection(v: unknown): v is SatSectionPayload {
+  if (!v || typeof v !== 'object') return false
+  const s = v as SatSectionPayload
+  return (s.pct === null || typeof s.pct === 'number') && (s.today === null || isBand(s.today))
+}
+
+/**
+ * Defensive parse of a stored 'sat' row's `recommendations` into a
+ * SatProjectionPayload. Returns null on anything it doesn't fully recognise —
+ * unknown/missing schemaVersion, wrong gate, or a malformed shape — so the card
+ * degrades to "nothing / foundation" rather than crashing on a stale payload.
+ */
+function parseSatPayload(raw: Json | null | undefined): SatProjectionPayload | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const p = raw as Record<string, unknown>
+  if (p.schemaVersion !== SAT_SCHEMA_VERSION) return null // only the version we know
+  if (p.gate !== 'ok' && p.gate !== 'insufficient') return null
+  const sections = p.sections as Record<string, unknown> | undefined
+  if (!sections || !isSection(sections.math) || !isSection(sections['reading-writing'])) return null
+  if (!(p.today === null || isBand(p.today))) return null
+  if (!(p.trajectory === null || isBand(p.trajectory))) return null
+  const missing = p.missingBySection as Record<string, unknown> | undefined
+  const mathMissing = Array.isArray(missing?.math) ? (missing!.math as SkillRef[]) : []
+  const rwMissing = Array.isArray(missing?.['reading-writing']) ? (missing!['reading-writing'] as SkillRef[]) : []
+  return {
+    schemaVersion: SAT_SCHEMA_VERSION,
+    gate: p.gate,
+    attemptedSatSkills: typeof p.attemptedSatSkills === 'number' ? p.attemptedSatSkills : 0,
+    overallPct: typeof p.overallPct === 'number' ? p.overallPct : null,
+    sections: sections as unknown as Record<SatSection, SatSectionPayload>,
+    today: (p.today as SatBand | null) ?? null,
+    trajectory: (p.trajectory as SatBand | null) ?? null,
+    missingBySection: { math: mathMissing, 'reading-writing': rwMissing },
+    nextSkillSlug: typeof p.nextSkillSlug === 'string' ? p.nextSkillSlug : null,
+    timeline: typeof p.timeline === 'string' ? p.timeline : '',
+  }
+}
+
+/**
+ * Read-only fetch of the student's SAT projection payload (the 'sat'
+ * readiness_scores row's `recommendations`). Returns null when there is no row
+ * or the payload is an unrecognised shape/version. Does NOT touch the pathway/
+ * subject view or Today's Plan. Call after ensureFreshReadiness so it reflects
+ * any just-written recompute.
+ */
+export async function getSatPayload(studentId: string): Promise<SatProjectionPayload | null> {
+  const { data, error } = await supabase
+    .from('readiness_scores')
+    .select('recommendations')
+    .eq('student_id', studentId)
+    .eq('readiness_type', 'sat')
+    .maybeSingle()
+  if (error) {
+    console.error('SAT payload read failed', error)
+    return null
+  }
+  return parseSatPayload(data?.recommendations)
+}
+
 export interface ReadinessFreshnessInput {
   /** Existing readiness rows for the student (any/all readiness_type). */
   readiness: { readiness_type: string; updated_at: string; engine_version: number }[]
