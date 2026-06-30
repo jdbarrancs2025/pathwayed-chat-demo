@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "bun run scripts/dev-api.ts",
     "build": "tsc --noEmit && vite build",
     "lint": "eslint .",
     "test": "vitest run",

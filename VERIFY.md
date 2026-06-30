@@ -24,22 +24,26 @@ are).
 
 ## Running locally (two terminals)
 
-The `vercel.json` SPA rewrite (`/((?!api/).*) -> /index.html`) intercepts Vite's
-in-memory module requests under `vercel dev` and serves `index.html` for them, so
-the frontend can't load through `vercel dev`. Instead, run the frontend on Vite
-and proxy `/api` to `vercel dev` (which serves the serverless functions). The
-proxy is configured in `vite.config.ts` (`server.proxy`, dev-only).
+`vercel dev` does not work in this repo: it runs the Vite framework preset
+(`vite --port $PORT`) and the `vercel.json` SPA catch-all rewrite makes its router
+throw "Can't detect way to handle request", so `/api/*` is never served as
+functions. Instead, run a tiny dev-only server (`scripts/dev-api.ts`) that mounts
+the same `api/*.ts` handlers on :3000, and run the frontend on Vite with `/api`
+proxied there (`vite.config.ts` → `server.proxy`, dev-only). Production is
+unaffected — Vercel still builds `api/*.ts` as real serverless functions.
 
-- **Terminal 1 — API (serverless functions):** `vercel dev` → serves `/api/*` on
-  **http://localhost:3000**. (Its own frontend is broken by the rewrite — ignore
-  it; we only use it for `/api`.)
+- **Terminal 1 — API:** `bun run dev:api` → serves the real `api/*.ts` handlers on
+  **http://localhost:3000**. (Needs `ANTHROPIC_API_KEY` in `.env` for `/api/chat`.)
 - **Terminal 2 — frontend:** `bun dev` → Vite on **http://localhost:5173**, with
   `/api/*` proxied to :3000.
-- **Browse http://localhost:5173.** `/api/chat` reaches the real Vercel function
-  via the proxy.
+- **Browse http://localhost:5173.** `/api/chat` reaches the handler via the proxy.
 
-Sanity check that the function is live: `curl -s -X GET http://localhost:3000/api/chat`
+Sanity check the API server is up: `curl -s -X GET http://localhost:3000/api/chat`
 returns `{"error":"Method not allowed"}` (the handler 405s GET).
+
+Note: voice input (`/api/transcribe`) and read-aloud (`/api/tts`) need
+OPENAI/ELEVENLABS keys that aren't in the local `.env`; the typed mastery test
+only needs `/api/chat`, so type your message rather than using the mic.
 
 ---
 
