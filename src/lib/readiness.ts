@@ -505,27 +505,6 @@ export async function recordReadiness(studentId: string): Promise<void> {
   // the 'sat' row goes missing while pathway/math still upsert.
   if (satCatalogError) console.error('SAT catalog read failed', satCatalogError)
 
-  // --- TEMP DIAGNOSTIC (SAT row not persisting) — remove after diagnosis -----
-  // Distinguishes: query error (satCatalogError set) vs seed-not-applied
-  // (skillsWithSatAlignment === 0) vs filter mismatch (aligned > 0 but
-  // catalogLen === 0). Probes are head/count-only and don't alter the write.
-  {
-    const [aligned, skillLevel] = await Promise.all([
-      supabase.from('skills').select('id', { count: 'exact', head: true }).not('sat_alignment', 'is', null),
-      supabase.from('skills').select('id', { count: 'exact', head: true }).eq('level', 'skill'),
-    ])
-    console.error('[SAT diag] recordReadiness', {
-      studentId,
-      satCatalogError: satCatalogError?.message ?? null,
-      satCatalogLen: satCatalog?.length ?? null,
-      skillsWithSatAlignment: aligned.count,
-      skillsWithSatAlignmentErr: aligned.error?.message ?? null,
-      skillLevelRows: skillLevel.count,
-      skillLevelErr: skillLevel.error?.message ?? null,
-    })
-  }
-  // --------------------------------------------------------------------------
-
   const masteryById = new Map(masteryRows.map((m) => [m.skill_id, m]))
   const satRows: SatSkillRow[] = []
   for (const c of satCatalog ?? []) {
@@ -541,9 +520,6 @@ export async function recordReadiness(studentId: string): Promise<void> {
       last_practiced: m ? m.last_practiced : null,
     })
   }
-  // TEMP DIAGNOSTIC — remove after diagnosis.
-  console.error('[SAT diag] satRows built', { satRowsLen: satRows.length, willPushSatRow: satRows.length > 0 })
-
   if (satRows.length) {
     upserts.push(satReadinessRow(studentId, computeSatProjection(satRows, now)))
   }
@@ -685,19 +661,6 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
       masteryUpdatedAt,
       currentEngineVersion: ENGINE_VERSION,
     })
-
-    // TEMP DIAGNOSTIC — remove after diagnosis. Distinguishes empty-vs-error and
-    // shows the staleness decision on the dashboard path.
-    console.error('[SAT diag] ensureFreshReadiness', {
-      studentId,
-      readinessRows: readinessRows.length,
-      readinessErr: readinessRes.error?.message ?? null,
-      masteryRows: masteryUpdatedAt.length,
-      masteryErr: masteryRes.error?.message ?? null,
-      types: readinessRows.map((r) => r.readiness_type),
-      stale,
-    })
-
     if (!stale) return buildReadinessView(readinessRows)
 
     await recordReadiness(studentId)
