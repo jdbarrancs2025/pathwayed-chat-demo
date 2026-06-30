@@ -202,7 +202,7 @@ async function commitMasterySignals(
   if (!entries.length) return []
 
   // Prior accuracy/attempts in one round-trip (RLS scopes to the parent's child).
-  const { data: priorRows } = await supabase
+  const { data: priorRows, error: priorError } = await supabase
     .from('student_skill_mastery')
     .select('skill_id, accuracy, attempts')
     .eq('student_id', studentId)
@@ -210,6 +210,7 @@ async function commitMasterySignals(
       'skill_id',
       entries.map((e) => e.skill_id),
     )
+  if (priorError) console.error('student_skill_mastery prior read failed', priorError)
   const priorById = new Map<string, { accuracy: number; attempts: number }>()
   for (const r of priorRows ?? []) {
     priorById.set(r.skill_id, { accuracy: Number(r.accuracy), attempts: r.attempts })
@@ -236,7 +237,7 @@ async function commitMasterySignals(
     .from('student_skill_mastery')
     .upsert(rows, { onConflict: 'student_id,skill_id' })
   if (error) {
-    console.error('student_skill_mastery upsert failed', error)
+    console.error('student_skill_mastery upsert failed', { error, rows })
     return []
   }
 

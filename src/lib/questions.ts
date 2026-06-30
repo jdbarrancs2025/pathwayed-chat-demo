@@ -135,7 +135,7 @@ export interface QuestionAttemptInput {
  */
 export async function recordQuestionAttempt(a: QuestionAttemptInput): Promise<void> {
   const timeMs = a.shownAtMs == null ? null : Math.max(0, Date.now() - a.shownAtMs)
-  const { error } = await supabase.from('question_attempts').insert({
+  const payload = {
     student_id: a.studentId,
     generated_question_id: a.generatedQuestionId,
     skill_id: a.skillId,
@@ -144,6 +144,13 @@ export async function recordQuestionAttempt(a: QuestionAttemptInput): Promise<vo
     chosen_choice_index: a.chosenChoiceIndex,
     chosen_misconception_token: a.chosenMisconceptionToken,
     time_ms: timeMs,
-  })
-  if (error) console.error('question_attempt insert failed', error)
+  }
+  // Surface BOTH a returned error (e.g. RLS) and a thrown rejection — the
+  // fire-and-forget caller would otherwise swallow either silently.
+  try {
+    const { error } = await supabase.from('question_attempts').insert(payload)
+    if (error) console.error('question_attempt insert failed', { error, payload })
+  } catch (err) {
+    console.error('question_attempt insert threw', { err, payload })
+  }
 }

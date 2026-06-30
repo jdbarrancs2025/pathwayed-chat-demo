@@ -112,9 +112,18 @@ export function Practice() {
     setSaving(true)
     const summary = summarizeAttempts(results)
     try {
-      await recordPracticeResult(student.id, questions[0].skill_id, summary.accuracy)
+      const update = await recordPracticeResult(student.id, questions[0].skill_id, summary.accuracy)
+      // null means the mastery upsert returned [] (it logged the underlying error
+      // in commitMasterySignals) — surface that the session didn't persist.
+      if (!update) {
+        console.error('recordPracticeResult returned null — mastery not written', {
+          studentId: student.id,
+          skillId: questions[0].skill_id,
+          accuracy: summary.accuracy,
+        })
+      }
     } catch (err) {
-      console.error('recordPracticeResult failed', err)
+      console.error('recordPracticeResult threw', err)
     }
     setSaving(false)
   }
