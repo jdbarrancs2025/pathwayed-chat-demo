@@ -54,7 +54,11 @@ export const MathField = forwardRef<MathFieldHandle>(function MathField(_props, 
       mf.setAttribute('aria-label', 'Math expression')
       hostRef.current.appendChild(mf)
       fieldRef.current = mf
-      mf.focus()
+      // Do NOT auto-focus on mount: focusing arms MathLive's virtual keyboard,
+      // which installs a global capture-phase window keydown listener that
+      // swallows the spacebar across the whole page (including the chat box).
+      // The student focuses the field by tapping it (or a fraction/power/root
+      // button, which inserts with focus), so the editor still works.
     })
     return () => {
       disposed = true

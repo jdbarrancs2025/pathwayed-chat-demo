@@ -410,6 +410,7 @@ function SessionView({
           childName={student.first_name}
           grade={student.grade}
           level={student.level}
+          paneActive={pane === 'work'}
           onSendText={(t) => {
             setPane('chat')
             void sendMessage(t)

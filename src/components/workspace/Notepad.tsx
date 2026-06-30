@@ -4,6 +4,10 @@ import { fileToDataURL, splitDataUrl, type ImageTurn } from '@/lib/image'
 
 interface NotepadProps {
   subject: string
+  /** Whether the Workspace pane is active/visible. The MathLive math-field is
+   *  only mounted when active, so its global keyboard listener can't swallow the
+   *  chat spacebar while the Chat pane is showing. */
+  paneActive: boolean
   onSendText: (text: string) => void
   onSendImage: (turn: ImageTurn) => void
 }
@@ -31,7 +35,7 @@ function paintGrid(ctx: CanvasRenderingContext2D, w: number, h: number) {
   ctx.restore()
 }
 
-export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
+export function Notepad({ subject, paneActive, onSendText, onSendImage }: NotepadProps) {
   const mathy = subject === 'math' || subject === 'science'
   const isReading = subject === 'reading'
   // Math: structured editor (MODE A) vs handwriting grid (MODE B).
@@ -309,7 +313,9 @@ export function Notepad({ subject, onSendText, onSendImage }: NotepadProps) {
               Root
             </button>
           </div>
-          <MathField ref={mathRef} />
+          {/* Mount MathLive only while the Workspace pane is active, so its
+              global keydown listener can't reach the chat box. */}
+          {paneActive && <MathField ref={mathRef} />}
         </>
       ) : mode === 'type' ? (
         <textarea

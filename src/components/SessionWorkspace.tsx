@@ -31,6 +31,10 @@ interface SessionWorkspaceProps {
   childName: string
   grade: string
   level: string
+  /** Whether the Workspace pane is the active/visible pane. Gates mounting the
+   *  MathLive math-field so its global keyboard listener can't eat the chat
+   *  spacebar while the Chat pane is showing. */
+  paneActive: boolean
   onSendText: (text: string) => void
   onSendImage: (turn: ImageTurn) => void
 }
@@ -40,6 +44,7 @@ export function SessionWorkspace({
   childName,
   grade,
   level,
+  paneActive,
   onSendText,
   onSendImage,
 }: SessionWorkspaceProps) {
@@ -60,7 +65,9 @@ export function SessionWorkspace({
       )}
       <div className="wsbody">
         <div className="wsbody-inner">
-          {active === 'note' && <Notepad subject={subject} onSendText={onSendText} onSendImage={onSendImage} />}
+          {active === 'note' && (
+            <Notepad subject={subject} paneActive={paneActive} onSendText={onSendText} onSendImage={onSendImage} />
+          )}
           {active === 'cards' && <Flashcards childName={childName} grade={grade} level={level} />}
           {active === 'home' && <HomeworkUpload onSendImage={onSendImage} />}
         </div>
