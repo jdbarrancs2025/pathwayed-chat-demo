@@ -263,6 +263,9 @@ export interface Database {
           gaps: Json
           next_skill_slug: string | null
           recommendations: Json
+          // Academic OS Phase 2 (migration 0003): engine version that computed
+          // this row, for self-healing recompute when the engine changes.
+          engine_version: number
           created_at: string
           updated_at: string
         }
@@ -275,6 +278,7 @@ export interface Database {
           gaps?: Json
           next_skill_slug?: string | null
           recommendations?: Json
+          engine_version?: number
           created_at?: string
           updated_at?: string
         }
@@ -287,6 +291,7 @@ export interface Database {
           gaps?: Json
           next_skill_slug?: string | null
           recommendations?: Json
+          engine_version?: number
           created_at?: string
           updated_at?: string
         }

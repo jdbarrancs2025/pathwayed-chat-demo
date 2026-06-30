@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { avColor, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
 import { getLastActivity } from '@/lib/sessions'
-import { getReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
+import { ensureFreshReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
@@ -51,7 +51,7 @@ export function ParentArea() {
       const data = await Promise.all(
         kids.map(async (student) => {
           const [readiness, mastery, lastActivity] = await Promise.all([
-            getReadiness(student.id),
+            ensureFreshReadiness(student.id),
             getStudentMastery(student.id, student.grade),
             getLastActivity(student.id),
           ])

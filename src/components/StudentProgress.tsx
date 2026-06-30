@@ -3,7 +3,7 @@ import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import {
   buildCoachMessage,
   buildTodaysPlan,
-  getReadiness,
+  ensureFreshReadiness,
   type ReadinessView,
 } from '@/lib/readiness'
 import { subjectDisplayName } from '@/lib/subjects'
@@ -60,7 +60,7 @@ export function StudentProgress({
 
   useEffect(() => {
     let active = true
-    getReadiness(studentId).then((r) => {
+    ensureFreshReadiness(studentId).then((r) => {
       if (active) setReadiness(r)
     })
     return () => {

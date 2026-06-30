@@ -32,6 +32,11 @@ const TOP_N = 3 // strengths / gaps list size
 // is a neutral "developing" range.
 const STRENGTH_MIN = 70
 const GAP_MAX = 60
+
+// Bumped whenever the scoring/classification logic changes. Stored on each
+// readiness_scores row so a row computed by an older engine is detected as stale
+// and recomputed on next view. (v2 = the threshold-based strengths/gaps fix.)
+export const ENGINE_VERSION = 2
 const DAY_MS = 86_400_000
 
 // Subjects we publish a per-subject sub-score for (seeded subjects). The overall
@@ -163,6 +168,7 @@ function readinessRow(studentId: string, readinessType: string, b: ReadinessBrea
     next_skill_slug: b.nextSkillSlug,
     // Reserved for the future AI Coach; the engine does not populate it yet.
     recommendations: [] as unknown as Json,
+    engine_version: ENGINE_VERSION,
   }
 }
 
@@ -242,18 +248,20 @@ function asRefs(v: Json | null | undefined): SkillRef[] {
   )
 }
 
-/** Read this student's readiness_scores (pathway + per-subject). Read-only,
- *  anon client under RLS (owns_student). Always resolves to a view. */
-export async function getReadiness(studentId: string): Promise<ReadinessView> {
-  const { data, error } = await supabase
-    .from('readiness_scores')
-    .select('readiness_type, score, strengths, gaps, next_skill_slug')
-    .eq('student_id', studentId)
-  if (error || !data || !data.length) return { pathway: null, bySubject: {}, hasAny: false }
+interface ReadinessRowLite {
+  readiness_type: string
+  score: number
+  strengths: Json
+  gaps: Json
+  next_skill_slug: string | null
+}
 
+/** Pure: shape raw readiness_scores rows into a view. */
+function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
+  if (!rows.length) return { pathway: null, bySubject: {}, hasAny: false }
   let pathway: ReadinessRecord | null = null
   const bySubject: Record<string, ReadinessRecord> = {}
-  for (const r of data) {
+  for (const r of rows) {
     const rec: ReadinessRecord = {
       score: Number(r.score),
       strengths: asRefs(r.strengths),
@@ -264,6 +272,77 @@ export async function getReadiness(studentId: string): Promise<ReadinessView> {
     else bySubject[r.readiness_type] = rec
   }
   return { pathway, bySubject, hasAny: true }
+}
+
+/** Read this student's readiness_scores (pathway + per-subject). Read-only,
+ *  anon client under RLS (owns_student). Always resolves to a view. */
+export async function getReadiness(studentId: string): Promise<ReadinessView> {
+  const { data, error } = await supabase
+    .from('readiness_scores')
+    .select('readiness_type, score, strengths, gaps, next_skill_slug')
+    .eq('student_id', studentId)
+  if (error || !data) return { pathway: null, bySubject: {}, hasAny: false }
+  return buildReadinessView(data)
+}
+
+export interface ReadinessFreshnessInput {
+  /** Existing readiness rows for the student (any/all readiness_type). */
+  readiness: { updated_at: string; engine_version: number }[]
+  /** updated_at of every student_skill_mastery row for the student. */
+  masteryUpdatedAt: string[]
+  currentEngineVersion: number
+}
+
+/**
+ * Pure staleness predicate. Readiness should be recomputed iff there is mastery
+ * to compute from AND any of: (a) no readiness row exists, (b) some mastery row
+ * is newer than the readiness, or (c) the stored engine_version is behind the
+ * current one. Otherwise the stored readiness is current — no write needed.
+ */
+export function isReadinessStale(input: ReadinessFreshnessInput): boolean {
+  if (input.masteryUpdatedAt.length === 0) return false // nothing to compute from
+  if (input.readiness.length === 0) return true // (a)
+  if (input.readiness.some((r) => r.engine_version < input.currentEngineVersion)) return true // (c)
+  // (b) any mastery written after the readiness was last computed.
+  const readinessTimes = input.readiness.map((r) => Date.parse(r.updated_at)).filter((n) => !Number.isNaN(n))
+  const masteryTimes = input.masteryUpdatedAt.map((s) => Date.parse(s)).filter((n) => !Number.isNaN(n))
+  if (!readinessTimes.length || !masteryTimes.length) return false
+  return Math.max(...masteryTimes) > Math.min(...readinessTimes)
+}
+
+/**
+ * Return the student's readiness, recomputing+upserting first ONLY if it's stale
+ * (see isReadinessStale) — so readiness is current when viewed without writing on
+ * every load. Best-effort: client-side under RLS; on any failure it falls back to
+ * whatever is stored (or an empty view) and never throws.
+ */
+export async function ensureFreshReadiness(studentId: string): Promise<ReadinessView> {
+  try {
+    const [readinessRes, masteryRes] = await Promise.all([
+      supabase
+        .from('readiness_scores')
+        .select('readiness_type, score, strengths, gaps, next_skill_slug, updated_at, engine_version')
+        .eq('student_id', studentId),
+      supabase.from('student_skill_mastery').select('updated_at').eq('student_id', studentId),
+    ])
+    const readinessRows = readinessRes.data ?? []
+    const stale = isReadinessStale({
+      readiness: readinessRows.map((r) => ({ updated_at: r.updated_at, engine_version: r.engine_version })),
+      masteryUpdatedAt: (masteryRes.data ?? []).map((m) => m.updated_at),
+      currentEngineVersion: ENGINE_VERSION,
+    })
+    if (!stale) return buildReadinessView(readinessRows)
+
+    await recordReadiness(studentId)
+    const { data: fresh } = await supabase
+      .from('readiness_scores')
+      .select('readiness_type, score, strengths, gaps, next_skill_slug')
+      .eq('student_id', studentId)
+    return buildReadinessView(fresh ?? readinessRows)
+  } catch (err) {
+    console.error('ensureFreshReadiness failed', err)
+    return getReadiness(studentId)
+  }
 }
 
 type ScoreBand = 'strong' | 'growing' | 'getting-started' | 'just-beginning'
