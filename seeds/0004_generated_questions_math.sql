@@ -720,7 +720,369 @@ values
    (select id from public.question_templates where code = 'percent-of'),
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy',
-   'What is $25\%$ of $120$?', '[{"text":"30","is_correct":true},{"text":"90","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"300","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"60","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '30', '$25\%$ of $120$ is $\frac{25}{100} \times 120 = 30$.', 'published')
+   'What is $20\%$ of $40$?', '[{"text":"8","is_correct":true},{"text":"80","is_correct":false,"misconception_token":"decimal-place-error"},{"text":"32","is_correct":false,"misconception_token":"complement-instead-of-percent"},{"text":"16","is_correct":false,"misconception_token":"halved-the-base"}]'::jsonb, '8', '$20\%$ of $40$ is $\frac{20}{100} \times 40 = 8$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- multiplication-basic-easy-v1 (problem-solving-data-analysis, easy) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('48fc346a-44e7-5ad0-80ff-64ffd8962a1e',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $8 \times 7$?', '[{"text":"15","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"63","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"48","is_correct":false,"misconception_token":"skip-count-error"},{"text":"56","is_correct":true}]'::jsonb, '56', '$8 \times 7 = 56$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a1f807f7-fe8f-5230-ab57-3cc12e352a26',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $11 \times 8$?', '[{"text":"88","is_correct":true},{"text":"96","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"77","is_correct":false,"misconception_token":"skip-count-error"},{"text":"19","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '88', '$11 \times 8 = 88$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d261bbeb-c35c-5814-ac2c-8119d7b105ae',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $4 \times 6$?', '[{"text":"30","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"24","is_correct":true},{"text":"10","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"20","is_correct":false,"misconception_token":"skip-count-error"}]'::jsonb, '24', '$4 \times 6 = 24$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('536ad54c-1375-503b-ac19-6a4f34dcdea4',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $10 \times 10$?', '[{"text":"90","is_correct":false,"misconception_token":"skip-count-error"},{"text":"110","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"100","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '100', '$10 \times 10 = 100$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('00c437b9-6392-51bc-8178-2e536394bbf0',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $4 \times 11$?', '[{"text":"15","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"55","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"44","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"skip-count-error"}]'::jsonb, '44', '$4 \times 11 = 44$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a15ba0aa-c6fc-5dfa-93cf-28330f9bd4c3',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $11 \times 2$?', '[{"text":"13","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"11","is_correct":false,"misconception_token":"skip-count-error"},{"text":"22","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"off-by-one-factor"}]'::jsonb, '22', '$11 \times 2 = 22$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('490a6767-1b5b-5b50-abf5-ac70f8860795',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $9 \times 3$?', '[{"text":"27","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"18","is_correct":false,"misconception_token":"skip-count-error"},{"text":"12","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '27', '$9 \times 3 = 27$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6e5eeaa7-fea5-595b-9951-bcb2446f6bf5',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $9 \times 10$?', '[{"text":"90","is_correct":true},{"text":"19","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"81","is_correct":false,"misconception_token":"skip-count-error"},{"text":"100","is_correct":false,"misconception_token":"off-by-one-factor"}]'::jsonb, '90', '$9 \times 10 = 90$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dfa8014a-6a80-50fd-a54e-6d0d198f8379',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $10 \times 3$?', '[{"text":"30","is_correct":true},{"text":"13","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"33","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"20","is_correct":false,"misconception_token":"skip-count-error"}]'::jsonb, '30', '$10 \times 3 = 30$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('7b512bae-103d-5d61-9903-20b349acbf48',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $11 \times 4$?', '[{"text":"44","is_correct":true},{"text":"33","is_correct":false,"misconception_token":"skip-count-error"},{"text":"15","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"48","is_correct":false,"misconception_token":"off-by-one-factor"}]'::jsonb, '44', '$11 \times 4 = 44$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c797c4fb-6058-53e6-82fb-7ff9123ee3f6',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $4 \times 5$?', '[{"text":"20","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"16","is_correct":false,"misconception_token":"skip-count-error"},{"text":"25","is_correct":false,"misconception_token":"off-by-one-factor"}]'::jsonb, '20', '$4 \times 5 = 20$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a5476b89-dbfc-565e-b8f7-a3716236147e',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $8 \times 10$?', '[{"text":"18","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"90","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"72","is_correct":false,"misconception_token":"skip-count-error"},{"text":"80","is_correct":true}]'::jsonb, '80', '$8 \times 10 = 80$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('bcffc6a8-af20-588c-a1e5-4cb246e57a8b',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $10 \times 5$?', '[{"text":"50","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"skip-count-error"},{"text":"55","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"15","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '50', '$10 \times 5 = 50$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ddab5e78-9013-5fc9-9755-533e205455f1',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $2 \times 12$?', '[{"text":"24","is_correct":true},{"text":"14","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"22","is_correct":false,"misconception_token":"skip-count-error"},{"text":"36","is_correct":false,"misconception_token":"off-by-one-factor"}]'::jsonb, '24', '$2 \times 12 = 24$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f4439efa-074c-5fcf-be3e-d997f2b9ded2',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $6 \times 9$?', '[{"text":"48","is_correct":false,"misconception_token":"skip-count-error"},{"text":"63","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"54","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '54', '$6 \times 9 = 54$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('34828b0f-bb6a-5cdb-9d99-3d95f30960b2',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $3 \times 7$?', '[{"text":"18","is_correct":false,"misconception_token":"skip-count-error"},{"text":"28","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"10","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"21","is_correct":true}]'::jsonb, '21', '$3 \times 7 = 21$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e804928d-a655-576e-a104-c96aca277a19',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $10 \times 11$?', '[{"text":"110","is_correct":true},{"text":"100","is_correct":false,"misconception_token":"skip-count-error"},{"text":"21","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"121","is_correct":false,"misconception_token":"off-by-one-factor"}]'::jsonb, '110', '$10 \times 11 = 110$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d9c5d2b8-900e-557c-b66c-ff21c1e6e2f2',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $12 \times 4$?', '[{"text":"36","is_correct":false,"misconception_token":"skip-count-error"},{"text":"16","is_correct":false,"misconception_token":"added-instead-of-multiplied"},{"text":"52","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"48","is_correct":true}]'::jsonb, '48', '$12 \times 4 = 48$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('710b3f71-8f51-5b51-b5d8-eb1a4e2b660c',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $4 \times 7$?', '[{"text":"28","is_correct":true},{"text":"35","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"24","is_correct":false,"misconception_token":"skip-count-error"},{"text":"11","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '28', '$4 \times 7 = 28$.', 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('18c8a79c-9e04-5c29-90b6-2cd0247adb29',
+   (select id from public.question_templates where code = 'multiplication-basic-easy-v1'),
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy',
+   'What is $4 \times 4$?', '[{"text":"16","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"skip-count-error"},{"text":"20","is_correct":false,"misconception_token":"off-by-one-factor"},{"text":"8","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]'::jsonb, '16', '$4 \times 4 = 16$.', 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,

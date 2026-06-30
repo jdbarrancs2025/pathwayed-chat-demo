@@ -7,7 +7,7 @@ import {
   type MathDistractorSpec,
   type MathGenerationSpec,
 } from './questionGen'
-import { LINEAR_EQUATION_SOLVE, PERCENT_OF } from './mathTemplates'
+import { LINEAR_EQUATION_SOLVE, MULTIPLICATION_BASIC, PERCENT_OF } from './mathTemplates'
 
 const KEBAB = /^[a-z][a-z0-9-]*$/
 const seeds = (n: number) => Array.from({ length: n }, (_, i) => i + 1)
@@ -58,9 +58,25 @@ describe('percent-of — correctness (mechanical, not asserted)', () => {
   })
 })
 
+describe('multiplication-basic — correctness (mechanical, not asserted)', () => {
+  it('the correct answer is exactly a*b, an integer, for many seeds', () => {
+    for (const s of seeds(80)) {
+      const { question, slots } = generateQuestionDebug(
+        MULTIPLICATION_BASIC.generationSpec,
+        MULTIPLICATION_BASIC.distractorSpec,
+        s,
+      )
+      const ans = Number(question.correct_answer)
+      expect(Number.isInteger(ans)).toBe(true)
+      expect(ans).toBe(slots.a * slots.b)
+    }
+  })
+})
+
 describe.each([
   ['linear-equation-solve', LINEAR_EQUATION_SOLVE],
   ['percent-of', PERCENT_OF],
+  ['multiplication-basic', MULTIPLICATION_BASIC],
 ])('%s — choices invariants', (_name, tpl) => {
   it('has exactly one correct choice and 4 distinct choices', () => {
     for (const s of seeds(50)) {

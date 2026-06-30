@@ -47,4 +47,23 @@ on conflict (code) do update set
   status          = excluded.status,
   version         = excluded.version;
 
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('multiplication-basic-easy-v1',
+   (select id from public.skills where slug = 'multiplication'),
+   'problem-solving-data-analysis', 'easy', 'template_math',
+   '{"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is ${a} \\times {b}$?","slots":[{"name":"a","min":2,"max":12},{"name":"b","min":2,"max":12}],"answerFormula":"a * b","answerFormat":"integer","solutionTemplate":"${a} \\times {b} = {answer}$."}'::jsonb,
+   '[{"formula":"a * b - a","misconception_token":"skip-count-error"},{"formula":"a * b + b","misconception_token":"off-by-one-factor"},{"formula":"a + b","misconception_token":"added-instead-of-multiplied"},{"formula":"a * b + a","misconception_token":"skip-count-error"},{"formula":"a * b - b","misconception_token":"off-by-one-factor"}]'::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
 commit;

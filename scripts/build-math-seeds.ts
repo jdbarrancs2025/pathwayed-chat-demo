@@ -99,15 +99,39 @@ on conflict (code) do update set
   ).join('\n') +
   '\n\ncommit;\n'
 
+type MathTemplate = (typeof MATH_TEMPLATES)[number]
+type CachedQuestion = { slot: number; question: ReturnType<typeof generateQuestion> }
+
+/**
+ * The N distinct cached questions for a template: walk indices, generate, and
+ * dedupe by stem so the cache never repeats the same question (sampling 20 of a
+ * limited combo space otherwise collides). Cache slot (1..N) is the stable id
+ * key; deterministic + idempotent. Throws if a template can't yield N distinct.
+ */
+function buildCached(t: MathTemplate): CachedQuestion[] {
+  const out: CachedQuestion[] = []
+  const seenStems = new Set<string>()
+  const MAX_INDEX = 5000
+  for (let index = 1; out.length < QUESTIONS_PER_TEMPLATE && index <= MAX_INDEX; index++) {
+    const question = generateQuestion(t.generationSpec, t.distractorSpec, seedForIndex(index))
+    if (seenStems.has(question.stem)) continue
+    seenStems.add(question.stem)
+    out.push({ slot: out.length + 1, question })
+  }
+  if (out.length < QUESTIONS_PER_TEMPLATE) {
+    throw new Error(`${t.code}: only ${out.length} distinct questions available (need ${QUESTIONS_PER_TEMPLATE})`)
+  }
+  return out
+}
+
 // --- Emit 0004: generated questions -----------------------------------------
 let questionsSql = QUESTIONS_HEADER
 let count = 0
 for (const t of MATH_TEMPLATES) {
   questionsSql += `\n-- ${t.code} (${t.satAlignment}, ${t.difficulty}) — questions 1..${QUESTIONS_PER_TEMPLATE}\n`
-  for (let index = 1; index <= QUESTIONS_PER_TEMPLATE; index++) {
-    const gq = generateQuestion(t.generationSpec, t.distractorSpec, seedForIndex(index))
-    // Cache identity is the stable human index, not the mixed seed.
-    const id = deterministicId(`${t.code}:${index}`)
+  for (const { slot, question: gq } of buildCached(t)) {
+    // Cache identity is the stable slot (1..N), not the mixed seed.
+    const id = deterministicId(`${t.code}:${slot}`)
     questionsSql += `insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
@@ -140,9 +164,8 @@ console.log(`Wrote seeds/0003 (${MATH_TEMPLATES.length} templates) and seeds/000
 if (process.argv.includes('--samples')) {
   for (const t of MATH_TEMPLATES) {
     console.log(`\n================ ${t.code} (${t.satAlignment}) ================`)
-    for (let index = 1; index <= 6; index++) {
-      const gq = generateQuestion(t.generationSpec, t.distractorSpec, seedForIndex(index))
-      console.log(`\n  [#${index}] ${gq.stem}`)
+    for (const { slot, question: gq } of buildCached(t).slice(0, 6)) {
+      console.log(`\n  [#${slot}] ${gq.stem}`)
       for (const c of gq.choices) {
         console.log(`     ${c.is_correct ? '*' : ' '} ${c.text}${c.misconception_token ? `   (${c.misconception_token})` : ''}`)
       }

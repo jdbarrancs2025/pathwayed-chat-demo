@@ -89,7 +89,42 @@ export const PERCENT_OF: MathTemplate = {
   ],
 }
 
-export const MATH_TEMPLATES: MathTemplate[] = [LINEAR_EQUATION_SOLVE, PERCENT_OF]
+// Grades 3-5: basic multiplication facts. The 'multiplication' skill is bridged
+// to PSDA (seed 0002), so practicing this elementary skill feeds SAT readiness —
+// useful for testing the full serve->score->mastery->readiness loop with a skill
+// students practice early. Distractors are kept NEAR the answer (±a, ±b) so it
+// isn't solvable by magnitude; a+b (added-instead-of-multiplied) is the one
+// intentional operation-confusion trap, not a magnitude ladder.
+export const MULTIPLICATION_BASIC: MathTemplate = {
+  code: 'multiplication-basic-easy-v1',
+  skillSlug: 'multiplication',
+  satAlignment: 'problem-solving-data-analysis',
+  difficulty: 'easy',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'What is ${a} \\times {b}$?',
+    slots: [
+      { name: 'a', min: 2, max: 12 },
+      { name: 'b', min: 2, max: 12 },
+    ],
+    answerFormula: 'a * b',
+    answerFormat: 'integer',
+    solutionTemplate: '${a} \\times {b} = {answer}$.',
+  },
+  // Primary 3 (near the answer): one short group, one extra factor-group, and the
+  // add-vs-multiply confusion. Backups cover the rare collision (e.g. a=b=2).
+  distractorSpec: [
+    { formula: 'a * b - a', misconception_token: 'skip-count-error' }, // = a*(b-1), one group short
+    { formula: 'a * b + b', misconception_token: 'off-by-one-factor' }, // = (a+1)*b, one extra group
+    { formula: 'a + b', misconception_token: 'added-instead-of-multiplied' },
+    { formula: 'a * b + a', misconception_token: 'skip-count-error' }, // backup
+    { formula: 'a * b - b', misconception_token: 'off-by-one-factor' }, // backup
+  ],
+}
+
+export const MATH_TEMPLATES: MathTemplate[] = [LINEAR_EQUATION_SOLVE, PERCENT_OF, MULTIPLICATION_BASIC]
 
 // Questions cached per template (deterministic seeds 1..N).
 export const QUESTIONS_PER_TEMPLATE = 20
