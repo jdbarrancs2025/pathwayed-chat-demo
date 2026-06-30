@@ -1257,6 +1257,114 @@
   text-align: center;
 }
 
+/* Academic OS Phase 1 — student progress sections (read-only, on KidHome). */
+.progress {
+  margin-top: 20px;
+}
+.progress .panel {
+  margin-bottom: 14px;
+}
+.progress .panel h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subj-group {
+  margin-top: 12px;
+}
+.subj-group:first-of-type {
+  margin-top: 6px;
+}
+.subj-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 4px 0 6px;
+}
+.subj-head .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.skill-row {
+  padding: 7px 0;
+}
+.skill-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.skill-name {
+  font-size: 14px;
+  color: var(--ink);
+}
+.skill-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.skill-row .bar {
+  height: 8px;
+  border-radius: 6px;
+  background: var(--line-2);
+  overflow: hidden;
+  margin: 6px 0 4px;
+}
+.skill-row .bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+.skill-meta {
+  font-size: 11.5px;
+  color: var(--faint);
+}
+.empty-progress {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+.subject-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.subject-chips .chip {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1.5px solid;
+  background: #fff;
+}
+.panel.placeholder {
+  background: var(--paper);
+  border-style: dashed;
+}
+.panel.placeholder h3 {
+  color: var(--muted);
+  font-size: 15px;
+}
+.panel .soon {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--orange);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
 /* Nikki call stage */
 .callstage {
   display: flex;

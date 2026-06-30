@@ -4,6 +4,7 @@ import { getStudent, gradeLabel, levelLabel, type Student } from '@/lib/students
 import { SUBJECTS, HOMEWORK } from '@/lib/subjects'
 import { listSavedSubjects } from '@/lib/sessions'
 import { TopMenu } from '@/components/TopMenu'
+import { StudentProgress } from '@/components/StudentProgress'
 import '@/styles/app-screens.css'
 
 export function KidHome() {
@@ -78,6 +79,8 @@ export function KidHome() {
             <p>{HOMEWORK.blurb}</p>
           </div>
         </button>
+
+        <StudentProgress studentId={student.id} grade={student.grade} />
 
         <div className="foot">
           Working level: {levelLabel(student.level).toLowerCase()} for {gradeLabel(student.grade).toLowerCase()}

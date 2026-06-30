@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectPracticedSlugs, nextMastery, ratingToAccuracy } from './skills'
+import { buildMasteryView, detectPracticedSlugs, nextMastery, ratingToAccuracy } from './skills'
 import type { StoredMessage } from './sessions'
 
 const msg = (content: string): StoredMessage => ({ role: 'assistant', content })
@@ -62,5 +62,47 @@ describe('detectPracticedSlugs', () => {
   it('returns [] when nothing recognizable was practiced', () => {
     const transcript = [msg('Hi Nikki! I am not sure what to do today.')]
     expect(detectPracticedSlugs('math', '4', transcript)).toEqual([])
+  })
+})
+
+describe('buildMasteryView (dashboard read transform)', () => {
+  const skills = [
+    { id: 's-frac', name: 'Understanding Fractions', subject: 'math', grade_band: '3-5' },
+    { id: 's-mult', name: 'Multiplication', subject: 'math', grade_band: '3-5' },
+    { id: 's-main', name: 'Main Idea', subject: 'reading', grade_band: '3-5' },
+    { id: 's-alg', name: 'Algebra', subject: 'math', grade_band: '6-8' }, // out of band
+  ]
+
+  it('groups by subject (display order), sorts by mastery desc, drops out-of-band', () => {
+    const mastery = [
+      { skill_id: 's-frac', mastery_percentage: 25, attempts: 1 },
+      { skill_id: 's-mult', mastery_percentage: 60, attempts: 3 },
+      { skill_id: 's-main', mastery_percentage: 50, attempts: 2 },
+      { skill_id: 's-alg', mastery_percentage: 90, attempts: 5 },
+    ]
+    const v = buildMasteryView(mastery, skills, '3-5')
+    expect(v.hasAny).toBe(true)
+    expect(v.bySubject.map((b) => b.subject)).toEqual(['math', 'reading'])
+    // math sorted by mastery desc: Multiplication (60) before Fractions (25)
+    expect(v.bySubject[0].skills.map((s) => s.name)).toEqual([
+      'Multiplication',
+      'Understanding Fractions',
+    ])
+    // out-of-band Algebra (6-8) is excluded for a 3-5 student
+    expect(v.bySubject[0].skills.find((s) => s.name === 'Algebra')).toBeUndefined()
+    expect(v.currentSubjects).toEqual(['math', 'reading'])
+  })
+
+  it('empty (day one): no rows -> hasAny false, current subjects fall back to band focus areas', () => {
+    const v = buildMasteryView([], [], '3-5')
+    expect(v.hasAny).toBe(false)
+    expect(v.bySubject).toEqual([])
+    expect(v.currentSubjects).toEqual(['math', 'reading', 'writing'])
+  })
+
+  it('k-2 has no seeded skills -> empty current subjects', () => {
+    const v = buildMasteryView([], [], 'k-2')
+    expect(v.hasAny).toBe(false)
+    expect(v.currentSubjects).toEqual([])
   })
 })

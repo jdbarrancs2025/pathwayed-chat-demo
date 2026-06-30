@@ -257,3 +257,96 @@ export async function recordSessionMastery(params: {
   await saveSessionSkills(studentId, subject, slugs, updates)
   return updates
 }
+
+// ---------------------------------------------------------------------------
+// Dashboard reads (read-only; Step 4). No writes here.
+// ---------------------------------------------------------------------------
+
+export interface SkillMasteryRow {
+  skill_id: string
+  name: string
+  subject: string
+  mastery_percentage: number
+  attempts: number
+}
+export interface SubjectMastery {
+  subject: string
+  skills: SkillMasteryRow[]
+}
+export interface StudentMasteryView {
+  /** Subjects that have in-band mastery rows, in display order. */
+  bySubject: SubjectMastery[]
+  /** Subjects the student is currently working (have mastery rows) or — on day
+   *  one with no rows yet — the grade band's focus-area subjects. */
+  currentSubjects: string[]
+  /** Whether any in-band mastery exists at all (drives the empty state). */
+  hasAny: boolean
+}
+
+const SUBJECT_DISPLAY_ORDER = ['math', 'reading', 'writing', 'science']
+
+/** Subjects that have focus areas (= seedable skills) for a band. */
+function bandFocusSubjects(band: GradeBand): string[] {
+  if (band === 'k-2') return []
+  return SUBJECT_DISPLAY_ORDER.filter((s) => s in focusAreasByGrade[band])
+}
+
+/**
+ * Pure transform: mastery rows + their skills -> a per-subject, band-scoped view.
+ * Rows whose skill is outside the student's grade band are dropped. Kept pure so
+ * it is unit-testable without the database.
+ */
+export function buildMasteryView(
+  masteryRows: { skill_id: string; mastery_percentage: number; attempts: number }[],
+  skills: { id: string; name: string; subject: string; grade_band: string | null }[],
+  band: GradeBand,
+): StudentMasteryView {
+  const skillById = new Map(skills.map((s) => [s.id, s]))
+  const rows: SkillMasteryRow[] = []
+  for (const m of masteryRows) {
+    const s = skillById.get(m.skill_id)
+    if (!s || s.grade_band !== band) continue // grade-band scope
+    rows.push({
+      skill_id: m.skill_id,
+      name: s.name,
+      subject: s.subject,
+      mastery_percentage: Number(m.mastery_percentage),
+      attempts: m.attempts,
+    })
+  }
+
+  const bySubject: SubjectMastery[] = []
+  for (const subject of SUBJECT_DISPLAY_ORDER) {
+    const subjectSkills = rows
+      .filter((r) => r.subject === subject)
+      .sort((a, b) => b.mastery_percentage - a.mastery_percentage || a.name.localeCompare(b.name))
+    if (subjectSkills.length) bySubject.push({ subject, skills: subjectSkills })
+  }
+
+  const currentSubjects = bySubject.length ? bySubject.map((b) => b.subject) : bandFocusSubjects(band)
+  return { bySubject, currentSubjects, hasAny: rows.length > 0 }
+}
+
+/**
+ * Read a student's skill mastery, grade-band-scoped (canonical gradeBand(grade)),
+ * grouped by subject. Two simple selects + a JS join (no PostgREST embedding) so
+ * it doesn't depend on relationship metadata. Read-only.
+ */
+export async function getStudentMastery(studentId: string, grade: string): Promise<StudentMasteryView> {
+  const band = gradeBand(grade)
+  const { data: masteryRows, error } = await supabase
+    .from('student_skill_mastery')
+    .select('skill_id, mastery_percentage, attempts')
+    .eq('student_id', studentId)
+  if (error || !masteryRows || !masteryRows.length) {
+    return { bySubject: [], currentSubjects: bandFocusSubjects(band), hasAny: false }
+  }
+  const { data: skillRows } = await supabase
+    .from('skills')
+    .select('id, name, subject, grade_band')
+    .in(
+      'id',
+      masteryRows.map((r) => r.skill_id),
+    )
+  return buildMasteryView(masteryRows, skillRows ?? [], band)
+}
