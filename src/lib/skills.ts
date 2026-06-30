@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { focusAreasByGrade } from '@/lib/focusAreas'
 import { gradeBand, type GradeBand } from '@/lib/gradeBand'
+import { recordReadiness } from '@/lib/readiness'
 import type { StoredMessage } from '@/lib/sessions'
 import type { Json } from '@/lib/database.types'
 
@@ -255,6 +256,16 @@ export async function recordSessionMastery(params: {
   }
 
   await saveSessionSkills(studentId, subject, slugs, updates)
+
+  // Academic OS Phase 2: recompute the student's readiness / Pathway Score from
+  // their full mastery set (now including this session) and upsert it. Best-
+  // effort — readiness is non-critical and must never block the kid's flow.
+  try {
+    await recordReadiness(studentId)
+  } catch (err) {
+    console.error('readiness recompute failed', err)
+  }
+
   return updates
 }
 
