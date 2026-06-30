@@ -79,6 +79,8 @@ export function Practice() {
   }
 
   const handlePick = (choiceIndex: number) => {
+    // TEMP diagnostic — confirms the click handler fires (remove after verify).
+    console.debug('[practice] handlePick', { choiceIndex, alreadyAnswered: selected !== null })
     const current = questions[index]
     if (selected !== null || !current) return
     setSelected(choiceIndex)
