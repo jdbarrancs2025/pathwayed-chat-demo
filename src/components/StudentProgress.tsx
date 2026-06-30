@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
+import {
+  buildCoachMessage,
+  buildTodaysPlan,
+  getReadiness,
+  type ReadinessView,
+} from '@/lib/readiness'
 import { subjectDisplayName } from '@/lib/subjects'
 
 /**
@@ -29,8 +35,18 @@ function masteryLabel(pct: number): string {
   return 'Just beginning'
 }
 
-export function StudentProgress({ studentId, grade }: { studentId: string; grade: string }) {
+export function StudentProgress({
+  studentId,
+  grade,
+  onOpenSubject,
+}: {
+  studentId: string
+  grade: string
+  /** Deep-link into a subject session from a Today's Plan item. */
+  onOpenSubject: (subject: string) => void
+}) {
   const [view, setView] = useState<StudentMasteryView | null>(null)
+  const [readiness, setReadiness] = useState<ReadinessView | null>(null)
 
   useEffect(() => {
     let active = true
@@ -42,12 +58,30 @@ export function StudentProgress({ studentId, grade }: { studentId: string; grade
     }
   }, [studentId, grade])
 
-  // KidHome already shows a top-level loader; render nothing until data is ready
-  // rather than flashing an empty card.
-  if (!view) return null
+  useEffect(() => {
+    let active = true
+    getReadiness(studentId).then((r) => {
+      if (active) setReadiness(r)
+    })
+    return () => {
+      active = false
+    }
+  }, [studentId])
+
+  // KidHome already shows a top-level loader; render nothing until both reads are
+  // ready rather than flashing partial cards.
+  if (!view || !readiness) return null
+
+  const plan = buildTodaysPlan(readiness)
 
   return (
     <div className="progress">
+      {/* AI Coach — near the top: the "what should I do next" anchor */}
+      <section className="panel coach">
+        <h3>Your Coach</h3>
+        <p className="coach-msg">{buildCoachMessage(readiness)}</p>
+      </section>
+
       {/* Skill Mastery Progress */}
       <section className="panel">
         <h3>Skill Mastery Progress</h3>
@@ -98,13 +132,29 @@ export function StudentProgress({ studentId, grade }: { studentId: string; grade
         )}
       </section>
 
-      {/* Phase 2-3 placeholders — labeled, no logic behind them yet. */}
-      <section className="panel placeholder">
-        <h3>
-          Today’s Plan <span className="soon">Phase 2</span>
-        </h3>
-        <p className="muted">A personalized daily plan will show up here soon.</p>
+      {/* Today's Plan — derived from readiness, deep-links into sessions. */}
+      <section className="panel">
+        <h3>Today’s Plan</h3>
+        {plan.length ? (
+          <ol className="plan-list">
+            {plan.map((item, i) => (
+              <li key={item.label}>
+                <button type="button" className="plan-item" onClick={() => onOpenSubject(item.subject)}>
+                  <span className="plan-num">{i + 1}</span>
+                  <span className="plan-label">{item.label}</span>
+                  <span className="plan-go" aria-hidden="true">
+                    ›
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="empty-progress">Your plan will appear here after your first session.</p>
+        )}
       </section>
+
+      {/* Remaining placeholders — labeled, no logic behind them yet. */}
       <section className="panel placeholder">
         <h3>
           Readiness Score <span className="soon">Phase 2</span>

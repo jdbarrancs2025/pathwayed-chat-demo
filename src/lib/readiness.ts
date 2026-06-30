@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { subjectDisplayName } from '@/lib/subjects'
 import type { Json } from '@/lib/database.types'
 
 /**
@@ -207,4 +208,163 @@ export async function recordReadiness(studentId: string): Promise<void> {
     .from('readiness_scores')
     .upsert(upserts, { onConflict: 'student_id,readiness_type' })
   if (error) console.error('readiness_scores upsert failed', error)
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard read + templated (NO-LLM) Coach message and Today's Plan.
+// computeXxx above is the engine; the below is read-only presentation, pure
+// where possible, so the student dashboard can show "what should I do next".
+// ---------------------------------------------------------------------------
+
+export interface ReadinessRecord {
+  score: number
+  strengths: SkillRef[]
+  gaps: SkillRef[]
+  nextSkillSlug: string | null
+}
+export interface ReadinessView {
+  pathway: ReadinessRecord | null
+  bySubject: Record<string, ReadinessRecord>
+  hasAny: boolean
+}
+
+function asRefs(v: Json | null | undefined): SkillRef[] {
+  if (!Array.isArray(v)) return []
+  return v.filter(
+    (x): x is SkillRef =>
+      !!x && typeof x === 'object' && 'slug' in x && 'name' in x && 'subject' in x,
+  )
+}
+
+/** Read this student's readiness_scores (pathway + per-subject). Read-only,
+ *  anon client under RLS (owns_student). Always resolves to a view. */
+export async function getReadiness(studentId: string): Promise<ReadinessView> {
+  const { data, error } = await supabase
+    .from('readiness_scores')
+    .select('readiness_type, score, strengths, gaps, next_skill_slug')
+    .eq('student_id', studentId)
+  if (error || !data || !data.length) return { pathway: null, bySubject: {}, hasAny: false }
+
+  let pathway: ReadinessRecord | null = null
+  const bySubject: Record<string, ReadinessRecord> = {}
+  for (const r of data) {
+    const rec: ReadinessRecord = {
+      score: Number(r.score),
+      strengths: asRefs(r.strengths),
+      gaps: asRefs(r.gaps),
+      nextSkillSlug: r.next_skill_slug,
+    }
+    if (r.readiness_type === 'pathway') pathway = rec
+    else bySubject[r.readiness_type] = rec
+  }
+  return { pathway, bySubject, hasAny: true }
+}
+
+type ScoreBand = 'strong' | 'growing' | 'getting-started' | 'just-beginning'
+function scoreBand(s: number): ScoreBand {
+  if (s >= 80) return 'strong'
+  if (s >= 50) return 'growing'
+  if (s >= 20) return 'getting-started'
+  return 'just-beginning'
+}
+
+// Deterministic pick so the same data always yields the same message (no
+// per-render flicker) while different students/states get varied phrasing.
+function pick(templates: string[], seed: string): string {
+  let h = 5381
+  for (let i = 0; i < seed.length; i++) h = ((h << 5) + h + seed.charCodeAt(i)) >>> 0
+  return templates[h % templates.length]
+}
+
+// Warm, varied, plain-text templates. NO emojis (matches the chat rule).
+const COACH_TEMPLATES: Record<'none' | 'encourage' | 'focus' | 'celebrate', string[]> = {
+  none: ["Start a practice session and I'll build a plan just for you."],
+  encourage: [
+    "You're just getting started, and every session makes you stronger. Let's keep going.",
+    'Great start. A little practice each day adds up fast.',
+    "You're on your way. One short session today keeps the momentum going.",
+  ],
+  focus: [
+    "Let's give {skill} some attention next. A few focused minutes there will pay off.",
+    '{skill} is the best thing to practice next. You can do this.',
+    "Here's a tip: spend your next session on {skill} to level it up.",
+  ],
+  celebrate: [
+    "You're doing great. {skill} is really strong. Keep it going with a quick session.",
+    "Nice work. {skill} is one of your strengths. Let's build on it.",
+    '{skill} is looking strong. A short session today will keep you sharp.',
+  ],
+}
+
+/**
+ * Pure, templated (NO-LLM) coach message from readiness. Picks a category —
+ * celebrate a strength when the student is strong, focus on the weakest gap
+ * when there's one to work on, otherwise encourage — and fills the skill name.
+ */
+export function buildCoachMessage(readiness: ReadinessView): string {
+  const p = readiness.pathway
+  if (!readiness.hasAny || !p) return pick(COACH_TEMPLATES.none, 'none')
+
+  const band = scoreBand(p.score)
+  let category: keyof typeof COACH_TEMPLATES = 'encourage'
+  let skill = ''
+  if (band === 'strong' && p.strengths.length) {
+    category = 'celebrate'
+    skill = p.strengths[0].name
+  } else if (p.gaps.length) {
+    category = 'focus'
+    skill = p.gaps[0].name
+  } else {
+    category = 'encourage'
+  }
+  return pick(COACH_TEMPLATES[category], `${category}:${skill}:${p.score}`).replace('{skill}', skill)
+}
+
+export interface PlanItem {
+  label: string
+  /** Subject session to deep-link into (math | reading | writing). */
+  subject: string
+}
+
+/**
+ * Pure: a short ordered plan (2-4 items) from readiness — review the weakest
+ * skill, practice the weakest subject, and build on a strength. Empty array when
+ * there's no readiness data yet (the card shows an empty state). Labels are
+ * deduped so items never repeat.
+ */
+export function buildTodaysPlan(readiness: ReadinessView): PlanItem[] {
+  const p = readiness.pathway
+  if (!readiness.hasAny || !p) return []
+
+  const items: PlanItem[] = []
+  const seen = new Set<string>()
+  const push = (label: string, subject: string) => {
+    if (!seen.has(label)) {
+      seen.add(label)
+      items.push({ label, subject })
+    }
+  }
+
+  // 1) Review the highest-leverage weak skill.
+  const gap = p.gaps[0]
+  if (gap) push(`Review ${gap.name}`, gap.subject)
+
+  // 2) Practice the weakest subject(s).
+  const subjectsByScore = Object.entries(readiness.bySubject).sort((a, b) => a[1].score - b[1].score)
+  for (const [subject] of subjectsByScore) {
+    if (items.length >= 3) break
+    push(`Practice ${subjectDisplayName(subject)}`, subject)
+  }
+
+  // 3) End on a strength.
+  const strong = p.strengths[0]
+  if (strong && items.length < 4) push(`Keep building ${strong.name}`, strong.subject)
+
+  // Guarantee at least a couple of items when there's any data.
+  if (items.length < 2) {
+    const anySubject = Object.keys(readiness.bySubject)[0] ?? gap?.subject ?? strong?.subject
+    if (anySubject) push(`Try a new skill in ${subjectDisplayName(anySubject)}`, anySubject)
+  }
+
+  return items.slice(0, 4)
 }

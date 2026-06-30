@@ -1338,6 +1338,68 @@
   color: var(--muted);
   margin: 6px 0 0;
 }
+/* AI Coach card — the "what should I do next" anchor near the top. */
+.progress .panel.coach {
+  background: var(--grow-soft);
+  border-color: var(--grow);
+}
+.progress .panel.coach h3 {
+  color: var(--navy);
+}
+.coach-msg {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 6px 0 0;
+}
+/* Today's Plan — ordered, tappable items that deep-link into a session. */
+.plan-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plan-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.plan-item:hover {
+  border-color: var(--orange);
+}
+.plan-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.plan-label {
+  flex: 1;
+  font-size: 14px;
+  color: var(--ink);
+}
+.plan-go {
+  color: var(--faint);
+  font-size: 18px;
+  line-height: 1;
+}
 .subject-chips {
   display: flex;
   flex-wrap: wrap;

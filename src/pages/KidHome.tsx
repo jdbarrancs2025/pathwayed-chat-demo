@@ -80,7 +80,7 @@ export function KidHome() {
           </div>
         </button>
 
-        <StudentProgress studentId={student.id} grade={student.grade} />
+        <StudentProgress studentId={student.id} grade={student.grade} onOpenSubject={open} />
 
         <div className="foot">
           Working level: {levelLabel(student.level).toLowerCase()} for {gradeLabel(student.grade).toLowerCase()}
