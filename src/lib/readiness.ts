@@ -110,10 +110,21 @@ function computeBreakdown(rows: ReadinessSkillRow[], now: number): ReadinessBrea
       a.name.localeCompare(b.name),
   )
 
+  const strengths = strongFirst.slice(0, TOP_N).map(toRef)
+  // Overlap guard: a skill must never be in BOTH lists (looks broken to a
+  // parent). With <= TOP_N practiced skills the top-N and bottom-N overlap, so
+  // gaps excludes anything already shown as a strength — an empty gaps array is
+  // the correct result for a student who only has strengths.
+  const strengthSlugs = new Set(strengths.map((s) => s.slug))
+  const gaps = weakFirst
+    .filter((r) => !strengthSlugs.has(r.slug))
+    .slice(0, TOP_N)
+    .map(toRef)
+
   return {
     score,
-    strengths: strongFirst.slice(0, TOP_N).map(toRef),
-    gaps: weakFirst.slice(0, TOP_N).map(toRef),
+    strengths,
+    gaps,
     nextSkillSlug: weakFirst[0]?.slug ?? null,
   }
 }

@@ -49,10 +49,11 @@ describe('computePathwayScore', () => {
       NOW,
     )
     expect(r.pathway.score).toBe(85)
-    // strongest first, weakest first
+    // strongest first; with only 2 skills both are strengths and gaps dedups to
+    // empty (no skill in both lists).
     expect(r.pathway.strengths.map((s) => s.slug)).toEqual(['a', 'b'])
-    expect(r.pathway.gaps.map((s) => s.slug)).toEqual(['b', 'a'])
-    // next skill = weakest
+    expect(r.pathway.gaps).toEqual([])
+    // next skill = weakest, even though gaps is empty
     expect(r.pathway.nextSkillSlug).toBe('b')
   })
 
@@ -72,14 +73,37 @@ describe('computePathwayScore', () => {
     expect(r.pathway.nextSkillSlug).toBe('r') // reading is the weaker
   })
 
-  it('caps strengths/gaps at the top 3', () => {
-    const rows = ['s1', 's2', 's3', 's4', 's5'].map((slug, i) =>
-      row({ slug, mastery_percentage: (i + 1) * 15 }),
+  it('caps strengths/gaps at the top 3 with disjoint lists', () => {
+    const rows = ['s1', 's2', 's3', 's4', 's5', 's6'].map((slug, i) =>
+      row({ slug, mastery_percentage: (i + 1) * 12 }),
     )
     const r = computePathwayScore(rows, NOW)
     expect(r.pathway.strengths).toHaveLength(3)
     expect(r.pathway.gaps).toHaveLength(3)
-    expect(r.pathway.strengths[0].slug).toBe('s5') // highest mastery (75)
-    expect(r.pathway.gaps[0].slug).toBe('s1') // lowest mastery (15)
+    expect(r.pathway.strengths[0].slug).toBe('s6') // highest mastery (72)
+    expect(r.pathway.gaps[0].slug).toBe('s1') // lowest mastery (12)
+    // No skill appears in both lists.
+    const overlap = r.pathway.strengths
+      .map((s) => s.slug)
+      .filter((slug) => r.pathway.gaps.some((g) => g.slug === slug))
+    expect(overlap).toEqual([])
+  })
+
+  it('never puts a skill in BOTH strengths and gaps (2 practiced skills)', () => {
+    const r = computePathwayScore(
+      [
+        row({ slug: 'strong', mastery_percentage: 80 }),
+        row({ slug: 'weak', mastery_percentage: 40 }),
+      ],
+      NOW,
+    )
+    const strengthSlugs = r.pathway.strengths.map((s) => s.slug)
+    const gapSlugs = r.pathway.gaps.map((g) => g.slug)
+    // No overlap: dedup keeps both as strengths and leaves gaps empty (correct).
+    expect(gapSlugs.filter((slug) => strengthSlugs.includes(slug))).toEqual([])
+    expect(r.pathway.gaps).toEqual([])
+    expect(strengthSlugs).toContain('strong')
+    // next_skill_slug still points at the weaker skill to practice next.
+    expect(r.pathway.nextSkillSlug).toBe('weak')
   })
 })
