@@ -71,11 +71,11 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
   const lastLoudRef = useRef(0)
   const segStartRef = useRef(0)
 
-  // Keep latest callbacks without restarting the loop.
+  // Keep latest callbacks without restarting the loop. These refs are read only
+  // asynchronously (inside the rAF loop and event handlers), so syncing them in a
+  // post-commit effect keeps the running loop current without writing refs during render.
   const onUtteranceRef = useRef(onUtterance)
-  onUtteranceRef.current = onUtterance
   const isPausedRef = useRef(isPaused)
-  isPausedRef.current = isPaused
 
   const cleanup = useCallback(() => {
     if (rafRef.current != null) {
@@ -138,8 +138,13 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
     }
   }, [])
 
+  // Hold the latest loop in a ref so the frame can reschedule itself without the
+  // callback referencing its own binding (same "latest without restart" pattern
+  // as onUtteranceRef/isPausedRef above).
+  const loopRef = useRef<() => void>(() => {})
+
   const loop = useCallback(() => {
-    rafRef.current = requestAnimationFrame(loop)
+    rafRef.current = requestAnimationFrame(() => loopRef.current())
     const analyser = analyserRef.current
     if (!analyser || !activeRef.current) return
 
@@ -179,6 +184,13 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
     }
   }, [startSegment, stopSegment])
 
+  // Sync latest callbacks/loop into their refs after each commit (see note above).
+  useEffect(() => {
+    onUtteranceRef.current = onUtterance
+    isPausedRef.current = isPaused
+    loopRef.current = loop
+  })
+
   const start = useCallback(async () => {
     setError(null)
     if (activeRef.current) return
@@ -201,13 +213,13 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
       analyserRef.current = analyser
       activeRef.current = true
       setState('listening')
-      rafRef.current = requestAnimationFrame(loop)
+      rafRef.current = requestAnimationFrame(() => loopRef.current())
     } catch (err) {
       setError(mapError(err))
       setState('error')
       cleanup()
     }
-  }, [loop, cleanup])
+  }, [cleanup])
 
   const stop = useCallback(() => {
     activeRef.current = false

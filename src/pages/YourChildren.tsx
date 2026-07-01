@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import '@/styles/app-screens.css'
@@ -28,16 +28,21 @@ export function YourChildren() {
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
 
-  const refresh = useCallback(async () => {
-    if (!user) return
-    setLoading(true)
-    setStudents(await listStudents(user.id))
-    setLoading(false)
-  }, [user])
-
+  // Load the parent's children on mount / when the signed-in user changes.
+  // State is set only after the fetch resolves (never synchronously in the
+  // effect body); `loading` starts true so the first render shows the spinner.
   useEffect(() => {
-    void refresh()
-  }, [refresh])
+    if (!user) return
+    let active = true
+    listStudents(user.id).then((list) => {
+      if (!active) return
+      setStudents(list)
+      setLoading(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [user])
 
   const handleRemove = async (id: string) => {
     await deleteStudent(id)

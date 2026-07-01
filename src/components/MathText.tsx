@@ -24,9 +24,9 @@ export function MathText({ content }: { content: string }) {
   const out: ReactNode[] = []
   let last = 0
   let key = 0
-  let m: RegExpExecArray | null
-  MATH_RE.lastIndex = 0
-  while ((m = MATH_RE.exec(content)) !== null) {
+  // matchAll iterates without mutating MATH_RE.lastIndex (it clones the regex
+  // internally), so repeated renders stay independent and there's no shared state.
+  for (const m of content.matchAll(MATH_RE)) {
     if (m.index > last) out.push(<Fragment key={key++}>{content.slice(last, m.index)}</Fragment>)
     const displayMode = m[1] !== undefined
     const tex = (m[1] ?? m[2] ?? '').trim()

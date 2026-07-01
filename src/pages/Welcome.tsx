@@ -101,7 +101,6 @@ const PROVIDERS: { id: OAuthProvider; label: string; icon: ReactElement }[] = [
 export function Welcome() {
   const { user, loading, signInWith, signInWithPassword, signUpWithEmail, resetPasswordForEmail } = useAuth()
   const navigate = useNavigate()
-  const [redirecting, setRedirecting] = useState(false)
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -168,7 +167,6 @@ export function Welcome() {
   useEffect(() => {
     if (loading || !user) return
     let active = true
-    setRedirecting(true)
     getConsentStatus(user.id).then((hasConsent) => {
       if (!active) return
       navigate(hasConsent ? '/students' : '/consent', { replace: true })
@@ -178,7 +176,7 @@ export function Welcome() {
     }
   }, [user, loading, navigate])
 
-  if (loading || user || redirecting) {
+  if (loading || user) {
     return (
       <div
         style={{
