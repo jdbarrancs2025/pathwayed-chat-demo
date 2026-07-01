@@ -1644,9 +1644,16 @@
   color: var(--muted);
   line-height: 1;
 }
+/* Gentle nudge that Nikki steps back for independent practice — subtle, not a banner. */
+.practice-solo {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--grow);
+  margin: 14px 0 2px;
+}
 .practice-progress {
   font-size: 13px;
-  margin: 14px 0 8px;
+  margin: 6px 0 8px;
 }
 .practice-q {
   padding: 18px;

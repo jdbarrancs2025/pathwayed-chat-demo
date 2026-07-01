@@ -49,9 +49,9 @@ export function PracticeSkills({ studentId }: { studentId: string }) {
 
   return (
     <section className="panel practice-picker">
-      <h3>Practice problems</h3>
+      <h3>Show what you know</h3>
       <p className="muted practice-picker-sub">
-        Pick a skill to practice — answer questions and get instant feedback.
+        Pick a skill and try it on your own, then get instant feedback.
       </p>
       {groups.map((group) => (
         <div key={group.subject} className="subj-group">

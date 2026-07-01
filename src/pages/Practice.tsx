@@ -156,6 +156,7 @@ export function Practice() {
     <div className="kid-screen">
       <div className="shell">
         <TopMenu />
+        <p className="practice-solo">This part’s on you. Give it your best shot!</p>
         <div className="practice-progress muted">
           Question {index + 1} of {questions.length}
         </div>
