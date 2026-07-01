@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
+import '@/styles/app-screens.css'
 import {
   avColor,
   deleteStudent,
@@ -46,18 +47,8 @@ export function YourChildren() {
   const have = students.length > 0
 
   return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '26px 22px',
-        background: '#FBF8F3',
-        color: '#1C2230',
-      }}
-    >
-      <div style={card}>
+    <div className="auth-screen" style={{ color: '#1C2230' }}>
+      <div className="auth-card" style={card}>
         <p
           style={{
             color: '#CC543C',

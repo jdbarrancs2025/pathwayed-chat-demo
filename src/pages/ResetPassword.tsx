@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { getConsentStatus } from '@/lib/consent'
+import '@/styles/app-screens.css'
 import logoImg from '@/assets/logo.png'
 
 const inputStyle: React.CSSProperties = {
@@ -58,18 +59,9 @@ export function ResetPassword() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '26px 22px',
-        background: '#FBF8F3',
-        color: '#1C2230',
-      }}
-    >
+    <div className="auth-screen" style={{ color: '#1C2230' }}>
       <div
+        className="auth-card"
         style={{
           background: '#FFFFFF',
           border: '1px solid #ECE4D8',

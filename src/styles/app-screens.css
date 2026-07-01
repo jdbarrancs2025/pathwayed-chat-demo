@@ -16,6 +16,28 @@
   flex-direction: column;
 }
 
+/* Auth / onboarding screens (Welcome, Consent, ChooseNikki, ResetPassword,
+   AddChild, YourChildren). Same job as .kid-screen: the global root is locked to
+   100dvh / overflow:hidden (index.css), so this is the OWN scroll container. The
+   card centers via margin:auto when it fits and scrolls with NO top-clip when it
+   is taller than the viewport (mobile / sign-up). Safe-area padding keeps the
+   bottom control clear of the iOS home bar. Desktop looks identical (centered). */
+.auth-screen {
+  height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 26px 22px;
+  padding-bottom: calc(26px + env(safe-area-inset-bottom));
+  background: #fbf8f3;
+}
+.auth-card {
+  margin: auto; /* centers both axes when it fits; collapses to 0 on overflow */
+  width: 100%;
+}
+
 .shell,
 .session {
   --navy: #003078;

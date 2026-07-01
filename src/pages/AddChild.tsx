@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import '@/styles/app-screens.css'
 import { useAuth } from '@/context/AuthContext'
 import {
   GRADES,
@@ -173,18 +174,8 @@ export function AddChild() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '26px 22px',
-        background: '#FBF8F3',
-        color: '#1C2230',
-      }}
-    >
-      <div style={card}>
+    <div className="auth-screen" style={{ color: '#1C2230' }}>
+      <div className="auth-card" style={card}>
         <p
           style={{
             color: '#CC543C',
