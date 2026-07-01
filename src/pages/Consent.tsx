@@ -69,7 +69,7 @@ export function Consent() {
     // Mirror the parent name onto their profile for display.
     await supabase.from('profiles').update({ display_name: trimmed }).eq('id', user.id)
 
-    navigate('/choose-nikki', { replace: true })
+    navigate('/children', { replace: true })
   }
 
   return (

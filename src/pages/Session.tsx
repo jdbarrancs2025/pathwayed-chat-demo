@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { useAuth } from '@/context/AuthContext'
 import { getStudent, type Student } from '@/lib/students'
-import { getNikkiChoice } from '@/lib/profile'
 import { loadTranscript, saveFeedback } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
@@ -53,13 +51,11 @@ function makeGreeting(name: string, subject: string): string {
 
 interface ReadyState {
   student: Student
-  nikki: string
   initialMessages: ChatMessage[]
 }
 
 export function Session() {
   const { id, subject } = useParams<{ id: string; subject: string }>()
-  const { user } = useAuth()
   const navigate = useNavigate()
   const [ready, setReady] = useState<ReadyState | null>(null)
 
@@ -69,11 +65,7 @@ export function Session() {
       return
     }
     let active = true
-    Promise.all([
-      getStudent(id),
-      user ? getNikkiChoice(user.id) : Promise.resolve('orb'),
-      loadTranscript(id, subject),
-    ]).then(([s, n, saved]) => {
+    Promise.all([getStudent(id), loadTranscript(id, subject)]).then(([s, saved]) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
@@ -82,12 +74,12 @@ export function Session() {
       const initialMessages: ChatMessage[] = saved.length
         ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
         : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject) }]
-      setReady({ student: s, nikki: n, initialMessages })
+      setReady({ student: s, initialMessages })
     })
     return () => {
       active = false
     }
-  }, [id, subject, user, navigate])
+  }, [id, subject, navigate])
 
   if (!ready || !subject) {
     return (
@@ -100,24 +92,17 @@ export function Session() {
   }
 
   return (
-    <SessionView
-      student={ready.student}
-      subject={subject}
-      nikki={ready.nikki}
-      initialMessages={ready.initialMessages}
-    />
+    <SessionView student={ready.student} subject={subject} initialMessages={ready.initialMessages} />
   )
 }
 
 function SessionView({
   student,
   subject,
-  nikki,
   initialMessages,
 }: {
   student: Student
   subject: string
-  nikki: string
   initialMessages: ChatMessage[]
 }) {
   const navigate = useNavigate()
@@ -330,7 +315,7 @@ function SessionView({
 
       <div className="work" data-pane={pane}>
         <div className="chatpane">
-          <CallStage nikki={nikki} state={callState} />
+          <CallStage state={callState} />
           <div className="feed" ref={feedRef}>
             {visibleMessages.map((m) => (
               <div key={m.id} className={`msg ${m.role === 'assistant' ? 'nikki' : 'me'}`}>
@@ -425,7 +410,6 @@ function SessionView({
       {showFeedback && (
         <SessionFeedback
           childName={student.first_name}
-          nikki={nikki}
           saving={savingFeedback}
           onDone={(rating, note) => void submitFeedback(rating, note)}
           onKeepLearning={() => setShowFeedback(false)}

@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { avColor, deleteStudent, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
-import { getDisplayName, getNikkiChoice, setNikkiChoice, updateDisplayName } from '@/lib/profile'
-import { NikkiChoiceGrid, type NikkiId } from '@/components/NikkiChoiceGrid'
+import { getDisplayName, updateDisplayName } from '@/lib/profile'
 import { BillingPanel } from '@/components/BillingPanel'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
@@ -15,9 +14,6 @@ export function Settings() {
   const navigate = useNavigate()
   const [children, setChildren] = useState<Student[]>([])
   const [name, setName] = useState('')
-  const [nikki, setNikki] = useState<NikkiId>('orb')
-  const [nikkiSaved, setNikkiSaved] = useState(false)
-  const [savingNikki, setSavingNikki] = useState(false)
   const [renaming, setRenaming] = useState(false)
   const [renameValue, setRenameValue] = useState('')
   const [loading, setLoading] = useState(true)
@@ -26,16 +22,11 @@ export function Settings() {
     if (!user) return
     let active = true
     void (async () => {
-      const [kids, displayName, choice] = await Promise.all([
-        listStudents(user.id),
-        getDisplayName(user.id),
-        getNikkiChoice(user.id),
-      ])
+      const [kids, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
       if (!active) return
       setChildren(kids)
       setName(displayName)
       setRenameValue(displayName)
-      setNikki((choice as NikkiId) ?? 'orb')
       setLoading(false)
     })()
     return () => {
@@ -46,14 +37,6 @@ export function Settings() {
   const removeChild = async (id: string) => {
     await deleteStudent(id)
     setChildren((prev) => prev.filter((c) => c.id !== id))
-  }
-
-  const saveNikki = async () => {
-    if (!user || savingNikki) return
-    setSavingNikki(true)
-    await setNikkiChoice(user.id, nikki)
-    setSavingNikki(false)
-    setNikkiSaved(true)
   }
 
   const saveName = async () => {
@@ -163,31 +146,6 @@ export function Settings() {
 
         {/* Billing */}
         {user && <BillingPanel students={children} userId={user.id} email={user.email ?? ''} />}
-
-        {/* Nikki */}
-        <div className="panel">
-          <h3>Nikki</h3>
-          <p className="muted" style={{ fontSize: 13, margin: '0 0 12px' }}>
-            Choose how Nikki looks for your child.
-          </p>
-          <NikkiChoiceGrid
-            value={nikki}
-            onChange={(id) => {
-              setNikki(id)
-              setNikkiSaved(false)
-            }}
-          />
-          <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button className="btn btn-soft" style={{ width: 'auto' }} disabled={savingNikki} onClick={saveNikki}>
-              {savingNikki ? 'Saving…' : 'Save Nikki'}
-            </button>
-            {nikkiSaved && (
-              <span className="muted" style={{ fontSize: 13 }}>
-                Saved
-              </span>
-            )}
-          </div>
-        </div>
 
         {/* Account */}
         <div className="panel">

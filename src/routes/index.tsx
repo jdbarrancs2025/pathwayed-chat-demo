@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router'
 import { Welcome } from '@/pages/Welcome'
 import { ResetPassword } from '@/pages/ResetPassword'
 import { Consent } from '@/pages/Consent'
-import { ChooseNikki } from '@/pages/ChooseNikki'
 import { YourChildren } from '@/pages/YourChildren'
 import { AddChild } from '@/pages/AddChild'
 import { StudentPicker } from '@/pages/StudentPicker'
@@ -24,7 +23,9 @@ export function AppRoutes() {
       <Route path="/" element={<Welcome />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/consent" element={<Consent />} />
-      <Route path="/choose-nikki" element={<ChooseNikki />} />
+      {/* Persona-selection step retired (orb is the only visual presence). Redirect
+          any lingering link into onboarding rather than 404. */}
+      <Route path="/choose-nikki" element={<Navigate to="/children" replace />} />
       <Route path="/children" element={<YourChildren />} />
       <Route path="/children/new" element={<AddChild />} />
       <Route path="/children/:id/edit" element={<AddChild />} />

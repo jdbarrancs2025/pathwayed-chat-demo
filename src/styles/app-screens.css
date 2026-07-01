@@ -16,7 +16,7 @@
   flex-direction: column;
 }
 
-/* Auth / onboarding screens (Welcome, Consent, ChooseNikki, ResetPassword,
+/* Auth / onboarding screens (Welcome, Consent, ResetPassword,
    AddChild, YourChildren). Same job as .kid-screen: the global root is locked to
    100dvh / overflow:hidden (index.css), so this is the OWN scroll container. The
    card centers via margin:auto when it fits and scrolls with NO top-clip when it
@@ -1770,56 +1770,6 @@
   color: var(--muted);
   letter-spacing: 0.06em;
 }
-.callphoto {
-  width: 296px;
-  height: 296px;
-  border-radius: 40px;
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  background: #eee;
-}
-.callphoto img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.callphoto.thinking {
-  animation: app-navpulse 1.5s ease-in-out infinite;
-}
-.callphoto.speaking {
-  animation: app-navpulse 0.85s ease-in-out infinite;
-}
-.callphoto.thinking::after,
-.callphoto.speaking::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 40px;
-  border: 3px solid var(--orange);
-  animation: app-navring 1.2s ease-out infinite;
-}
-@keyframes app-navpulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-@keyframes app-navring {
-  0% {
-    opacity: 0.55;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.28);
-  }
-}
-
 /* Comfortable wider content area on laptops/desktops — uses the width without
    stretching forms edge to edge. */
 @media (min-width: 1024px) {
@@ -1860,18 +1810,10 @@
   .callstage {
     padding: 14px 10px 10px;
   }
-  .callphoto {
-    width: 232px;
-    height: 232px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .typing i,
-  .callphoto.thinking,
-  .callphoto.speaking,
-  .callphoto.thinking::after,
-  .callphoto.speaking::after {
+  .typing i {
     animation: none !important;
   }
 }
