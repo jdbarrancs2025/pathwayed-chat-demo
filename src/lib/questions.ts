@@ -113,6 +113,61 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
   return shuffle(parsed).slice(0, limit)
 }
 
+// --- Read path: which skills are practiceable (have published questions) -----
+
+export interface PracticeableSkill {
+  skill_id: string
+  slug: string
+  name: string
+  subject: string
+}
+
+// Display order for grouping the practice picker by subject (mirrors the
+// dashboard's SUBJECT_DISPLAY_ORDER); unknown subjects sort last, then by name.
+const PRACTICE_SUBJECT_ORDER = ['math', 'reading', 'writing', 'science']
+
+/**
+ * List the skills a student can actually practice right now: every skill with at
+ * least one PUBLISHED question, joined to its skill metadata and sorted by
+ * subject then name. Drives the dashboard practice picker — skills without
+ * questions never appear. Best-effort: returns [] on any read error, never throws.
+ */
+export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
+  // RLS already limits the client to status='published'; the filter is explicit
+  // so the intent is clear and it still holds if policies change.
+  const { data: qRows, error: qError } = await supabase
+    .from('generated_questions')
+    .select('skill_id')
+    .eq('status', 'published')
+  if (qError) {
+    console.error('listPracticeableSkills: questions read failed', qError)
+    return []
+  }
+  const skillIds = [...new Set((qRows ?? []).map((r) => r.skill_id).filter(Boolean))]
+  if (!skillIds.length) return []
+
+  const { data: skillRows, error: sError } = await supabase
+    .from('skills')
+    .select('id, slug, name, subject')
+    .in('id', skillIds)
+  if (sError) {
+    console.error('listPracticeableSkills: skills read failed', sError)
+    return []
+  }
+
+  const skills: PracticeableSkill[] = []
+  for (const s of skillRows ?? []) {
+    if (!s.slug || !s.name) continue // need a slug to route practice to
+    skills.push({ skill_id: s.id, slug: s.slug, name: s.name, subject: s.subject })
+  }
+
+  const orderOf = (subject: string) => {
+    const i = PRACTICE_SUBJECT_ORDER.indexOf(subject)
+    return i === -1 ? PRACTICE_SUBJECT_ORDER.length : i
+  }
+  return skills.sort((a, b) => orderOf(a.subject) - orderOf(b.subject) || a.name.localeCompare(b.name))
+}
+
 // --- Write path: append-only question_attempts -------------------------------
 
 export interface QuestionAttemptInput {

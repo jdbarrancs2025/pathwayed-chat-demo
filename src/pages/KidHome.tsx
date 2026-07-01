@@ -5,6 +5,7 @@ import { SUBJECTS, HOMEWORK } from '@/lib/subjects'
 import { listSavedSubjects } from '@/lib/sessions'
 import { TopMenu } from '@/components/TopMenu'
 import { StudentProgress } from '@/components/StudentProgress'
+import { PracticeSkills } from '@/components/PracticeSkills'
 import '@/styles/app-screens.css'
 
 export function KidHome() {
@@ -80,18 +81,7 @@ export function KidHome() {
           </div>
         </button>
 
-        <button
-          className="bigcard practice-card"
-          onClick={() => navigate(`/students/${student.id}/practice/multiplication`)}
-        >
-          <div className="ico" style={{ background: 'var(--grow)' }}>
-            ✦
-          </div>
-          <div>
-            <h3>Practice problems</h3>
-            <p>Quick multiplication questions — answer, get instant feedback, grow your skills.</p>
-          </div>
-        </button>
+        <PracticeSkills studentId={student.id} />
 
         <StudentProgress studentId={student.id} grade={student.grade} onOpenSubject={open} />
 
