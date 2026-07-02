@@ -194,6 +194,68 @@ const EXPLANATIONS: Record<string, string> = {
     "An exclamation point is for strong emphasis, which doesn't fit a plain statement like this. End it with a period.",
   'missing-end-punctuation':
     'Every sentence needs end punctuation — this one should finish with a period.',
+
+  // grammar — sentence structure / boundaries
+  'creates-a-fragment':
+    "That leaves an incomplete sentence (a fragment). Make sure the sentence has a subject and a complete main verb.",
+  'colon-needs-complete-clause':
+    'A colon does not join two complete sentences — use a period or semicolon there instead.',
+  'comma-in-complex-list':
+    'When the items in a list already contain commas, separate the items with semicolons so the list stays clear.',
+  'comma-where-colon-needed':
+    'A comma cannot introduce a list or explanation after a complete clause — a colon does that job.',
+  'missing-colon':
+    'A complete clause that introduces a list or explanation needs a colon before it.',
+  'unpaired-dash':
+    'A dash that sets off an aside in the middle of a sentence needs a matching partner — use a pair of dashes, or a pair of commas, not one lone dash.',
+
+  // grammar — pronouns
+  'pronoun-matches-nearby-noun':
+    'Match the pronoun to the noun it actually replaces, not just the closest noun in the sentence.',
+  'pronoun-number-mismatch':
+    'A pronoun must match its noun in number — singular with singular, plural with plural.',
+  'wrong-pronoun-case':
+    "Check the pronoun's job: subject pronouns (I, he, they, who) and object pronouns (me, him, them, whom) are not interchangeable.",
+  'wrong-pronoun-type':
+    'That is the wrong kind of pronoun for this spot. Use the one that fits the noun and its role in the sentence.',
+  'reflexive-misuse':
+    'A "-self" pronoun (myself, himself) is only for pointing back to the subject — it is not a fancy way to say "me" or "I."',
+  'which-for-person':
+    'Use "who" or "whom" for a person, not "which" (which is for things).',
+  'contraction-for-possessive':
+    'That is a contraction (it\'s = "it is," they\'re = "they are," who\'s = "who is"), but a possessive is needed here.',
+  'wrong-word-homophone':
+    'That word sounds the same but means something different (there = a place, their = belonging to them). Pick the one that fits.',
+
+  // grammar — verb tense/form
+  'wrong-tense-for-context':
+    'The time clues in the sentence call for a different tense here.',
+  'verb-tense-shift':
+    'Keep the tense consistent — this verb jumps to a different time than the rest of the sentence.',
+  'wrong-past-participle':
+    'That is not the correct past form of the verb. After "has," "have," or "had," use the past participle (for example, "gone," not "went").',
+
+  // grammar — possessives & apostrophes
+  'possessive-missing-apostrophe':
+    'To show possession, add an apostrophe — a plain word without one just names the thing, it does not own anything.',
+  'wrong-possessive-form':
+    'Check singular vs. plural ownership: one owner takes ’s, and more than one owner takes s’.',
+  'apostrophe-in-plural':
+    'A plain plural (more than one) does not take an apostrophe — an apostrophe here wrongly signals possession.',
+  'extra-apostrophe':
+    'That has an extra apostrophe. A possessive needs just one, in the right spot.',
+  'whos-whose-confusion':
+    '"Whose" shows possession; "who\'s" means "who is." This spot needs the possessive.',
+  'wrong-number-noun':
+    'Check whether the noun should be singular or plural here — the sentence calls for the other one.',
+
+  // grammar — modifier placement
+  'dangling-modifier':
+    'The opening description has nothing sensible to attach to — the thing right after it cannot do what the phrase describes. Start the main part with the person or thing being described.',
+  'illogical-modifier-subject':
+    'An opener like "it" or "there" cannot be what the opening phrase describes. Begin the main clause with the real doer.',
+  'wrong-subject-for-modifier':
+    "The opening phrase should describe the sentence's subject, but here the subject is an -ing action or the wrong noun. Start with who or what the phrase is really about.",
 }
 
 /**
