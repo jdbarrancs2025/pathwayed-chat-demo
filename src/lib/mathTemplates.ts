@@ -327,6 +327,190 @@ export const MEAN_FROM_TOTAL: MathTemplate = {
   ],
 }
 
+// Grades 6-8 (algebra): substitute a value and evaluate a·x + b. The order-of-
+// operations trap a·(x+b) sits above the answer and "dropped the constant" (a·x)
+// below, so the answer is never the extreme. All distractors positive; five
+// distinct tokens.
+export const EVALUATE_EXPRESSION: MathTemplate = {
+  code: 'evaluate-expression-medium-v1',
+  skillSlug: 'expressions',
+  satAlignment: 'algebra',
+  difficulty: 'medium',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'If $x = {x}$, what is the value of $\\,{a}x + {b}$?',
+    slots: [
+      { name: 'a', min: 2, max: 9 },
+      { name: 'x', min: 2, max: 9 },
+      { name: 'b', min: 1, max: 9 },
+    ],
+    answerFormula: 'a * x + b',
+    answerFormat: 'integer',
+    solutionTemplate: 'Multiply first, then add: $\\,{a} \\times {x} + {b} = {answer}$.',
+  },
+  distractorSpec: [
+    { formula: 'a * (x + b)', misconception_token: 'wrong-order-of-operations' }, // added b before multiplying
+    { formula: 'a * x', misconception_token: 'dropped-the-constant' }, // forgot + b (below)
+    { formula: '(a + 1) * x + b', misconception_token: 'coefficient-too-high' }, // answer + x (above)
+    { formula: 'a + x + b', misconception_token: 'added-the-coefficient' }, // added a instead of multiplying
+    { formula: 'a * x + b + b', misconception_token: 'doubled-the-constant' }, // added b twice
+  ],
+}
+
+// Grades 6-8 (algebra): evaluate a two-variable expression a·x + b·y. a!=b and
+// x!=y so the swapped-variables distractor is distinct. "Dropped a term" (a·x)
+// sits below and a bumped coefficient above. Five distinct tokens; all positive.
+export const EVALUATE_TWO_VARIABLE: MathTemplate = {
+  code: 'evaluate-two-variable-medium-v1',
+  skillSlug: 'algebra-1-concepts',
+  satAlignment: 'algebra',
+  difficulty: 'medium',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'If $x = {x}$ and $y = {y}$, what is $\\,{a}x + {b}y$?',
+    slots: [
+      { name: 'a', min: 2, max: 6 },
+      { name: 'b', min: 2, max: 6 },
+      { name: 'x', min: 2, max: 6 },
+      { name: 'y', min: 2, max: 6 },
+    ],
+    answerFormula: 'a * x + b * y',
+    answerFormat: 'integer',
+    constraints: ['a != b', 'x != y'],
+    solutionTemplate: 'Substitute, then add the products: $\\,{a}\\times{x} + {b}\\times{y} = {answer}$.',
+  },
+  distractorSpec: [
+    { formula: 'a * y + b * x', misconception_token: 'swapped-the-variables' }, // matched coeffs to wrong vars
+    { formula: 'a * x', misconception_token: 'dropped-a-term' }, // forgot b*y (below)
+    { formula: '(a + 1) * x + b * y', misconception_token: 'coefficient-too-high' }, // answer + x (above)
+    { formula: 'a + x + b + y', misconception_token: 'added-everything' }, // added all four numbers
+    { formula: 'a * x + b * y - x', misconception_token: 'coefficient-too-low' }, // answer - x (below)
+  ],
+}
+
+// Grades 6-8 (advanced math): evaluate a quadratic function f(x) = x^2 + b. The
+// marquee trap is 2x instead of x^2. "Dropped the constant" (x^2) below and a
+// bigger base above straddle the answer. Five distinct tokens; all positive.
+export const EVALUATE_QUADRATIC_FUNCTION: MathTemplate = {
+  code: 'evaluate-quadratic-function-medium-v1',
+  skillSlug: 'functions',
+  satAlignment: 'advanced-math',
+  difficulty: 'medium',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'If $f(x) = x^2 + {b}$, what is $f({x})$?',
+    slots: [
+      { name: 'x', min: 2, max: 9 },
+      { name: 'b', min: 1, max: 9 },
+    ],
+    answerFormula: 'x * x + b',
+    answerFormat: 'integer',
+    solutionTemplate: 'Square first, then add: ${x}^2 + {b} = {answer}$.',
+  },
+  distractorSpec: [
+    { formula: '2 * x + b', misconception_token: 'multiplied-instead-of-squared' }, // used 2x, not x^2
+    { formula: 'x * x', misconception_token: 'dropped-the-constant' }, // forgot + b (below)
+    { formula: '(x + 1) * (x + 1) + b', misconception_token: 'base-too-high' }, // squared one too many (above)
+    { formula: 'x * x + b + b', misconception_token: 'doubled-the-constant' }, // added b twice
+    { formula: '(x - 1) * (x - 1) + b', misconception_token: 'base-too-low' }, // squared one too few (below, >=1)
+  ],
+}
+
+// Grades 9-12 (geometry): area of a triangle, (base x height) / 2. base is even
+// so the area is an integer. The classic "forgot to halve" (base x height) sits
+// above; a shorter base below. Five distinct tokens; all positive.
+export const TRIANGLE_AREA: MathTemplate = {
+  code: 'triangle-area-hard-v1',
+  skillSlug: 'hs-geometry',
+  satAlignment: 'geometry-trigonometry',
+  difficulty: 'hard',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'A triangle has base ${base}$ and height ${height}$. What is its area, in square units?',
+    slots: [
+      { name: 'base', min: 4, max: 20, step: 2 },
+      { name: 'height', min: 2, max: 12 },
+    ],
+    answerFormula: 'base * height / 2',
+    answerFormat: 'integer',
+    solutionTemplate: 'Area is half of base times height: $({base} \\times {height}) \\div 2 = {answer}$ square units.',
+  },
+  distractorSpec: [
+    { formula: '(base - 2) * height / 2', misconception_token: 'base-too-short' }, // one step short (below)
+    { formula: '(base + 2) * height / 2', misconception_token: 'base-too-long' }, // one step long (above)
+    { formula: 'base * height', misconception_token: 'forgot-to-halve' }, // rectangle area, not halved (above)
+    { formula: 'base * (height + 1) / 2', misconception_token: 'height-too-tall' }, // one step tall (above)
+    { formula: 'base + height', misconception_token: 'added-instead-of-multiplied' }, // added the sides
+  ],
+}
+
+// Grades 9-12 (advanced math): the positive solution to x^2 = k (k is a perfect
+// square). "Answered the square" (k itself) is the far trap; root +-1 straddle
+// the answer. Five distinct tokens; all positive (x-1 >= 1).
+export const SOLVE_SQUARE: MathTemplate = {
+  code: 'solve-square-hard-v1',
+  skillSlug: 'algebra-2',
+  satAlignment: 'advanced-math',
+  difficulty: 'hard',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'What is the positive solution to $x^2 = {k}$?',
+    slots: [{ name: 'x', min: 2, max: 25 }],
+    derived: [{ name: 'k', formula: 'x * x' }],
+    answerFormula: 'x',
+    answerFormat: 'integer',
+    solutionTemplate: 'The positive number whose square is ${k}$ is ${answer}$ (since ${answer}^2 = {k}$).',
+  },
+  distractorSpec: [
+    { formula: 'k', misconception_token: 'answered-the-square' }, // gave x^2, not x (far above)
+    { formula: 'x + 1', misconception_token: 'root-too-high' }, // one too high (above)
+    { formula: 'x - 1', misconception_token: 'root-too-low' }, // one too low (below, >=1)
+    { formula: '2 * x', misconception_token: 'doubled-the-root' }, // halved the exponent -> doubled (above)
+    { formula: 'x + 2', misconception_token: 'root-way-too-high' }, // backup, distinct token
+  ],
+}
+
+// Grades 9-12 (advanced math): evaluate f(x) = a*x^2 + c. Marquee trap squares
+// the whole a*x. "Dropped the constant" (a*x^2) below and a bigger base above
+// straddle the answer. Five distinct tokens; all positive.
+export const EVALUATE_QUADRATIC_COEFF: MathTemplate = {
+  code: 'evaluate-quadratic-coeff-hard-v1',
+  skillSlug: 'advanced-functions',
+  satAlignment: 'advanced-math',
+  difficulty: 'hard',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'If $f(x) = {a}x^2 + {c}$, what is $f({x})$?',
+    slots: [
+      { name: 'a', min: 2, max: 5 },
+      { name: 'x', min: 2, max: 7 },
+      { name: 'c', min: 1, max: 12 },
+    ],
+    answerFormula: 'a * x * x + c',
+    answerFormat: 'integer',
+    solutionTemplate: 'Square first, then multiply, then add: ${a} \\times {x}^2 + {c} = {answer}$.',
+  },
+  distractorSpec: [
+    { formula: 'a * x * x', misconception_token: 'dropped-the-constant' }, // forgot + c (below)
+    { formula: 'a * (x + 1) * (x + 1) + c', misconception_token: 'base-too-high' }, // squared one too many (above)
+    { formula: '2 * a * x + c', misconception_token: 'multiplied-instead-of-squared' }, // used 2ax, not a*x^2 (below)
+    { formula: '(a * x) * (a * x) + c', misconception_token: 'squared-the-coefficient' }, // squared a*x (far above)
+    { formula: 'a * x * x + c + c', misconception_token: 'doubled-the-constant' }, // added c twice
+  ],
+}
+
 export const MATH_TEMPLATES: MathTemplate[] = [
   LINEAR_EQUATION_SOLVE,
   PERCENT_OF,
@@ -337,6 +521,12 @@ export const MATH_TEMPLATES: MathTemplate[] = [
   RATIO_SCALE,
   PROPORTION_SCALE,
   MEAN_FROM_TOTAL,
+  EVALUATE_EXPRESSION,
+  EVALUATE_TWO_VARIABLE,
+  EVALUATE_QUADRATIC_FUNCTION,
+  TRIANGLE_AREA,
+  SOLVE_SQUARE,
+  EVALUATE_QUADRATIC_COEFF,
 ]
 
 // Questions cached per template (deterministic seeds 1..N).

@@ -3266,4 +3266,2176 @@ on conflict (id) do update set
   solution       = excluded.solution,
   status         = excluded.status;
 
+-- evaluate-expression-medium-v1 (algebra, medium) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ffa3aea3-d098-5d09-8724-9e7582e88e3d',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 5$, what is the value of $\,6x + 3$?$q$, $q$[{"text":"33","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"38","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"30","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '33', $q$Multiply first, then add: $\,6 \times 5 + 3 = 33$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e8231989-609c-542d-ae6b-3d405de9eb0d',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 6$, what is the value of $\,8x + 7$?$q$, $q$[{"text":"104","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"55","is_correct":true},{"text":"61","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"48","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '55', $q$Multiply first, then add: $\,8 \times 6 + 7 = 55$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('deaac060-a163-5ec5-acb7-dd190a625d82',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 5$, what is the value of $\,4x + 5$?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"20","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"25","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"wrong-order-of-operations"}]$q$::jsonb, '25', $q$Multiply first, then add: $\,4 \times 5 + 5 = 25$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('18a2c981-48a4-5c61-bd19-43340d5c2a31',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 8$, what is the value of $\,8x + 9$?$q$, $q$[{"text":"64","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"136","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"81","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"73","is_correct":true}]$q$::jsonb, '73', $q$Multiply first, then add: $\,8 \times 8 + 9 = 73$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d9e15890-e37c-55be-9e77-9f9c0c92aaa1',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 9$, what is the value of $\,3x + 4$?$q$, $q$[{"text":"39","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"27","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"40","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"31","is_correct":true}]$q$::jsonb, '31', $q$Multiply first, then add: $\,3 \times 9 + 4 = 31$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('13cd9e85-d288-5d36-ba1d-8fc38a0f0d28',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 5$, what is the value of $\,3x + 6$?$q$, $q$[{"text":"33","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"26","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"15","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"21","is_correct":true}]$q$::jsonb, '21', $q$Multiply first, then add: $\,3 \times 5 + 6 = 21$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fa9966be-b440-595d-bf3f-9e3cfba32308',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 2$, what is the value of $\,9x + 5$?$q$, $q$[{"text":"63","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"25","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"18","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"23","is_correct":true}]$q$::jsonb, '23', $q$Multiply first, then add: $\,9 \times 2 + 5 = 23$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dbf78347-797b-5e0c-bc21-45f7d9ddba7e',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 3$, what is the value of $\,7x + 7$?$q$, $q$[{"text":"28","is_correct":true},{"text":"70","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"31","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"21","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '28', $q$Multiply first, then add: $\,7 \times 3 + 7 = 28$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('34c3622f-ebc3-592f-af91-022b930e8b8b',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 7$, what is the value of $\,7x + 7$?$q$, $q$[{"text":"98","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"56","is_correct":true},{"text":"63","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"49","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '56', $q$Multiply first, then add: $\,7 \times 7 + 7 = 56$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4d0b668a-060e-5568-a03e-4a064608b9df',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 3$, what is the value of $\,8x + 3$?$q$, $q$[{"text":"27","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"24","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"30","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '27', $q$Multiply first, then add: $\,8 \times 3 + 3 = 27$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('35ab29d6-48c2-5ce1-a1b5-4552550921f1',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 3$, what is the value of $\,9x + 6$?$q$, $q$[{"text":"81","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"33","is_correct":true},{"text":"27","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"36","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '33', $q$Multiply first, then add: $\,9 \times 3 + 6 = 33$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('df87b2a4-c85f-50c7-9eb6-4f7d176e46e7',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 4$, what is the value of $\,3x + 5$?$q$, $q$[{"text":"21","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"17","is_correct":true},{"text":"27","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"12","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '17', $q$Multiply first, then add: $\,3 \times 4 + 5 = 17$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e298b956-baf8-5293-8130-6950fd7de7ae',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 7$, what is the value of $\,6x + 1$?$q$, $q$[{"text":"48","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"43","is_correct":true},{"text":"50","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"42","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '43', $q$Multiply first, then add: $\,6 \times 7 + 1 = 43$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('54d2e371-6bb6-5235-93fc-3a5a640f07ed',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 4$, what is the value of $\,7x + 8$?$q$, $q$[{"text":"84","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"36","is_correct":true},{"text":"28","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"40","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '36', $q$Multiply first, then add: $\,7 \times 4 + 8 = 36$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e729422a-b23c-5f42-954c-3a5c85bbbf8a',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 9$, what is the value of $\,2x + 7$?$q$, $q$[{"text":"25","is_correct":true},{"text":"18","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"34","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"32","is_correct":false,"misconception_token":"wrong-order-of-operations"}]$q$::jsonb, '25', $q$Multiply first, then add: $\,2 \times 9 + 7 = 25$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('1f837dbe-b4c2-527e-b93c-b8238c923860',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 7$, what is the value of $\,5x + 9$?$q$, $q$[{"text":"35","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"44","is_correct":true},{"text":"51","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"80","is_correct":false,"misconception_token":"wrong-order-of-operations"}]$q$::jsonb, '44', $q$Multiply first, then add: $\,5 \times 7 + 9 = 44$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f3dfd03e-7267-5688-b7a3-fc2104a0b0be',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 5$, what is the value of $\,3x + 2$?$q$, $q$[{"text":"17","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"22","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"21","is_correct":false,"misconception_token":"wrong-order-of-operations"}]$q$::jsonb, '17', $q$Multiply first, then add: $\,3 \times 5 + 2 = 17$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b093153a-98c2-52e0-8cee-30e7c896f651',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 8$, what is the value of $\,7x + 7$?$q$, $q$[{"text":"105","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"63","is_correct":true},{"text":"56","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"71","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '63', $q$Multiply first, then add: $\,7 \times 8 + 7 = 63$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('cb26de9f-f6da-5dde-9301-8c4d48560483',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 3$, what is the value of $\,9x + 2$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"27","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"29","is_correct":true},{"text":"32","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '29', $q$Multiply first, then add: $\,9 \times 3 + 2 = 29$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('85b5f156-3986-5e13-8e93-ce25d5b9e484',
+   (select id from public.question_templates where code = 'evaluate-expression-medium-v1'),
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium',
+   $q$If $x = 6$, what is the value of $\,4x + 9$?$q$, $q$[{"text":"60","is_correct":false,"misconception_token":"wrong-order-of-operations"},{"text":"33","is_correct":true},{"text":"39","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"24","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '33', $q$Multiply first, then add: $\,4 \times 6 + 9 = 33$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- evaluate-two-variable-medium-v1 (algebra, medium) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f2842422-dac4-570c-9cb5-d3cc9a9a9ed3',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 2$ and $y = 4$, what is $\,5x + 4y$?$q$, $q$[{"text":"26","is_correct":true},{"text":"10","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"15","is_correct":false,"misconception_token":"added-everything"},{"text":"28","is_correct":false,"misconception_token":"swapped-the-variables"}]$q$::jsonb, '26', $q$Substitute, then add the products: $\,5\times2 + 4\times4 = 26$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('787fa9d4-b38b-52f7-970a-8afa387c4170',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 5$ and $y = 4$, what is $\,6x + 4y$?$q$, $q$[{"text":"51","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"46","is_correct":true},{"text":"44","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"30","is_correct":false,"misconception_token":"dropped-a-term"}]$q$::jsonb, '46', $q$Substitute, then add the products: $\,6\times5 + 4\times4 = 46$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fbf14a9f-f8a0-5179-9b8a-13f734d67d43',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 3$ and $y = 4$, what is $\,3x + 5y$?$q$, $q$[{"text":"29","is_correct":true},{"text":"32","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"9","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"27","is_correct":false,"misconception_token":"swapped-the-variables"}]$q$::jsonb, '29', $q$Substitute, then add the products: $\,3\times3 + 5\times4 = 29$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('52e651aa-e9d0-58f1-8e6a-21cd505bad0b',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 3$ and $y = 4$, what is $\,3x + 6y$?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"30","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"9","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"33","is_correct":true}]$q$::jsonb, '33', $q$Substitute, then add the products: $\,3\times3 + 6\times4 = 33$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('95731253-ac71-57c8-9f3d-96cd76ec3ca4',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 3$ and $y = 2$, what is $\,3x + 6y$?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"9","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"14","is_correct":false,"misconception_token":"added-everything"},{"text":"21","is_correct":true}]$q$::jsonb, '21', $q$Substitute, then add the products: $\,3\times3 + 6\times2 = 21$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5746b643-f7ee-50e9-8e01-b2a7bc31ec35',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 5$ and $y = 2$, what is $\,2x + 4y$?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"10","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"18","is_correct":true},{"text":"23","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '18', $q$Substitute, then add the products: $\,2\times5 + 4\times2 = 18$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('509a815c-5822-5916-94a8-6e8d0309c434',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 4$ and $y = 3$, what is $\,6x + 2y$?$q$, $q$[{"text":"26","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"24","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"30","is_correct":true},{"text":"34","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '30', $q$Substitute, then add the products: $\,6\times4 + 2\times3 = 30$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d7bab4ff-abf5-551e-bbd7-c23fdea8f623',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 5$ and $y = 4$, what is $\,5x + 2y$?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"33","is_correct":true},{"text":"25","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"38","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '33', $q$Substitute, then add the products: $\,5\times5 + 2\times4 = 33$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a2bdc053-e134-5fb6-899b-8d1398af4340',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 6$ and $y = 4$, what is $\,6x + 4y$?$q$, $q$[{"text":"48","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"58","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"36","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"52","is_correct":true}]$q$::jsonb, '52', $q$Substitute, then add the products: $\,6\times6 + 4\times4 = 52$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5fcf0937-fc41-5c57-8ae9-4f693f65036c',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 3$ and $y = 6$, what is $\,5x + 2y$?$q$, $q$[{"text":"27","is_correct":true},{"text":"36","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"15","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"30","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '27', $q$Substitute, then add the products: $\,5\times3 + 2\times6 = 27$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6e0eb252-8685-5edf-99e7-93c20aa39539',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 4$ and $y = 6$, what is $\,6x + 3y$?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"48","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"42","is_correct":true},{"text":"46","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '42', $q$Substitute, then add the products: $\,6\times4 + 3\times6 = 42$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dcdc1842-b9b7-5629-b37b-24a0dfe2454d',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 2$ and $y = 6$, what is $\,5x + 4y$?$q$, $q$[{"text":"38","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"10","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"34","is_correct":true},{"text":"36","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '34', $q$Substitute, then add the products: $\,5\times2 + 4\times6 = 34$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('92525720-8837-52c8-9044-e97709b0e71f',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 2$ and $y = 4$, what is $\,4x + 5y$?$q$, $q$[{"text":"28","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"26","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"8","is_correct":false,"misconception_token":"dropped-a-term"}]$q$::jsonb, '28', $q$Substitute, then add the products: $\,4\times2 + 5\times4 = 28$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3371ad21-7657-50cc-8e0e-b15fe6108886',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 5$ and $y = 4$, what is $\,5x + 3y$?$q$, $q$[{"text":"37","is_correct":true},{"text":"35","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"42","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"25","is_correct":false,"misconception_token":"dropped-a-term"}]$q$::jsonb, '37', $q$Substitute, then add the products: $\,5\times5 + 3\times4 = 37$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f646e8ea-4e94-568d-a5f8-8004795670f4',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 5$ and $y = 4$, what is $\,2x + 6y$?$q$, $q$[{"text":"34","is_correct":true},{"text":"38","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"39","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"10","is_correct":false,"misconception_token":"dropped-a-term"}]$q$::jsonb, '34', $q$Substitute, then add the products: $\,2\times5 + 6\times4 = 34$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('54fa06e9-1de1-524f-954e-862ce431dacd',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 6$ and $y = 3$, what is $\,4x + 5y$?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"45","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"39","is_correct":true},{"text":"42","is_correct":false,"misconception_token":"swapped-the-variables"}]$q$::jsonb, '39', $q$Substitute, then add the products: $\,4\times6 + 5\times3 = 39$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fb2349e1-b3d7-564d-95a3-729c150432ff',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 2$ and $y = 3$, what is $\,2x + 4y$?$q$, $q$[{"text":"18","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"16","is_correct":true},{"text":"4","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"14","is_correct":false,"misconception_token":"swapped-the-variables"}]$q$::jsonb, '16', $q$Substitute, then add the products: $\,2\times2 + 4\times3 = 16$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('134c70db-62a3-5c2e-844f-bdab3d96891e',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 5$ and $y = 6$, what is $\,5x + 6y$?$q$, $q$[{"text":"66","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"60","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"61","is_correct":true},{"text":"25","is_correct":false,"misconception_token":"dropped-a-term"}]$q$::jsonb, '61', $q$Substitute, then add the products: $\,5\times5 + 6\times6 = 61$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8353d75d-9cfe-5d63-bced-5127d4f957a5',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 2$ and $y = 6$, what is $\,6x + 3y$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"30","is_correct":true},{"text":"32","is_correct":false,"misconception_token":"coefficient-too-high"},{"text":"42","is_correct":false,"misconception_token":"swapped-the-variables"}]$q$::jsonb, '30', $q$Substitute, then add the products: $\,6\times2 + 3\times6 = 30$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c1e91337-d32e-51a1-8c91-ed08963aa5f1',
+   (select id from public.question_templates where code = 'evaluate-two-variable-medium-v1'),
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium',
+   $q$If $x = 6$ and $y = 4$, what is $\,3x + 4y$?$q$, $q$[{"text":"18","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"36","is_correct":false,"misconception_token":"swapped-the-variables"},{"text":"34","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"coefficient-too-high"}]$q$::jsonb, '34', $q$Substitute, then add the products: $\,3\times6 + 4\times4 = 34$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- evaluate-quadratic-function-medium-v1 (advanced-math, medium) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6ee035dd-30ac-5d64-938e-38c7fd6d1e77',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 5$, what is $f(6)$?$q$, $q$[{"text":"54","is_correct":false,"misconception_token":"base-too-high"},{"text":"36","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"17","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"41","is_correct":true}]$q$::jsonb, '41', $q$Square first, then add: $6^2 + 5 = 41$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c599c815-6ee7-5b3e-886a-dec7d2c5552d',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 5$, what is $f(8)$?$q$, $q$[{"text":"69","is_correct":true},{"text":"64","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"21","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"86","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '69', $q$Square first, then add: $8^2 + 5 = 69$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a315a223-c9d9-5b83-9b48-ba3733d8e7ae',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 4$, what is $f(4)$?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"20","is_correct":true},{"text":"29","is_correct":false,"misconception_token":"base-too-high"},{"text":"12","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '20', $q$Square first, then add: $4^2 + 4 = 20$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('08ee7d2e-3dcd-56a0-baa2-79a646adbfd4',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 7$, what is $f(8)$?$q$, $q$[{"text":"23","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"64","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"71","is_correct":true},{"text":"88","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '71', $q$Square first, then add: $8^2 + 7 = 71$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e7cfa29b-0f69-5b22-98d0-893039be1514',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 8$, what is $f(3)$?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"base-too-high"},{"text":"9","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"17","is_correct":true},{"text":"14","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '17', $q$Square first, then add: $3^2 + 8 = 17$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5e071bba-7600-5761-95c6-7d7e24841937',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 4$, what is $f(3)$?$q$, $q$[{"text":"20","is_correct":false,"misconception_token":"base-too-high"},{"text":"10","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"13","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '13', $q$Square first, then add: $3^2 + 4 = 13$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('207f9fc1-9ba2-514a-869f-877ccd513b02',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 1$, what is $f(9)$?$q$, $q$[{"text":"101","is_correct":false,"misconception_token":"base-too-high"},{"text":"19","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"82","is_correct":true},{"text":"81","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '82', $q$Square first, then add: $9^2 + 1 = 82$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d3804da5-c332-532c-aceb-a0580af38f45',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 2$, what is $f(7)$?$q$, $q$[{"text":"51","is_correct":true},{"text":"49","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"16","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"66","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '51', $q$Square first, then add: $7^2 + 2 = 51$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('527b20bd-3e7f-5dae-859d-a37412ae8ba5',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 7$, what is $f(7)$?$q$, $q$[{"text":"56","is_correct":true},{"text":"71","is_correct":false,"misconception_token":"base-too-high"},{"text":"21","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"49","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '56', $q$Square first, then add: $7^2 + 7 = 56$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4c30c803-4902-57bf-b5d3-a5c3358d8290',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 2$, what is $f(8)$?$q$, $q$[{"text":"66","is_correct":true},{"text":"83","is_correct":false,"misconception_token":"base-too-high"},{"text":"64","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"18","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '66', $q$Square first, then add: $8^2 + 2 = 66$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('945a67e3-dce4-5209-b19c-99833a040265',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 2$, what is $f(9)$?$q$, $q$[{"text":"83","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"102","is_correct":false,"misconception_token":"base-too-high"},{"text":"81","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '83', $q$Square first, then add: $9^2 + 2 = 83$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('41b24041-3f5b-5768-92c6-661e22f820cf',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 3$, what is $f(3)$?$q$, $q$[{"text":"12","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"doubled-the-constant"},{"text":"9","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"19","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '12', $q$Square first, then add: $3^2 + 3 = 12$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2eec4e9b-cce1-519e-89ab-b1e5618b214b',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 7$, what is $f(6)$?$q$, $q$[{"text":"56","is_correct":false,"misconception_token":"base-too-high"},{"text":"36","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"19","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"43","is_correct":true}]$q$::jsonb, '43', $q$Square first, then add: $6^2 + 7 = 43$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('634c2356-0a7e-5a34-981e-cb450b853878',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 3$, what is $f(7)$?$q$, $q$[{"text":"52","is_correct":true},{"text":"17","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"49","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"67","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '52', $q$Square first, then add: $7^2 + 3 = 52$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('02cedfcc-9ad5-57ad-a466-1af4c29cdc2c',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 9$, what is $f(2)$?$q$, $q$[{"text":"13","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"doubled-the-constant"},{"text":"4","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"18","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '13', $q$Square first, then add: $2^2 + 9 = 13$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9fbf869d-be3f-55d0-9d61-a956bed153d3',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 6$, what is $f(5)$?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"25","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"31","is_correct":true},{"text":"42","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '31', $q$Square first, then add: $5^2 + 6 = 31$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e46a1ca4-8f28-5317-9bc2-fa7797a02148',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 5$, what is $f(3)$?$q$, $q$[{"text":"11","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"9","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"21","is_correct":false,"misconception_token":"base-too-high"},{"text":"14","is_correct":true}]$q$::jsonb, '14', $q$Square first, then add: $3^2 + 5 = 14$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('26a5d872-36a7-5308-be1f-55213cab654e',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 8$, what is $f(7)$?$q$, $q$[{"text":"57","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"72","is_correct":false,"misconception_token":"base-too-high"},{"text":"49","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '57', $q$Square first, then add: $7^2 + 8 = 57$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('edf5b33d-9781-5b2c-b96b-9fb6f6eed886',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 3$, what is $f(9)$?$q$, $q$[{"text":"21","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"103","is_correct":false,"misconception_token":"base-too-high"},{"text":"81","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"84","is_correct":true}]$q$::jsonb, '84', $q$Square first, then add: $9^2 + 3 = 84$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d3ec40b5-9ba2-57ee-b969-bb2aa5abec25',
+   (select id from public.question_templates where code = 'evaluate-quadratic-function-medium-v1'),
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium',
+   $q$If $f(x) = x^2 + 5$, what is $f(4)$?$q$, $q$[{"text":"21","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"13","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"30","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '21', $q$Square first, then add: $4^2 + 5 = 21$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- triangle-area-hard-v1 (geometry-trigonometry, hard) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('1b64ea7d-6a73-57a8-ac4c-52307204bde7',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $12$ and height $7$. What is its area, in square units?$q$, $q$[{"text":"84","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"49","is_correct":false,"misconception_token":"base-too-long"},{"text":"35","is_correct":false,"misconception_token":"base-too-short"},{"text":"42","is_correct":true}]$q$::jsonb, '42', $q$Area is half of base times height: $(12 \times 7) \div 2 = 42$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('68c30292-c911-5b12-9237-0c2e383b94cf',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $18$ and height $8$. What is its area, in square units?$q$, $q$[{"text":"72","is_correct":true},{"text":"80","is_correct":false,"misconception_token":"base-too-long"},{"text":"64","is_correct":false,"misconception_token":"base-too-short"},{"text":"144","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '72', $q$Area is half of base times height: $(18 \times 8) \div 2 = 72$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('24a7dbab-2dbd-5cb0-9c2d-34db68b4e246',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $8$ and height $6$. What is its area, in square units?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"base-too-long"},{"text":"24","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"18","is_correct":false,"misconception_token":"base-too-short"}]$q$::jsonb, '24', $q$Area is half of base times height: $(8 \times 6) \div 2 = 24$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c671445b-14a2-5a67-bb43-0fecebda8b7b',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $16$ and height $10$. What is its area, in square units?$q$, $q$[{"text":"70","is_correct":false,"misconception_token":"base-too-short"},{"text":"90","is_correct":false,"misconception_token":"base-too-long"},{"text":"80","is_correct":true},{"text":"160","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '80', $q$Area is half of base times height: $(16 \times 10) \div 2 = 80$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('83b1a7c2-8ce5-5175-9db0-f7f9badbc573',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $6$ and height $11$. What is its area, in square units?$q$, $q$[{"text":"66","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"44","is_correct":false,"misconception_token":"base-too-long"},{"text":"33","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"base-too-short"}]$q$::jsonb, '33', $q$Area is half of base times height: $(6 \times 11) \div 2 = 33$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5359e6a6-0224-5103-9353-3fba88f542d5',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $6$ and height $6$. What is its area, in square units?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"12","is_correct":false,"misconception_token":"base-too-short"},{"text":"18","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"base-too-long"}]$q$::jsonb, '18', $q$Area is half of base times height: $(6 \times 6) \div 2 = 18$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dea29831-898a-57bf-8121-564f477292df',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $20$ and height $2$. What is its area, in square units?$q$, $q$[{"text":"40","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"18","is_correct":false,"misconception_token":"base-too-short"},{"text":"20","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"base-too-long"}]$q$::jsonb, '20', $q$Area is half of base times height: $(20 \times 2) \div 2 = 20$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a8ec751f-e87e-50d3-9967-1e37bdcb52e6',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $16$ and height $3$. What is its area, in square units?$q$, $q$[{"text":"24","is_correct":true},{"text":"27","is_correct":false,"misconception_token":"base-too-long"},{"text":"21","is_correct":false,"misconception_token":"base-too-short"},{"text":"48","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '24', $q$Area is half of base times height: $(16 \times 3) \div 2 = 24$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f010457c-812e-5a15-9442-7d9314c5426a',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $20$ and height $4$. What is its area, in square units?$q$, $q$[{"text":"40","is_correct":true},{"text":"36","is_correct":false,"misconception_token":"base-too-short"},{"text":"80","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"44","is_correct":false,"misconception_token":"base-too-long"}]$q$::jsonb, '40', $q$Area is half of base times height: $(20 \times 4) \div 2 = 40$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('666c08c7-53cc-55e6-afb6-ba45a78f6e71',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $8$ and height $5$. What is its area, in square units?$q$, $q$[{"text":"20","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"15","is_correct":false,"misconception_token":"base-too-short"},{"text":"25","is_correct":false,"misconception_token":"base-too-long"}]$q$::jsonb, '20', $q$Area is half of base times height: $(8 \times 5) \div 2 = 20$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('743493d9-0993-58cb-8529-3b6d5ca93d0e',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $14$ and height $10$. What is its area, in square units?$q$, $q$[{"text":"140","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"80","is_correct":false,"misconception_token":"base-too-long"},{"text":"60","is_correct":false,"misconception_token":"base-too-short"},{"text":"70","is_correct":true}]$q$::jsonb, '70', $q$Area is half of base times height: $(14 \times 10) \div 2 = 70$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ccf49968-1225-5f42-8305-289f1f2799ec',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $16$ and height $5$. What is its area, in square units?$q$, $q$[{"text":"40","is_correct":true},{"text":"35","is_correct":false,"misconception_token":"base-too-short"},{"text":"45","is_correct":false,"misconception_token":"base-too-long"},{"text":"80","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '40', $q$Area is half of base times height: $(16 \times 5) \div 2 = 40$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d7d8f3ae-b3f6-5f73-8e98-e80e615fc544',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $4$ and height $12$. What is its area, in square units?$q$, $q$[{"text":"24","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"12","is_correct":false,"misconception_token":"base-too-short"},{"text":"36","is_correct":false,"misconception_token":"base-too-long"}]$q$::jsonb, '24', $q$Area is half of base times height: $(4 \times 12) \div 2 = 24$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('84555028-17d6-52c7-88ff-a6ed921e4e37',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $12$ and height $9$. What is its area, in square units?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"base-too-short"},{"text":"63","is_correct":false,"misconception_token":"base-too-long"},{"text":"54","is_correct":true},{"text":"108","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '54', $q$Area is half of base times height: $(12 \times 9) \div 2 = 54$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('efeec58b-bbcb-5246-8558-4e82edab1db1',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $6$ and height $7$. What is its area, in square units?$q$, $q$[{"text":"14","is_correct":false,"misconception_token":"base-too-short"},{"text":"28","is_correct":false,"misconception_token":"base-too-long"},{"text":"42","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"21","is_correct":true}]$q$::jsonb, '21', $q$Area is half of base times height: $(6 \times 7) \div 2 = 21$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('1477fea1-6b0b-5d3e-8033-ff8741ffb7a5',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $16$ and height $11$. What is its area, in square units?$q$, $q$[{"text":"88","is_correct":true},{"text":"77","is_correct":false,"misconception_token":"base-too-short"},{"text":"176","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"99","is_correct":false,"misconception_token":"base-too-long"}]$q$::jsonb, '88', $q$Area is half of base times height: $(16 \times 11) \div 2 = 88$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0065f210-ab6d-5bae-8869-0e96a547d393',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $8$ and height $7$. What is its area, in square units?$q$, $q$[{"text":"28","is_correct":true},{"text":"35","is_correct":false,"misconception_token":"base-too-long"},{"text":"21","is_correct":false,"misconception_token":"base-too-short"},{"text":"56","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '28', $q$Area is half of base times height: $(8 \times 7) \div 2 = 28$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a62f3764-d907-513a-886a-e548b00e56ae',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $6$ and height $4$. What is its area, in square units?$q$, $q$[{"text":"12","is_correct":true},{"text":"8","is_correct":false,"misconception_token":"base-too-short"},{"text":"16","is_correct":false,"misconception_token":"base-too-long"},{"text":"24","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '12', $q$Area is half of base times height: $(6 \times 4) \div 2 = 12$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('aefaac9f-465f-59d4-805f-6f0b07436b9a',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $12$ and height $10$. What is its area, in square units?$q$, $q$[{"text":"50","is_correct":false,"misconception_token":"base-too-short"},{"text":"70","is_correct":false,"misconception_token":"base-too-long"},{"text":"60","is_correct":true},{"text":"120","is_correct":false,"misconception_token":"forgot-to-halve"}]$q$::jsonb, '60', $q$Area is half of base times height: $(12 \times 10) \div 2 = 60$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2359eaab-f35d-5a10-b616-dbe6aa9663b9',
+   (select id from public.question_templates where code = 'triangle-area-hard-v1'),
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard',
+   $q$A triangle has base $20$ and height $8$. What is its area, in square units?$q$, $q$[{"text":"88","is_correct":false,"misconception_token":"base-too-long"},{"text":"72","is_correct":false,"misconception_token":"base-too-short"},{"text":"160","is_correct":false,"misconception_token":"forgot-to-halve"},{"text":"80","is_correct":true}]$q$::jsonb, '80', $q$Area is half of base times height: $(20 \times 8) \div 2 = 80$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- solve-square-hard-v1 (advanced-math, hard) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8aca57b6-6445-5640-b1d4-1db9bc3ace3a',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 225$?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"root-too-high"},{"text":"14","is_correct":false,"misconception_token":"root-too-low"},{"text":"15","is_correct":true},{"text":"225","is_correct":false,"misconception_token":"answered-the-square"}]$q$::jsonb, '15', $q$The positive number whose square is $225$ is $15$ (since $15^2 = 225$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('43627145-6e2e-59f3-809d-a4b5e94f6a30',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 484$?$q$, $q$[{"text":"22","is_correct":true},{"text":"484","is_correct":false,"misconception_token":"answered-the-square"},{"text":"21","is_correct":false,"misconception_token":"root-too-low"},{"text":"23","is_correct":false,"misconception_token":"root-too-high"}]$q$::jsonb, '22', $q$The positive number whose square is $484$ is $22$ (since $22^2 = 484$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('99d21216-0a83-551b-8052-c1da2c49b1fe',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 64$?$q$, $q$[{"text":"9","is_correct":false,"misconception_token":"root-too-high"},{"text":"8","is_correct":true},{"text":"7","is_correct":false,"misconception_token":"root-too-low"},{"text":"64","is_correct":false,"misconception_token":"answered-the-square"}]$q$::jsonb, '8', $q$The positive number whose square is $64$ is $8$ (since $8^2 = 64$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('60fec538-64d9-5948-8cb1-dc9c5fed984c',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 400$?$q$, $q$[{"text":"400","is_correct":false,"misconception_token":"answered-the-square"},{"text":"20","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"root-too-high"},{"text":"19","is_correct":false,"misconception_token":"root-too-low"}]$q$::jsonb, '20', $q$The positive number whose square is $400$ is $20$ (since $20^2 = 400$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('425ab3bc-5189-56aa-9c26-7a51a2248a10',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 49$?$q$, $q$[{"text":"8","is_correct":false,"misconception_token":"root-too-high"},{"text":"7","is_correct":true},{"text":"49","is_correct":false,"misconception_token":"answered-the-square"},{"text":"6","is_correct":false,"misconception_token":"root-too-low"}]$q$::jsonb, '7', $q$The positive number whose square is $49$ is $7$ (since $7^2 = 49$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('74a58003-0436-5ac4-aa45-d7a0fcb58e46',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 36$?$q$, $q$[{"text":"7","is_correct":false,"misconception_token":"root-too-high"},{"text":"6","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"root-too-low"},{"text":"36","is_correct":false,"misconception_token":"answered-the-square"}]$q$::jsonb, '6', $q$The positive number whose square is $36$ is $6$ (since $6^2 = 36$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('bc8ad3da-344b-51b5-9e76-e0bfc765bb0c',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 529$?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"root-too-high"},{"text":"22","is_correct":false,"misconception_token":"root-too-low"},{"text":"529","is_correct":false,"misconception_token":"answered-the-square"},{"text":"23","is_correct":true}]$q$::jsonb, '23', $q$The positive number whose square is $529$ is $23$ (since $23^2 = 529$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e1e07648-bf4c-5e3b-a7d9-2f316c0fa220',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 361$?$q$, $q$[{"text":"18","is_correct":false,"misconception_token":"root-too-low"},{"text":"361","is_correct":false,"misconception_token":"answered-the-square"},{"text":"20","is_correct":false,"misconception_token":"root-too-high"},{"text":"19","is_correct":true}]$q$::jsonb, '19', $q$The positive number whose square is $361$ is $19$ (since $19^2 = 361$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4a403a81-4d1c-50ff-ba54-b5befdbf8116',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 324$?$q$, $q$[{"text":"18","is_correct":true},{"text":"324","is_correct":false,"misconception_token":"answered-the-square"},{"text":"17","is_correct":false,"misconception_token":"root-too-low"},{"text":"19","is_correct":false,"misconception_token":"root-too-high"}]$q$::jsonb, '18', $q$The positive number whose square is $324$ is $18$ (since $18^2 = 324$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('75481d9f-2f48-5ff2-b962-40d220ef35f2',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 256$?$q$, $q$[{"text":"15","is_correct":false,"misconception_token":"root-too-low"},{"text":"256","is_correct":false,"misconception_token":"answered-the-square"},{"text":"16","is_correct":true},{"text":"17","is_correct":false,"misconception_token":"root-too-high"}]$q$::jsonb, '16', $q$The positive number whose square is $256$ is $16$ (since $16^2 = 256$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4c6826ce-76da-56c7-b483-7ea55d22108f',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 4$?$q$, $q$[{"text":"4","is_correct":false,"misconception_token":"answered-the-square"},{"text":"2","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"root-too-high"},{"text":"1","is_correct":false,"misconception_token":"root-too-low"}]$q$::jsonb, '2', $q$The positive number whose square is $4$ is $2$ (since $2^2 = 4$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5a60bb63-534f-51d7-b3f7-90e36f9cb2e9',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 144$?$q$, $q$[{"text":"144","is_correct":false,"misconception_token":"answered-the-square"},{"text":"12","is_correct":true},{"text":"11","is_correct":false,"misconception_token":"root-too-low"},{"text":"13","is_correct":false,"misconception_token":"root-too-high"}]$q$::jsonb, '12', $q$The positive number whose square is $144$ is $12$ (since $12^2 = 144$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5fcdd5a5-56ac-5ccd-9c89-7942d36b9682',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 25$?$q$, $q$[{"text":"4","is_correct":false,"misconception_token":"root-too-low"},{"text":"6","is_correct":false,"misconception_token":"root-too-high"},{"text":"5","is_correct":true},{"text":"25","is_correct":false,"misconception_token":"answered-the-square"}]$q$::jsonb, '5', $q$The positive number whose square is $25$ is $5$ (since $5^2 = 25$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e11ed746-fcf0-5044-b0e8-6e497135b1cf',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 576$?$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"root-too-high"},{"text":"576","is_correct":false,"misconception_token":"answered-the-square"},{"text":"23","is_correct":false,"misconception_token":"root-too-low"},{"text":"24","is_correct":true}]$q$::jsonb, '24', $q$The positive number whose square is $576$ is $24$ (since $24^2 = 576$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c02c74d9-47f7-59e9-afa9-be14c0036334',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 81$?$q$, $q$[{"text":"10","is_correct":false,"misconception_token":"root-too-high"},{"text":"9","is_correct":true},{"text":"81","is_correct":false,"misconception_token":"answered-the-square"},{"text":"8","is_correct":false,"misconception_token":"root-too-low"}]$q$::jsonb, '9', $q$The positive number whose square is $81$ is $9$ (since $9^2 = 81$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e1aabe21-c263-5cde-918a-7074e0bfee0e',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 121$?$q$, $q$[{"text":"10","is_correct":false,"misconception_token":"root-too-low"},{"text":"121","is_correct":false,"misconception_token":"answered-the-square"},{"text":"11","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"root-too-high"}]$q$::jsonb, '11', $q$The positive number whose square is $121$ is $11$ (since $11^2 = 121$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d3c593ee-c1fe-583b-b276-7781dd5bb4b4',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 169$?$q$, $q$[{"text":"169","is_correct":false,"misconception_token":"answered-the-square"},{"text":"14","is_correct":false,"misconception_token":"root-too-high"},{"text":"13","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"root-too-low"}]$q$::jsonb, '13', $q$The positive number whose square is $169$ is $13$ (since $13^2 = 169$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a7608235-2846-56ca-a5bb-91fcd6f0ae1e',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 9$?$q$, $q$[{"text":"3","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"answered-the-square"},{"text":"4","is_correct":false,"misconception_token":"root-too-high"},{"text":"2","is_correct":false,"misconception_token":"root-too-low"}]$q$::jsonb, '3', $q$The positive number whose square is $9$ is $3$ (since $3^2 = 9$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('042096d5-832c-514e-9173-3fec975d8581',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 625$?$q$, $q$[{"text":"625","is_correct":false,"misconception_token":"answered-the-square"},{"text":"26","is_correct":false,"misconception_token":"root-too-high"},{"text":"24","is_correct":false,"misconception_token":"root-too-low"},{"text":"25","is_correct":true}]$q$::jsonb, '25', $q$The positive number whose square is $625$ is $25$ (since $25^2 = 625$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('06418f8a-2bf0-58f4-8aee-550e07d070f2',
+   (select id from public.question_templates where code = 'solve-square-hard-v1'),
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard',
+   $q$What is the positive solution to $x^2 = 100$?$q$, $q$[{"text":"10","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"root-too-low"},{"text":"11","is_correct":false,"misconception_token":"root-too-high"},{"text":"100","is_correct":false,"misconception_token":"answered-the-square"}]$q$::jsonb, '10', $q$The positive number whose square is $100$ is $10$ (since $10^2 = 100$).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- evaluate-quadratic-coeff-hard-v1 (advanced-math, hard) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ab03d1d5-03af-522e-b226-957dc8200cda',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 4x^2 + 3$, what is $f(4)$?$q$, $q$[{"text":"67","is_correct":true},{"text":"64","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"35","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"103","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '67', $q$Square first, then multiply, then add: $4 \times 4^2 + 3 = 67$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('aa89ebbd-85b5-5dc1-81d3-62fbfd67e35a',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 5x^2 + 10$, what is $f(5)$?$q$, $q$[{"text":"125","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"135","is_correct":true},{"text":"60","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"190","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '135', $q$Square first, then multiply, then add: $5 \times 5^2 + 10 = 135$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f084161a-55e2-5634-9dda-f2bdee923886',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 3x^2 + 6$, what is $f(4)$?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"81","is_correct":false,"misconception_token":"base-too-high"},{"text":"54","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '54', $q$Square first, then multiply, then add: $3 \times 4^2 + 6 = 54$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ec1148c6-1ca6-5e8d-89cc-33632fc4e33e',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 5x^2 + 12$, what is $f(6)$?$q$, $q$[{"text":"257","is_correct":false,"misconception_token":"base-too-high"},{"text":"180","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"72","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"192","is_correct":true}]$q$::jsonb, '192', $q$Square first, then multiply, then add: $5 \times 6^2 + 12 = 192$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2884e010-655e-5c63-9481-8d1cce03fcf6',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 2x^2 + 5$, what is $f(7)$?$q$, $q$[{"text":"98","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"133","is_correct":false,"misconception_token":"base-too-high"},{"text":"33","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"103","is_correct":true}]$q$::jsonb, '103', $q$Square first, then multiply, then add: $2 \times 7^2 + 5 = 103$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ee93090c-67b8-502f-90b2-4dc78608766a',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 2x^2 + 8$, what is $f(4)$?$q$, $q$[{"text":"32","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"24","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"58","is_correct":false,"misconception_token":"base-too-high"},{"text":"40","is_correct":true}]$q$::jsonb, '40', $q$Square first, then multiply, then add: $2 \times 4^2 + 8 = 40$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e0aabc4c-08ba-5602-9561-488d38dda5ee',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 5x^2 + 7$, what is $f(2)$?$q$, $q$[{"text":"20","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"107","is_correct":false,"misconception_token":"squared-the-coefficient"},{"text":"52","is_correct":false,"misconception_token":"base-too-high"},{"text":"27","is_correct":true}]$q$::jsonb, '27', $q$Square first, then multiply, then add: $5 \times 2^2 + 7 = 27$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c79bff56-1f21-57cc-863c-7e56be2c7be4',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 4x^2 + 10$, what is $f(2)$?$q$, $q$[{"text":"26","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"74","is_correct":false,"misconception_token":"squared-the-coefficient"},{"text":"46","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '26', $q$Square first, then multiply, then add: $4 \times 2^2 + 10 = 26$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f27abdfc-0e57-5ba9-b3e0-5f4bdfce510f',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 4x^2 + 9$, what is $f(6)$?$q$, $q$[{"text":"144","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"153","is_correct":true},{"text":"57","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"205","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '153', $q$Square first, then multiply, then add: $4 \times 6^2 + 9 = 153$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4024afbc-9014-58e7-865a-ce9835b88996',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 5x^2 + 4$, what is $f(2)$?$q$, $q$[{"text":"24","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"49","is_correct":false,"misconception_token":"base-too-high"},{"text":"104","is_correct":false,"misconception_token":"squared-the-coefficient"}]$q$::jsonb, '24', $q$Square first, then multiply, then add: $5 \times 2^2 + 4 = 24$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fdbd1919-99e7-5662-9e5a-6f77f7eec5e9',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 5x^2 + 8$, what is $f(3)$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"53","is_correct":true},{"text":"88","is_correct":false,"misconception_token":"base-too-high"},{"text":"38","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '53', $q$Square first, then multiply, then add: $5 \times 3^2 + 8 = 53$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dcf98f08-caa7-5312-a377-b26051b96329',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 2x^2 + 7$, what is $f(3)$?$q$, $q$[{"text":"19","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"25","is_correct":true},{"text":"18","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"39","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '25', $q$Square first, then multiply, then add: $2 \times 3^2 + 7 = 25$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('49088940-38f7-5a0d-8196-e6cb155b34df',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 4x^2 + 2$, what is $f(6)$?$q$, $q$[{"text":"144","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"146","is_correct":true},{"text":"50","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"198","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '146', $q$Square first, then multiply, then add: $4 \times 6^2 + 2 = 146$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9d94e235-8317-54bf-88ca-25970c985c9a',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 4x^2 + 10$, what is $f(3)$?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"46","is_correct":true},{"text":"74","is_correct":false,"misconception_token":"base-too-high"},{"text":"34","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '46', $q$Square first, then multiply, then add: $4 \times 3^2 + 10 = 46$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('95ef5f49-dc32-5f1f-8a3c-5808dcf06af1',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 2x^2 + 9$, what is $f(7)$?$q$, $q$[{"text":"107","is_correct":true},{"text":"137","is_correct":false,"misconception_token":"base-too-high"},{"text":"37","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"98","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '107', $q$Square first, then multiply, then add: $2 \times 7^2 + 9 = 107$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a24a6869-e4b7-5368-8f20-0a97e6dc52b5',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 3x^2 + 11$, what is $f(5)$?$q$, $q$[{"text":"119","is_correct":false,"misconception_token":"base-too-high"},{"text":"86","is_correct":true},{"text":"41","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"75","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '86', $q$Square first, then multiply, then add: $3 \times 5^2 + 11 = 86$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0c679ac7-6727-5169-bb72-b1f600b2d3f2',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 2x^2 + 2$, what is $f(4)$?$q$, $q$[{"text":"34","is_correct":true},{"text":"52","is_correct":false,"misconception_token":"base-too-high"},{"text":"18","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"32","is_correct":false,"misconception_token":"dropped-the-constant"}]$q$::jsonb, '34', $q$Square first, then multiply, then add: $2 \times 4^2 + 2 = 34$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b5288597-9ad5-54f7-8ea8-a4f11eafd5a7',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 4x^2 + 9$, what is $f(7)$?$q$, $q$[{"text":"196","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"205","is_correct":true},{"text":"265","is_correct":false,"misconception_token":"base-too-high"},{"text":"65","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '205', $q$Square first, then multiply, then add: $4 \times 7^2 + 9 = 205$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6daa0fc8-c46e-5fc5-949c-fce19e562c77',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 5x^2 + 2$, what is $f(3)$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"82","is_correct":false,"misconception_token":"base-too-high"},{"text":"47","is_correct":true},{"text":"32","is_correct":false,"misconception_token":"multiplied-instead-of-squared"}]$q$::jsonb, '47', $q$Square first, then multiply, then add: $5 \times 3^2 + 2 = 47$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f784b4e5-ffea-559e-bc4a-8ae5f3f82ffc',
+   (select id from public.question_templates where code = 'evaluate-quadratic-coeff-hard-v1'),
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard',
+   $q$If $f(x) = 3x^2 + 12$, what is $f(5)$?$q$, $q$[{"text":"75","is_correct":false,"misconception_token":"dropped-the-constant"},{"text":"87","is_correct":true},{"text":"42","is_correct":false,"misconception_token":"multiplied-instead-of-squared"},{"text":"120","is_correct":false,"misconception_token":"base-too-high"}]$q$::jsonb, '87', $q$Square first, then multiply, then add: $3 \times 5^2 + 12 = 87$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
 commit;

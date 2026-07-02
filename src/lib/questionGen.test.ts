@@ -9,6 +9,10 @@ import {
 } from './questionGen'
 import {
   DIVISION_BASIC,
+  EVALUATE_EXPRESSION,
+  EVALUATE_QUADRATIC_COEFF,
+  EVALUATE_QUADRATIC_FUNCTION,
+  EVALUATE_TWO_VARIABLE,
   FRACTION_OF_NUMBER,
   LINEAR_EQUATION_SOLVE,
   MEAN_FROM_TOTAL,
@@ -17,6 +21,8 @@ import {
   PROPORTION_SCALE,
   RATIO_SCALE,
   RECTANGLE_AREA,
+  SOLVE_SQUARE,
+  TRIANGLE_AREA,
 } from './mathTemplates'
 
 const KEBAB = /^[a-z][a-z0-9-]*$/
@@ -98,15 +104,21 @@ describe('fraction-of-number — kid-app quality guarantees', () => {
   })
 })
 
-// Batch A2 (6-8 PSDA): same kid-app quality bar enforced per template — distinct
-// misconception token per wrong option, no zero distractor, no magnitude tell
-// (the answer is never the smallest or largest option, so it can't be guessed by
-// size), and lowest-terms ratios where a ratio appears.
+// Batches A2-A4 (near-answer templates): same kid-app quality bar enforced per
+// template — distinct misconception token per wrong option, no zero distractor,
+// no magnitude tell (the answer is never the smallest or largest option, so it
+// can't be guessed by size), and lowest-terms ratios where a ratio appears.
 describe.each([
   ['ratio-scale', RATIO_SCALE, true],
   ['proportion-scale', PROPORTION_SCALE, false],
   ['mean-from-total', MEAN_FROM_TOTAL, false],
-])('%s — A2 kid-app quality guarantees', (_name, tpl, isRatio) => {
+  ['evaluate-expression', EVALUATE_EXPRESSION, false],
+  ['evaluate-two-variable', EVALUATE_TWO_VARIABLE, false],
+  ['evaluate-quadratic-function', EVALUATE_QUADRATIC_FUNCTION, false],
+  ['triangle-area', TRIANGLE_AREA, false],
+  ['solve-square', SOLVE_SQUARE, false],
+  ['evaluate-quadratic-coeff', EVALUATE_QUADRATIC_COEFF, false],
+])('%s — kid-app quality guarantees', (_name, tpl, isRatio) => {
   const g = (x: number, y: number): number => (y === 0 ? x : g(y, x % y))
 
   it('distinct-token, no-zero, answer never the min/max option, coprime ratio', () => {
@@ -158,6 +170,12 @@ describe.each([
   ['ratio-scale', RATIO_SCALE],
   ['proportion-scale', PROPORTION_SCALE],
   ['mean-from-total', MEAN_FROM_TOTAL],
+  ['evaluate-expression', EVALUATE_EXPRESSION],
+  ['evaluate-two-variable', EVALUATE_TWO_VARIABLE],
+  ['evaluate-quadratic-function', EVALUATE_QUADRATIC_FUNCTION],
+  ['triangle-area', TRIANGLE_AREA],
+  ['solve-square', SOLVE_SQUARE],
+  ['evaluate-quadratic-coeff', EVALUATE_QUADRATIC_COEFF],
 ])('%s — choices invariants', (_name, tpl) => {
   it('has exactly one correct choice and 4 distinct choices', () => {
     for (const s of seeds(50)) {

@@ -180,4 +180,118 @@ on conflict (code) do update set
   status          = excluded.status,
   version         = excluded.version;
 
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('evaluate-expression-medium-v1',
+   (select id from public.skills where slug = 'expressions'),
+   'algebra', 'medium', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"If $x = {x}$, what is the value of $\\,{a}x + {b}$?","slots":[{"name":"a","min":2,"max":9},{"name":"x","min":2,"max":9},{"name":"b","min":1,"max":9}],"answerFormula":"a * x + b","answerFormat":"integer","solutionTemplate":"Multiply first, then add: $\\,{a} \\times {x} + {b} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"a * (x + b)","misconception_token":"wrong-order-of-operations"},{"formula":"a * x","misconception_token":"dropped-the-constant"},{"formula":"(a + 1) * x + b","misconception_token":"coefficient-too-high"},{"formula":"a + x + b","misconception_token":"added-the-coefficient"},{"formula":"a * x + b + b","misconception_token":"doubled-the-constant"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('evaluate-two-variable-medium-v1',
+   (select id from public.skills where slug = 'algebra-1-concepts'),
+   'algebra', 'medium', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"If $x = {x}$ and $y = {y}$, what is $\\,{a}x + {b}y$?","slots":[{"name":"a","min":2,"max":6},{"name":"b","min":2,"max":6},{"name":"x","min":2,"max":6},{"name":"y","min":2,"max":6}],"answerFormula":"a * x + b * y","answerFormat":"integer","constraints":["a != b","x != y"],"solutionTemplate":"Substitute, then add the products: $\\,{a}\\times{x} + {b}\\times{y} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"a * y + b * x","misconception_token":"swapped-the-variables"},{"formula":"a * x","misconception_token":"dropped-a-term"},{"formula":"(a + 1) * x + b * y","misconception_token":"coefficient-too-high"},{"formula":"a + x + b + y","misconception_token":"added-everything"},{"formula":"a * x + b * y - x","misconception_token":"coefficient-too-low"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('evaluate-quadratic-function-medium-v1',
+   (select id from public.skills where slug = 'functions'),
+   'advanced-math', 'medium', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"If $f(x) = x^2 + {b}$, what is $f({x})$?","slots":[{"name":"x","min":2,"max":9},{"name":"b","min":1,"max":9}],"answerFormula":"x * x + b","answerFormat":"integer","solutionTemplate":"Square first, then add: ${x}^2 + {b} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"2 * x + b","misconception_token":"multiplied-instead-of-squared"},{"formula":"x * x","misconception_token":"dropped-the-constant"},{"formula":"(x + 1) * (x + 1) + b","misconception_token":"base-too-high"},{"formula":"x * x + b + b","misconception_token":"doubled-the-constant"},{"formula":"(x - 1) * (x - 1) + b","misconception_token":"base-too-low"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('triangle-area-hard-v1',
+   (select id from public.skills where slug = 'hs-geometry'),
+   'geometry-trigonometry', 'hard', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"A triangle has base ${base}$ and height ${height}$. What is its area, in square units?","slots":[{"name":"base","min":4,"max":20,"step":2},{"name":"height","min":2,"max":12}],"answerFormula":"base * height / 2","answerFormat":"integer","solutionTemplate":"Area is half of base times height: $({base} \\times {height}) \\div 2 = {answer}$ square units."}$q$::jsonb,
+   $q$[{"formula":"(base - 2) * height / 2","misconception_token":"base-too-short"},{"formula":"(base + 2) * height / 2","misconception_token":"base-too-long"},{"formula":"base * height","misconception_token":"forgot-to-halve"},{"formula":"base * (height + 1) / 2","misconception_token":"height-too-tall"},{"formula":"base + height","misconception_token":"added-instead-of-multiplied"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('solve-square-hard-v1',
+   (select id from public.skills where slug = 'algebra-2'),
+   'advanced-math', 'hard', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is the positive solution to $x^2 = {k}$?","slots":[{"name":"x","min":2,"max":25}],"derived":[{"name":"k","formula":"x * x"}],"answerFormula":"x","answerFormat":"integer","solutionTemplate":"The positive number whose square is ${k}$ is ${answer}$ (since ${answer}^2 = {k}$)."}$q$::jsonb,
+   $q$[{"formula":"k","misconception_token":"answered-the-square"},{"formula":"x + 1","misconception_token":"root-too-high"},{"formula":"x - 1","misconception_token":"root-too-low"},{"formula":"2 * x","misconception_token":"doubled-the-root"},{"formula":"x + 2","misconception_token":"root-way-too-high"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('evaluate-quadratic-coeff-hard-v1',
+   (select id from public.skills where slug = 'advanced-functions'),
+   'advanced-math', 'hard', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"If $f(x) = {a}x^2 + {c}$, what is $f({x})$?","slots":[{"name":"a","min":2,"max":5},{"name":"x","min":2,"max":7},{"name":"c","min":1,"max":12}],"answerFormula":"a * x * x + c","answerFormat":"integer","solutionTemplate":"Square first, then multiply, then add: ${a} \\times {x}^2 + {c} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"a * x * x","misconception_token":"dropped-the-constant"},{"formula":"a * (x + 1) * (x + 1) + c","misconception_token":"base-too-high"},{"formula":"2 * a * x + c","misconception_token":"multiplied-instead-of-squared"},{"formula":"(a * x) * (a * x) + c","misconception_token":"squared-the-coefficient"},{"formula":"a * x * x + c + c","misconception_token":"doubled-the-constant"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
 commit;

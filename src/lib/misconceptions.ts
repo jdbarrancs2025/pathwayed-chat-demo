@@ -108,6 +108,58 @@ const EXPLANATIONS: Record<string, string> = {
     'That is the total. To get the mean, share it equally: divide the total by the number of games.',
   'answered-the-count':
     'That is the number of games, not the average. Divide the total points by the number of games.',
+
+  // expressions / algebra (evaluate a*x + b, a*x + b*y)
+  'wrong-order-of-operations':
+    'Careful with the order — multiply before you add. Work out the times part first, then add the extra number.',
+  'dropped-the-constant':
+    'So close — it looks like you left off the number being added at the end. Do the multiply, then add it back.',
+  'coefficient-too-high':
+    'So close — just a little high. Double-check the number in front of the variable and multiply by exactly that.',
+  'coefficient-too-low':
+    'So close — just a little low. Double-check the number in front of the variable and multiply by exactly that.',
+  'added-the-coefficient':
+    'It looks like you added the number in front instead of multiplying. "3x" means 3 times x.',
+  'doubled-the-constant':
+    'Close — it looks like the number on the end got added twice. Add it just once.',
+  'swapped-the-variables':
+    'It looks like the two numbers in front got matched to the wrong variables. Keep each one with its own letter.',
+  'dropped-a-term':
+    'So close — it looks like one whole term was left out. Work out both parts, then add them together.',
+  'added-everything':
+    'It looks like all the numbers were added. Multiply each variable by its own number first, then add those results.',
+
+  // functions / advanced functions (evaluate x^2 + b, a*x^2 + c)
+  'multiplied-instead-of-squared':
+    'Squaring means the number times itself, not times 2. For example, $5^2 = 5 \\times 5 = 25$, not $10$.',
+  'base-too-high':
+    'So close — a little high. Square exactly the number given, not one more than it.',
+  'base-too-low':
+    'So close — a little low. Square exactly the number given, not one less than it.',
+  'squared-the-coefficient':
+    'Only the variable is squared, not the number in front. Square the variable first, then multiply by the number.',
+
+  // hs-geometry (triangle area)
+  'forgot-to-halve':
+    'That is the whole rectangle. A triangle is half of it — divide base times height by 2.',
+  'base-too-short':
+    'So close — a little low. Use the exact base length, then take half of base times height.',
+  'base-too-long':
+    'So close — a little high. Use the exact base length, then take half of base times height.',
+  'height-too-tall':
+    'So close — a little high. Use the exact height, then take half of base times height.',
+
+  // algebra-2 (solve x^2 = k)
+  'answered-the-square':
+    'That is the number being squared, not x. You need the number that, times itself, gives it.',
+  'root-too-high':
+    'So close — a little high. Find the number that multiplied by itself gives exactly that value.',
+  'root-too-low':
+    'So close — a little low. Find the number that multiplied by itself gives exactly that value.',
+  'doubled-the-root':
+    'To undo a square you take the square root, not divide the exponent to get double. Find the number whose square is given.',
+  'root-way-too-high':
+    'That is too big — the number times itself would be much larger than the value shown. Try a smaller number.',
 }
 
 /**
