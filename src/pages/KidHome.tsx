@@ -4,6 +4,7 @@ import { getStudent, gradeLabel, levelLabel, type Student, type StudentLevel } f
 import { SUBJECTS } from '@/lib/subjects'
 import { listSavedSubjects } from '@/lib/sessions'
 import { nextPracticeSkill, type PracticeableSkill } from '@/lib/questions'
+import { showKidSatFraming } from '@/lib/satFraming'
 import { TopMenu } from '@/components/TopMenu'
 import { StudentProgress } from '@/components/StudentProgress'
 import { PracticeSkills } from '@/components/PracticeSkills'
@@ -88,7 +89,7 @@ export function KidHome() {
           studentId={student.id}
           grade={student.grade}
           onOpenSubject={open}
-          showAdvancedFraming={student.above_grade_ok}
+          showSatFraming={showKidSatFraming({ grade: student.grade, above_grade_ok: student.above_grade_ok })}
         />
 
         <div className="foot">

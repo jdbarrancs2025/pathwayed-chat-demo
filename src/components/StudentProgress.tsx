@@ -42,14 +42,14 @@ export function StudentProgress({
   studentId,
   grade,
   onOpenSubject,
-  showAdvancedFraming = false,
+  showSatFraming = false,
 }: {
   studentId: string
   grade: string
   /** Deep-link into a subject session from a Today's Plan item. */
   onOpenSubject: (subject: string) => void
-  /** Parent consent to surface above-grade / SAT framing (placement Phase 3). */
-  showAdvancedFraming?: boolean
+  /** Whether the KID sees SAT framing (showKidSatFraming: consent + grade>=9). */
+  showSatFraming?: boolean
 }) {
   const [view, setView] = useState<StudentMasteryView | null>(null)
   const [readiness, setReadiness] = useState<ReadinessView | null>(null)
@@ -175,9 +175,10 @@ export function StudentProgress({
         </h3>
         <p className="muted">A grade-level readiness score is coming in a later phase.</p>
       </section>
-      {/* SAT / above-grade framing is gated on parent consent (placement Phase 3).
-          Mastery + Today's Plan above still reflect the child's real level. */}
-      {showAdvancedFraming && <SatReadiness payload={sat} grade={grade} variant="student" />}
+      {/* Kid-facing SAT framing: consent + grade threshold (showKidSatFraming).
+          Below it the kid sees skill-focused language only; mastery + Today's
+          Plan above always reflect the child's real level. */}
+      {showSatFraming && <SatReadiness payload={sat} grade={grade} variant="student" />}
     </div>
   )
 }
