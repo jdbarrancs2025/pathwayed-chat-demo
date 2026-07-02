@@ -254,7 +254,9 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             </div>
           )}
 
-          <SatReadiness payload={sat} grade={student.grade} variant="parent" />
+          {/* SAT / above-grade framing gated on this child's consent (placement
+              Phase 3) — matches the kid dashboard: declined = no SAT anywhere. */}
+          {student.above_grade_ok && <SatReadiness payload={sat} grade={student.grade} variant="parent" />}
 
           <div className="stat-row">
             <span className="muted">Last activity</span>
