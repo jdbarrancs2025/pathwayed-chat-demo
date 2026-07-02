@@ -98,6 +98,41 @@ describe('fraction-of-number — kid-app quality guarantees', () => {
   })
 })
 
+// Batch A2 (6-8 PSDA): same kid-app quality bar enforced per template — distinct
+// misconception token per wrong option, no zero distractor, no magnitude tell
+// (the answer is never the smallest or largest option, so it can't be guessed by
+// size), and lowest-terms ratios where a ratio appears.
+describe.each([
+  ['ratio-scale', RATIO_SCALE, true],
+  ['proportion-scale', PROPORTION_SCALE, false],
+  ['mean-from-total', MEAN_FROM_TOTAL, false],
+])('%s — A2 kid-app quality guarantees', (_name, tpl, isRatio) => {
+  const g = (x: number, y: number): number => (y === 0 ? x : g(y, x % y))
+
+  it('distinct-token, no-zero, answer never the min/max option, coprime ratio', () => {
+    for (const s of seeds(120)) {
+      const { question, slots } = generateQuestionDebug(tpl.generationSpec, tpl.distractorSpec, s)
+      const ans = Number(question.correct_answer)
+      const wrong = question.choices.filter((c) => !c.is_correct)
+
+      // distinct misconception token per wrong option
+      const tokens = wrong.map((c) => c.misconception_token)
+      expect(new Set(tokens).size).toBe(tokens.length)
+
+      // no zero distractor
+      for (const c of wrong) expect(Number(c.text)).not.toBe(0)
+
+      // no magnitude tell: the answer is neither the smallest nor the largest choice
+      const vals = question.choices.map((c) => Number(c.text))
+      expect(ans).not.toBe(Math.min(...vals))
+      expect(ans).not.toBe(Math.max(...vals))
+
+      // ratios are shown in lowest terms
+      if (isRatio) expect(g(slots.p, slots.q)).toBe(1)
+    }
+  })
+})
+
 describe('multiplication-basic — correctness (mechanical, not asserted)', () => {
   it('the correct answer is exactly a*b, an integer, for many seeds', () => {
     for (const s of seeds(80)) {
