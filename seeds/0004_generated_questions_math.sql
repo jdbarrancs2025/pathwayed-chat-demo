@@ -2180,4 +2180,1090 @@ on conflict (id) do update set
   solution       = excluded.solution,
   status         = excluded.status;
 
+-- ratio-scale-medium-v1 (problem-solving-data-analysis, medium) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('843d50cb-ef57-591d-9d3e-1dea144a6ba0',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $4 : 3$. If there are $16$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"12","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"9","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"15","is_correct":false,"misconception_token":"ratio-scaled-too-far"}]$q$::jsonb, '12', $q$There are $16 \div 4 = 4$ equal groups, so the blue marbles are $3 \times 4 = 12$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('cec25c1f-3ca9-5c1a-b5cb-95961c420316',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $4 : 5$. If there are $20$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"25","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"added-instead-of-scaled"},{"text":"20","is_correct":false,"misconception_token":"inverted-the-ratio"}]$q$::jsonb, '25', $q$There are $20 \div 4 = 5$ equal groups, so the blue marbles are $5 \times 5 = 25$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b073cc00-26e9-5bba-8a45-339b6e9901e1',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $2 : 3$. If there are $12$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"15","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"21","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"18","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"inverted-the-ratio"}]$q$::jsonb, '18', $q$There are $12 \div 2 = 6$ equal groups, so the blue marbles are $3 \times 6 = 18$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c0cdaf7a-3fe0-5042-a9ce-19df5ccba59c',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 6$. If there are $30$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"36","is_correct":true},{"text":"31","is_correct":false,"misconception_token":"added-instead-of-scaled"},{"text":"30","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"42","is_correct":false,"misconception_token":"ratio-scaled-too-far"}]$q$::jsonb, '36', $q$There are $30 \div 5 = 6$ equal groups, so the blue marbles are $6 \times 6 = 36$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d4cb33d1-0fe3-54a4-8caf-143bc1f45d61',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $2 : 1$. If there are $16$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"8","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"9","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"7","is_correct":false,"misconception_token":"ratio-scaled-too-short"}]$q$::jsonb, '8', $q$There are $16 \div 2 = 8$ equal groups, so the blue marbles are $1 \times 8 = 8$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('57fd6665-6fd9-5202-83c1-7318059274f7',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $2 : 3$. If there are $14$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"14","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"18","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"24","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"21","is_correct":true}]$q$::jsonb, '21', $q$There are $14 \div 2 = 7$ equal groups, so the blue marbles are $3 \times 7 = 21$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('07f02338-7e3f-567a-a32f-a9c4ade1295b',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $6 : 1$. If there are $36$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"5","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"7","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"6","is_correct":true}]$q$::jsonb, '6', $q$There are $36 \div 6 = 6$ equal groups, so the blue marbles are $1 \times 6 = 6$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c10105fb-b335-5379-9b27-2926aed89c2d',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 1$. If there are $40$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"8","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"7","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"9","is_correct":false,"misconception_token":"ratio-scaled-too-far"}]$q$::jsonb, '8', $q$There are $40 \div 5 = 8$ equal groups, so the blue marbles are $1 \times 8 = 8$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2165eb85-9d1a-5317-864d-edfdc5481bc9',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 6$. If there are $45$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"54","is_correct":true},{"text":"45","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"48","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"60","is_correct":false,"misconception_token":"ratio-scaled-too-far"}]$q$::jsonb, '54', $q$There are $45 \div 5 = 9$ equal groups, so the blue marbles are $6 \times 9 = 54$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('677b6edd-494f-54a7-b1b5-08acd83bbdef',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 1$. If there are $20$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"4","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"5","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"3","is_correct":false,"misconception_token":"ratio-scaled-too-short"}]$q$::jsonb, '4', $q$There are $20 \div 5 = 4$ equal groups, so the blue marbles are $1 \times 4 = 4$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fa8cdfaa-f3d8-5926-a15a-9b69c4bb7ccb',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $6 : 5$. If there are $24$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"24","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"20","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"ratio-scaled-too-short"}]$q$::jsonb, '20', $q$There are $24 \div 6 = 4$ equal groups, so the blue marbles are $5 \times 4 = 20$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ab995eae-b343-58dc-a076-451b2ae1d1e6',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $6 : 5$. If there are $30$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"25","is_correct":true},{"text":"29","is_correct":false,"misconception_token":"added-instead-of-scaled"},{"text":"30","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"20","is_correct":false,"misconception_token":"ratio-scaled-too-short"}]$q$::jsonb, '25', $q$There are $30 \div 6 = 5$ equal groups, so the blue marbles are $5 \times 5 = 25$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8bc40246-ff0f-59b8-9577-25c5edebe677',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $4 : 5$. If there are $8$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"8","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"10","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"15","is_correct":false,"misconception_token":"ratio-scaled-too-far"}]$q$::jsonb, '10', $q$There are $8 \div 4 = 2$ equal groups, so the blue marbles are $5 \times 2 = 10$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b4fa4c7b-c02f-57e0-86ed-a90ea681d488',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 2$. If there are $45$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"18","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"16","is_correct":false,"misconception_token":"ratio-scaled-too-short"}]$q$::jsonb, '18', $q$There are $45 \div 5 = 9$ equal groups, so the blue marbles are $2 \times 9 = 18$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f7e3ce3a-5b8b-5d87-a489-eb43dc6908d5',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $1 : 6$. If there are $8$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"48","is_correct":true},{"text":"54","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"42","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"8","is_correct":false,"misconception_token":"inverted-the-ratio"}]$q$::jsonb, '48', $q$There are $8 \div 1 = 8$ equal groups, so the blue marbles are $6 \times 8 = 48$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('85751629-0f83-5365-ba9c-c7c01edb5e7e',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $3 : 4$. If there are $30$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"44","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"40","is_correct":true},{"text":"36","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"30","is_correct":false,"misconception_token":"inverted-the-ratio"}]$q$::jsonb, '40', $q$There are $30 \div 3 = 10$ equal groups, so the blue marbles are $4 \times 10 = 40$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ab49ed4c-d032-51bf-b2f3-e0a80a1cd204',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $1 : 3$. If there are $3$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"9","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"6","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"3","is_correct":false,"misconception_token":"inverted-the-ratio"}]$q$::jsonb, '9', $q$There are $3 \div 1 = 3$ equal groups, so the blue marbles are $3 \times 3 = 9$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b00f695a-1c35-5818-b72a-54fa97544ffb',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 6$. If there are $40$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"40","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"48","is_correct":true},{"text":"54","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"42","is_correct":false,"misconception_token":"ratio-scaled-too-short"}]$q$::jsonb, '48', $q$There are $40 \div 5 = 8$ equal groups, so the blue marbles are $6 \times 8 = 48$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ba39d8e0-c199-5b76-bd0b-1dd31a9e1128',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $3 : 1$. If there are $12$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"3","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"5","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"4","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"inverted-the-ratio"}]$q$::jsonb, '4', $q$There are $12 \div 3 = 4$ equal groups, so the blue marbles are $1 \times 4 = 4$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2683598d-90df-5bad-9d59-961576c6aa46',
+   (select id from public.question_templates where code = 'ratio-scale-medium-v1'),
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A bag has red and blue marbles in the ratio $5 : 2$. If there are $40$ red marbles, how many blue marbles are there?$q$, $q$[{"text":"14","is_correct":false,"misconception_token":"ratio-scaled-too-short"},{"text":"40","is_correct":false,"misconception_token":"inverted-the-ratio"},{"text":"18","is_correct":false,"misconception_token":"ratio-scaled-too-far"},{"text":"16","is_correct":true}]$q$::jsonb, '16', $q$There are $40 \div 5 = 8$ equal groups, so the blue marbles are $2 \times 8 = 16$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- proportion-scale-medium-v1 (problem-solving-data-analysis, medium) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('72b38cb5-74c8-5c0f-b69c-1fe0c7614709',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$5$ identical boxes hold $30$ books in all. How many books do $4$ boxes hold?$q$, $q$[{"text":"24","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"29","is_correct":false,"misconception_token":"added-instead-of-scaled"},{"text":"18","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '24', $q$Each box holds $30 \div 5 = 6$ books, so $4$ boxes hold $6 \times 4 = 24$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ab1261d7-4308-5700-a586-cef96b4bc7b9',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$5$ identical boxes hold $40$ books in all. How many books do $10$ boxes hold?$q$, $q$[{"text":"88","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"80","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"answered-the-total"},{"text":"72","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '80', $q$Each box holds $40 \div 5 = 8$ books, so $10$ boxes hold $8 \times 10 = 80$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('7ff2dd8d-c978-55ce-9d55-619a3e2d6ffd',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$4$ identical boxes hold $16$ books in all. How many books do $7$ boxes hold?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"answered-the-total"},{"text":"24","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"28","is_correct":true},{"text":"32","is_correct":false,"misconception_token":"rate-scaled-too-far"}]$q$::jsonb, '28', $q$Each box holds $16 \div 4 = 4$ books, so $7$ boxes hold $4 \times 7 = 28$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ab655309-490e-5586-a27a-bf883be1499f',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$7$ identical boxes hold $56$ books in all. How many books do $12$ boxes hold?$q$, $q$[{"text":"88","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"104","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"56","is_correct":false,"misconception_token":"answered-the-total"},{"text":"96","is_correct":true}]$q$::jsonb, '96', $q$Each box holds $56 \div 7 = 8$ books, so $12$ boxes hold $8 \times 12 = 96$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('40208373-81e9-5b14-b13a-308b699bd015',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$8$ identical boxes hold $24$ books in all. How many books do $5$ boxes hold?$q$, $q$[{"text":"18","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"12","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"24","is_correct":false,"misconception_token":"answered-the-total"},{"text":"15","is_correct":true}]$q$::jsonb, '15', $q$Each box holds $24 \div 8 = 3$ books, so $5$ boxes hold $3 \times 5 = 15$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8ee27fad-b900-519c-8022-6458835c6afd',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$4$ identical boxes hold $12$ books in all. How many books do $8$ boxes hold?$q$, $q$[{"text":"27","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"12","is_correct":false,"misconception_token":"answered-the-total"},{"text":"21","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"24","is_correct":true}]$q$::jsonb, '24', $q$Each box holds $12 \div 4 = 3$ books, so $8$ boxes hold $3 \times 8 = 24$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('69111f1b-2133-56f6-9481-074d147db8f2',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$2$ identical boxes hold $18$ books in all. How many books do $7$ boxes hold?$q$, $q$[{"text":"72","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"18","is_correct":false,"misconception_token":"answered-the-total"},{"text":"54","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"63","is_correct":true}]$q$::jsonb, '63', $q$Each box holds $18 \div 2 = 9$ books, so $7$ boxes hold $9 \times 7 = 63$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a1253d8e-055e-5dab-b1bd-67404e6646cf',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$3$ identical boxes hold $21$ books in all. How many books do $10$ boxes hold?$q$, $q$[{"text":"70","is_correct":true},{"text":"77","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"21","is_correct":false,"misconception_token":"answered-the-total"},{"text":"63","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '70', $q$Each box holds $21 \div 3 = 7$ books, so $10$ boxes hold $7 \times 10 = 70$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3d47de9a-4d10-5639-a1e6-f97960b99f10',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$7$ identical boxes hold $49$ books in all. How many books do $9$ boxes hold?$q$, $q$[{"text":"70","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"63","is_correct":true},{"text":"49","is_correct":false,"misconception_token":"answered-the-total"},{"text":"56","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '63', $q$Each box holds $49 \div 7 = 7$ books, so $9$ boxes hold $7 \times 9 = 63$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a6f49e97-419d-5909-bdbe-4699d08db9c3',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$3$ identical boxes hold $24$ books in all. How many books do $5$ boxes hold?$q$, $q$[{"text":"40","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"32","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"24","is_correct":false,"misconception_token":"answered-the-total"}]$q$::jsonb, '40', $q$Each box holds $24 \div 3 = 8$ books, so $5$ boxes hold $8 \times 5 = 40$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('334a8a5d-0b99-5c3f-96a4-12429d0512fc',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$3$ identical boxes hold $27$ books in all. How many books do $8$ boxes hold?$q$, $q$[{"text":"81","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"72","is_correct":true},{"text":"63","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"27","is_correct":false,"misconception_token":"answered-the-total"}]$q$::jsonb, '72', $q$Each box holds $27 \div 3 = 9$ books, so $8$ boxes hold $9 \times 8 = 72$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('7b7927f9-b2c8-5373-8b55-31d75fd3f231',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$4$ identical boxes hold $12$ books in all. How many books do $7$ boxes hold?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"answered-the-total"},{"text":"21","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"18","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '21', $q$Each box holds $12 \div 4 = 3$ books, so $7$ boxes hold $3 \times 7 = 21$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e3491945-e00a-56e2-93da-9074fcc9b35a',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$7$ identical boxes hold $42$ books in all. How many books do $3$ boxes hold?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"18","is_correct":true},{"text":"42","is_correct":false,"misconception_token":"answered-the-total"},{"text":"12","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '18', $q$Each box holds $42 \div 7 = 6$ books, so $3$ boxes hold $6 \times 3 = 18$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2ad47402-a358-5798-a9bd-a0b57bd6ad46',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$4$ identical boxes hold $28$ books in all. How many books do $10$ boxes hold?$q$, $q$[{"text":"77","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"70","is_correct":true},{"text":"63","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"28","is_correct":false,"misconception_token":"answered-the-total"}]$q$::jsonb, '70', $q$Each box holds $28 \div 4 = 7$ books, so $10$ boxes hold $7 \times 10 = 70$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('259d49fd-39ce-5972-9e5f-300bc5a03bf4',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$8$ identical boxes hold $16$ books in all. How many books do $9$ boxes hold?$q$, $q$[{"text":"18","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"17","is_correct":false,"misconception_token":"added-instead-of-scaled"},{"text":"20","is_correct":false,"misconception_token":"rate-scaled-too-far"}]$q$::jsonb, '18', $q$Each box holds $16 \div 8 = 2$ books, so $9$ boxes hold $2 \times 9 = 18$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f2386959-ac94-516c-ba42-18989626aae9',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$6$ identical boxes hold $30$ books in all. How many books do $11$ boxes hold?$q$, $q$[{"text":"50","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"55","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"answered-the-total"},{"text":"60","is_correct":false,"misconception_token":"rate-scaled-too-far"}]$q$::jsonb, '55', $q$Each box holds $30 \div 6 = 5$ books, so $11$ boxes hold $5 \times 11 = 55$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e61d32db-2a71-5c3b-a971-6c2df0dc3242',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$5$ identical boxes hold $15$ books in all. How many books do $3$ boxes hold?$q$, $q$[{"text":"9","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"15","is_correct":false,"misconception_token":"answered-the-total"},{"text":"12","is_correct":false,"misconception_token":"rate-scaled-too-far"}]$q$::jsonb, '9', $q$Each box holds $15 \div 5 = 3$ books, so $3$ boxes hold $3 \times 3 = 9$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('425e2d9d-329d-5399-8c66-a691ec23372f',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$3$ identical boxes hold $27$ books in all. How many books do $6$ boxes hold?$q$, $q$[{"text":"27","is_correct":false,"misconception_token":"answered-the-total"},{"text":"45","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"54","is_correct":true},{"text":"63","is_correct":false,"misconception_token":"rate-scaled-too-far"}]$q$::jsonb, '54', $q$Each box holds $27 \div 3 = 9$ books, so $6$ boxes hold $9 \times 6 = 54$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('7b3ea8fc-1d46-59d1-a7f5-e2ef079372c5',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$5$ identical boxes hold $20$ books in all. How many books do $12$ boxes hold?$q$, $q$[{"text":"52","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"48","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"answered-the-total"},{"text":"44","is_correct":false,"misconception_token":"rate-scaled-too-short"}]$q$::jsonb, '48', $q$Each box holds $20 \div 5 = 4$ books, so $12$ boxes hold $4 \times 12 = 48$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('34b8c6db-6ba5-5877-9683-1b419e6856d3',
+   (select id from public.question_templates where code = 'proportion-scale-medium-v1'),
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium',
+   $q$$3$ identical boxes hold $9$ books in all. How many books do $12$ boxes hold?$q$, $q$[{"text":"33","is_correct":false,"misconception_token":"rate-scaled-too-short"},{"text":"36","is_correct":true},{"text":"39","is_correct":false,"misconception_token":"rate-scaled-too-far"},{"text":"9","is_correct":false,"misconception_token":"answered-the-total"}]$q$::jsonb, '36', $q$Each box holds $9 \div 3 = 3$ books, so $12$ boxes hold $3 \times 12 = 36$ books.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- mean-from-total-medium-v1 (problem-solving-data-analysis, medium) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('42b7c49c-4c6d-5a8b-9c02-11a6b1cd7290',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $96$ points in $6$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"96","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"15","is_correct":false,"misconception_token":"mean-too-low"},{"text":"17","is_correct":false,"misconception_token":"mean-too-high"},{"text":"16","is_correct":true}]$q$::jsonb, '16', $q$The mean is the total shared equally: $96 \div 6 = 16$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('88c6bc54-dcec-5bbf-b647-df9be9306d53',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $152$ points in $8$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"19","is_correct":true},{"text":"18","is_correct":false,"misconception_token":"mean-too-low"},{"text":"20","is_correct":false,"misconception_token":"mean-too-high"},{"text":"152","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '19', $q$The mean is the total shared equally: $152 \div 8 = 19$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dc3d18af-81d0-5395-b03d-30d249675b47',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $60$ points in $4$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"14","is_correct":false,"misconception_token":"mean-too-low"},{"text":"15","is_correct":true},{"text":"60","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"16","is_correct":false,"misconception_token":"mean-too-high"}]$q$::jsonb, '15', $q$The mean is the total shared equally: $60 \div 4 = 15$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('20ff4898-8bd4-5b5b-886f-327a834090b6',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $168$ points in $7$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"mean-too-high"},{"text":"23","is_correct":false,"misconception_token":"mean-too-low"},{"text":"24","is_correct":true},{"text":"168","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '24', $q$The mean is the total shared equally: $168 \div 7 = 24$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('bb541335-0c83-516d-bf5e-7c9befbe6a63',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $108$ points in $4$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"108","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"26","is_correct":false,"misconception_token":"mean-too-low"},{"text":"27","is_correct":true},{"text":"28","is_correct":false,"misconception_token":"mean-too-high"}]$q$::jsonb, '27', $q$The mean is the total shared equally: $108 \div 4 = 27$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c7c8cae9-4916-54e4-880e-2ad5c5b0a9fa',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $40$ points in $8$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"40","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"6","is_correct":false,"misconception_token":"mean-too-high"},{"text":"5","is_correct":true},{"text":"4","is_correct":false,"misconception_token":"mean-too-low"}]$q$::jsonb, '5', $q$The mean is the total shared equally: $40 \div 8 = 5$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2fefb191-3792-583c-a968-9308ee310e83',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $63$ points in $7$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"9","is_correct":true},{"text":"8","is_correct":false,"misconception_token":"mean-too-low"},{"text":"10","is_correct":false,"misconception_token":"mean-too-high"},{"text":"63","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '9', $q$The mean is the total shared equally: $63 \div 7 = 9$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ebfec3ff-f610-54fd-ad3b-78356997dfbe',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $56$ points in $7$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"8","is_correct":true},{"text":"56","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"7","is_correct":false,"misconception_token":"mean-too-low"},{"text":"9","is_correct":false,"misconception_token":"mean-too-high"}]$q$::jsonb, '8', $q$The mean is the total shared equally: $56 \div 7 = 8$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c90a83ce-9a45-511c-b915-5fab712b29cd',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $80$ points in $8$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"10","is_correct":true},{"text":"11","is_correct":false,"misconception_token":"mean-too-high"},{"text":"80","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"9","is_correct":false,"misconception_token":"mean-too-low"}]$q$::jsonb, '10', $q$The mean is the total shared equally: $80 \div 8 = 10$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('17cec151-9236-5718-b7c3-9a56c2ef0771',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $48$ points in $4$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"12","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"13","is_correct":false,"misconception_token":"mean-too-high"},{"text":"11","is_correct":false,"misconception_token":"mean-too-low"}]$q$::jsonb, '12', $q$The mean is the total shared equally: $48 \div 4 = 12$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6f01b32f-18c6-5b2d-ba09-bf485e49893d',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $144$ points in $6$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"144","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"23","is_correct":false,"misconception_token":"mean-too-low"},{"text":"25","is_correct":false,"misconception_token":"mean-too-high"},{"text":"24","is_correct":true}]$q$::jsonb, '24', $q$The mean is the total shared equally: $144 \div 6 = 24$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c6bca56f-9ee4-53a1-bd3b-a8a23f757d12',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $91$ points in $7$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"13","is_correct":true},{"text":"14","is_correct":false,"misconception_token":"mean-too-high"},{"text":"12","is_correct":false,"misconception_token":"mean-too-low"},{"text":"91","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '13', $q$The mean is the total shared equally: $91 \div 7 = 13$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('561e9b8e-cc42-5076-b3c2-98eb09ee05f9',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $84$ points in $3$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"28","is_correct":true},{"text":"84","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"29","is_correct":false,"misconception_token":"mean-too-high"},{"text":"27","is_correct":false,"misconception_token":"mean-too-low"}]$q$::jsonb, '28', $q$The mean is the total shared equally: $84 \div 3 = 28$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('066ccfed-a573-5834-9f5c-aba2fcb3d1e3',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $105$ points in $5$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"22","is_correct":false,"misconception_token":"mean-too-high"},{"text":"20","is_correct":false,"misconception_token":"mean-too-low"},{"text":"21","is_correct":true},{"text":"105","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '21', $q$The mean is the total shared equally: $105 \div 5 = 21$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('32763092-47f2-5633-8e85-91026ed251f3',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $48$ points in $3$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"17","is_correct":false,"misconception_token":"mean-too-high"},{"text":"15","is_correct":false,"misconception_token":"mean-too-low"},{"text":"48","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"16","is_correct":true}]$q$::jsonb, '16', $q$The mean is the total shared equally: $48 \div 3 = 16$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('69757d0a-2943-5b92-8d65-ffa9992c6be2',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $182$ points in $7$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"26","is_correct":true},{"text":"27","is_correct":false,"misconception_token":"mean-too-high"},{"text":"182","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"25","is_correct":false,"misconception_token":"mean-too-low"}]$q$::jsonb, '26', $q$The mean is the total shared equally: $182 \div 7 = 26$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e27d31f9-04ef-5fb8-abc9-682766c5c76c',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $72$ points in $4$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"18","is_correct":true},{"text":"17","is_correct":false,"misconception_token":"mean-too-low"},{"text":"19","is_correct":false,"misconception_token":"mean-too-high"},{"text":"72","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '18', $q$The mean is the total shared equally: $72 \div 4 = 18$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b9dc1001-885a-530d-8259-0b2ab26a75ef',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $36$ points in $4$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"9","is_correct":true},{"text":"10","is_correct":false,"misconception_token":"mean-too-high"},{"text":"8","is_correct":false,"misconception_token":"mean-too-low"},{"text":"36","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '9', $q$The mean is the total shared equally: $36 \div 4 = 9$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9db8d68f-0f25-554a-a9ab-da80b7f3dde6',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $150$ points in $6$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"26","is_correct":false,"misconception_token":"mean-too-high"},{"text":"24","is_correct":false,"misconception_token":"mean-too-low"},{"text":"25","is_correct":true},{"text":"150","is_correct":false,"misconception_token":"forgot-to-divide-total"}]$q$::jsonb, '25', $q$The mean is the total shared equally: $150 \div 6 = 25$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b8bcc336-08a2-5a82-9f2d-f93874e3c3cd',
+   (select id from public.question_templates where code = 'mean-from-total-medium-v1'),
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium',
+   $q$A team scored $112$ points in $4$ games. What was the mean (average) number of points per game?$q$, $q$[{"text":"28","is_correct":true},{"text":"112","is_correct":false,"misconception_token":"forgot-to-divide-total"},{"text":"29","is_correct":false,"misconception_token":"mean-too-high"},{"text":"27","is_correct":false,"misconception_token":"mean-too-low"}]$q$::jsonb, '28', $q$The mean is the total shared equally: $112 \div 4 = 28$ points per game.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
 commit;

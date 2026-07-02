@@ -123,4 +123,61 @@ on conflict (code) do update set
   status          = excluded.status,
   version         = excluded.version;
 
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('ratio-scale-medium-v1',
+   (select id from public.skills where slug = 'ratios'),
+   'problem-solving-data-analysis', 'medium', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"A bag has red and blue marbles in the ratio ${p} : {q}$. If there are ${red}$ red marbles, how many blue marbles are there?","slots":[{"name":"p","min":1,"max":6},{"name":"q","min":1,"max":6},{"name":"m","min":2,"max":10}],"derived":[{"name":"red","formula":"p * m"}],"answerFormula":"q * m","answerFormat":"integer","constraints":["gcd(p, q) == 1","p != q"],"solutionTemplate":"There are ${red} \\div {p} = {m}$ equal groups, so the blue marbles are ${q} \\times {m} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"p * m","misconception_token":"inverted-the-ratio"},{"formula":"q * (m + 1)","misconception_token":"ratio-scaled-too-far"},{"formula":"q * (m - 1)","misconception_token":"ratio-scaled-too-short"},{"formula":"p * m + (q - p)","misconception_token":"added-instead-of-scaled"},{"formula":"q","misconception_token":"answered-the-ratio-part"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('proportion-scale-medium-v1',
+   (select id from public.skills where slug = 'proportional-reasoning'),
+   'problem-solving-data-analysis', 'medium', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"${a}$ identical boxes hold ${total}$ books in all. How many books do ${b}$ boxes hold?","slots":[{"name":"u","min":2,"max":9},{"name":"a","min":2,"max":8},{"name":"b","min":2,"max":12}],"derived":[{"name":"total","formula":"u * a"}],"answerFormula":"u * b","answerFormat":"integer","constraints":["a != b"],"solutionTemplate":"Each box holds ${total} \\div {a} = {u}$ books, so ${b}$ boxes hold ${u} \\times {b} = {answer}$ books."}$q$::jsonb,
+   $q$[{"formula":"u * (b + 1)","misconception_token":"rate-scaled-too-far"},{"formula":"u * (b - 1)","misconception_token":"rate-scaled-too-short"},{"formula":"total","misconception_token":"answered-the-total"},{"formula":"total + (b - a)","misconception_token":"added-instead-of-scaled"},{"formula":"u","misconception_token":"answered-the-unit-rate"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('mean-from-total-medium-v1',
+   (select id from public.skills where slug = 'data-analysis'),
+   'problem-solving-data-analysis', 'medium', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"A team scored ${total}$ points in ${n}$ games. What was the mean (average) number of points per game?","slots":[{"name":"n","min":3,"max":8},{"name":"q","min":5,"max":30}],"derived":[{"name":"total","formula":"n * q"}],"answerFormula":"q","answerFormat":"integer","solutionTemplate":"The mean is the total shared equally: ${total} \\div {n} = {answer}$ points per game."}$q$::jsonb,
+   $q$[{"formula":"q + 1","misconception_token":"mean-too-high"},{"formula":"q - 1","misconception_token":"mean-too-low"},{"formula":"total","misconception_token":"forgot-to-divide-total"},{"formula":"total - n","misconception_token":"subtracted-instead-of-divided"},{"formula":"n","misconception_token":"answered-the-count"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
 commit;

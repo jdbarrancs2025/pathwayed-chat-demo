@@ -76,6 +76,38 @@ const EXPLANATIONS: Record<string, string> = {
     'Careful with the decimal — this answer is 10 times too big. A percent means out of 100, so divide by 100, not 10.',
   'halved-the-base':
     'Close! It looks like you divided by 50 instead of 100. A percent is always out of 100.',
+
+  // ratios (ratio-scale)
+  'inverted-the-ratio':
+    'It looks like you swapped the two parts of the ratio. Match each number to the right color — the first number goes with the first color.',
+  'ratio-scaled-too-far':
+    'So close — that is one scale-step too high. Find how many times bigger the real count is, then use that same amount for the other part.',
+  'ratio-scaled-too-short':
+    'So close — that is one scale-step too low. Find how many times bigger the real count is, then use that same amount for the other part.',
+  'added-instead-of-scaled':
+    'Ratios and rates scale by multiplying, not adding. Find how many times bigger the amount is, then multiply the other part by that same number.',
+  'answered-the-ratio-part':
+    'That is just the number from the ratio. You still need to scale it up to match the real count.',
+
+  // proportional-reasoning (proportion-scale)
+  'rate-scaled-too-far':
+    'So close — a little too high. Find the amount for one first, then multiply by how many you need.',
+  'rate-scaled-too-short':
+    'So close — a little too low. Find the amount for one first, then multiply by how many you need.',
+  'answered-the-total':
+    'That is the amount you started with. Find the amount for just one first, then scale up to the new number.',
+  'answered-the-unit-rate':
+    'That is the amount for just one. Multiply it by how many you need.',
+
+  // data-analysis (mean-from-total)
+  'mean-too-high':
+    'So close — a little high. The mean is the total shared equally: total divided by the number of games.',
+  'mean-too-low':
+    'So close — a little low. The mean is the total shared equally: total divided by the number of games.',
+  'forgot-to-divide-total':
+    'That is the total. To get the mean, share it equally: divide the total by the number of games.',
+  'answered-the-count':
+    'That is the number of games, not the average. Divide the total points by the number of games.',
 }
 
 /**

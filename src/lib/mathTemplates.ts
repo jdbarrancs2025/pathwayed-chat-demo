@@ -226,6 +226,107 @@ export const RECTANGLE_AREA: MathTemplate = {
   ],
 }
 
+// Grades 6-8: scale a ratio. The ratio p:q is drawn coprime (gcd=1, lowest terms)
+// and p!=q, and the given quantity red = p·m so the answer blue = q·m is an
+// integer. The headline distractor is the classic inverted ratio; the rest are
+// near (one scale-step off) plus the additive-thinking trap. Distinct tokens.
+export const RATIO_SCALE: MathTemplate = {
+  code: 'ratio-scale-medium-v1',
+  skillSlug: 'ratios',
+  satAlignment: 'problem-solving-data-analysis',
+  difficulty: 'medium',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate:
+      'A bag has red and blue marbles in the ratio ${p} : {q}$. If there are ${red}$ red marbles, how many blue marbles are there?',
+    slots: [
+      { name: 'p', min: 1, max: 6 },
+      { name: 'q', min: 1, max: 6 },
+      { name: 'm', min: 2, max: 10 },
+    ],
+    derived: [{ name: 'red', formula: 'p * m' }],
+    answerFormula: 'q * m',
+    answerFormat: 'integer',
+    constraints: ['gcd(p, q) == 1', 'p != q'],
+    solutionTemplate:
+      'There are ${red} \\div {p} = {m}$ equal groups, so the blue marbles are ${q} \\times {m} = {answer}$.',
+  },
+  distractorSpec: [
+    { formula: 'p * m', misconception_token: 'inverted-the-ratio' }, // used red's part (p!=q -> != answer)
+    { formula: 'q * (m + 1)', misconception_token: 'ratio-scaled-too-far' }, // answer + q (near, high)
+    { formula: 'q * (m - 1)', misconception_token: 'ratio-scaled-too-short' }, // answer - q (near, low, >=1)
+    { formula: 'p * m + (q - p)', misconception_token: 'added-instead-of-scaled' }, // additive thinking
+    { formula: 'q', misconception_token: 'answered-the-ratio-part' }, // the bare ratio number
+  ],
+}
+
+// Grades 6-8: a proportion / unit-rate problem. a boxes hold total = u·a books, so
+// b boxes hold u·b. a!=b so it is a real scaling. Distractors: one step off the
+// scale (near), the additive trap, the original total, and the bare unit rate.
+export const PROPORTION_SCALE: MathTemplate = {
+  code: 'proportion-scale-medium-v1',
+  skillSlug: 'proportional-reasoning',
+  satAlignment: 'problem-solving-data-analysis',
+  difficulty: 'medium',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: '${a}$ identical boxes hold ${total}$ books in all. How many books do ${b}$ boxes hold?',
+    slots: [
+      { name: 'u', min: 2, max: 9 },
+      { name: 'a', min: 2, max: 8 },
+      { name: 'b', min: 2, max: 12 },
+    ],
+    derived: [{ name: 'total', formula: 'u * a' }],
+    answerFormula: 'u * b',
+    answerFormat: 'integer',
+    constraints: ['a != b'],
+    solutionTemplate:
+      'Each box holds ${total} \\div {a} = {u}$ books, so ${b}$ boxes hold ${u} \\times {b} = {answer}$ books.',
+  },
+  distractorSpec: [
+    { formula: 'u * (b + 1)', misconception_token: 'rate-scaled-too-far' }, // answer + u (near, high)
+    { formula: 'u * (b - 1)', misconception_token: 'rate-scaled-too-short' }, // answer - u (near, low, >=2)
+    { formula: 'total', misconception_token: 'answered-the-total' }, // gave the starting total (a!=b -> != answer)
+    { formula: 'total + (b - a)', misconception_token: 'added-instead-of-scaled' }, // additive thinking
+    { formula: 'u', misconception_token: 'answered-the-unit-rate' }, // gave books-per-box
+  ],
+}
+
+// Grades 6-8: the mean of a dataset, given as total over count. total = n·q so the
+// mean q is an integer. Distractors: mean +-1 (near) and the undivided total (far);
+// backups cover the wrong-operation and count-as-answer slips. Distinct tokens.
+export const MEAN_FROM_TOTAL: MathTemplate = {
+  code: 'mean-from-total-medium-v1',
+  skillSlug: 'data-analysis',
+  satAlignment: 'problem-solving-data-analysis',
+  difficulty: 'medium',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'A team scored ${total}$ points in ${n}$ games. What was the mean (average) number of points per game?',
+    slots: [
+      { name: 'n', min: 3, max: 8 },
+      { name: 'q', min: 5, max: 30 },
+    ],
+    derived: [{ name: 'total', formula: 'n * q' }],
+    answerFormula: 'q',
+    answerFormat: 'integer',
+    solutionTemplate: 'The mean is the total shared equally: ${total} \\div {n} = {answer}$ points per game.',
+  },
+  distractorSpec: [
+    { formula: 'q + 1', misconception_token: 'mean-too-high' }, // near, high
+    { formula: 'q - 1', misconception_token: 'mean-too-low' }, // near, low (q>=5, >0)
+    { formula: 'total', misconception_token: 'forgot-to-divide-total' }, // gave the total, not the mean
+    { formula: 'total - n', misconception_token: 'subtracted-instead-of-divided' }, // backup: wrong operation
+    { formula: 'n', misconception_token: 'answered-the-count' }, // backup: gave the number of games
+  ],
+}
+
 export const MATH_TEMPLATES: MathTemplate[] = [
   LINEAR_EQUATION_SOLVE,
   PERCENT_OF,
@@ -233,6 +334,9 @@ export const MATH_TEMPLATES: MathTemplate[] = [
   DIVISION_BASIC,
   FRACTION_OF_NUMBER,
   RECTANGLE_AREA,
+  RATIO_SCALE,
+  PROPORTION_SCALE,
+  MEAN_FROM_TOTAL,
 ]
 
 // Questions cached per template (deterministic seeds 1..N).

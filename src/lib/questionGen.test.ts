@@ -11,8 +11,11 @@ import {
   DIVISION_BASIC,
   FRACTION_OF_NUMBER,
   LINEAR_EQUATION_SOLVE,
+  MEAN_FROM_TOTAL,
   MULTIPLICATION_BASIC,
   PERCENT_OF,
+  PROPORTION_SCALE,
+  RATIO_SCALE,
   RECTANGLE_AREA,
 } from './mathTemplates'
 
@@ -117,6 +120,9 @@ describe.each([
   ['division-basic', DIVISION_BASIC],
   ['fraction-of-number', FRACTION_OF_NUMBER],
   ['rectangle-area', RECTANGLE_AREA],
+  ['ratio-scale', RATIO_SCALE],
+  ['proportion-scale', PROPORTION_SCALE],
+  ['mean-from-total', MEAN_FROM_TOTAL],
 ])('%s — choices invariants', (_name, tpl) => {
   it('has exactly one correct choice and 4 distinct choices', () => {
     for (const s of seeds(50)) {
