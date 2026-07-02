@@ -320,9 +320,13 @@ const DIAGNOSTIC_WRONG_MASTERY = 25
 /**
  * Seed initial student_skill_mastery from a completed placement diagnostic, then
  * recompute readiness so the dashboard/path pick up at the student's real level.
- * Upserts one row per skill (last answer wins if a skill somehow repeats). Meant
- * to run once at placement time. Best-effort: returns the number of rows written,
- * 0 on empty input or a write error; never throws into the caller.
+ *
+ * SAFETY GUARD: never clobbers real earned mastery. A skill is seeded ONLY if the
+ * student has no prior NON-diagnostic attempts for it (no real practice history);
+ * skills the student has actually practiced keep their earned mastery untouched.
+ * So a returning student re-taking the diagnostic refreshes only their still-
+ * provisional (diagnostic-only) skills. Meant to run at placement time.
+ * Best-effort: returns the number of rows written, 0 on empty/guarded/error.
  */
 export async function seedDiagnosticMastery(
   studentId: string,
@@ -332,6 +336,23 @@ export async function seedDiagnosticMastery(
   // same (student, skill) twice), keeping the last answer.
   const bySkill = new Map<string, boolean>()
   for (const r of results) bySkill.set(r.skillId, r.isCorrect)
+  if (!bySkill.size) return 0
+
+  // Guard: find skills with real (non-diagnostic) practice history and exclude
+  // them, so seeding never resets earned mastery.
+  const { data: practiced, error: practicedError } = await supabase
+    .from('question_attempts')
+    .select('skill_id')
+    .eq('student_id', studentId)
+    .eq('is_diagnostic', false)
+  if (practicedError) {
+    console.error('seedDiagnosticMastery: practice-history read failed', practicedError)
+    return 0 // fail safe: don't seed if we can't verify practice history
+  }
+  const practicedSet = new Set((practiced ?? []).map((r) => r.skill_id))
+  for (const skillId of [...bySkill.keys()]) {
+    if (practicedSet.has(skillId)) bySkill.delete(skillId)
+  }
   if (!bySkill.size) return 0
 
   const now = new Date().toISOString()

@@ -83,7 +83,12 @@ export function KidHome() {
 
         <PracticeSkills studentId={student.id} />
 
-        <StudentProgress studentId={student.id} grade={student.grade} onOpenSubject={open} />
+        <StudentProgress
+          studentId={student.id}
+          grade={student.grade}
+          onOpenSubject={open}
+          showAdvancedFraming={student.above_grade_ok}
+        />
 
         <div className="foot">
           Working level: {levelLabel(student.level).toLowerCase()} for {gradeLabel(student.grade).toLowerCase()}

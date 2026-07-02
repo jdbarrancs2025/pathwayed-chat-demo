@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { getStudent, type Student } from '@/lib/students'
+import { getStudent, setAboveGradeConsent, type Student } from '@/lib/students'
 import {
   fetchDiagnosticQuestions,
   listPracticeableSkills,
@@ -15,6 +15,15 @@ import { gradeBand } from '@/lib/gradeBand'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
+
+// Completion line. When the parent declined above-grade framing, soften an
+// above-grade placement to a neutral message (consent governs framing, not the
+// seeded mastery — the child is still placed at their real level either way).
+function completionLine(place: Placement | null, consent: boolean): string {
+  if (!place) return 'Your answers are saved.'
+  if (place.aboveGrade && !consent) return 'We’ll start you at just the right level.'
+  return place.label
+}
 
 /**
  * Placement diagnostic — PHASE 2 (adaptive + placement). Still silent: present ->
@@ -42,6 +51,8 @@ export function Diagnostic() {
   const [busy, setBusy] = useState(false) // fetching the extension, or seeding at the end
   const [done, setDone] = useState(false)
   const [place, setPlace] = useState<Placement | null>(null)
+  const [started, setStarted] = useState(false)
+  const [consent, setConsent] = useState(false) // parent OK to show above-grade / SAT framing
   const shownAtRef = useRef(0)
 
   useEffect(() => {
@@ -78,11 +89,21 @@ export function Diagnostic() {
     }
   }, [id, navigate])
 
-  // Stamp the presented-at time whenever a new question is shown (Date.now() is
-  // only valid outside render, so it lives in an effect, not the click handler).
+  // Stamp the presented-at time whenever a new question is shown, including when
+  // the quiz starts (so reading the consent intro isn't counted). Date.now() is
+  // only valid outside render, so it lives in an effect, not the click handler.
   useEffect(() => {
     shownAtRef.current = Date.now()
-  }, [index, questions])
+  }, [index, questions, started])
+
+  // Parent-consent step: record the above-grade framing choice, then begin. Either
+  // choice proceeds to the same questions — consent governs framing, not learning.
+  const handleStart = (ok: boolean) => {
+    if (!student) return
+    setConsent(ok)
+    void setAboveGradeConsent(student.id, ok)
+    setStarted(true)
+  }
 
   const finish = async (allResults: DiagnosticResult[], stu: Student) => {
     setBusy(true)
@@ -126,6 +147,7 @@ export function Diagnostic() {
       chosenChoiceIndex: choiceIndex,
       chosenMisconceptionToken: misconceptionToken,
       shownAtMs: shownAtRef.current,
+      isDiagnostic: true,
     })
     const nextResults = [...results, { skillId: current.skill_id, band: current.grade_band ?? '', isCorrect }]
     setResults(nextResults)
@@ -173,14 +195,42 @@ export function Diagnostic() {
                 {place.correct} <span className="muted">/ {place.total}</span>
               </p>
             )}
-            <p className="practice-encourage">
-              {place
-                ? `Great effort — we'll start you ${place.label} and go from there.`
-                : 'Great effort — your answers are saved.'}
-            </p>
+            <p className="practice-encourage">Great effort! {completionLine(place, consent)}</p>
           </div>
           <button className="btn btn-navy" onClick={() => navigate(`/students/${student.id}`)}>
             See my dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Parent-consent step (above-grade / SAT framing) before the questions begin.
+  if (!started) {
+    return (
+      <div className="kid-screen">
+        <div className="shell">
+          <TopMenu />
+          <h1 className="greet">Let’s find {student.first_name}’s level</h1>
+          <div className="panel">
+            <p className="muted" style={{ margin: '0 0 10px' }}>
+              A few quick questions help us start {student.first_name} at the right level — not too easy, not too
+              hard. There’s nothing to study; they just answer what they can.
+            </p>
+            <p className="muted" style={{ margin: '0 0 10px' }}>
+              Sometimes a child is ready for work beyond their grade. For example, if your 1st grader reads at a
+              3rd-grade level, we can let them move ahead. Is that okay with you?
+            </p>
+            <p className="muted" style={{ margin: 0, fontSize: 12.5 }}>
+              Either way, {student.first_name} practices at the level that fits them — your choice only controls
+              whether we show above-grade and SAT progress.
+            </p>
+          </div>
+          <button className="btn btn-navy" onClick={() => handleStart(true)}>
+            Yes — let {student.first_name} get ahead when ready
+          </button>
+          <button className="btn btn-soft" style={{ marginTop: 10 }} onClick={() => handleStart(false)}>
+            Keep it grade-focused for now
           </button>
         </div>
       </div>

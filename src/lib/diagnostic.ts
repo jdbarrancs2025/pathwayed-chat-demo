@@ -50,6 +50,8 @@ export function shouldExtend(results: DiagnosticResult[], atBand: string): boole
 
 export interface Placement {
   label: string
+  /** True when the label reflects above-grade readiness (consent gate softens it). */
+  aboveGrade: boolean
   correct: number
   total: number
 }
@@ -68,11 +70,21 @@ export function placement(results: DiagnosticResult[], atBand: string): Placemen
   const aboveFrac = fractionCorrect(results.filter((r) => BAND_ORDER.indexOf(r.band as GradeBand) > at))
   const belowFrac = fractionCorrect(results.filter((r) => BAND_ORDER.indexOf(r.band as GradeBand) < at))
 
+  // Self-contained sentences so the completion screen can show them directly
+  // (no "we'll start you <label>" framing, which doubled words like "start you
+  // starting with…"). `aboveGrade` marks labels the consent gate should soften.
   let label: string
-  if (aboveFrac !== null && aboveFrac >= 0.6) label = 'ready for above-grade challenges'
-  else if (atFrac !== null && atFrac >= EXTEND_THRESHOLD) label = 'right on grade level'
-  else if (belowFrac !== null && belowFrac >= 0.5) label = 'building grade-level foundations'
-  else label = 'starting with the core basics'
+  let aboveGrade = false
+  if (aboveFrac !== null && aboveFrac >= 0.6) {
+    label = "You're ready for some above-grade challenges."
+    aboveGrade = true
+  } else if (atFrac !== null && atFrac >= EXTEND_THRESHOLD) {
+    label = "You're right on grade level."
+  } else if (belowFrac !== null && belowFrac >= 0.5) {
+    label = "We'll build up your grade-level foundations."
+  } else {
+    label = "We'll start with the core basics."
+  }
 
-  return { label, correct, total }
+  return { label, aboveGrade, correct, total }
 }

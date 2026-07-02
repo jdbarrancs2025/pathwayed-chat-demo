@@ -89,6 +89,9 @@ export interface Database {
           // preferences (modality, pace, …). Grade band is NOT stored — it is
           // derived from `grade` via gradeBand() in src/lib/gradeBand.ts.
           learning_preferences: Json
+          // Placement (migration 0006): parent consent to show above-grade / SAT
+          // framing. Governs framing only, not whether the child advances.
+          above_grade_ok: boolean
         }
         Insert: {
           id?: string
@@ -97,6 +100,7 @@ export interface Database {
           grade: string
           level: string
           learning_preferences?: Json
+          above_grade_ok?: boolean
         }
         Update: {
           id?: string
@@ -105,6 +109,7 @@ export interface Database {
           grade?: string
           level?: string
           learning_preferences?: Json
+          above_grade_ok?: boolean
         }
         Relationships: []
       }
@@ -404,6 +409,9 @@ export interface Database {
           chosen_misconception_token: string | null
           time_ms: number | null
           created_at: string
+          // Placement (migration 0006): true for diagnostic-recorded attempts so
+          // seeding can tell them apart from real practice history.
+          is_diagnostic: boolean
         }
         Insert: {
           id?: string
@@ -416,6 +424,7 @@ export interface Database {
           chosen_misconception_token?: string | null
           time_ms?: number | null
           created_at?: string
+          is_diagnostic?: boolean
         }
         Update: {
           id?: string
@@ -428,6 +437,7 @@ export interface Database {
           chosen_misconception_token?: string | null
           time_ms?: number | null
           created_at?: string
+          is_diagnostic?: boolean
         }
         Relationships: []
       }

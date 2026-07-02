@@ -205,6 +205,8 @@ export interface QuestionAttemptInput {
   chosenMisconceptionToken: string | null
   /** Epoch ms when the question was shown; time_ms is computed here (null skips). */
   shownAtMs: number | null
+  /** True when recorded by the placement diagnostic (kept out of practice history). */
+  isDiagnostic?: boolean
 }
 
 /**
@@ -224,6 +226,7 @@ export async function recordQuestionAttempt(a: QuestionAttemptInput): Promise<vo
     chosen_choice_index: a.chosenChoiceIndex,
     chosen_misconception_token: a.chosenMisconceptionToken,
     time_ms: timeMs,
+    is_diagnostic: a.isDiagnostic ?? false,
   }
   // Surface BOTH a returned error (e.g. RLS) and a thrown rejection — the
   // fire-and-forget caller would otherwise swallow either silently.

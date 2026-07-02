@@ -53,8 +53,25 @@ export async function getStudent(id: string): Promise<Student | null> {
   return data ?? null
 }
 
-export async function createStudent(parentId: string, input: StudentInput) {
-  return supabase.from('students').insert({ parent_id: parentId, ...input })
+/** Create a child and return its new id (needed to route into placement). */
+export async function createStudent(
+  parentId: string,
+  input: StudentInput,
+): Promise<{ id: string | null; error: unknown }> {
+  const { data, error } = await supabase
+    .from('students')
+    .insert({ parent_id: parentId, ...input })
+    .select('id')
+    .single()
+  return { id: data?.id ?? null, error }
+}
+
+/**
+ * Set the per-child consent to surface above-grade / SAT framing. Placement still
+ * advances the child at their real level regardless; this governs framing only.
+ */
+export async function setAboveGradeConsent(studentId: string, ok: boolean) {
+  return supabase.from('students').update({ above_grade_ok: ok }).eq('id', studentId)
 }
 
 export async function updateStudent(id: string, input: StudentInput) {

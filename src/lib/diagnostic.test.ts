@@ -33,15 +33,21 @@ describe('placement', () => {
 
   it('counts correct/total and labels by evidence', () => {
     const aboveStrong = [r('6-8', true, 1), r('6-8', true, 2), r('9-12', true, 3), r('9-12', true, 4)]
-    expect(placement(aboveStrong, '6-8')).toEqual({ label: 'ready for above-grade challenges', correct: 4, total: 4 })
+    expect(placement(aboveStrong, '6-8')).toEqual({
+      label: "You're ready for some above-grade challenges.",
+      aboveGrade: true,
+      correct: 4,
+      total: 4,
+    })
 
     const onGrade = [r('6-8', true, 1), r('6-8', true, 2), r('6-8', true, 3), r('3-5', false, 4)]
-    expect(placement(onGrade, '6-8').label).toBe('right on grade level')
+    expect(placement(onGrade, '6-8').label).toBe("You're right on grade level.")
+    expect(placement(onGrade, '6-8').aboveGrade).toBe(false)
 
     const foundations = [r('6-8', false, 1), r('6-8', false, 2), r('3-5', true, 3), r('3-5', true, 4)]
-    expect(placement(foundations, '6-8').label).toBe('building grade-level foundations')
+    expect(placement(foundations, '6-8').label).toBe("We'll build up your grade-level foundations.")
 
     const basics = [r('6-8', false, 1), r('6-8', false, 2), r('3-5', false, 3), r('3-5', false, 4)]
-    expect(placement(basics, '6-8').label).toBe('starting with the core basics')
+    expect(placement(basics, '6-8').label).toBe("We'll start with the core basics.")
   })
 })

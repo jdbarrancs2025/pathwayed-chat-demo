@@ -163,14 +163,17 @@ export function AddChild() {
       }
     }
 
-    const { error } = await createStudent(user.id, input)
-    if (error) {
+    const { id: newId, error } = await createStudent(user.id, input)
+    if (error || !newId) {
       setErrMsg('Sorry — something went wrong saving. Please try again.')
       setSaving(false)
       setConfirmBilling(false)
       return
     }
-    navigate(returnTo, { replace: true })
+    // New child → run the one-time placement diagnostic (consent + adaptive
+    // questions + seeding), which lands on the child's dashboard when finished.
+    // Existing children are never re-created, so they're never force-placed.
+    navigate(`/students/${newId}/diagnostic`, { replace: true })
   }
 
   return (

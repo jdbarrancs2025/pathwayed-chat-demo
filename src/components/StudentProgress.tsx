@@ -42,11 +42,14 @@ export function StudentProgress({
   studentId,
   grade,
   onOpenSubject,
+  showAdvancedFraming = false,
 }: {
   studentId: string
   grade: string
   /** Deep-link into a subject session from a Today's Plan item. */
   onOpenSubject: (subject: string) => void
+  /** Parent consent to surface above-grade / SAT framing (placement Phase 3). */
+  showAdvancedFraming?: boolean
 }) {
   const [view, setView] = useState<StudentMasteryView | null>(null)
   const [readiness, setReadiness] = useState<ReadinessView | null>(null)
@@ -172,7 +175,9 @@ export function StudentProgress({
         </h3>
         <p className="muted">A grade-level readiness score is coming in a later phase.</p>
       </section>
-      <SatReadiness payload={sat} grade={grade} variant="student" />
+      {/* SAT / above-grade framing is gated on parent consent (placement Phase 3).
+          Mastery + Today's Plan above still reflect the child's real level. */}
+      {showAdvancedFraming && <SatReadiness payload={sat} grade={grade} variant="student" />}
     </div>
   )
 }
