@@ -75,17 +75,20 @@ export const PERCENT_OF: MathTemplate = {
     answerFormat: 'integer',
     solutionTemplate: '${p}\\%$ of ${n}$ is $\\frac{{p}}{100} \\times {n} = {answer}$.',
   },
-  // KNOWN STAGE-2 LIMITATION (magnitude guessability): these distractors are
-  // fixed multiples of the answer — decimal-place-error is always exactly 10x
-  // (so always the largest option) and halved-the-base always 2x. A student can
-  // eliminate by magnitude without doing the math; real distractors cluster
-  // nearer the answer. Leave functional for now; improve when we build smarter,
-  // answer-relative distractor strategies (e.g. ±10–20%, near-miss arithmetic).
+  // Distractors cluster NEAR the answer so it can't be picked by size (the old
+  // set was a magnitude ladder — a fixed 10x and 2x that made the answer always
+  // the smallest). Because p is a multiple of 5 and n a multiple of 20, n/20 is
+  // an integer 1-10, so (p±5)% of n lands exactly one 5-point step above/below
+  // the answer (answer ± n/20) and is ALWAYS a distinct integer. The complement
+  // ("% off" vs "% of") is the one conceptual trap; its size varies with p and it
+  // only collides with the answer at p=50, where the backups fill in. Every token
+  // stays a real, explainable misconception (used by the Stage-4 explanations).
   distractorSpec: [
-    { formula: 'p * n / 10', misconception_token: 'decimal-place-error' }, // 10x too big
-    { formula: 'n - p * n / 100', misconception_token: 'complement-instead-of-percent' }, // "% off" vs "% of"
-    { formula: 'p * n / 50', misconception_token: 'halved-the-base' }, // /50 instead of /100
-    { formula: 'p', misconception_token: 'answered-the-percent' }, // backup pattern
+    { formula: '(p + 5) * n / 100', misconception_token: 'overstated-the-percent' }, // answer + n/20 (a step high)
+    { formula: '(p - 5) * n / 100', misconception_token: 'understated-the-percent' }, // answer - n/20 (a step low)
+    { formula: 'n - p * n / 100', misconception_token: 'complement-instead-of-percent' }, // took p% OFF, not OF
+    { formula: '(p + 10) * n / 100', misconception_token: 'overstated-the-percent' }, // backup for the p=50 collision
+    { formula: 'p', misconception_token: 'answered-the-percent' }, // backup: gave the percent itself
   ],
 }
 

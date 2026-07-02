@@ -35,7 +35,7 @@ values
    (select id from public.skills where slug = 'percentages'),
    'problem-solving-data-analysis', 'easy', 'template_math',
    $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is ${p}\\%$ of ${n}$?","slots":[{"name":"p","min":5,"max":90,"step":5},{"name":"n","min":20,"max":200,"step":20}],"answerFormula":"p * n / 100","answerFormat":"integer","solutionTemplate":"${p}\\%$ of ${n}$ is $\\frac{{p}}{100} \\times {n} = {answer}$."}$q$::jsonb,
-   $q$[{"formula":"p * n / 10","misconception_token":"decimal-place-error"},{"formula":"n - p * n / 100","misconception_token":"complement-instead-of-percent"},{"formula":"p * n / 50","misconception_token":"halved-the-base"},{"formula":"p","misconception_token":"answered-the-percent"}]$q$::jsonb,
+   $q$[{"formula":"(p + 5) * n / 100","misconception_token":"overstated-the-percent"},{"formula":"(p - 5) * n / 100","misconception_token":"understated-the-percent"},{"formula":"n - p * n / 100","misconception_token":"complement-instead-of-percent"},{"formula":"(p + 10) * n / 100","misconception_token":"overstated-the-percent"},{"formula":"p","misconception_token":"answered-the-percent"}]$q$::jsonb,
    'published', 1)
 on conflict (code) do update set
   skill_id        = excluded.skill_id,
