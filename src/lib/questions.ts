@@ -169,6 +169,28 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   return skills.sort((a, b) => orderOf(a.subject) - orderOf(b.subject) || a.name.localeCompare(b.name))
 }
 
+/**
+ * The next skill to "keep going" on: the lowest-mastery PRACTICEABLE skill for
+ * this student (highest-leverage next step, matching the coach's weakest-skill
+ * focus, using the seeded/earned mastery). Falls back to the first practiceable
+ * skill when the student has no mastery yet. Returns null only if nothing is
+ * practiceable. Best-effort.
+ */
+export async function nextPracticeSkill(studentId: string): Promise<PracticeableSkill | null> {
+  const practiceable = await listPracticeableSkills()
+  if (!practiceable.length) return null
+  const { data, error } = await supabase
+    .from('student_skill_mastery')
+    .select('skill_id, mastery_percentage')
+    .eq('student_id', studentId)
+  if (error) console.error('nextPracticeSkill: mastery read failed', error)
+  const masteryById = new Map<string, number>()
+  for (const m of data ?? []) masteryById.set(m.skill_id, Number(m.mastery_percentage))
+  const practiced = practiceable.filter((s) => masteryById.has(s.skill_id))
+  const pool = practiced.length ? practiced : practiceable
+  return [...pool].sort((a, b) => (masteryById.get(a.skill_id) ?? 0) - (masteryById.get(b.skill_id) ?? 0))[0] ?? null
+}
+
 // --- Read path: placement diagnostic set -------------------------------------
 
 /** A diagnostic item carries its skill's grade_band so the page can score by band. */

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, gradeLabel, levelLabel, type Student } from '@/lib/students'
-import { SUBJECTS, HOMEWORK } from '@/lib/subjects'
+import { SUBJECTS } from '@/lib/subjects'
 import { listSavedSubjects } from '@/lib/sessions'
+import { nextPracticeSkill, type PracticeableSkill } from '@/lib/questions'
 import { TopMenu } from '@/components/TopMenu'
 import { StudentProgress } from '@/components/StudentProgress'
 import { PracticeSkills } from '@/components/PracticeSkills'
+import { SessionOpener } from '@/components/SessionOpener'
 import '@/styles/app-screens.css'
 
 export function KidHome() {
@@ -13,12 +15,13 @@ export function KidHome() {
   const navigate = useNavigate()
   const [student, setStudent] = useState<Student | null>(null)
   const [savedSubjects, setSavedSubjects] = useState<Set<string>>(new Set())
+  const [nextSkill, setNextSkill] = useState<PracticeableSkill | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
     let active = true
-    Promise.all([getStudent(id), listSavedSubjects(id)]).then(([s, subjects]) => {
+    Promise.all([getStudent(id), listSavedSubjects(id), nextPracticeSkill(id)]).then(([s, subjects, next]) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
@@ -26,6 +29,7 @@ export function KidHome() {
       }
       setStudent(s)
       setSavedSubjects(new Set(subjects))
+      setNextSkill(next)
       setLoading(false)
     })
     return () => {
@@ -51,8 +55,13 @@ export function KidHome() {
         <TopMenu />
 
         <h1 className="greet">Hi, {student.first_name}.</h1>
-        <p className="muted">What do you want to work on today?</p>
+        <p className="muted">What’s the plan today?</p>
 
+        {/* Session opener — the branch: homework help vs. keep going at their
+            real level, with re-checking always available. */}
+        <SessionOpener studentId={student.id} studentName={student.first_name} nextSkill={nextSkill} />
+
+        <p className="muted opener-more">Or pick a subject to learn something new:</p>
         <div className="subjects">
           {SUBJECTS.map((s) => (
             <button key={s.id} className="subject" onClick={() => open(s.id)}>
@@ -67,19 +76,6 @@ export function KidHome() {
             </button>
           ))}
         </div>
-
-        <button className="bigcard" onClick={() => open('homework')}>
-          {savedSubjects.has('homework') && <span className="resume">Continue</span>}
-          <div
-            className="ico"
-            style={{ background: HOMEWORK.accent }}
-            dangerouslySetInnerHTML={{ __html: HOMEWORK.icon }}
-          />
-          <div>
-            <h3>{HOMEWORK.name}</h3>
-            <p>{HOMEWORK.blurb}</p>
-          </div>
-        </button>
 
         <PracticeSkills studentId={student.id} />
 
