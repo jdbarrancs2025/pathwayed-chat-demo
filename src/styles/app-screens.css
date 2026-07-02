@@ -1718,6 +1718,18 @@
 .practice-verdict.soft {
   color: var(--navy);
 }
+/* Misconception-specific nudge for a wrong answer (Stage 4). Warm, encouraging
+   callout — a helpful tip, not a scolding. */
+.practice-explain {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #8a4b1f;
+  background: #fdf1e3;
+  border-left: 3px solid var(--orange);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0;
+}
 .practice-solution {
   font-size: 15px;
   line-height: 1.5;

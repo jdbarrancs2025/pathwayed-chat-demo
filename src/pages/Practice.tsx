@@ -9,6 +9,7 @@ import {
   type PracticeQuestion,
 } from '@/lib/questions'
 import { recordPracticeResult } from '@/lib/skills'
+import { explainMisconception } from '@/lib/misconceptions'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
@@ -151,6 +152,11 @@ export function Practice() {
   const current = questions[index]
   const answered = selected !== null
   const lastResult = results[results.length - 1]
+  // For a wrong answer, a nudge targeted at the specific mistake the student made
+  // (from the chosen choice's misconception token), shown instead of just "the answer is N".
+  const chosenChoice = selected !== null ? current.choices[selected] : undefined
+  const mistakeHint =
+    answered && !lastResult?.isCorrect ? explainMisconception(chosenChoice?.misconception_token) : null
 
   return (
     <div className="kid-screen">
@@ -185,6 +191,7 @@ export function Practice() {
               <p className={`practice-verdict ${lastResult?.isCorrect ? 'good' : 'soft'}`}>
                 {lastResult?.isCorrect ? 'Correct! 🎉' : `Good try — the answer is ${current.correct_answer}.`}
               </p>
+              {mistakeHint && <p className="practice-explain">{mistakeHint}</p>}
               {current.solution && (
                 <div className="practice-solution">
                   <MathText content={current.solution} />
