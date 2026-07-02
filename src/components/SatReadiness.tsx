@@ -1,4 +1,5 @@
 import type { SatProjectionPayload } from '@/lib/readiness'
+import { satPacingTone } from '@/lib/satFraming'
 
 /**
  * Shared SAT Readiness presentation for BOTH surfaces — the student dashboard
@@ -24,6 +25,24 @@ import type { SatProjectionPayload } from '@/lib/readiness'
 const METHODOLOGY = 'Projected from demonstrated mastery, refined as your child practices.'
 const TRAJECTORY_DISCLAIMER =
   'Junior-year potential is where they could land if they master weak and untouched skills — a potential, not a prediction.'
+
+// Pacing message: readiness comes from MASTERING the material, not from reaching a
+// grade. "Ready by 11th" is a target, not a gate — a strong-mastery student is
+// ready early. Two honest, encouraging variants (no numbers), chosen by tone.
+const PACING: Record<Variant, Record<'ahead' | 'building', string>> = {
+  student: {
+    ahead:
+      "You're ahead of the usual pace! Readiness comes from mastering the skills, not waiting for a grade — keep it up and you'll be ready early.",
+    building:
+      "Readiness comes from mastering the skills, not reaching a certain grade. Master them and you're ready — as soon as that takes you, not a moment later.",
+  },
+  parent: {
+    ahead:
+      'Ahead of the usual pace — readiness comes from mastered skills, not a grade. A strong-mastery student is ready early, ahead of the typical junior-year timeline.',
+    building:
+      "Readiness comes from mastered skills, not a grade. As your child masters the material they become ready — potentially ahead of the typical junior-year timeline, never held to it.",
+  },
+}
 
 type Band = 'foundation' | 'college' | 'sat'
 type Variant = 'student' | 'parent'
@@ -152,6 +171,9 @@ export function SatReadiness({
               {payload.trajectory!.low}&ndash;{payload.trajectory!.high}
             </span>
           </div>
+          <p className={`sat-pacing${satPacingTone(payload.overallPct) === 'ahead' ? ' ahead' : ''}`}>
+            {PACING[variant][satPacingTone(payload.overallPct)]}
+          </p>
           <p className="sat-note">{TRAJECTORY_DISCLAIMER}</p>
           <p className="sat-method">{METHODOLOGY}</p>
         </div>
