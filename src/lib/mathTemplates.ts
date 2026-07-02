@@ -127,7 +127,111 @@ export const MULTIPLICATION_BASIC: MathTemplate = {
   ],
 }
 
-export const MATH_TEMPLATES: MathTemplate[] = [LINEAR_EQUATION_SOLVE, PERCENT_OF, MULTIPLICATION_BASIC]
+// Grades 3-5: basic division facts. The quotient q and divisor b are drawn and
+// the dividend a = b·q is derived, so a ÷ b is always a clean integer. Bridged to
+// PSDA (seed 0002). Distractors stay near the answer (q±1) with one operation-
+// confusion trap (subtracting instead of dividing); no magnitude ladder.
+export const DIVISION_BASIC: MathTemplate = {
+  code: 'division-basic-easy-v1',
+  skillSlug: 'division',
+  satAlignment: 'problem-solving-data-analysis',
+  difficulty: 'easy',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'What is ${a} \\div {b}$?',
+    slots: [
+      { name: 'b', min: 2, max: 12 },
+      { name: 'q', min: 2, max: 12 },
+    ],
+    derived: [{ name: 'a', formula: 'b * q' }],
+    answerFormula: 'q',
+    answerFormat: 'integer',
+    solutionTemplate: '${a} \\div {b} = {answer}$, because ${b} \\times {answer} = {a}$.',
+  },
+  distractorSpec: [
+    { formula: 'q + 1', misconception_token: 'quotient-too-high' }, // one too many (near)
+    { formula: 'q - 1', misconception_token: 'quotient-too-low' }, // one too few (near)
+    { formula: 'a - b', misconception_token: 'subtracted-instead-of-divided' }, // wrong operation
+    { formula: 'q + 2', misconception_token: 'quotient-too-high' }, // backup
+    { formula: 'b', misconception_token: 'answered-the-divisor' }, // backup
+  ],
+}
+
+// Grades 3-5: a fraction OF a whole number. a/b with a<b (proper), and n = b·k so
+// a/b of n = a·k is always an integer. Bridged to PSDA. Distractors: one numerator
+// off in each direction (near), plus the "other part" (b-a)/b as the conceptual
+// trap; backups cover the whole (n) and a wider miss.
+export const FRACTION_OF_NUMBER: MathTemplate = {
+  code: 'fraction-of-number-easy-v1',
+  skillSlug: 'fractions',
+  satAlignment: 'problem-solving-data-analysis',
+  difficulty: 'easy',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'What is $\\frac{{a}}{{b}}$ of ${n}$?',
+    slots: [
+      { name: 'a', min: 1, max: 5 },
+      { name: 'b', min: 2, max: 6 },
+      { name: 'k', min: 2, max: 12 },
+    ],
+    derived: [{ name: 'n', formula: 'b * k' }],
+    answerFormula: 'a * k',
+    answerFormat: 'integer',
+    constraints: ['a < b'],
+    solutionTemplate:
+      'One part is ${n} \\div {b} = {k}$, so $\\frac{{a}}{{b}}$ of ${n}$ is ${a} \\times {k} = {answer}$.',
+  },
+  distractorSpec: [
+    { formula: '(a + 1) * k', misconception_token: 'numerator-too-high' }, // a step high (near)
+    { formula: '(a - 1) * k', misconception_token: 'numerator-too-low' }, // a step low (near)
+    { formula: '(b - a) * k', misconception_token: 'used-the-other-part' }, // took the complement fraction
+    { formula: 'n', misconception_token: 'answered-the-whole' }, // backup: gave the whole
+    { formula: '(a + 2) * k', misconception_token: 'numerator-too-high' }, // backup
+  ],
+}
+
+// Grades 3-5: area of a rectangle (L·W). Bridged to geometry-trigonometry. The
+// headline distractor is the classic area/perimeter confusion (2(L+W)); the other
+// two are one row/column off (near the answer). No magnitude ladder.
+export const RECTANGLE_AREA: MathTemplate = {
+  code: 'rectangle-area-easy-v1',
+  skillSlug: 'geometry',
+  satAlignment: 'geometry-trigonometry',
+  difficulty: 'easy',
+  generationSpec: {
+    kind: 'template_math',
+    schemaVersion: 1,
+    responseType: 'multiple_choice',
+    stemTemplate: 'A rectangle is ${L}$ units long and ${W}$ units wide. What is its area, in square units?',
+    slots: [
+      { name: 'L', min: 2, max: 12 },
+      { name: 'W', min: 2, max: 12 },
+    ],
+    answerFormula: 'L * W',
+    answerFormat: 'integer',
+    solutionTemplate: 'Area is length times width: ${L} \\times {W} = {answer}$ square units.',
+  },
+  distractorSpec: [
+    { formula: 'L * W + L', misconception_token: 'miscounted-a-row' }, // one row too many (near)
+    { formula: 'L * W - W', misconception_token: 'miscounted-a-column' }, // one column short (near)
+    { formula: '2 * (L + W)', misconception_token: 'confused-area-perimeter' }, // gave the perimeter
+    { formula: 'L + W', misconception_token: 'added-instead-of-multiplied' }, // backup
+    { formula: 'L * W + W', misconception_token: 'miscounted-a-row' }, // backup
+  ],
+}
+
+export const MATH_TEMPLATES: MathTemplate[] = [
+  LINEAR_EQUATION_SOLVE,
+  PERCENT_OF,
+  MULTIPLICATION_BASIC,
+  DIVISION_BASIC,
+  FRACTION_OF_NUMBER,
+  RECTANGLE_AREA,
+]
 
 // Questions cached per template (deterministic seeds 1..N).
 export const QUESTIONS_PER_TEMPLATE = 20

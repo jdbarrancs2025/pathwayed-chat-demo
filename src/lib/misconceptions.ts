@@ -38,6 +38,34 @@ const EXPLANATIONS: Record<string, string> = {
   'added-instead-of-multiplied':
     'It looks like you added the two numbers. This one asks you to multiply them — think of it as groups of.',
 
+  // division-basic
+  'quotient-too-high':
+    'So close — that is a little too high. Ask yourself: how many times does the smaller number fit into the bigger one?',
+  'quotient-too-low':
+    'So close — that is a little too low. Count how many times the smaller number fits into the bigger one.',
+  'subtracted-instead-of-divided':
+    'It looks like you subtracted. This one asks you to divide — how many equal groups can you make?',
+  'answered-the-divisor':
+    'That is the number you are dividing by, not the answer. Try: how many of it fit into the total?',
+
+  // fraction-of-number
+  'numerator-too-high':
+    'Close! That is a bit too much. Split the number into equal parts first, then take exactly the number of parts on top of the fraction.',
+  'numerator-too-low':
+    'So close — that is a bit too little. Take one more of the equal parts.',
+  'used-the-other-part':
+    'That is the other part of the whole. The top number of the fraction tells you how many parts to take — count those.',
+  'answered-the-whole':
+    'That is the whole amount. The fraction asks for just part of it — split it into equal parts first, then take some.',
+
+  // rectangle-area
+  'miscounted-a-row':
+    'Almost! It looks like you counted one extra row. Multiply the exact length and width.',
+  'miscounted-a-column':
+    'Almost! It looks like you missed a column. Multiply the exact length and width.',
+  'confused-area-perimeter':
+    'That is the perimeter — the distance around the edge. Area is the space inside: multiply length times width.',
+
   // retired percent tokens (kept so pre-Stage-6 questions / historical attempts
   // still get a targeted explanation)
   'decimal-place-error':

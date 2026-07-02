@@ -1094,4 +1094,1090 @@ on conflict (id) do update set
   solution       = excluded.solution,
   status         = excluded.status;
 
+-- division-basic-easy-v1 (problem-solving-data-analysis, easy) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('69d95301-464f-58ce-8dae-1a50bf0f5a45',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $56 \div 8$?$q$, $q$[{"text":"48","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"6","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"8","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"7","is_correct":true}]$q$::jsonb, '7', $q$$56 \div 8 = 7$, because $8 \times 7 = 56$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0f7e2326-a46b-5847-aa9f-36e52a91b180',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $88 \div 11$?$q$, $q$[{"text":"8","is_correct":true},{"text":"7","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"9","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"77","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '8', $q$$88 \div 11 = 8$, because $11 \times 8 = 88$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8be9ba6b-4450-52fd-ae4a-65fb2fdc7328',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $24 \div 4$?$q$, $q$[{"text":"5","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"6","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"7","is_correct":false,"misconception_token":"quotient-too-high"}]$q$::jsonb, '6', $q$$24 \div 4 = 6$, because $4 \times 6 = 24$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2c9e2d28-1061-51d0-9879-193f0dc28cd2',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $100 \div 10$?$q$, $q$[{"text":"11","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"9","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"10","is_correct":true},{"text":"90","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '10', $q$$100 \div 10 = 10$, because $10 \times 10 = 100$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c6025b2f-d84d-5d67-891d-ec2bb19fec81',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $44 \div 4$?$q$, $q$[{"text":"40","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"10","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"11","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"quotient-too-high"}]$q$::jsonb, '11', $q$$44 \div 4 = 11$, because $4 \times 11 = 44$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3c24245d-883c-5f64-9387-8a3c40177cb1',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $22 \div 11$?$q$, $q$[{"text":"11","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"3","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"2","is_correct":true},{"text":"1","is_correct":false,"misconception_token":"quotient-too-low"}]$q$::jsonb, '2', $q$$22 \div 11 = 2$, because $11 \times 2 = 22$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8c657e03-ac11-5c43-97f5-e41f10cb31c2',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $27 \div 9$?$q$, $q$[{"text":"3","is_correct":true},{"text":"2","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"4","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"18","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '3', $q$$27 \div 9 = 3$, because $9 \times 3 = 27$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('964f3a9c-7fb2-5495-a089-a51c073047a2',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $90 \div 9$?$q$, $q$[{"text":"10","is_correct":true},{"text":"81","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"11","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"9","is_correct":false,"misconception_token":"quotient-too-low"}]$q$::jsonb, '10', $q$$90 \div 9 = 10$, because $9 \times 10 = 90$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b8b71d2f-7de3-5053-a12c-d311f3ada2fe',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $30 \div 10$?$q$, $q$[{"text":"3","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"2","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"4","is_correct":false,"misconception_token":"quotient-too-high"}]$q$::jsonb, '3', $q$$30 \div 10 = 3$, because $10 \times 3 = 30$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('adcac9ec-e8b9-54e7-a8b9-58aa25e246ee',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $44 \div 11$?$q$, $q$[{"text":"4","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"33","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"3","is_correct":false,"misconception_token":"quotient-too-low"}]$q$::jsonb, '4', $q$$44 \div 11 = 4$, because $11 \times 4 = 44$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('661e3310-4e2c-5902-8ebf-e62f79bc8e26',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $20 \div 4$?$q$, $q$[{"text":"5","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"6","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"4","is_correct":false,"misconception_token":"quotient-too-low"}]$q$::jsonb, '5', $q$$20 \div 4 = 5$, because $4 \times 5 = 20$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ca00b161-997f-51d2-8695-6f5ae2993c06',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $80 \div 8$?$q$, $q$[{"text":"72","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"9","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"11","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"10","is_correct":true}]$q$::jsonb, '10', $q$$80 \div 8 = 10$, because $8 \times 10 = 80$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c8989f58-c109-5355-952a-ea1b208504d2',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $50 \div 10$?$q$, $q$[{"text":"5","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"4","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"40","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '5', $q$$50 \div 10 = 5$, because $10 \times 5 = 50$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0add043d-888e-5e93-9e59-0a68c0af3e62',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $24 \div 2$?$q$, $q$[{"text":"12","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"13","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"11","is_correct":false,"misconception_token":"quotient-too-low"}]$q$::jsonb, '12', $q$$24 \div 2 = 12$, because $2 \times 12 = 24$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9ea3532a-2ee0-5a9c-a8ae-6fdd44d4fdf7',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $54 \div 6$?$q$, $q$[{"text":"10","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"8","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"9","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '9', $q$$54 \div 6 = 9$, because $6 \times 9 = 54$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9dd9df72-b031-5554-828b-39b8103c1387',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $21 \div 3$?$q$, $q$[{"text":"8","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"6","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"18","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"7","is_correct":true}]$q$::jsonb, '7', $q$$21 \div 3 = 7$, because $3 \times 7 = 21$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('51dc4172-6a85-59a6-9142-7d1ed79a1e26',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $110 \div 10$?$q$, $q$[{"text":"11","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"100","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"10","is_correct":false,"misconception_token":"quotient-too-low"}]$q$::jsonb, '11', $q$$110 \div 10 = 11$, because $10 \times 11 = 110$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3345da97-6a2f-5194-8a3d-cfa9324b2b0f',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $48 \div 12$?$q$, $q$[{"text":"5","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"36","is_correct":false,"misconception_token":"subtracted-instead-of-divided"},{"text":"3","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"4","is_correct":true}]$q$::jsonb, '4', $q$$48 \div 12 = 4$, because $12 \times 4 = 48$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('57101c96-a75e-5e72-9c0d-d278545b3bff',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $28 \div 4$?$q$, $q$[{"text":"7","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"8","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"24","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '7', $q$$28 \div 4 = 7$, because $4 \times 7 = 28$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dc8b0fc7-8e32-5eec-b0e6-57f5d4ba8f28',
+   (select id from public.question_templates where code = 'division-basic-easy-v1'),
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $16 \div 4$?$q$, $q$[{"text":"4","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"quotient-too-high"},{"text":"3","is_correct":false,"misconception_token":"quotient-too-low"},{"text":"12","is_correct":false,"misconception_token":"subtracted-instead-of-divided"}]$q$::jsonb, '4', $q$$16 \div 4 = 4$, because $4 \times 4 = 16$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- fraction-of-number-easy-v1 (problem-solving-data-analysis, easy) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ca2af15c-c923-5105-af74-c5c0eac382e4',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{3}{4}$ of $16$?$q$, $q$[{"text":"12","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"8","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '12', $q$One part is $16 \div 4 = 4$, so $\frac{3}{4}$ of $16$ is $3 \times 4 = 12$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b05680b7-ba2c-5a8d-bac0-9e476faacfa2',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{3}{5}$ of $30$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"18","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"24","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '18', $q$One part is $30 \div 5 = 6$, so $\frac{3}{5}$ of $30$ is $3 \times 6 = 18$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ee447c75-1583-5cae-8235-ed7b6d3f9816',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{2}{4}$ of $28$?$q$, $q$[{"text":"28","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"7","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"14","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '14', $q$One part is $28 \div 4 = 7$, so $\frac{2}{4}$ of $28$ is $2 \times 7 = 14$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9fa968cb-dcf8-5e94-a14c-86543b29406e',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{4}{5}$ of $60$?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"60","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"48","is_correct":true}]$q$::jsonb, '48', $q$One part is $60 \div 5 = 12$, so $\frac{4}{5}$ of $60$ is $4 \times 12 = 48$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9acb6005-7a74-52e4-84b6-0a75708527db',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{2}{6}$ of $30$?$q$, $q$[{"text":"15","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"5","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"20","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"10","is_correct":true}]$q$::jsonb, '10', $q$One part is $30 \div 6 = 5$, so $\frac{2}{6}$ of $30$ is $2 \times 5 = 10$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fc904f7c-744f-5c9c-bcf5-a0785b8a3b9c',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{1}{4}$ of $32$?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"24","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"8","is_correct":true}]$q$::jsonb, '8', $q$One part is $32 \div 4 = 8$, so $\frac{1}{4}$ of $32$ is $1 \times 8 = 8$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9c0f1425-3ccd-58ff-8beb-2262380928fa',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{2}{6}$ of $12$?$q$, $q$[{"text":"2","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"8","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":true}]$q$::jsonb, '4', $q$One part is $12 \div 6 = 2$, so $\frac{2}{6}$ of $12$ is $2 \times 2 = 4$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c6305fa6-499e-5895-ae18-5c42291dbaaf',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{3}{6}$ of $60$?$q$, $q$[{"text":"40","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"60","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"20","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"30","is_correct":true}]$q$::jsonb, '30', $q$One part is $60 \div 6 = 10$, so $\frac{3}{6}$ of $60$ is $3 \times 10 = 30$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('de9b9cc3-5327-5428-82b9-667da6594d01',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{4}{5}$ of $45$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"27","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '36', $q$One part is $45 \div 5 = 9$, so $\frac{4}{5}$ of $45$ is $4 \times 9 = 36$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('84d41252-4cbd-508c-87bd-71a44b213960',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{5}{6}$ of $72$?$q$, $q$[{"text":"72","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"48","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"60","is_correct":true}]$q$::jsonb, '60', $q$One part is $72 \div 6 = 12$, so $\frac{5}{6}$ of $72$ is $5 \times 12 = 60$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('506b9ae6-bb19-5d89-9c97-f85e8ec86b6b',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{1}{3}$ of $12$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"8","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":true},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '4', $q$One part is $12 \div 3 = 4$, so $\frac{1}{3}$ of $12$ is $1 \times 4 = 4$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4a417092-a549-545d-9703-092ab5056bd3',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{2}{3}$ of $21$?$q$, $q$[{"text":"28","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"14","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"7","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '14', $q$One part is $21 \div 3 = 7$, so $\frac{2}{3}$ of $21$ is $2 \times 7 = 14$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0bc6efd6-b43f-5479-8ac5-bda19ccb7885',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{3}{5}$ of $15$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"9","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '9', $q$One part is $15 \div 5 = 3$, so $\frac{3}{5}$ of $15$ is $3 \times 3 = 9$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8e029139-ab5a-5bc1-bada-aaf253ae1d3a',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{4}{5}$ of $25$?$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"20","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"15","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '20', $q$One part is $25 \div 5 = 5$, so $\frac{4}{5}$ of $25$ is $4 \times 5 = 20$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9297dd2a-c30b-5376-83e2-f22e7944ba5e',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{1}{6}$ of $54$?$q$, $q$[{"text":"9","is_correct":true},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"45","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"18","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '9', $q$One part is $54 \div 6 = 9$, so $\frac{1}{6}$ of $54$ is $1 \times 9 = 9$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0ac3f969-bc61-58bb-800b-80dc88f62ea9',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{3}{5}$ of $55$?$q$, $q$[{"text":"22","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"33","is_correct":true},{"text":"55","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"44","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '33', $q$One part is $55 \div 5 = 11$, so $\frac{3}{5}$ of $55$ is $3 \times 11 = 33$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f8878341-4897-56dd-a086-6c2a6531fb5a',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{1}{4}$ of $12$?$q$, $q$[{"text":"3","is_correct":true},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"9","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '3', $q$One part is $12 \div 4 = 3$, so $\frac{1}{4}$ of $12$ is $1 \times 3 = 3$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9014a542-c21a-58c4-b847-866c8f9225d3',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{4}{6}$ of $54$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":true},{"text":"27","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"18","is_correct":false,"misconception_token":"used-the-other-part"}]$q$::jsonb, '36', $q$One part is $54 \div 6 = 9$, so $\frac{4}{6}$ of $54$ is $4 \times 9 = 36$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('69c2e9b0-95ef-5e1c-825f-27f7d54fd055',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{2}{4}$ of $48$?$q$, $q$[{"text":"48","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"12","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"24","is_correct":true},{"text":"36","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '24', $q$One part is $48 \div 4 = 12$, so $\frac{2}{4}$ of $48$ is $2 \times 12 = 24$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('262881fa-ca05-574f-972d-266cc61bae66',
+   (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy',
+   $q$What is $\frac{1}{2}$ of $24$?$q$, $q$[{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"12","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '12', $q$One part is $24 \div 2 = 12$, so $\frac{1}{2}$ of $24$ is $1 \times 12 = 12$.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- rectangle-area-easy-v1 (geometry-trigonometry, easy) — questions 1..20
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4b49e22f-4c1a-505e-95bd-6080c1193eca',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $8$ units long and $7$ units wide. What is its area, in square units?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"49","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"64","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"56","is_correct":true}]$q$::jsonb, '56', $q$Area is length times width: $8 \times 7 = 56$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('03977d61-5912-5c0f-95f4-e47280dacb5f',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $11$ units long and $8$ units wide. What is its area, in square units?$q$, $q$[{"text":"88","is_correct":true},{"text":"80","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"99","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"38","is_correct":false,"misconception_token":"confused-area-perimeter"}]$q$::jsonb, '88', $q$Area is length times width: $11 \times 8 = 88$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('af334cd9-92c3-5866-af1b-01da18dd0103',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $4$ units long and $6$ units wide. What is its area, in square units?$q$, $q$[{"text":"18","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"24","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"28","is_correct":false,"misconception_token":"miscounted-a-row"}]$q$::jsonb, '24', $q$Area is length times width: $4 \times 6 = 24$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('df4dd114-8364-56ef-9b43-7b46312c810a',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $10$ units long and $10$ units wide. What is its area, in square units?$q$, $q$[{"text":"110","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"90","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"100","is_correct":true},{"text":"40","is_correct":false,"misconception_token":"confused-area-perimeter"}]$q$::jsonb, '100', $q$Area is length times width: $10 \times 10 = 100$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('34157491-df0b-5abb-898a-a98a65550610',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $4$ units long and $11$ units wide. What is its area, in square units?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"33","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"44","is_correct":true},{"text":"48","is_correct":false,"misconception_token":"miscounted-a-row"}]$q$::jsonb, '44', $q$Area is length times width: $4 \times 11 = 44$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('62463e0f-b6df-566d-b7bb-b1a74ad01948',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $11$ units long and $2$ units wide. What is its area, in square units?$q$, $q$[{"text":"26","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"33","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"22","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"miscounted-a-column"}]$q$::jsonb, '22', $q$Area is length times width: $11 \times 2 = 22$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('51716c2a-8c75-5cf1-a191-a15c77ae2eac',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $9$ units long and $3$ units wide. What is its area, in square units?$q$, $q$[{"text":"27","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"36","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"12","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]$q$::jsonb, '27', $q$Area is length times width: $9 \times 3 = 27$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b5a85eef-60b9-5a1d-b11c-e16fab64505a',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $9$ units long and $10$ units wide. What is its area, in square units?$q$, $q$[{"text":"90","is_correct":true},{"text":"38","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"99","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"80","is_correct":false,"misconception_token":"miscounted-a-column"}]$q$::jsonb, '90', $q$Area is length times width: $9 \times 10 = 90$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('36685a2d-190b-5f8f-bbbf-8aa2b1164225',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $10$ units long and $3$ units wide. What is its area, in square units?$q$, $q$[{"text":"30","is_correct":true},{"text":"26","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"27","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"40","is_correct":false,"misconception_token":"miscounted-a-row"}]$q$::jsonb, '30', $q$Area is length times width: $10 \times 3 = 30$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('481773c0-e19b-59c3-86c4-054c6c4d59a5',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $11$ units long and $4$ units wide. What is its area, in square units?$q$, $q$[{"text":"44","is_correct":true},{"text":"55","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"30","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"40","is_correct":false,"misconception_token":"miscounted-a-column"}]$q$::jsonb, '44', $q$Area is length times width: $11 \times 4 = 44$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('1d9f897d-27bb-53ff-acef-70d8bdf2fcf2',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $4$ units long and $5$ units wide. What is its area, in square units?$q$, $q$[{"text":"20","is_correct":true},{"text":"18","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"24","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"15","is_correct":false,"misconception_token":"miscounted-a-column"}]$q$::jsonb, '20', $q$Area is length times width: $4 \times 5 = 20$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('692ff8f9-9dd8-576d-a422-077314e7b4c0',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $8$ units long and $10$ units wide. What is its area, in square units?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"70","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"88","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"80","is_correct":true}]$q$::jsonb, '80', $q$Area is length times width: $8 \times 10 = 80$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c43d9a6f-62e6-5f23-87bc-b4025c2bd6a2',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $10$ units long and $5$ units wide. What is its area, in square units?$q$, $q$[{"text":"50","is_correct":true},{"text":"60","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"45","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"30","is_correct":false,"misconception_token":"confused-area-perimeter"}]$q$::jsonb, '50', $q$Area is length times width: $10 \times 5 = 50$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('02d4b528-55b3-590e-aa68-0015f1124220',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $2$ units long and $12$ units wide. What is its area, in square units?$q$, $q$[{"text":"24","is_correct":true},{"text":"28","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"26","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"12","is_correct":false,"misconception_token":"miscounted-a-column"}]$q$::jsonb, '24', $q$Area is length times width: $2 \times 12 = 24$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5a799ed0-b4f1-5b19-89b0-b21cb8553da5',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $6$ units long and $9$ units wide. What is its area, in square units?$q$, $q$[{"text":"60","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"45","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"54","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"confused-area-perimeter"}]$q$::jsonb, '54', $q$Area is length times width: $6 \times 9 = 54$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f8a39449-86ce-5136-8a2e-269c5fdddafb',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $3$ units long and $7$ units wide. What is its area, in square units?$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"14","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"20","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"21","is_correct":true}]$q$::jsonb, '21', $q$Area is length times width: $3 \times 7 = 21$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('bfa603bb-b4ee-5dcc-899f-a2dc3a5491c7',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $10$ units long and $11$ units wide. What is its area, in square units?$q$, $q$[{"text":"110","is_correct":true},{"text":"120","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"42","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"99","is_correct":false,"misconception_token":"miscounted-a-column"}]$q$::jsonb, '110', $q$Area is length times width: $10 \times 11 = 110$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('09f009da-45ce-5ccb-ac94-68285fc0373b',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $12$ units long and $4$ units wide. What is its area, in square units?$q$, $q$[{"text":"60","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"32","is_correct":false,"misconception_token":"confused-area-perimeter"},{"text":"44","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"48","is_correct":true}]$q$::jsonb, '48', $q$Area is length times width: $12 \times 4 = 48$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9533d1c2-164a-518c-b397-826f5e911455',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $4$ units long and $7$ units wide. What is its area, in square units?$q$, $q$[{"text":"28","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"32","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"22","is_correct":false,"misconception_token":"confused-area-perimeter"}]$q$::jsonb, '28', $q$Area is length times width: $4 \times 7 = 28$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('50b9d92e-51b7-5df7-ba15-9ecd8780abc8',
+   (select id from public.question_templates where code = 'rectangle-area-easy-v1'),
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy',
+   $q$A rectangle is $4$ units long and $4$ units wide. What is its area, in square units?$q$, $q$[{"text":"16","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"miscounted-a-row"},{"text":"12","is_correct":false,"misconception_token":"miscounted-a-column"},{"text":"8","is_correct":false,"misconception_token":"added-instead-of-multiplied"}]$q$::jsonb, '16', $q$Area is length times width: $4 \times 4 = 16$ square units.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
 commit;

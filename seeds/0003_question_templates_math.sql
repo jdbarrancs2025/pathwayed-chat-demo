@@ -66,4 +66,61 @@ on conflict (code) do update set
   status          = excluded.status,
   version         = excluded.version;
 
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('division-basic-easy-v1',
+   (select id from public.skills where slug = 'division'),
+   'problem-solving-data-analysis', 'easy', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is ${a} \\div {b}$?","slots":[{"name":"b","min":2,"max":12},{"name":"q","min":2,"max":12}],"derived":[{"name":"a","formula":"b * q"}],"answerFormula":"q","answerFormat":"integer","solutionTemplate":"${a} \\div {b} = {answer}$, because ${b} \\times {answer} = {a}$."}$q$::jsonb,
+   $q$[{"formula":"q + 1","misconception_token":"quotient-too-high"},{"formula":"q - 1","misconception_token":"quotient-too-low"},{"formula":"a - b","misconception_token":"subtracted-instead-of-divided"},{"formula":"q + 2","misconception_token":"quotient-too-high"},{"formula":"b","misconception_token":"answered-the-divisor"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('fraction-of-number-easy-v1',
+   (select id from public.skills where slug = 'fractions'),
+   'problem-solving-data-analysis', 'easy', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is $\\frac{{a}}{{b}}$ of ${n}$?","slots":[{"name":"a","min":1,"max":5},{"name":"b","min":2,"max":6},{"name":"k","min":2,"max":12}],"derived":[{"name":"n","formula":"b * k"}],"answerFormula":"a * k","answerFormat":"integer","constraints":["a < b"],"solutionTemplate":"One part is ${n} \\div {b} = {k}$, so $\\frac{{a}}{{b}}$ of ${n}$ is ${a} \\times {k} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"(a + 1) * k","misconception_token":"numerator-too-high"},{"formula":"(a - 1) * k","misconception_token":"numerator-too-low"},{"formula":"(b - a) * k","misconception_token":"used-the-other-part"},{"formula":"n","misconception_token":"answered-the-whole"},{"formula":"(a + 2) * k","misconception_token":"numerator-too-high"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
+insert into public.question_templates
+  (code, skill_id, sat_alignment, difficulty, kind, generation_spec, distractor_spec, status, version)
+values
+  ('rectangle-area-easy-v1',
+   (select id from public.skills where slug = 'geometry'),
+   'geometry-trigonometry', 'easy', 'template_math',
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"A rectangle is ${L}$ units long and ${W}$ units wide. What is its area, in square units?","slots":[{"name":"L","min":2,"max":12},{"name":"W","min":2,"max":12}],"answerFormula":"L * W","answerFormat":"integer","solutionTemplate":"Area is length times width: ${L} \\times {W} = {answer}$ square units."}$q$::jsonb,
+   $q$[{"formula":"L * W + L","misconception_token":"miscounted-a-row"},{"formula":"L * W - W","misconception_token":"miscounted-a-column"},{"formula":"2 * (L + W)","misconception_token":"confused-area-perimeter"},{"formula":"L + W","misconception_token":"added-instead-of-multiplied"},{"formula":"L * W + W","misconception_token":"miscounted-a-row"}]$q$::jsonb,
+   'published', 1)
+on conflict (code) do update set
+  skill_id        = excluded.skill_id,
+  sat_alignment   = excluded.sat_alignment,
+  difficulty      = excluded.difficulty,
+  kind            = excluded.kind,
+  generation_spec = excluded.generation_spec,
+  distractor_spec = excluded.distractor_spec,
+  status          = excluded.status,
+  version         = excluded.version;
+
 commit;

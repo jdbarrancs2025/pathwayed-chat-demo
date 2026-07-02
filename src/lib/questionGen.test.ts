@@ -7,7 +7,14 @@ import {
   type MathDistractorSpec,
   type MathGenerationSpec,
 } from './questionGen'
-import { LINEAR_EQUATION_SOLVE, MULTIPLICATION_BASIC, PERCENT_OF } from './mathTemplates'
+import {
+  DIVISION_BASIC,
+  FRACTION_OF_NUMBER,
+  LINEAR_EQUATION_SOLVE,
+  MULTIPLICATION_BASIC,
+  PERCENT_OF,
+  RECTANGLE_AREA,
+} from './mathTemplates'
 
 const KEBAB = /^[a-z][a-z0-9-]*$/
 const seeds = (n: number) => Array.from({ length: n }, (_, i) => i + 1)
@@ -77,6 +84,9 @@ describe.each([
   ['linear-equation-solve', LINEAR_EQUATION_SOLVE],
   ['percent-of', PERCENT_OF],
   ['multiplication-basic', MULTIPLICATION_BASIC],
+  ['division-basic', DIVISION_BASIC],
+  ['fraction-of-number', FRACTION_OF_NUMBER],
+  ['rectangle-area', RECTANGLE_AREA],
 ])('%s — choices invariants', (_name, tpl) => {
   it('has exactly one correct choice and 4 distinct choices', () => {
     for (const s of seeds(50)) {
