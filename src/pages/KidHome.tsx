@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { getStudent, gradeLabel, levelLabel, type Student } from '@/lib/students'
+import { getStudent, gradeLabel, levelLabel, type Student, type StudentLevel } from '@/lib/students'
 import { SUBJECTS } from '@/lib/subjects'
 import { listSavedSubjects } from '@/lib/sessions'
 import { nextPracticeSkill, type PracticeableSkill } from '@/lib/questions'
@@ -59,7 +59,12 @@ export function KidHome() {
 
         {/* Session opener — the branch: homework help vs. keep going at their
             real level, with re-checking always available. */}
-        <SessionOpener studentId={student.id} studentName={student.first_name} nextSkill={nextSkill} />
+        <SessionOpener
+          studentId={student.id}
+          studentName={student.first_name}
+          level={student.level as StudentLevel}
+          nextSkill={nextSkill}
+        />
 
         <p className="muted opener-more">Or pick a subject to learn something new:</p>
         <div className="subjects">

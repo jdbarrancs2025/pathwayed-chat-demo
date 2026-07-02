@@ -1,6 +1,9 @@
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { HOMEWORK } from '@/lib/subjects'
 import type { PracticeableSkill } from '@/lib/questions'
+import type { StudentLevel } from '@/lib/students'
+import { openerOrder, type OpenerActionKey } from '@/lib/opener'
 
 /**
  * Session opener — the "meet them where they are" daily entry branch. Presents
@@ -11,17 +14,20 @@ import type { PracticeableSkill } from '@/lib/questions'
  * Re-checking their level (the diagnostic) is always reachable too — mastery is
  * truth, the kid is never trapped.
  *
- * Phase A renders a FIXED order (homework first). The `actions` array is the seam
- * Phase B uses to lead with the level-appropriate option; a usage-history
- * override can slot into the same ordering step later without rework.
+ * Order/emphasis follows the child's onboarding challenge level via openerOrder()
+ * (getting-ahead/advanced lead with "keep going"; on-grade leads with homework).
+ * Both cards always render — order only. openerOrder() is the seam where a
+ * usage-history override can slot in later without touching this component.
  */
 export function SessionOpener({
   studentId,
   studentName,
+  level,
   nextSkill,
 }: {
   studentId: string
   studentName: string
+  level: StudentLevel
   nextSkill: PracticeableSkill | null
 }) {
   const navigate = useNavigate()
@@ -60,9 +66,11 @@ export function SessionOpener({
     </button>
   ) : null
 
-  // SEAM: Phase A order is fixed (homework first). Phase B reorders this array by
-  // the child's challenge level; a usage-history override can hook in here later.
-  const actions = [homework, keepGoing].filter(Boolean)
+  // Order decided by openerOrder() (the seam); both cards always render.
+  const cards: Record<OpenerActionKey, ReactNode | null> = { homework, keepgoing: keepGoing }
+  const actions = openerOrder(level)
+    .map((key) => cards[key])
+    .filter(Boolean)
 
   return (
     <section className="opener">
