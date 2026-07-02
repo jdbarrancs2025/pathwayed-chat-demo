@@ -53,6 +53,10 @@ const EXPLANATIONS: Record<string, string> = {
     'Close! That is a bit too much. Split the number into equal parts first, then take exactly the number of parts on top of the fraction.',
   'numerator-too-low':
     'So close — that is a bit too little. Take one more of the equal parts.',
+  'part-size-too-small':
+    'So close — just a little low. Find the size of one part by dividing the number by the bottom of the fraction, then take the top-number of them.',
+  'part-size-too-big':
+    'So close — just a little high. Find the size of one part by dividing the number by the bottom of the fraction, then take the top-number of them.',
   'used-the-other-part':
     'That is the other part of the whole. The top number of the fraction tells you how many parts to take — count those.',
   'answered-the-whole':

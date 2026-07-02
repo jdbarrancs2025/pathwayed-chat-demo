@@ -95,7 +95,7 @@ function tokenize(src: string): Tok[] {
       i = j
       continue
     }
-    if ('+-*/()'.includes(c)) {
+    if ('+-*/(),'.includes(c)) {
       toks.push({ t: 'op', v: c })
       i++
       continue
@@ -105,7 +105,25 @@ function tokenize(src: string): Tok[] {
   return toks
 }
 
-/** Evaluate a whitelisted arithmetic expression over `vars`. */
+function gcd2(x: number, y: number): number {
+  let a = Math.abs(Math.trunc(x))
+  let b = Math.abs(Math.trunc(y))
+  while (b) [a, b] = [b, a % b]
+  return a
+}
+
+// Whitelisted formula functions. Additive: formulas without a call parse exactly
+// as before, so existing templates are unaffected.
+function callFn(name: string, args: number[], src: string): number {
+  if (name === 'gcd') {
+    if (args.length !== 2) throw new Error(`evalFormula: gcd expects 2 args in '${src}'`)
+    return gcd2(args[0], args[1])
+  }
+  throw new Error(`evalFormula: unknown function '${name}' in '${src}'`)
+}
+
+/** Evaluate a whitelisted arithmetic expression over `vars`. Supports +,-,*,/,
+ *  unary minus, parentheses, and whitelisted function calls (e.g. gcd(a, b)). */
 export function evalFormula(src: string, vars: Record<string, number>): number {
   const toks = tokenize(src)
   let pos = 0
@@ -150,6 +168,22 @@ export function evalFormula(src: string, vars: Record<string, number>): number {
     }
     if (t.t === 'id') {
       eat()
+      // Function call: id '(' expr (',' expr)* ')'
+      const next = peek()
+      if (next && next.t === 'op' && next.v === '(') {
+        eat() // '('
+        const args: number[] = []
+        if (!(peek()?.t === 'op' && peek()?.v === ')')) {
+          args.push(parseExpr())
+          for (let n = peek(); n && n.t === 'op' && n.v === ','; n = peek()) {
+            eat()
+            args.push(parseExpr())
+          }
+        }
+        const close = eat()
+        if (!close || close.t !== 'op' || close.v !== ')') throw new Error(`evalFormula: missing ')' in '${src}'`)
+        return callFn(t.v, args, src)
+      }
       if (!(t.v in vars)) throw new Error(`evalFormula: unknown variable '${t.v}' in '${src}'`)
       return vars[t.v]
     }

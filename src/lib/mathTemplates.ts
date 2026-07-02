@@ -159,10 +159,12 @@ export const DIVISION_BASIC: MathTemplate = {
   ],
 }
 
-// Grades 3-5: a fraction OF a whole number. a/b with a<b (proper), and n = b·k so
-// a/b of n = a·k is always an integer. Bridged to PSDA. Distractors: one numerator
-// off in each direction (near), plus the "other part" (b-a)/b as the conceptual
-// trap; backups cover the whole (n) and a wider miss.
+// Grades 3-5: a fraction OF a whole number. a/b is proper (a<b) and in LOWEST
+// TERMS (gcd(a,b)=1), and n = b·k so a/b of n = a·k is always an integer. Bridged
+// to PSDA. Every distractor carries a DISTINCT misconception token (so a question
+// never ships two options with the same tag) and every distractor is nonzero (the
+// low miss is a·(k-1) ≥ 1, never 0). The engine picks the first three that come out
+// distinct-valued; the last two cover collisions (e.g. unit fractions, a=k).
 export const FRACTION_OF_NUMBER: MathTemplate = {
   code: 'fraction-of-number-easy-v1',
   skillSlug: 'fractions',
@@ -181,16 +183,16 @@ export const FRACTION_OF_NUMBER: MathTemplate = {
     derived: [{ name: 'n', formula: 'b * k' }],
     answerFormula: 'a * k',
     answerFormat: 'integer',
-    constraints: ['a < b'],
+    constraints: ['a < b', 'gcd(a, b) == 1'],
     solutionTemplate:
       'One part is ${n} \\div {b} = {k}$, so $\\frac{{a}}{{b}}$ of ${n}$ is ${a} \\times {k} = {answer}$.',
   },
   distractorSpec: [
-    { formula: '(a + 1) * k', misconception_token: 'numerator-too-high' }, // a step high (near)
-    { formula: '(a - 1) * k', misconception_token: 'numerator-too-low' }, // a step low (near)
-    { formula: '(b - a) * k', misconception_token: 'used-the-other-part' }, // took the complement fraction
-    { formula: 'n', misconception_token: 'answered-the-whole' }, // backup: gave the whole
-    { formula: '(a + 2) * k', misconception_token: 'numerator-too-high' }, // backup
+    { formula: '(a + 1) * k', misconception_token: 'numerator-too-high' }, // answer + k (near, high)
+    { formula: 'a * (k - 1)', misconception_token: 'part-size-too-small' }, // answer - a (near, low, >=1)
+    { formula: '(b - a) * k', misconception_token: 'used-the-other-part' }, // the complement fraction
+    { formula: 'a * (k + 1)', misconception_token: 'part-size-too-big' }, // answer + a (near, high)
+    { formula: 'n', misconception_token: 'answered-the-whole' }, // gave the whole amount
   ],
 }
 

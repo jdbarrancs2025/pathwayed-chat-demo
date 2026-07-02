@@ -1464,7 +1464,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{3}{4}$ of $16$?$q$, $q$[{"text":"12","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"8","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '12', $q$One part is $16 \div 4 = 4$, so $\frac{3}{4}$ of $16$ is $3 \times 4 = 12$.$q$, 'published')
+   $q$What is $\frac{3}{4}$ of $16$?$q$, $q$[{"text":"12","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"9","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '12', $q$One part is $16 \div 4 = 4$, so $\frac{3}{4}$ of $16$ is $3 \times 4 = 12$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1482,7 +1482,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{3}{5}$ of $30$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"18","is_correct":true},{"text":"30","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"24","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '18', $q$One part is $30 \div 5 = 6$, so $\frac{3}{5}$ of $30$ is $3 \times 6 = 18$.$q$, 'published')
+   $q$What is $\frac{3}{5}$ of $30$?$q$, $q$[{"text":"15","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"18","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"24","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '18', $q$One part is $30 \div 5 = 6$, so $\frac{3}{5}$ of $30$ is $3 \times 6 = 18$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1500,7 +1500,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{2}{4}$ of $28$?$q$, $q$[{"text":"28","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"7","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"14","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '14', $q$One part is $28 \div 4 = 7$, so $\frac{2}{4}$ of $28$ is $2 \times 7 = 14$.$q$, 'published')
+   $q$What is $\frac{3}{5}$ of $25$?$q$, $q$[{"text":"15","is_correct":true},{"text":"10","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"20","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"12","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '15', $q$One part is $25 \div 5 = 5$, so $\frac{3}{5}$ of $25$ is $3 \times 5 = 15$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1518,7 +1518,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{4}{5}$ of $60$?$q$, $q$[{"text":"36","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"60","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"48","is_correct":true}]$q$::jsonb, '48', $q$One part is $60 \div 5 = 12$, so $\frac{4}{5}$ of $60$ is $4 \times 12 = 48$.$q$, 'published')
+   $q$What is $\frac{4}{5}$ of $60$?$q$, $q$[{"text":"44","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"60","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"48","is_correct":true}]$q$::jsonb, '48', $q$One part is $60 \div 5 = 12$, so $\frac{4}{5}$ of $60$ is $4 \times 12 = 48$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1536,7 +1536,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{2}{6}$ of $30$?$q$, $q$[{"text":"15","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"5","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"20","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"10","is_correct":true}]$q$::jsonb, '10', $q$One part is $30 \div 6 = 5$, so $\frac{2}{6}$ of $30$ is $2 \times 5 = 10$.$q$, 'published')
+   $q$What is $\frac{1}{2}$ of $4$?$q$, $q$[{"text":"1","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"3","is_correct":false,"misconception_token":"part-size-too-big"},{"text":"2","is_correct":true},{"text":"4","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '2', $q$One part is $4 \div 2 = 2$, so $\frac{1}{2}$ of $4$ is $1 \times 2 = 2$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1554,7 +1554,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{1}{4}$ of $32$?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"24","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"8","is_correct":true}]$q$::jsonb, '8', $q$One part is $32 \div 4 = 8$, so $\frac{1}{4}$ of $32$ is $1 \times 8 = 8$.$q$, 'published')
+   $q$What is $\frac{1}{4}$ of $32$?$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"24","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"7","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"8","is_correct":true}]$q$::jsonb, '8', $q$One part is $32 \div 4 = 8$, so $\frac{1}{4}$ of $32$ is $1 \times 8 = 8$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1572,7 +1572,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{2}{6}$ of $12$?$q$, $q$[{"text":"2","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"8","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":true}]$q$::jsonb, '4', $q$One part is $12 \div 6 = 2$, so $\frac{2}{6}$ of $12$ is $2 \times 2 = 4$.$q$, 'published')
+   $q$What is $\frac{1}{4}$ of $8$?$q$, $q$[{"text":"4","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"1","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"2","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"used-the-other-part"}]$q$::jsonb, '2', $q$One part is $8 \div 4 = 2$, so $\frac{1}{4}$ of $8$ is $1 \times 2 = 2$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1590,7 +1590,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{3}{6}$ of $60$?$q$, $q$[{"text":"40","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"60","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"20","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"30","is_correct":true}]$q$::jsonb, '30', $q$One part is $60 \div 6 = 10$, so $\frac{3}{6}$ of $60$ is $3 \times 10 = 30$.$q$, 'published')
+   $q$What is $\frac{1}{6}$ of $24$?$q$, $q$[{"text":"4","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"8","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"20","is_correct":false,"misconception_token":"used-the-other-part"}]$q$::jsonb, '4', $q$One part is $24 \div 6 = 4$, so $\frac{1}{6}$ of $24$ is $1 \times 4 = 4$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1608,7 +1608,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{4}{5}$ of $45$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"27","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '36', $q$One part is $45 \div 5 = 9$, so $\frac{4}{5}$ of $45$ is $4 \times 9 = 36$.$q$, 'published')
+   $q$What is $\frac{4}{5}$ of $45$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":true},{"text":"9","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"32","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '36', $q$One part is $45 \div 5 = 9$, so $\frac{4}{5}$ of $45$ is $4 \times 9 = 36$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1626,7 +1626,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{5}{6}$ of $72$?$q$, $q$[{"text":"72","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"48","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"60","is_correct":true}]$q$::jsonb, '60', $q$One part is $72 \div 6 = 12$, so $\frac{5}{6}$ of $72$ is $5 \times 12 = 60$.$q$, 'published')
+   $q$What is $\frac{5}{6}$ of $72$?$q$, $q$[{"text":"72","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"55","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"12","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"60","is_correct":true}]$q$::jsonb, '60', $q$One part is $72 \div 6 = 12$, so $\frac{5}{6}$ of $72$ is $5 \times 12 = 60$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1644,7 +1644,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{1}{3}$ of $12$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"8","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":true},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '4', $q$One part is $12 \div 3 = 4$, so $\frac{1}{3}$ of $12$ is $1 \times 4 = 4$.$q$, 'published')
+   $q$What is $\frac{1}{3}$ of $12$?$q$, $q$[{"text":"5","is_correct":false,"misconception_token":"part-size-too-big"},{"text":"8","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"4","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '4', $q$One part is $12 \div 3 = 4$, so $\frac{1}{3}$ of $12$ is $1 \times 4 = 4$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1662,7 +1662,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{2}{3}$ of $21$?$q$, $q$[{"text":"28","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"14","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"7","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '14', $q$One part is $21 \div 3 = 7$, so $\frac{2}{3}$ of $21$ is $2 \times 7 = 14$.$q$, 'published')
+   $q$What is $\frac{2}{3}$ of $21$?$q$, $q$[{"text":"7","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"14","is_correct":true},{"text":"21","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"12","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '14', $q$One part is $21 \div 3 = 7$, so $\frac{2}{3}$ of $21$ is $2 \times 7 = 14$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1680,7 +1680,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{3}{5}$ of $15$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"9","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '9', $q$One part is $15 \div 5 = 3$, so $\frac{3}{5}$ of $15$ is $3 \times 3 = 9$.$q$, 'published')
+   $q$What is $\frac{3}{5}$ of $15$?$q$, $q$[{"text":"12","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"9","is_correct":true},{"text":"15","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"6","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '9', $q$One part is $15 \div 5 = 3$, so $\frac{3}{5}$ of $15$ is $3 \times 3 = 9$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1698,7 +1698,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{4}{5}$ of $25$?$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"20","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"15","is_correct":false,"misconception_token":"numerator-too-low"}]$q$::jsonb, '20', $q$One part is $25 \div 5 = 5$, so $\frac{4}{5}$ of $25$ is $4 \times 5 = 20$.$q$, 'published')
+   $q$What is $\frac{4}{5}$ of $25$?$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"20","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"16","is_correct":false,"misconception_token":"part-size-too-small"}]$q$::jsonb, '20', $q$One part is $25 \div 5 = 5$, so $\frac{4}{5}$ of $25$ is $4 \times 5 = 20$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1716,7 +1716,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{1}{6}$ of $54$?$q$, $q$[{"text":"9","is_correct":true},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"45","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"18","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '9', $q$One part is $54 \div 6 = 9$, so $\frac{1}{6}$ of $54$ is $1 \times 9 = 9$.$q$, 'published')
+   $q$What is $\frac{1}{6}$ of $54$?$q$, $q$[{"text":"9","is_correct":true},{"text":"8","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"45","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"18","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '9', $q$One part is $54 \div 6 = 9$, so $\frac{1}{6}$ of $54$ is $1 \times 9 = 9$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1734,7 +1734,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{3}{5}$ of $55$?$q$, $q$[{"text":"22","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"33","is_correct":true},{"text":"55","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"44","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '33', $q$One part is $55 \div 5 = 11$, so $\frac{3}{5}$ of $55$ is $3 \times 11 = 33$.$q$, 'published')
+   $q$What is $\frac{3}{5}$ of $55$?$q$, $q$[{"text":"30","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"33","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"44","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '33', $q$One part is $55 \div 5 = 11$, so $\frac{3}{5}$ of $55$ is $3 \times 11 = 33$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1752,7 +1752,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{1}{4}$ of $12$?$q$, $q$[{"text":"3","is_correct":true},{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"9","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '3', $q$One part is $12 \div 4 = 3$, so $\frac{1}{4}$ of $12$ is $1 \times 3 = 3$.$q$, 'published')
+   $q$What is $\frac{1}{4}$ of $12$?$q$, $q$[{"text":"3","is_correct":true},{"text":"2","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"9","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"6","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '3', $q$One part is $12 \div 4 = 3$, so $\frac{1}{4}$ of $12$ is $1 \times 3 = 3$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1770,7 +1770,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{4}{6}$ of $54$?$q$, $q$[{"text":"45","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":true},{"text":"27","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"18","is_correct":false,"misconception_token":"used-the-other-part"}]$q$::jsonb, '36', $q$One part is $54 \div 6 = 9$, so $\frac{4}{6}$ of $54$ is $4 \times 9 = 36$.$q$, 'published')
+   $q$What is $\frac{4}{5}$ of $30$?$q$, $q$[{"text":"24","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"30","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"6","is_correct":false,"misconception_token":"used-the-other-part"}]$q$::jsonb, '24', $q$One part is $30 \div 5 = 6$, so $\frac{4}{5}$ of $30$ is $4 \times 6 = 24$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1788,7 +1788,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{2}{4}$ of $48$?$q$, $q$[{"text":"48","is_correct":false,"misconception_token":"answered-the-whole"},{"text":"12","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"24","is_correct":true},{"text":"36","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '24', $q$One part is $48 \div 4 = 12$, so $\frac{2}{4}$ of $48$ is $2 \times 12 = 24$.$q$, 'published')
+   $q$What is $\frac{1}{5}$ of $55$?$q$, $q$[{"text":"10","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"44","is_correct":false,"misconception_token":"used-the-other-part"},{"text":"11","is_correct":true},{"text":"22","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '11', $q$One part is $55 \div 5 = 11$, so $\frac{1}{5}$ of $55$ is $1 \times 11 = 11$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1806,7 +1806,7 @@ values
    (select id from public.question_templates where code = 'fraction-of-number-easy-v1'),
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy',
-   $q$What is $\frac{1}{2}$ of $24$?$q$, $q$[{"text":"0","is_correct":false,"misconception_token":"numerator-too-low"},{"text":"12","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"36","is_correct":false,"misconception_token":"numerator-too-high"}]$q$::jsonb, '12', $q$One part is $24 \div 2 = 12$, so $\frac{1}{2}$ of $24$ is $1 \times 12 = 12$.$q$, 'published')
+   $q$What is $\frac{1}{2}$ of $24$?$q$, $q$[{"text":"11","is_correct":false,"misconception_token":"part-size-too-small"},{"text":"12","is_correct":true},{"text":"24","is_correct":false,"misconception_token":"numerator-too-high"},{"text":"13","is_correct":false,"misconception_token":"part-size-too-big"}]$q$::jsonb, '12', $q$One part is $24 \div 2 = 12$, so $\frac{1}{2}$ of $24$ is $1 \times 12 = 12$.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,

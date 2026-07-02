@@ -31,6 +31,12 @@ describe('evalFormula (safe arithmetic)', () => {
     expect(() => evalFormula('2 +', {})).toThrow()
     expect(() => evalFormula('2 ; 3', {})).toThrow()
   })
+  it('supports the gcd(...) function', () => {
+    expect(evalFormula('gcd(a, b)', { a: 12, b: 18 })).toBe(6)
+    expect(evalFormula('gcd(a, b)', { a: 3, b: 4 })).toBe(1)
+    expect(evalFormula('gcd(a, b) * 5', { a: 8, b: 6 })).toBe(10) // gcd(8,6)=2
+    expect(() => evalFormula('nope(a)', { a: 1 })).toThrow(/unknown function/)
+  })
 })
 
 describe('linear-equation-solve — correctness (mechanical, not asserted)', () => {
@@ -61,6 +67,30 @@ describe('percent-of — correctness (mechanical, not asserted)', () => {
       const ans = Number(question.correct_answer)
       expect(Number.isInteger(ans)).toBe(true)
       expect(ans).toBe((slots.p * slots.n) / 100)
+    }
+  })
+})
+
+describe('fraction-of-number — kid-app quality guarantees', () => {
+  const g = (x: number, y: number): number => (y === 0 ? x : g(y, x % y))
+
+  it('fraction is proper and in lowest terms, answer is a/b of n, no 0 or dup-token distractors', () => {
+    for (const s of seeds(120)) {
+      const { question, slots } = generateQuestionDebug(
+        FRACTION_OF_NUMBER.generationSpec,
+        FRACTION_OF_NUMBER.distractorSpec,
+        s,
+      )
+      const { a, b, k } = slots
+      expect(a).toBeLessThan(b) // proper
+      expect(g(a, b)).toBe(1) // lowest terms
+      expect(Number(question.correct_answer)).toBe(a * k) // a/b of n = a·k
+
+      // No zero distractor, and every wrong option has a DISTINCT misconception token.
+      const wrong = question.choices.filter((c) => !c.is_correct)
+      for (const c of wrong) expect(Number(c.text)).not.toBe(0)
+      const tokens = wrong.map((c) => c.misconception_token)
+      expect(new Set(tokens).size).toBe(tokens.length)
     }
   })
 })

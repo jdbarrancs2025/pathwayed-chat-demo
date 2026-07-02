@@ -91,8 +91,8 @@ values
   ('fraction-of-number-easy-v1',
    (select id from public.skills where slug = 'fractions'),
    'problem-solving-data-analysis', 'easy', 'template_math',
-   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is $\\frac{{a}}{{b}}$ of ${n}$?","slots":[{"name":"a","min":1,"max":5},{"name":"b","min":2,"max":6},{"name":"k","min":2,"max":12}],"derived":[{"name":"n","formula":"b * k"}],"answerFormula":"a * k","answerFormat":"integer","constraints":["a < b"],"solutionTemplate":"One part is ${n} \\div {b} = {k}$, so $\\frac{{a}}{{b}}$ of ${n}$ is ${a} \\times {k} = {answer}$."}$q$::jsonb,
-   $q$[{"formula":"(a + 1) * k","misconception_token":"numerator-too-high"},{"formula":"(a - 1) * k","misconception_token":"numerator-too-low"},{"formula":"(b - a) * k","misconception_token":"used-the-other-part"},{"formula":"n","misconception_token":"answered-the-whole"},{"formula":"(a + 2) * k","misconception_token":"numerator-too-high"}]$q$::jsonb,
+   $q${"kind":"template_math","schemaVersion":1,"responseType":"multiple_choice","stemTemplate":"What is $\\frac{{a}}{{b}}$ of ${n}$?","slots":[{"name":"a","min":1,"max":5},{"name":"b","min":2,"max":6},{"name":"k","min":2,"max":12}],"derived":[{"name":"n","formula":"b * k"}],"answerFormula":"a * k","answerFormat":"integer","constraints":["a < b","gcd(a, b) == 1"],"solutionTemplate":"One part is ${n} \\div {b} = {k}$, so $\\frac{{a}}{{b}}$ of ${n}$ is ${a} \\times {k} = {answer}$."}$q$::jsonb,
+   $q$[{"formula":"(a + 1) * k","misconception_token":"numerator-too-high"},{"formula":"a * (k - 1)","misconception_token":"part-size-too-small"},{"formula":"(b - a) * k","misconception_token":"used-the-other-part"},{"formula":"a * (k + 1)","misconception_token":"part-size-too-big"},{"formula":"n","misconception_token":"answered-the-whole"}]$q$::jsonb,
    'published', 1)
 on conflict (code) do update set
   skill_id        = excluded.skill_id,
