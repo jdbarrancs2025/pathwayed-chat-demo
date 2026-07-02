@@ -160,6 +160,40 @@ const EXPLANATIONS: Record<string, string> = {
     'To undo a square you take the square root, not divide the exponent to get double. Find the number whose square is given.',
   'root-way-too-high':
     'That is too big — the number times itself would be much larger than the value shown. Try a smaller number.',
+
+  // grammar — subject-verb agreement
+  'agreed-with-nearby-noun':
+    'Careful — the verb should match the real subject, not the closest noun. Find who or what is doing the action, then match the verb to that.',
+  'plural-verb-for-singular':
+    'The subject here is singular, so it needs a singular verb. A plural verb form does not match.',
+  'treated-collective-as-plural':
+    'A group word like "committee" or "team" acting as one unit is singular — match it with a singular verb.',
+  'singular-for-compound-subject':
+    'Two subjects joined by "and" make a plural subject, so use the plural verb.',
+  'nonfinite-verb':
+    "That is an \"-ing\" form, which can't be the main verb by itself — it would leave the sentence unfinished. Use a complete verb.",
+  'used-infinitive':
+    'That is the "to ___" form, which can\'t serve as the main verb here. Use a verb that matches the subject.',
+
+  // grammar — punctuation
+  'missing-comma':
+    'A comma is needed here — after an introductory part, or to separate items — so the sentence reads clearly.',
+  'comma-splice':
+    "A comma alone can't join two complete sentences (that's a comma splice). Use a period or a semicolon, or add a joining word.",
+  'run-on':
+    'Two complete sentences are run together with no punctuation. Separate them with a period or a semicolon.',
+  'unnecessary-comma':
+    'No comma belongs here — the "and" is joining two actions of the same subject, not two separate sentences.',
+  'semicolon-misused':
+    "A semicolon joins two complete sentences. It doesn't belong here — a comma or a period fits instead.",
+  'period-creates-fragment':
+    "A period here leaves a piece that isn't a complete sentence (a fragment). Keep it connected with a comma.",
+  'question-mark-for-indirect-question':
+    "This sentence only reports a question (\"wondered whether…\"); it's a statement, so it ends with a period, not a question mark.",
+  'exclamation-misuse':
+    "An exclamation point is for strong emphasis, which doesn't fit a plain statement like this. End it with a period.",
+  'missing-end-punctuation':
+    'Every sentence needs end punctuation — this one should finish with a period.',
 }
 
 /**
