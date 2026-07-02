@@ -168,6 +168,21 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   return skills.sort((a, b) => orderOf(a.subject) - orderOf(b.subject) || a.name.localeCompare(b.name))
 }
 
+// --- Read path: placement diagnostic set -------------------------------------
+
+/**
+ * Phase-1 placement diagnostic set: one PUBLISHED question from each practiceable
+ * skill (the 15 math skills today), shuffled into a mixed order. Reuses the normal
+ * per-skill serve path, so diagnostic questions are exactly the same items a
+ * student would practice. Returns [] if nothing is practiceable.
+ */
+export async function fetchDiagnosticQuestions(perSkill = 1): Promise<PracticeQuestion[]> {
+  const skills = await listPracticeableSkills()
+  if (!skills.length) return []
+  const sets = await Promise.all(skills.map((s) => fetchPracticeQuestions(s.slug, perSkill)))
+  return shuffle(sets.flat())
+}
+
 // --- Write path: append-only question_attempts -------------------------------
 
 export interface QuestionAttemptInput {
