@@ -120,6 +120,7 @@ export interface PracticeableSkill {
   slug: string
   name: string
   subject: string
+  grade_band: string | null
 }
 
 // Display order for grouping the practice picker by subject (mirrors the
@@ -148,7 +149,7 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
 
   const { data: skillRows, error: sError } = await supabase
     .from('skills')
-    .select('id, slug, name, subject')
+    .select('id, slug, name, subject, grade_band')
     .in('id', skillIds)
   if (sError) {
     console.error('listPracticeableSkills: skills read failed', sError)
@@ -158,7 +159,7 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   const skills: PracticeableSkill[] = []
   for (const s of skillRows ?? []) {
     if (!s.slug || !s.name) continue // need a slug to route practice to
-    skills.push({ skill_id: s.id, slug: s.slug, name: s.name, subject: s.subject })
+    skills.push({ skill_id: s.id, slug: s.slug, name: s.name, subject: s.subject, grade_band: s.grade_band })
   }
 
   const orderOf = (subject: string) => {
@@ -170,16 +171,25 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
 
 // --- Read path: placement diagnostic set -------------------------------------
 
+/** A diagnostic item carries its skill's grade_band so the page can score by band. */
+export interface DiagnosticQuestion extends PracticeQuestion {
+  grade_band: string | null
+}
+
 /**
- * Phase-1 placement diagnostic set: one PUBLISHED question from each practiceable
- * skill (the 15 math skills today), shuffled into a mixed order. Reuses the normal
- * per-skill serve path, so diagnostic questions are exactly the same items a
- * student would practice. Returns [] if nothing is practiceable.
+ * Placement diagnostic set (Phase 2): one PUBLISHED question from each of the
+ * given skills, each tagged with its grade_band, shuffled into a mixed order.
+ * Reuses the normal per-skill serve path, so diagnostic items are exactly the
+ * questions a student would practice. Returns [] for an empty skill list.
  */
-export async function fetchDiagnosticQuestions(perSkill = 1): Promise<PracticeQuestion[]> {
-  const skills = await listPracticeableSkills()
+export async function fetchDiagnosticQuestions(skills: PracticeableSkill[]): Promise<DiagnosticQuestion[]> {
   if (!skills.length) return []
-  const sets = await Promise.all(skills.map((s) => fetchPracticeQuestions(s.slug, perSkill)))
+  const sets = await Promise.all(
+    skills.map(async (s) => {
+      const qs = await fetchPracticeQuestions(s.slug, 1)
+      return qs.map((q) => ({ ...q, grade_band: s.grade_band }))
+    }),
+  )
   return shuffle(sets.flat())
 }
 

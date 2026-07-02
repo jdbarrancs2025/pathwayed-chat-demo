@@ -309,6 +309,58 @@ export async function recordPracticeResult(
   return updates[0] ?? null
 }
 
+// Placement diagnostic seed (Phase 2). A single diagnostic question is a
+// deliberate probe, so it seeds an initial mastery estimate DIRECTLY (not via the
+// attempts-based practice ramp, which would read one correct answer as ~25%).
+// Explicit, legible numbers; attempts=1 keeps it light so real practice quickly
+// refines it. Correct -> 60, wrong -> 25.
+const DIAGNOSTIC_CORRECT_MASTERY = 60
+const DIAGNOSTIC_WRONG_MASTERY = 25
+
+/**
+ * Seed initial student_skill_mastery from a completed placement diagnostic, then
+ * recompute readiness so the dashboard/path pick up at the student's real level.
+ * Upserts one row per skill (last answer wins if a skill somehow repeats). Meant
+ * to run once at placement time. Best-effort: returns the number of rows written,
+ * 0 on empty input or a write error; never throws into the caller.
+ */
+export async function seedDiagnosticMastery(
+  studentId: string,
+  results: { skillId: string; isCorrect: boolean }[],
+): Promise<number> {
+  // Dedupe by skill (one mastery row per skill; a batch upsert can't touch the
+  // same (student, skill) twice), keeping the last answer.
+  const bySkill = new Map<string, boolean>()
+  for (const r of results) bySkill.set(r.skillId, r.isCorrect)
+  if (!bySkill.size) return 0
+
+  const now = new Date().toISOString()
+  const rows = [...bySkill].map(([skill_id, isCorrect]) => ({
+    student_id: studentId,
+    skill_id,
+    mastery_percentage: isCorrect ? DIAGNOSTIC_CORRECT_MASTERY : DIAGNOSTIC_WRONG_MASTERY,
+    accuracy: isCorrect ? 100 : 0,
+    attempts: 1,
+    last_practiced: now,
+  }))
+
+  const { error } = await supabase
+    .from('student_skill_mastery')
+    .upsert(rows, { onConflict: 'student_id,skill_id' })
+  if (error) {
+    console.error('seedDiagnosticMastery upsert failed', { error, rows })
+    return 0
+  }
+
+  // Recompute readiness/Pathway/SAT from the freshly-seeded mastery.
+  try {
+    await recordReadiness(studentId)
+  } catch (err) {
+    console.error('readiness recompute after diagnostic failed', err)
+  }
+  return rows.length
+}
+
 // ---------------------------------------------------------------------------
 // Dashboard reads (read-only; Step 4). No writes here.
 // ---------------------------------------------------------------------------
