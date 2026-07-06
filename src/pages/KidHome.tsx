@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { getStudent, gradeLabel, levelLabel, avatarModeOf, type Student } from '@/lib/students'
+import { getStudent, gradeLabel, levelLabel, avatarModeOf, updateAvatarMode, type AvatarMode, type Student } from '@/lib/students'
 import { HOMEWORK } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
+import { AvatarModePicker } from '@/components/AvatarModePicker'
 import '@/styles/app-screens.css'
 
 /**
@@ -18,6 +19,7 @@ export function KidHome() {
   const navigate = useNavigate()
   const [student, setStudent] = useState<Student | null>(null)
   const [loading, setLoading] = useState(true)
+  const [pickingAvatar, setPickingAvatar] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -35,6 +37,15 @@ export function KidHome() {
       active = false
     }
   }, [id, navigate])
+
+  // Kid picks how Nikki appears to them. Writes the same students.avatar_mode
+  // field the parent's Edit form uses, so kid and parent changes stay in sync.
+  // Optimistic: Nikki above re-renders instantly, then we persist.
+  const chooseAvatar = async (mode: AvatarMode) => {
+    if (!student) return
+    setStudent((prev) => (prev ? { ...prev, avatar_mode: mode } : prev))
+    await updateAvatarMode(student.id, mode)
+  }
 
   if (loading || !student) {
     return (
@@ -64,7 +75,34 @@ export function KidHome() {
           <NikkiFace mode={avatarModeOf(student)} size={104} />
           <h1 className="greet">Hi, {student.first_name}!</h1>
           <p className="muted">Great to see you. What are we doing today?</p>
+          <button
+            type="button"
+            onClick={() => setPickingAvatar((v) => !v)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#5A6172',
+              fontSize: 13,
+              fontWeight: 600,
+              textDecoration: 'underline',
+              textUnderlineOffset: 3,
+              cursor: 'pointer',
+              marginTop: 2,
+            }}
+          >
+            {pickingAvatar ? 'Done' : 'How should I appear?'}
+          </button>
         </div>
+
+        {pickingAvatar && (
+          <div style={{ maxWidth: 380, margin: '0 auto 22px' }}>
+            <AvatarModePicker
+              value={avatarModeOf(student)}
+              onChange={(m) => void chooseAvatar(m)}
+              label="Tap how you'd like me to appear:"
+            />
+          </div>
+        )}
 
         <section className="opener">
           <button
