@@ -10,18 +10,35 @@ export interface MathFieldHandle {
   insert: (latex: string) => void
 }
 
+interface MathFieldProps {
+  /** LaTeX to restore into the field on mount (preserves input across tab switches). */
+  initialValue?: string
+  /** Fired on the field's native `input` event with the current LaTeX. */
+  onInput?: (latex: string) => void
+}
+
 /**
  * MODE A — a structured math input field backed by MathLive's <math-field> web
  * component: real fraction/exponent/root boxes and MathLive's built-in virtual
- * keyboard (including the fraction key). The value is LaTeX, read on submit.
+ * keyboard (including the fraction key). The value is LaTeX, read on submit and
+ * mirrored out on the field's `input` event (never driven by a React value prop).
  *
  * Created imperatively (rather than as a JSX custom element) to avoid web-
  * component JSX typing, and MathLive is dynamic-imported so it code-splits out
  * of the main bundle and only loads when a student opens the math editor.
  */
-export const MathField = forwardRef<MathFieldHandle>(function MathField(_props, ref) {
+export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function MathField(
+  { initialValue = '', onInput },
+  ref,
+) {
   const hostRef = useRef<HTMLDivElement>(null)
   const fieldRef = useRef<MathfieldElement | null>(null)
+  // Keep the latest onInput without re-running the mount effect (which would
+  // tear down and recreate the field).
+  const onInputRef = useRef(onInput)
+  onInputRef.current = onInput
+  // Captured once so the mount effect can restore it without depending on the prop.
+  const initialValueRef = useRef(initialValue)
 
   useImperativeHandle(
     ref,
@@ -48,10 +65,17 @@ export const MathField = forwardRef<MathFieldHandle>(function MathField(_props, 
 
       const mf = new MathfieldElement()
       // Show MathLive's built-in virtual keyboard (with the fraction key) on
-      // focus — on desktop, tablet, and phone alike.
+      // focus — on desktop, tablet, and phone alike. Physical-keyboard typing
+      // works regardless of the virtual keyboard.
       mf.mathVirtualKeyboardPolicy = 'onfocus'
       mf.className = 'mathfield'
       mf.setAttribute('aria-label', 'Math expression')
+      mf.setAttribute('placeholder', 'Type your problem')
+      // Restore any preserved expression (e.g. after switching to Write by hand
+      // and back).
+      if (initialValueRef.current) mf.value = initialValueRef.current
+      // Mirror the value out on every change via the field's own input event.
+      mf.addEventListener('input', () => onInputRef.current?.(mf.value))
       hostRef.current.appendChild(mf)
       fieldRef.current = mf
       // Do NOT auto-focus on mount: focusing arms MathLive's virtual keyboard,

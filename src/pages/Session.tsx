@@ -116,6 +116,20 @@ function SessionView({
   })
 
   const [pane, setPane] = useState<'chat' | 'work'>('chat')
+  // On wide screens the chat and workspace show side-by-side and the pane toggle
+  // is hidden (see .panetabs @media <=900px), so `pane` stays 'chat'. Track the
+  // breakpoint so the workspace counts as active/visible on desktop — otherwise
+  // the MathLive field, which mounts only while the workspace is active, never
+  // renders on desktop.
+  const [isWide, setIsWide] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 901px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 901px)')
+    const onChange = () => setIsWide(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
   // Nikki auto-speaks her responses by default; this mutes that (in-session).
   const [muted, setMuted] = useState(false)
   const [speaking, setSpeaking] = useState(false)
@@ -395,7 +409,7 @@ function SessionView({
           childName={student.first_name}
           grade={student.grade}
           level={student.level}
-          paneActive={pane === 'work'}
+          paneActive={pane === 'work' || isWide}
           onSendText={(t) => {
             setPane('chat')
             void sendMessage(t)

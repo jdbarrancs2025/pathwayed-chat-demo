@@ -45,11 +45,22 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
   const [typed, setTyped] = useState('')
   const [noteImg, setNoteImg] = useState<string | null>(null)
   const [error, setError] = useState('')
+  // Math-editor LaTeX lifted here so it survives switching to Write by hand and
+  // back (the MathField unmounts on switch; this state does not).
+  const [mathLatex, setMathLatex] = useState('')
   const taRef = useRef<HTMLTextAreaElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const mathRef = useRef<MathFieldHandle>(null)
   const hasInkRef = useRef(false)
+  // Last handwritten drawing as a data URL, preserved across editor/draw switches.
+  const drawnRef = useRef<string | null>(null)
+
+  // Insert a LaTeX snippet into the focused field and keep the lifted value in sync.
+  const insertMath = (latex: string) => {
+    mathRef.current?.insert(latex)
+    setMathLatex(mathRef.current?.getLatex() ?? '')
+  }
 
   const upload = async (file: File | undefined) => {
     if (!file) return
@@ -64,14 +75,16 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
   const check = () => {
     // Structured math editor.
     if (mode === 'editor') {
-      const latex = (mathRef.current?.getLatex() ?? '').trim()
+      const latex = (mathRef.current?.getLatex() ?? mathLatex).trim()
       if (latex) {
         // Wrap in display-math delimiters so the student's bubble renders the
         // expression as a real fraction/power/root (MathText/KaTeX), not raw
         // LaTeX. Nikki still reads the LaTeX precisely.
         onSendText(`$$${latex}$$`)
         mathRef.current?.clear()
+        setMathLatex('')
       }
+      // Empty field: do nothing (and don't crash — the ref guard handles it).
       return
     }
     // A snapped/uploaded photo takes priority (reading "page", or math work).
@@ -133,6 +146,15 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
       ctx.lineJoin = 'round'
       ctx.strokeStyle = '#1C2230'
       hasInkRef.current = false
+      // Restore a previously-saved drawing (preserved across editor/draw switches).
+      if (drawnRef.current) {
+        const img = new Image()
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, rect.width, rect.height)
+          hasInkRef.current = true
+        }
+        img.src = drawnRef.current
+      }
     }
     configure()
     const ro = new ResizeObserver(() => configure())
@@ -173,6 +195,8 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
     canvas.addEventListener('touchmove', move, { passive: false })
     canvas.addEventListener('touchend', up)
     return () => {
+      // Save the current drawing so switching to the Math editor and back keeps it.
+      if (hasInkRef.current) drawnRef.current = canvas.toDataURL('image/png')
       ro.disconnect()
       canvas.removeEventListener('mousedown', down)
       canvas.removeEventListener('mousemove', move)
@@ -197,6 +221,7 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
       }
     }
     hasInkRef.current = false
+    drawnRef.current = null
   }
 
   // Reading: a simple writing area + snap-a-page photo. No draw, no math editor.
@@ -282,7 +307,7 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
               type="button"
               className="mq"
               aria-label="Insert a fraction"
-              onClick={() => mathRef.current?.insert('\\frac{#@}{#?}')}
+              onClick={() => insertMath('\\frac{#@}{#?}')}
             >
               <span className="frac-ico" aria-hidden="true">
                 <b>a</b>
@@ -294,7 +319,7 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
               type="button"
               className="mq"
               aria-label="Insert a power or exponent"
-              onClick={() => mathRef.current?.insert('#@^{#?}')}
+              onClick={() => insertMath('#@^{#?}')}
             >
               <span className="mq-ico" aria-hidden="true">
                 x<sup>2</sup>
@@ -305,7 +330,7 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
               type="button"
               className="mq"
               aria-label="Insert a square root"
-              onClick={() => mathRef.current?.insert('\\sqrt{#@}')}
+              onClick={() => insertMath('\\sqrt{#@}')}
             >
               <span className="mq-ico" aria-hidden="true">
                 √x
@@ -313,9 +338,12 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
               Root
             </button>
           </div>
-          {/* Mount MathLive only while the Workspace pane is active, so its
-              global keydown listener can't reach the chat box. */}
-          {paneActive && <MathField ref={mathRef} />}
+          {/* Mount MathLive while the Workspace pane is active/visible (always so
+              on desktop, where chat + workspace show side-by-side). initialValue
+              restores preserved input; onInput mirrors changes back out. */}
+          {paneActive && (
+            <MathField ref={mathRef} initialValue={mathLatex} onInput={setMathLatex} />
+          )}
         </>
       ) : mode === 'type' ? (
         <textarea
