@@ -62,12 +62,12 @@ describe('planPrice', () => {
 describe('totalPrice — base plus per-child add-on', () => {
   it('is just the plan price with zero extra children', () => {
     expect(totalPrice('elementary', 'monthly', 0)).toBe(15)
-    expect(totalPrice('high', 'annual', 0)).toBe(289)
+    expect(totalPrice('high', 'annual', 0)).toBe(389)
   })
 
   it('adds the add-on price per extra child', () => {
     expect(totalPrice('middle', 'monthly', 2)).toBe(24 + 2 * ADDON_PRICE.monthly)
-    expect(totalPrice('high', 'annual', 1)).toBe(289 + ADDON_PRICE.annual)
+    expect(totalPrice('high', 'annual', 1)).toBe(389 + ADDON_PRICE.annual)
   })
 
   it('never subtracts for a negative extra count', () => {
@@ -78,7 +78,7 @@ describe('totalPrice — base plus per-child add-on', () => {
 describe('formatMoney', () => {
   it('omits cents for whole amounts', () => {
     expect(formatMoney(15)).toBe('$15')
-    expect(formatMoney(289)).toBe('$289')
+    expect(formatMoney(389)).toBe('$389')
   })
 
   it('shows two decimals for fractional amounts', () => {
