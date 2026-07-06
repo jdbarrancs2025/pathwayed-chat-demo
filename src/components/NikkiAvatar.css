@@ -1,0 +1,22 @@
+/* Video avatar for Nikki in the session call stage. Two clips are stacked in the
+   same circular box the energy orb occupied and cross-faded on the speaking
+   signal, so there is no black flash and no layout shift. */
+
+.nikki-avatar {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  line-height: 0; /* kill the inline-block descender gap so the box is exact */
+  background: #f4f2ee; /* matches the clip backdrop → no dark edge before first frame */
+}
+
+.nikki-avatar-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 260ms ease;
+  will-change: opacity;
+}
