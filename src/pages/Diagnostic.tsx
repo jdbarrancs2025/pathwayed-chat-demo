@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { getStudent, setAboveGradeConsent, type Student } from '@/lib/students'
 import {
   fetchDiagnosticQuestions,
@@ -37,8 +37,14 @@ function completionLine(place: Placement | null, consent: boolean): string {
  *    up at the student's real level. A plain summary is shown on completion.
  * Still behind the direct /students/:id/diagnostic route; not wired into onboarding.
  */
+/** Only honor a same-app student return path (guards against open redirects). */
+function resolveReturn(raw: string | null, studentId: string): string {
+  return raw && raw.startsWith(`/students/${studentId}`) ? raw : `/students/${studentId}`
+}
+
 export function Diagnostic() {
   const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
   const [student, setStudent] = useState<Student | null>(null)
@@ -197,8 +203,11 @@ export function Diagnostic() {
             )}
             <p className="practice-encourage">Great effort! {completionLine(place, consent)}</p>
           </div>
-          <button className="btn btn-navy" onClick={() => navigate(`/students/${student.id}`)}>
-            See my dashboard
+          <button
+            className="btn btn-navy"
+            onClick={() => navigate(resolveReturn(searchParams.get('return'), student.id))}
+          >
+            {searchParams.get('return') ? 'Start my first lesson' : 'See my dashboard'}
           </button>
         </div>
       </div>

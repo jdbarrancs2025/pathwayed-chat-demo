@@ -11,6 +11,8 @@ interface UseSessionChatOptions {
   childName: string
   grade: string
   level: string
+  /** Focus areas for the tutor prompt (e.g. today's skill label). Defaults to []. */
+  focusAreas?: string[]
   /** Resolved opening transcript: the saved messages, or a single greeting. */
   initialMessages: ChatMessage[]
 }
@@ -111,7 +113,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
             mode: 'kid-tutor',
             context: {
               subject: o.subject,
-              focusAreas: [],
+              focusAreas: o.focusAreas ?? [],
               appMode: null,
               childName: o.childName,
               grade: o.grade,
@@ -181,7 +183,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
             mode: 'kid-tutor',
             context: {
               subject: o.subject,
-              focusAreas: [],
+              focusAreas: o.focusAreas ?? [],
               appMode: null,
               childName: o.childName,
               grade: o.grade,

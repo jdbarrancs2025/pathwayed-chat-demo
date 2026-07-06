@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { getStudent, type Student } from '@/lib/students'
 import { loadTranscript, saveFeedback } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
+import { skillLabel, scopeBandForGrade, isScopeSubject } from '@/lib/lessonPath'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
 import { useAudioRecorder } from '@/hooks/useAudioRecorder'
 import { useConversationMic } from '@/hooks/useConversationMic'
@@ -42,9 +43,12 @@ function lastAssistantId(msgs: ChatMessage[]): string | null {
   return null
 }
 
-function makeGreeting(name: string, subject: string): string {
+function makeGreeting(name: string, subject: string, focusLabel?: string | null): string {
   if (subject === 'homework') {
     return `Hi ${name}! I'm Nikki. Upload a photo or PDF of the homework you're working on using the panel on the right, and we'll go through it together. You can also just tell me what it's about.`
+  }
+  if (focusLabel) {
+    return `Hi ${name}! I'm Nikki. Today we're working on ${focusLabel}. I might ask a quick question first to see what you already know, then we'll learn it together. Ready to start?`
   }
   return `Hi ${name}! I'm Nikki. I'm glad you're here. What are we working on in ${subjectDisplayName(subject).toLowerCase()} today? You can ask me a question, or use the workspace on the right to show me your work.`
 }
@@ -52,10 +56,13 @@ function makeGreeting(name: string, subject: string): string {
 interface ReadyState {
   student: Student
   initialMessages: ChatMessage[]
+  focusLabel: string | null
 }
 
 export function Session() {
   const { id, subject } = useParams<{ id: string; subject: string }>()
+  const [searchParams] = useSearchParams()
+  const focusSlug = searchParams.get('skill')
   const navigate = useNavigate()
   const [ready, setReady] = useState<ReadyState | null>(null)
 
@@ -71,15 +78,20 @@ export function Session() {
         navigate('/students', { replace: true })
         return
       }
+      // Skills-building launches carry ?skill=<slug>; name it so the lesson is
+      // focused (the diagnose-first prompt then checks that skill before teaching).
+      const band = scopeBandForGrade(s.grade)
+      const focusLabel =
+        focusSlug && band && isScopeSubject(subject) ? skillLabel(band, subject, focusSlug) : null
       const initialMessages: ChatMessage[] = saved.length
         ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
-        : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject) }]
-      setReady({ student: s, initialMessages })
+        : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject, focusLabel) }]
+      setReady({ student: s, initialMessages, focusLabel })
     })
     return () => {
       active = false
     }
-  }, [id, subject, navigate])
+  }, [id, subject, focusSlug, navigate])
 
   if (!ready || !subject) {
     return (
@@ -92,7 +104,12 @@ export function Session() {
   }
 
   return (
-    <SessionView student={ready.student} subject={subject} initialMessages={ready.initialMessages} />
+    <SessionView
+      student={ready.student}
+      subject={subject}
+      initialMessages={ready.initialMessages}
+      focusLabel={ready.focusLabel}
+    />
   )
 }
 
@@ -100,10 +117,12 @@ function SessionView({
   student,
   subject,
   initialMessages,
+  focusLabel,
 }: {
   student: Student
   subject: string
   initialMessages: ChatMessage[]
+  focusLabel: string | null
 }) {
   const navigate = useNavigate()
   const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
@@ -112,6 +131,7 @@ function SessionView({
     childName: student.first_name,
     grade: student.grade,
     level: student.level,
+    focusAreas: focusLabel ? [focusLabel] : [],
     initialMessages,
   })
 
