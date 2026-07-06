@@ -6,6 +6,8 @@ import { YourChildren } from '@/pages/YourChildren'
 import { AddChild } from '@/pages/AddChild'
 import { StudentPicker } from '@/pages/StudentPicker'
 import { KidHome } from '@/pages/KidHome'
+import { SkillsBuilding } from '@/pages/SkillsBuilding'
+import { HomeworkStart } from '@/pages/HomeworkStart'
 import { Practice } from '@/pages/Practice'
 import { Diagnostic } from '@/pages/Diagnostic'
 import { Session } from '@/pages/Session'
@@ -32,6 +34,9 @@ export function AppRoutes() {
       <Route path="/children/:id/edit" element={<AddChild />} />
       <Route path="/students" element={<StudentPicker />} />
       <Route path="/students/:id" element={<KidHome />} />
+      {/* Arrival choices (Phase 1 stubs): skills building (Phase 2) + homework (Phase 3). */}
+      <Route path="/students/:id/learn" element={<SkillsBuilding />} />
+      <Route path="/students/:id/homework" element={<HomeworkStart />} />
       <Route path="/students/:id/session/:subject" element={<Session />} />
       <Route path="/students/:id/practice/:skill" element={<Practice />} />
       {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
