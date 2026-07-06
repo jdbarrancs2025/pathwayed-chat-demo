@@ -1,9 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
-import { avColor, deleteStudent, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
+import {
+  avColor,
+  avatarModeOf,
+  deleteStudent,
+  gradeLabel,
+  initials,
+  levelLabel,
+  listStudents,
+  updateAvatarMode,
+  type AvatarMode,
+  type Student,
+} from '@/lib/students'
 import { getDisplayName, updateDisplayName } from '@/lib/profile'
 import { BillingPanel } from '@/components/BillingPanel'
+import { AvatarModePicker } from '@/components/AvatarModePicker'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
 
@@ -37,6 +49,13 @@ export function Settings() {
   const removeChild = async (id: string) => {
     await deleteStudent(id)
     setChildren((prev) => prev.filter((c) => c.id !== id))
+  }
+
+  // Writes the same students.avatar_mode field the edit form uses. Optimistic:
+  // reflect the choice locally, then persist. No grade touch → no reassessment.
+  const setChildAvatar = async (id: string, mode: AvatarMode) => {
+    setChildren((prev) => prev.map((c) => (c.id === id ? { ...c, avatar_mode: mode } : c)))
+    await updateAvatarMode(id, mode)
   }
 
   const saveName = async () => {
@@ -84,9 +103,6 @@ export function Settings() {
                 <div
                   key={child.id}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 14,
                     width: '100%',
                     background: '#fff',
                     border: '1.6px solid #ECE4D8',
@@ -95,6 +111,7 @@ export function Settings() {
                     marginBottom: 12,
                   }}
                 >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <div
                     style={{
                       width: 54,
@@ -131,6 +148,11 @@ export function Settings() {
                   <button type="button" style={{ ...linkStyle, color: '#C0492F', marginLeft: 12 }} onClick={() => removeChild(child.id)}>
                     Remove
                   </button>
+                  </div>
+                  <AvatarModePicker
+                    value={avatarModeOf(child)}
+                    onChange={(m) => void setChildAvatar(child.id, m)}
+                  />
                 </div>
               ))
             )}

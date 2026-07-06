@@ -3,7 +3,6 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 import '@/styles/app-screens.css'
 import { useAuth } from '@/context/AuthContext'
 import {
-  AVATAR_MODES,
   GRADES,
   LEVELS,
   avatarModeOf,
@@ -15,6 +14,7 @@ import {
   type AvatarMode,
   type StudentLevel,
 } from '@/lib/students'
+import { AvatarModePicker } from '@/components/AvatarModePicker'
 import { getSubscription, type Subscription } from '@/lib/profile'
 import {
   ADDON_PRICE,
@@ -298,35 +298,7 @@ export function AddChild() {
               })}
             </div>
 
-            <div style={{ margin: '16px 0', textAlign: 'left' }}>
-              <label style={{ display: 'block', fontWeight: 600, fontSize: 14, marginBottom: 7 }}>
-                How should Nikki appear?
-              </label>
-              {AVATAR_MODES.map((opt) => {
-                const on = avatarMode === opt.id
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setAvatarMode(opt.id)}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      textAlign: 'left',
-                      border: on ? '1.6px solid #CC543C' : '1.6px solid #ECE4D8',
-                      borderRadius: 14,
-                      padding: '14px 16px',
-                      marginBottom: 10,
-                      background: on ? '#FBEEE9' : '#fff',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <div style={{ fontWeight: 700, fontSize: 15, color: '#1C2230' }}>{opt.label}</div>
-                    <div style={{ fontSize: 13, color: '#5A6172', marginTop: 2 }}>{opt.desc}</div>
-                  </button>
-                )
-              })}
-            </div>
+            <AvatarModePicker value={avatarMode} onChange={setAvatarMode} />
 
             {/* Heads-up when this child goes beyond the plan's included seats. */}
             {willBill && !confirmBilling && (

@@ -95,6 +95,13 @@ export async function updateStudent(id: string, input: StudentInput) {
   return supabase.from('students').update(input).eq('id', id)
 }
 
+/** Focused write of just the Nikki avatar mode — the same students.avatar_mode
+ *  field the edit form writes, so Settings and the edit form stay in sync. Does
+ *  not touch grade, so it never triggers a reassessment. */
+export async function updateAvatarMode(studentId: string, mode: AvatarMode) {
+  return supabase.from('students').update({ avatar_mode: mode }).eq('id', studentId)
+}
+
 export async function deleteStudent(id: string) {
   return supabase.from('students').delete().eq('id', id)
 }
