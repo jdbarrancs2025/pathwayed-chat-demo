@@ -305,7 +305,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
         type="button"
         className="btn btn-soft"
         style={{ marginTop: 14 }}
-        onClick={() => navigate(`/students/${student.id}/diagnostic?fresh=1`)}
+        onClick={() => navigate(`/students/${student.id}/diagnostic?fresh=1&return=/parent`)}
       >
         Reassess {student.first_name}’s level
       </button>

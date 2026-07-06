@@ -33,9 +33,11 @@ import '@/styles/app-screens.css'
  *    up at the student's real level. A plain summary is shown on completion.
  * Still behind the direct /students/:id/diagnostic route; not wired into onboarding.
  */
-/** Only honor a same-app student return path (guards against open redirects). */
+/** Only honor a known same-app return path (guards against open redirects):
+ *  this student's own routes, or the parent dashboard (parent-triggered reassess). */
 function resolveReturn(raw: string | null, studentId: string): string {
-  return raw && raw.startsWith(`/students/${studentId}`) ? raw : `/students/${studentId}`
+  if (raw && (raw.startsWith(`/students/${studentId}`) || raw === '/parent')) return raw
+  return `/students/${studentId}`
 }
 
 export function Diagnostic() {
