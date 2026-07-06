@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { NikkiOrb } from '@/components/NikkiOrb'
+import { NikkiFace } from '@/components/NikkiFace'
+import type { AvatarMode } from '@/lib/students'
 
 const RATINGS: [string, string, string][] = [
   ['great', 'Great!', '😀'],
@@ -9,20 +10,21 @@ const RATINGS: [string, string, string][] = [
 
 interface SessionFeedbackProps {
   childName: string
+  mode?: AvatarMode
   saving: boolean
   onDone: (rating: string, note: string) => void
   onKeepLearning: () => void
 }
 
 /** End-of-session feedback: rating + optional note (written to the feedback table). */
-export function SessionFeedback({ childName, saving, onDone, onKeepLearning }: SessionFeedbackProps) {
+export function SessionFeedback({ childName, mode = 'video', saving, onDone, onKeepLearning }: SessionFeedbackProps) {
   const [rating, setRating] = useState<string | null>(null)
   const [note, setNote] = useState('')
 
   return (
     <div className="feedback-overlay">
       <div className="feedback-card">
-        <NikkiOrb size={84} />
+        <NikkiFace mode={mode} size={84} />
 
         <h1 style={{ fontSize: 23, margin: '20px 0 4px' }}>Nice work, {childName}!</h1>
         <p className="muted" style={{ margin: 0 }}>

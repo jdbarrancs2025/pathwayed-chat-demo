@@ -3,13 +3,16 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 import '@/styles/app-screens.css'
 import { useAuth } from '@/context/AuthContext'
 import {
+  AVATAR_MODES,
   GRADES,
   LEVELS,
+  avatarModeOf,
   createStudent,
   getStudent,
   gradeLabel,
   listStudents,
   updateStudent,
+  type AvatarMode,
   type StudentLevel,
 } from '@/lib/students'
 import { getSubscription, type Subscription } from '@/lib/profile'
@@ -64,6 +67,7 @@ export function AddChild() {
   const [originalGrade, setOriginalGrade] = useState('')
   const [confirmReassess, setConfirmReassess] = useState(false)
   const [level, setLevel] = useState<StudentLevel>('on')
+  const [avatarMode, setAvatarMode] = useState<AvatarMode>('video')
   const [nameError, setNameError] = useState(false)
   const [gradeError, setGradeError] = useState(false)
   const [errMsg, setErrMsg] = useState('')
@@ -88,6 +92,7 @@ export function AddChild() {
       setGrade(student.grade)
       setOriginalGrade(student.grade)
       setLevel((student.level as StudentLevel) ?? 'on')
+      setAvatarMode(avatarModeOf(student))
       setLoading(false)
     })
     return () => {
@@ -148,7 +153,7 @@ export function AddChild() {
 
     setSaving(true)
 
-    const input = { first_name: trimmed, grade, level }
+    const input = { first_name: trimmed, grade, level, avatar_mode: avatarMode }
 
     if (editing && id) {
       const { error } = await updateStudent(id, input)
@@ -274,6 +279,36 @@ export function AddChild() {
                     key={opt.id}
                     type="button"
                     onClick={() => setLevel(opt.id)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      border: on ? '1.6px solid #CC543C' : '1.6px solid #ECE4D8',
+                      borderRadius: 14,
+                      padding: '14px 16px',
+                      marginBottom: 10,
+                      background: on ? '#FBEEE9' : '#fff',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: 15, color: '#1C2230' }}>{opt.label}</div>
+                    <div style={{ fontSize: 13, color: '#5A6172', marginTop: 2 }}>{opt.desc}</div>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div style={{ margin: '16px 0', textAlign: 'left' }}>
+              <label style={{ display: 'block', fontWeight: 600, fontSize: 14, marginBottom: 7 }}>
+                How should Nikki appear?
+              </label>
+              {AVATAR_MODES.map((opt) => {
+                const on = avatarMode === opt.id
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setAvatarMode(opt.id)}
                     style={{
                       display: 'block',
                       width: '100%',

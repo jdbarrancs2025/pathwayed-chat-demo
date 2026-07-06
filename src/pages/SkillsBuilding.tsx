@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { getStudent, type Student } from '@/lib/students'
+import { getStudent, avatarModeOf, type Student } from '@/lib/students'
 import { SUBJECTS, type SubjectDef } from '@/lib/subjects'
 import {
   scopeBandForGrade,
@@ -11,7 +11,7 @@ import {
 } from '@/lib/lessonPath'
 import type { ScopeSubject } from '@/lib/scopeSequence'
 import { TopMenu } from '@/components/TopMenu'
-import { NikkiOrb } from '@/components/NikkiOrb'
+import { NikkiFace } from '@/components/NikkiFace'
 import '@/styles/app-screens.css'
 
 // Remember the subject the kid last built, so a return visit leads with it.
@@ -122,7 +122,7 @@ export function SkillsBuilding() {
         {phase === 'coming-soon' && (
           <>
             <div style={hero}>
-              <NikkiOrb size={96} />
+              <NikkiFace mode={avatarModeOf(student)} size={96} />
               <h1 className="greet">Skills building</h1>
               <p className="muted">
                 My guided lessons for this grade are coming soon. In the meantime, bring me your homework and we’ll
@@ -147,7 +147,7 @@ export function SkillsBuilding() {
         {phase === 'need-check' && (
           <>
             <div style={hero}>
-              <NikkiOrb size={96} />
+              <NikkiFace mode={avatarModeOf(student)} size={96} />
               <h1 className="greet">Let’s get started, {student.first_name}!</h1>
               <p className="muted">
                 First, a quick check so I can pick just-right lessons for you. It’s short — no grades, just so I know
@@ -174,7 +174,7 @@ export function SkillsBuilding() {
         {phase === 'pick' && (
           <>
             <div style={hero}>
-              <NikkiOrb size={96} />
+              <NikkiFace mode={avatarModeOf(student)} size={96} />
               <h1 className="greet">What do you want to build today?</h1>
               <p className="muted">Pick a subject and I’ll pull up your next lesson.</p>
             </div>
@@ -206,7 +206,7 @@ export function SkillsBuilding() {
         {phase === 'lesson' && (
           <>
             <div style={hero}>
-              <NikkiOrb size={96} state={lessonLoading ? 'thinking' : 'idle'} />
+              <NikkiFace mode={avatarModeOf(student)} size={96} state={lessonLoading ? 'thinking' : 'idle'} />
               {lessonLoading ? (
                 <h1 className="greet">Picking today’s lesson…</h1>
               ) : lesson ? (

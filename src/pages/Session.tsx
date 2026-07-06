@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
-import { getStudent, type Student } from '@/lib/students'
+import { getStudent, avatarModeOf, type Student } from '@/lib/students'
 import { loadTranscript, saveFeedback } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
 import { skillLabel, scopeBandForGrade, isScopeSubject } from '@/lib/lessonPath'
@@ -311,6 +311,7 @@ function SessionView({
   }
 
   const callState: CallState = isLoading ? 'thinking' : speaking ? 'speaking' : 'idle'
+  const avatarMode = avatarModeOf(student)
   const recording = isReading
     ? convoMic.active
     : recorder.state === 'recording' || recorder.state === 'requesting'
@@ -363,7 +364,7 @@ function SessionView({
 
       <div className="work" data-pane={pane}>
         <div className="chatpane">
-          <CallStage state={callState} />
+          <CallStage state={callState} mode={avatarMode} />
           <div className="feed" ref={feedRef}>
             {visibleMessages.map((m) => (
               <div key={m.id} className={`msg ${m.role === 'assistant' ? 'nikki' : 'me'}`}>
@@ -459,6 +460,7 @@ function SessionView({
       {showFeedback && (
         <SessionFeedback
           childName={student.first_name}
+          mode={avatarMode}
           saving={savingFeedback}
           onDone={(rating, note) => void submitFeedback(rating, note)}
           onKeepLearning={() => setShowFeedback(false)}

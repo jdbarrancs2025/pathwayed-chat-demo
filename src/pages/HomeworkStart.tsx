@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { SUBJECTS } from '@/lib/subjects'
+import { getStudent, avatarModeOf, type Student } from '@/lib/students'
 import { TopMenu } from '@/components/TopMenu'
-import { NikkiOrb } from '@/components/NikkiOrb'
+import { NikkiFace } from '@/components/NikkiFace'
 import '@/styles/app-screens.css'
 
 /**
@@ -13,6 +15,18 @@ import '@/styles/app-screens.css'
 export function HomeworkStart() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [student, setStudent] = useState<Student | null>(null)
+
+  useEffect(() => {
+    if (!id) return
+    let active = true
+    getStudent(id).then((s) => {
+      if (active) setStudent(s)
+    })
+    return () => {
+      active = false
+    }
+  }, [id])
 
   return (
     <div className="kid-screen">
@@ -28,7 +42,7 @@ export function HomeworkStart() {
             marginBottom: 22,
           }}
         >
-          <NikkiOrb size={96} />
+          <NikkiFace mode={avatarModeOf(student)} size={96} />
           <h1 className="greet">What’s the homework?</h1>
           <p className="muted">Pick the subject and bring me a photo or PDF — we’ll work through it together.</p>
         </div>

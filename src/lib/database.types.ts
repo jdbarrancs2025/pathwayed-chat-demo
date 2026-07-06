@@ -92,6 +92,9 @@ export interface Database {
           // Placement (migration 0006): parent consent to show above-grade / SAT
           // framing. Governs framing only, not whether the child advances.
           above_grade_ok: boolean
+          // Parent-chosen Nikki visual per child: 'video' | 'orb' | 'voice'
+          // (default 'video'). Check-constrained in the DB.
+          avatar_mode: string
         }
         Insert: {
           id?: string
@@ -101,6 +104,7 @@ export interface Database {
           level: string
           learning_preferences?: Json
           above_grade_ok?: boolean
+          avatar_mode?: string
         }
         Update: {
           id?: string
@@ -110,6 +114,7 @@ export interface Database {
           level?: string
           learning_preferences?: Json
           above_grade_ok?: boolean
+          avatar_mode?: string
         }
         Relationships: []
       }

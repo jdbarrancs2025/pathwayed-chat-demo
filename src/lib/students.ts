@@ -4,10 +4,27 @@ import type { Database } from '@/lib/database.types'
 export type Student = Database['public']['Tables']['students']['Row']
 export type StudentLevel = 'on' | 'ahead' | 'advanced'
 
+/** How Nikki appears for this child (parent-chosen). Voice = static nameplate,
+ *  ElevenLabs voice still plays. Defaults to video. */
+export type AvatarMode = 'video' | 'orb' | 'voice'
+
+export const AVATAR_MODES: { id: AvatarMode; label: string; desc: string }[] = [
+  { id: 'video', label: 'Video', desc: "Nikki's animated face" },
+  { id: 'orb', label: 'Orb', desc: 'A calmer animated orb' },
+  { id: 'voice', label: 'Voice only', desc: 'A simple nameplate — no animated face' },
+]
+
+/** Resolve a student's avatar mode, defaulting to video for null/legacy/invalid. */
+export function avatarModeOf(student: Pick<Student, 'avatar_mode'> | null | undefined): AvatarMode {
+  const m = student?.avatar_mode
+  return m === 'orb' || m === 'voice' ? m : 'video'
+}
+
 export interface StudentInput {
   first_name: string
   grade: string
   level: StudentLevel
+  avatar_mode?: AvatarMode
 }
 
 export const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']

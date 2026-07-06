@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { getStudent, gradeLabel, levelLabel, type Student } from '@/lib/students'
+import { getStudent, gradeLabel, levelLabel, avatarModeOf, type Student } from '@/lib/students'
 import { HOMEWORK } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
-import { NikkiOrb } from '@/components/NikkiOrb'
+import { NikkiFace } from '@/components/NikkiFace'
 import '@/styles/app-screens.css'
 
 /**
@@ -61,7 +61,7 @@ export function KidHome() {
             marginBottom: 22,
           }}
         >
-          <NikkiOrb size={104} />
+          <NikkiFace mode={avatarModeOf(student)} size={104} />
           <h1 className="greet">Hi, {student.first_name}!</h1>
           <p className="muted">Great to see you. What are we doing today?</p>
         </div>
