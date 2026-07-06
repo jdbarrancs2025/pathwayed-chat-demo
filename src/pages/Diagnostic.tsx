@@ -10,20 +10,16 @@ import {
   type PracticeableSkill,
 } from '@/lib/questions'
 import { seedDiagnosticMastery } from '@/lib/skills'
-import { diagnosticBands, placement, shouldExtend, type DiagnosticResult, type Placement } from '@/lib/diagnostic'
+import { diagnosticBands, shouldExtend, type DiagnosticResult } from '@/lib/diagnostic'
 import { gradeBand } from '@/lib/gradeBand'
+import {
+  loadDiagnosticProgress,
+  saveDiagnosticProgress,
+  clearDiagnosticProgress,
+} from '@/lib/diagnosticProgress'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
-
-// Completion line. When the parent declined above-grade framing, soften an
-// above-grade placement to a neutral message (consent governs framing, not the
-// seeded mastery — the child is still placed at their real level either way).
-function completionLine(place: Placement | null, consent: boolean): string {
-  if (!place) return 'Your answers are saved.'
-  if (place.aboveGrade && !consent) return 'We’ll start you at just the right level.'
-  return place.label
-}
 
 /**
  * Placement diagnostic — PHASE 2 (adaptive + placement). Still silent: present ->
@@ -56,7 +52,6 @@ export function Diagnostic() {
   const [extended, setExtended] = useState(false)
   const [busy, setBusy] = useState(false) // fetching the extension, or seeding at the end
   const [done, setDone] = useState(false)
-  const [place, setPlace] = useState<Placement | null>(null)
   const [started, setStarted] = useState(false)
   const [consent, setConsent] = useState(false) // parent OK to show above-grade / SAT framing
   const shownAtRef = useRef(0)
@@ -65,12 +60,31 @@ export function Diagnostic() {
     if (!id) return
     let active = true
     ;(async () => {
-      const [s, practiceable] = await Promise.all([getStudent(id), listPracticeableSkills()])
+      const s = await getStudent(id)
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
         return
       }
+      setStudent(s)
+
+      // Resume a paused run (device-local) instead of re-fetching a new set.
+      const saved = loadDiagnosticProgress(s.id)
+      if (saved) {
+        setConsent(saved.consent)
+        setStarted(saved.started)
+        setQuestions(saved.questions)
+        setAtBand(saved.atBand)
+        setExtensionSkills(saved.extensionSkills)
+        setIndex(saved.index)
+        setResults(saved.results)
+        setExtended(saved.extended)
+        return
+      }
+
+      // Fresh assembly.
+      const practiceable = await listPracticeableSkills()
+      if (!active) return
       const inBand = (bands: string[]) => (sk: PracticeableSkill) => !!sk.grade_band && bands.includes(sk.grade_band)
       const { initial, extension } = diagnosticBands(s.grade)
       let initialSkills = practiceable.filter(inBand(initial))
@@ -85,7 +99,6 @@ export function Diagnostic() {
       }
       const qs = await fetchDiagnosticQuestions(initialSkills)
       if (!active) return
-      setStudent(s)
       setAtBand(at)
       setExtensionSkills(extSkills)
       setQuestions(qs)
@@ -94,6 +107,22 @@ export function Diagnostic() {
       active = false
     }
   }, [id, navigate])
+
+  // Persist the running assessment so it can be paused and resumed. Only once
+  // started and before completion (finishing clears it in finish()).
+  useEffect(() => {
+    if (!student || !started || done || !questions) return
+    saveDiagnosticProgress(student.id, {
+      consent,
+      started,
+      questions,
+      atBand,
+      extensionSkills,
+      index,
+      results,
+      extended,
+    })
+  }, [student, started, done, questions, atBand, extensionSkills, index, results, extended, consent])
 
   // Stamp the presented-at time whenever a new question is shown, including when
   // the quiz starts (so reading the consent intro isn't counted). Date.now() is
@@ -113,11 +142,14 @@ export function Diagnostic() {
 
   const finish = async (allResults: DiagnosticResult[], stu: Student) => {
     setBusy(true)
+    // The real placement is the seeded mastery (behind the scenes); the kid never
+    // sees a score or band. Parent-facing per-subject bands are derived separately
+    // from the stored diagnostic attempts.
     await seedDiagnosticMastery(
       stu.id,
       allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
     )
-    setPlace(placement(allResults, atBand))
+    clearDiagnosticProgress(stu.id)
     setBusy(false)
     setDone(true)
   }
@@ -190,24 +222,20 @@ export function Diagnostic() {
   }
 
   if (done) {
+    // No score, no band, no verdict to the child — just a positive forward line
+    // and straight into learning.
     return (
       <div className="kid-screen">
         <div className="shell">
           <TopMenu />
-          <h1 className="greet">All done, {student.first_name}!</h1>
-          <div className="panel practice-summary">
-            {place && (
-              <p className="practice-score">
-                {place.correct} <span className="muted">/ {place.total}</span>
-              </p>
-            )}
-            <p className="practice-encourage">Great effort! {completionLine(place, consent)}</p>
-          </div>
+          <h1 className="greet">Perfect — I know just where to start you!</h1>
+          <p className="muted">Great effort, {student.first_name}. Let’s jump into your first lesson.</p>
           <button
             className="btn btn-navy"
+            style={{ marginTop: 14 }}
             onClick={() => navigate(resolveReturn(searchParams.get('return'), student.id))}
           >
-            {searchParams.get('return') ? 'Start my first lesson' : 'See my dashboard'}
+            Let’s go →
           </button>
         </div>
       </div>
@@ -252,7 +280,9 @@ export function Diagnostic() {
       <div className="shell">
         <TopMenu />
         <p className="practice-solo">Just do your best — this helps us find the right level for you.</p>
-        <div className="practice-progress muted">Question {index + 1}</div>
+        <div className="practice-progress muted">
+          Question {index + 1} of {questions.length}
+        </div>
         <div className="panel practice-q">
           <div className="practice-stem">
             <MathText content={current.stem} />

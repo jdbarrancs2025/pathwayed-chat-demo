@@ -57,6 +57,7 @@ interface ReadyState {
   student: Student
   initialMessages: ChatMessage[]
   focusLabel: string | null
+  transcriptKey: string
 }
 
 export function Session() {
@@ -71,8 +72,11 @@ export function Session() {
       navigate('/students', { replace: true })
       return
     }
+    // Transcript is keyed per skill (subject:skill) so each new lesson opens fresh
+    // and re-entering the same skill resumes; homework/plain sessions key on subject.
+    const transcriptKey = focusSlug ? `${subject}:${focusSlug}` : subject
     let active = true
-    Promise.all([getStudent(id), loadTranscript(id, subject)]).then(([s, saved]) => {
+    Promise.all([getStudent(id), loadTranscript(id, transcriptKey)]).then(([s, saved]) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
@@ -86,7 +90,7 @@ export function Session() {
       const initialMessages: ChatMessage[] = saved.length
         ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
         : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject, focusLabel) }]
-      setReady({ student: s, initialMessages, focusLabel })
+      setReady({ student: s, initialMessages, focusLabel, transcriptKey })
     })
     return () => {
       active = false
@@ -109,6 +113,7 @@ export function Session() {
       subject={subject}
       initialMessages={ready.initialMessages}
       focusLabel={ready.focusLabel}
+      transcriptKey={ready.transcriptKey}
     />
   )
 }
@@ -118,11 +123,13 @@ function SessionView({
   subject,
   initialMessages,
   focusLabel,
+  transcriptKey,
 }: {
   student: Student
   subject: string
   initialMessages: ChatMessage[]
   focusLabel: string | null
+  transcriptKey: string
 }) {
   const navigate = useNavigate()
   const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
@@ -132,6 +139,7 @@ function SessionView({
     grade: student.grade,
     level: student.level,
     focusAreas: focusLabel ? [focusLabel] : [],
+    transcriptKey,
     initialMessages,
   })
 

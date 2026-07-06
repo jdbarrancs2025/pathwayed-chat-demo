@@ -13,6 +13,9 @@ interface UseSessionChatOptions {
   level: string
   /** Focus areas for the tutor prompt (e.g. today's skill label). Defaults to []. */
   focusAreas?: string[]
+  /** Storage key for the transcript. Defaults to `subject`; skills-building
+   *  lessons pass `subject:skill` so each skill has its own fresh transcript. */
+  transcriptKey?: string
   /** Resolved opening transcript: the saved messages, or a single greeting. */
   initialMessages: ChatMessage[]
 }
@@ -71,6 +74,7 @@ async function streamInto(
  */
 export function useSessionChat(opts: UseSessionChatOptions) {
   const { studentId, subject } = opts
+  const transcriptKey = opts.transcriptKey ?? subject
   const [messages, setMessages] = useState<ChatMessage[]>(opts.initialMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -82,8 +86,8 @@ export function useSessionChat(opts: UseSessionChatOptions) {
 
   const persist = useCallback(
     (msgs: ChatMessage[]) =>
-      saveTranscript(studentId, subject, msgs.map(({ role, content }) => ({ role, content }))),
-    [studentId, subject],
+      saveTranscript(studentId, transcriptKey, msgs.map(({ role, content }) => ({ role, content }))),
+    [studentId, transcriptKey],
   )
 
   const sendMessage = useCallback(

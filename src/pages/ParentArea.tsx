@@ -11,6 +11,7 @@ import {
   type SatProjectionPayload,
 } from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
+import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
 import { formatRelativeDay } from '@/lib/format'
@@ -33,6 +34,7 @@ interface ChildData {
   mastery: StudentMasteryView
   sat: SatProjectionPayload | null
   lastActivity: string | null
+  placements: SubjectPlacement[]
 }
 
 /**
@@ -58,14 +60,15 @@ export function ParentArea() {
       const [kids, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
       const data = await Promise.all(
         kids.map(async (student) => {
-          const [readiness, mastery, lastActivity] = await Promise.all([
+          const [readiness, mastery, lastActivity, placements] = await Promise.all([
             ensureFreshReadiness(student.id),
             getStudentMastery(student.id, student.grade),
             getLastActivity(student.id),
+            getSubjectPlacements(student.id, student.grade),
           ])
           // After ensureFreshReadiness so the just-written 'sat' row is current.
           const sat = await getSatPayload(student.id)
-          return { student, readiness, mastery, sat, lastActivity }
+          return { student, readiness, mastery, sat, lastActivity, placements }
         }),
       )
       if (!active) return
@@ -127,9 +130,9 @@ export function ParentArea() {
 }
 
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
-  const { student, readiness, mastery, sat, lastActivity } = data
+  const { student, readiness, mastery, sat, lastActivity, placements } = data
   const pathway = readiness.pathway
-  const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity
+  const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
 
   return (
     <div className="panel">
@@ -158,6 +161,36 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
         </p>
       ) : (
         <>
+          {placements.length > 0 && (
+            <div className="pd-section">
+              <div className="pd-label">Placement by subject</div>
+              {placements.map((p) => {
+                const copy = placementCopy(p.level, subjectDisplayName(p.subject), !!student.above_grade_ok)
+                return (
+                  <div key={p.subject} className="subj-group">
+                    <div className="subj-head">
+                      <span className="dot" style={{ background: accentFor(p.subject) }} />
+                      {subjectDisplayName(p.subject)}
+                      <span
+                        className="chip"
+                        style={{
+                          marginLeft: 8,
+                          color: accentFor(p.subject),
+                          borderColor: accentFor(p.subject),
+                        }}
+                      >
+                        {copy.band}
+                      </span>
+                    </div>
+                    <p className="muted" style={{ margin: '4px 0 0', fontSize: 13, lineHeight: 1.5 }}>
+                      {copy.nextStep}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
           {readiness.hasAny && (
             <div className="pd-section">
               <div className="pd-label">Readiness by subject</div>
