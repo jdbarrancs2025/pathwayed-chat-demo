@@ -6,13 +6,14 @@ import type { ImageTurn } from '@/lib/image'
 
 type Tool = 'note' | 'cards' | 'home'
 
-/** Subject-specific tool set. */
-function toolsFor(subject: string): Tool[] {
+/** Subject-specific tool set. In homework mode the photo/PDF upload is added as
+ *  the leading tool, so the student gets the subject's interface AND can hand
+ *  Nikki their assignment. */
+function toolsFor(subject: string, homeworkMode: boolean): Tool[] {
   if (subject === 'homework') return ['home']
   // Reading: Flashcards is primary; the note tool is a simple write + snap-a-page.
-  if (subject === 'reading') return ['cards', 'note']
-  if (subject === 'science') return ['note', 'cards']
-  return ['note']
+  const base: Tool[] = subject === 'reading' ? ['cards', 'note'] : subject === 'science' ? ['note', 'cards'] : ['note']
+  return homeworkMode ? ['home', ...base] : base
 }
 
 /** The note tool is labelled per subject (a full notepad vs. a simple writing area). */
@@ -35,6 +36,8 @@ interface SessionWorkspaceProps {
    *  MathLive math-field so its global keyboard listener can't eat the chat
    *  spacebar while the Chat pane is showing. */
   paneActive: boolean
+  /** Homework flow: surface the photo/PDF upload alongside the subject tools. */
+  homeworkMode?: boolean
   onSendText: (text: string) => void
   onSendImage: (turn: ImageTurn) => void
 }
@@ -45,10 +48,11 @@ export function SessionWorkspace({
   grade,
   level,
   paneActive,
+  homeworkMode = false,
   onSendText,
   onSendImage,
 }: SessionWorkspaceProps) {
-  const tools = toolsFor(subject)
+  const tools = toolsFor(subject, homeworkMode)
   const [tab, setTab] = useState<Tool>(tools[0])
   const active = tools.includes(tab) ? tab : tools[0]
 

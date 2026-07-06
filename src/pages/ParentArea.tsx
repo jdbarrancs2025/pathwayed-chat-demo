@@ -130,6 +130,7 @@ export function ParentArea() {
 }
 
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
+  const navigate = useNavigate()
   const { student, readiness, mastery, sat, lastActivity, placements } = data
   const pathway = readiness.pathway
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
@@ -297,6 +298,17 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
           </div>
         </>
       )}
+
+      {/* Reassessment layers on top of existing mastery (earned mastery is kept;
+          new/higher-band skills get re-placed), then the path picks up from there. */}
+      <button
+        type="button"
+        className="btn btn-soft"
+        style={{ marginTop: 14 }}
+        onClick={() => navigate(`/students/${student.id}/diagnostic?fresh=1`)}
+      >
+        Reassess {student.first_name}’s level
+      </button>
     </div>
   )
 }

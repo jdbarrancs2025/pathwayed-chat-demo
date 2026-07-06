@@ -61,6 +61,8 @@ export function AddChild() {
 
   const [name, setName] = useState('')
   const [grade, setGrade] = useState('')
+  const [originalGrade, setOriginalGrade] = useState('')
+  const [confirmReassess, setConfirmReassess] = useState(false)
   const [level, setLevel] = useState<StudentLevel>('on')
   const [nameError, setNameError] = useState(false)
   const [gradeError, setGradeError] = useState(false)
@@ -84,6 +86,7 @@ export function AddChild() {
       }
       setName(student.first_name)
       setGrade(student.grade)
+      setOriginalGrade(student.grade)
       setLevel((student.level as StudentLevel) ?? 'on')
       setLoading(false)
     })
@@ -135,6 +138,14 @@ export function AddChild() {
       return
     }
 
+    // Editing + grade changed → prompt first; on confirm, save and route into a
+    // fresh assessment that resets their level (layered on existing mastery).
+    const gradeChanged = editing && grade !== originalGrade
+    if (gradeChanged && !confirmReassess) {
+      setConfirmReassess(true)
+      return
+    }
+
     setSaving(true)
 
     const input = { first_name: trimmed, grade, level }
@@ -144,9 +155,10 @@ export function AddChild() {
       if (error) {
         setErrMsg('Sorry — something went wrong saving. Please try again.')
         setSaving(false)
+        setConfirmReassess(false)
         return
       }
-      navigate(returnTo, { replace: true })
+      navigate(gradeChanged ? `/students/${id}/diagnostic?fresh=1` : returnTo, { replace: true })
       return
     }
 
@@ -309,6 +321,26 @@ export function AddChild() {
               </div>
             )}
 
+            {/* Grade changed → a fresh assessment is needed to reset their level. */}
+            {confirmReassess && (
+              <div
+                style={{
+                  border: '1.6px solid #003078',
+                  background: '#EAF1FB',
+                  borderRadius: 14,
+                  padding: '13px 15px',
+                  margin: '12px 0 0',
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>New grade — quick re-check</div>
+                <p style={{ fontSize: 13.5, color: '#5A6172', margin: '4px 0 0' }}>
+                  Changing {name.trim() || 'their'}’s grade means we’ll do a short fresh assessment to reset their
+                  level. What they’ve already mastered is kept — we’ll save and start it now.
+                </p>
+              </div>
+            )}
+
             <div
               style={{
                 color: '#C0492F',
@@ -343,7 +375,9 @@ export function AddChild() {
               {saving
                 ? 'Saving…'
                 : editing
-                  ? 'Save changes'
+                  ? confirmReassess
+                    ? 'Save & start assessment'
+                    : 'Save changes'
                   : confirmBilling
                     ? `Confirm & add child (${addCost})`
                     : 'Save child'}
@@ -351,7 +385,13 @@ export function AddChild() {
             <button
               type="button"
               disabled={saving}
-              onClick={() => (confirmBilling ? setConfirmBilling(false) : navigate(returnTo))}
+              onClick={() =>
+                confirmBilling
+                  ? setConfirmBilling(false)
+                  : confirmReassess
+                    ? setConfirmReassess(false)
+                    : navigate(returnTo)
+              }
               style={{
                 display: 'block',
                 margin: '12px auto 0',
@@ -365,7 +405,7 @@ export function AddChild() {
                 opacity: saving ? 0.45 : 1,
               }}
             >
-              {confirmBilling ? 'Not now' : 'Cancel'}
+              {confirmBilling || confirmReassess ? 'Not now' : 'Cancel'}
             </button>
           </>
         )}

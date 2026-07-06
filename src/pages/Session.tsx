@@ -43,9 +43,10 @@ function lastAssistantId(msgs: ChatMessage[]): string | null {
   return null
 }
 
-function makeGreeting(name: string, subject: string, focusLabel?: string | null): string {
-  if (subject === 'homework') {
-    return `Hi ${name}! I'm Nikki. Upload a photo or PDF of the homework you're working on using the panel on the right, and we'll go through it together. You can also just tell me what it's about.`
+function makeGreeting(name: string, subject: string, focusLabel?: string | null, isHomework?: boolean): string {
+  if (subject === 'homework' || isHomework) {
+    const subjPhrase = subject === 'homework' ? '' : ` ${subjectDisplayName(subject).toLowerCase()}`
+    return `Hi ${name}! I'm Nikki. Upload a photo or PDF of your${subjPhrase} homework using the panel on the right, and we'll work through it together. You can also just tell me what it's about.`
   }
   if (focusLabel) {
     return `Hi ${name}! I'm Nikki. Today we're working on ${focusLabel}. I might ask a quick question first to see what you already know, then we'll learn it together. Ready to start?`
@@ -58,12 +59,14 @@ interface ReadyState {
   initialMessages: ChatMessage[]
   focusLabel: string | null
   transcriptKey: string
+  homeworkMode: boolean
 }
 
 export function Session() {
   const { id, subject } = useParams<{ id: string; subject: string }>()
   const [searchParams] = useSearchParams()
   const focusSlug = searchParams.get('skill')
+  const isHomework = searchParams.get('mode') === 'homework'
   const navigate = useNavigate()
   const [ready, setReady] = useState<ReadyState | null>(null)
 
@@ -89,13 +92,13 @@ export function Session() {
         focusSlug && band && isScopeSubject(subject) ? skillLabel(band, subject, focusSlug) : null
       const initialMessages: ChatMessage[] = saved.length
         ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
-        : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject, focusLabel) }]
-      setReady({ student: s, initialMessages, focusLabel, transcriptKey })
+        : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject, focusLabel, isHomework) }]
+      setReady({ student: s, initialMessages, focusLabel, transcriptKey, homeworkMode: isHomework })
     })
     return () => {
       active = false
     }
-  }, [id, subject, focusSlug, navigate])
+  }, [id, subject, focusSlug, isHomework, navigate])
 
   if (!ready || !subject) {
     return (
@@ -114,6 +117,7 @@ export function Session() {
       initialMessages={ready.initialMessages}
       focusLabel={ready.focusLabel}
       transcriptKey={ready.transcriptKey}
+      homeworkMode={ready.homeworkMode}
     />
   )
 }
@@ -124,12 +128,14 @@ function SessionView({
   initialMessages,
   focusLabel,
   transcriptKey,
+  homeworkMode,
 }: {
   student: Student
   subject: string
   initialMessages: ChatMessage[]
   focusLabel: string | null
   transcriptKey: string
+  homeworkMode: boolean
 }) {
   const navigate = useNavigate()
   const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
@@ -438,6 +444,7 @@ function SessionView({
           grade={student.grade}
           level={student.level}
           paneActive={pane === 'work' || isWide}
+          homeworkMode={homeworkMode}
           onSendText={(t) => {
             setPane('chat')
             void sendMessage(t)

@@ -68,8 +68,10 @@ export function Diagnostic() {
       }
       setStudent(s)
 
-      // Resume a paused run (device-local) instead of re-fetching a new set.
-      const saved = loadDiagnosticProgress(s.id)
+      // A reassessment (?fresh=1) always starts clean; otherwise resume a paused
+      // run (device-local) instead of re-fetching a new set.
+      if (searchParams.get('fresh')) clearDiagnosticProgress(s.id)
+      const saved = searchParams.get('fresh') ? null : loadDiagnosticProgress(s.id)
       if (saved) {
         setConsent(saved.consent)
         setStarted(saved.started)

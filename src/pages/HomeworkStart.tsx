@@ -1,12 +1,14 @@
 import { useNavigate, useParams } from 'react-router'
+import { SUBJECTS } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiOrb } from '@/components/NikkiOrb'
 import '@/styles/app-screens.css'
 
 /**
- * Homework — the homework-help entry. STUB (Phase 1): routing target only.
- * Phase 3 will ask which subject (Math / Reading / Writing / Science), load the
- * matching interface, and surface the photo/PDF upload here.
+ * Homework — Nikki asks which subject the assignment is, then opens that
+ * subject's session in homework mode: the matching workspace interface plus the
+ * photo/PDF upload so Nikki can see the assignment. Homework sessions are keyed
+ * by subject (no per-skill scoping).
  */
 export function HomeworkStart() {
   const { id } = useParams<{ id: string }>()
@@ -27,11 +29,25 @@ export function HomeworkStart() {
           }}
         >
           <NikkiOrb size={96} />
-          <h1 className="greet">Homework</h1>
-          <p className="muted">
-            Bring an assignment and we’ll work through it together — this is coming in the next step.
-          </p>
+          <h1 className="greet">What’s the homework?</h1>
+          <p className="muted">Pick the subject and bring me a photo or PDF — we’ll work through it together.</p>
         </div>
+        <section className="opener">
+          {SUBJECTS.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className="bigcard"
+              onClick={() => navigate(`/students/${id}/session/${s.id}?mode=homework`)}
+            >
+              <div className="ico" style={{ background: s.accent }} dangerouslySetInnerHTML={{ __html: s.icon }} />
+              <div>
+                <h3>{s.name}</h3>
+                <p>{s.blurb}</p>
+              </div>
+            </button>
+          ))}
+        </section>
         <button type="button" className="opener-reassess" onClick={() => navigate(`/students/${id}`)}>
           ← Back
         </button>
