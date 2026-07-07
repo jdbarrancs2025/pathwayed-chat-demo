@@ -10,6 +10,7 @@ import { useConversationMic } from '@/hooks/useConversationMic'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { SessionFeedback } from '@/components/SessionFeedback'
+import { NikkiFace } from '@/components/NikkiFace'
 import { MathText } from '@/components/MathText'
 import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
 import { recordSessionMastery } from '@/lib/skills'
@@ -19,6 +20,30 @@ import { transcribeAudio } from '@/lib/transcribe'
 import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
+
+// Rating cap: offer the end-of-lesson rating at most once per browser visit
+// ("session"), not once per lesson. sessionStorage is per-tab and clears when the
+// visit ends — exactly the granularity we want.
+const ratedKey = (studentId: string) => `pathwayed:ratedThisSession:${studentId}`
+function ratingUsedThisSession(studentId: string): boolean {
+  try {
+    return sessionStorage.getItem(ratedKey(studentId)) === '1'
+  } catch {
+    return false
+  }
+}
+function markRatingUsed(studentId: string): void {
+  try {
+    sessionStorage.setItem(ratedKey(studentId), '1')
+  } catch {
+    /* private mode / storage full — the cap is a nicety, ignore */
+  }
+}
+
+// Neutral mastery signal for a completed lesson when no rating was collected
+// (every completion after the first this visit). 'ok' maps to a mid accuracy —
+// completing counts as steady practice, not a strong or weak read.
+const NEUTRAL_COMPLETION_RATING = 'ok'
 
 // Speak in Nikki's ElevenLabs voice (falls back to the browser voice on
 // failure). setSpeaking drives the avatar's speaking ring while audio plays.
@@ -168,7 +193,9 @@ function SessionView({
   const [muted, setMuted] = useState(false)
   const [speaking, setSpeaking] = useState(false)
   const [draft, setDraft] = useState('')
-  const [showFeedback, setShowFeedback] = useState(false)
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false)
+  const [showRating, setShowRating] = useState(false)
+  const [niceWork, setNiceWork] = useState(false)
   const [savingFeedback, setSavingFeedback] = useState(false)
   // Seed with the last message already on screen so resuming doesn't replay it.
   const spokenRef = useRef<string | null>(lastAssistantId(initialMessages))
@@ -284,18 +311,12 @@ function SessionView({
     void sendMessage(text)
   }
 
-  const finish = () => {
-    stopSpeak(setSpeaking)
-    convoMic.stop()
-    setShowFeedback(true)
-  }
+  const returnToWelcome = () => navigate(`/students/${student.id}`)
 
-  const submitFeedback = async (rating: string, note: string) => {
-    setSavingFeedback(true)
-    await saveFeedback(student.id, subject, rating, note)
-    // Academic OS Phase 1: record skill mastery from this finished session
-    // (client-side under RLS). Best-effort — a failure here must never block the
-    // child returning to their dashboard.
+  // Academic OS Phase 1: record skill mastery from this session's transcript
+  // (client-side under RLS). Best-effort — a failure here must never block the
+  // child returning to their welcome.
+  const recordMastery = async (rating: string) => {
     try {
       await recordSessionMastery({
         studentId: student.id,
@@ -307,7 +328,47 @@ function SessionView({
     } catch (err) {
       console.error('mastery recording failed', err)
     }
-    navigate(`/students/${student.id}`)
+  }
+
+  // Mid-lesson exit (the ✕): nothing is completed, so warn before leaving.
+  const attemptLeave = () => setShowLeaveWarning(true)
+  const confirmLeave = () => {
+    stopSpeak(setSpeaking)
+    convoMic.stop()
+    returnToWelcome()
+  }
+
+  // Completing the lesson (the "Done" button). No forced rating per lesson: the
+  // rating is offered at most ONCE per visit (first completion); every later
+  // completion gets a brief "Nice work" close and a smooth return. A completed
+  // lesson never shows the leave warning — nothing is lost.
+  const completeLesson = () => {
+    stopSpeak(setSpeaking)
+    convoMic.stop()
+    if (ratingUsedThisSession(student.id)) {
+      void finishWithNiceWork()
+    } else {
+      setShowRating(true)
+    }
+  }
+
+  // First completion of the visit: capture the rating (real mastery signal), then
+  // return. The rating card ("Nice work, {name}!") is itself the positive close.
+  const submitRating = async (rating: string, note: string) => {
+    setSavingFeedback(true)
+    markRatingUsed(student.id)
+    await saveFeedback(student.id, subject, rating, note)
+    await recordMastery(rating)
+    setSavingFeedback(false)
+    returnToWelcome()
+  }
+
+  // Later completions this visit: brief positive close, neutral mastery signal,
+  // then a smooth auto-return. Mastery is awaited so the write isn't cut off.
+  const finishWithNiceWork = async () => {
+    setNiceWork(true)
+    await recordMastery(NEUTRAL_COMPLETION_RATING)
+    window.setTimeout(returnToWelcome, 900)
   }
 
   const callState: CallState = isLoading ? 'thinking' : speaking ? 'speaking' : 'idle'
@@ -346,10 +407,29 @@ function SessionView({
             </svg>
           )}
         </button>
-        <button className="iconbtn" title="Finish" onClick={finish}>
+        <button className="iconbtn" title="Leave lesson" aria-label="Leave lesson" onClick={attemptLeave}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 6 6 18M6 6l12 12" />
           </svg>
+        </button>
+        <button
+          type="button"
+          title="Finish this lesson"
+          onClick={completeLesson}
+          style={{
+            flexShrink: 0,
+            padding: '11px 20px',
+            borderRadius: 999,
+            border: 'none',
+            background: 'var(--orange)',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 14.5,
+            fontFamily: 'var(--body)',
+            cursor: 'pointer',
+          }}
+        >
+          Done
         </button>
       </div>
 
@@ -457,14 +537,47 @@ function SessionView({
         />
       </div>
 
-      {showFeedback && (
+      {showRating && (
         <SessionFeedback
           childName={student.first_name}
           mode={avatarMode}
           saving={savingFeedback}
-          onDone={(rating, note) => void submitFeedback(rating, note)}
-          onKeepLearning={() => setShowFeedback(false)}
+          onDone={(rating, note) => void submitRating(rating, note)}
+          onKeepLearning={() => setShowRating(false)}
         />
+      )}
+
+      {showLeaveWarning && (
+        <div className="feedback-overlay">
+          <div className="feedback-card">
+            <NikkiFace mode={avatarMode} size={84} />
+            <h1 style={{ fontSize: 22, margin: '20px 0 4px' }}>Leave this lesson?</h1>
+            <p className="muted" style={{ margin: '0 0 20px' }}>
+              Leaving now will end this session — we haven’t finished this lesson yet.
+            </p>
+            <button type="button" className="btn btn-primary" onClick={() => setShowLeaveWarning(false)}>
+              Keep going
+            </button>
+            <button
+              type="button"
+              className="link"
+              style={{ display: 'block', margin: '12px auto 0' }}
+              onClick={confirmLeave}
+            >
+              Leave anyway
+            </button>
+          </div>
+        </div>
+      )}
+
+      {niceWork && (
+        <div className="feedback-overlay">
+          <div className="feedback-card">
+            <NikkiFace mode={avatarMode} size={84} />
+            <h1 style={{ fontSize: 23, margin: '20px 0 4px' }}>Nice work, {student.first_name}!</h1>
+            <p className="muted" style={{ margin: 0 }}>Taking you back…</p>
+          </div>
+        </div>
       )}
     </div>
   )
