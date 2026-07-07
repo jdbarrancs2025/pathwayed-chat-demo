@@ -260,6 +260,36 @@ export interface Database {
         }
         Relationships: []
       }
+      // Practice-SAT Phase 2: per-student focus skills (missed SAT skills the
+      // learning path serves next). Active = resolved_at is null. Written
+      // client-side under RLS gated by owns_student(student_id).
+      student_focus_skills: {
+        Row: {
+          id: string
+          student_id: string
+          skill_id: string
+          source: string
+          created_at: string
+          resolved_at: string | null
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          skill_id: string
+          source?: string
+          created_at?: string
+          resolved_at?: string | null
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          skill_id?: string
+          source?: string
+          created_at?: string
+          resolved_at?: string | null
+        }
+        Relationships: []
+      }
       // Academic OS Phase 2 (migration 0002): computed readiness / Pathway Score
       // per student per type ('pathway' overall + 'math'/'reading'/'writing').
       // Written client-side under RLS gated by owns_student(student_id).

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { resolveSkillIdsBySlug } from '@/lib/skills'
+import { getActiveFocusSkillIds } from '@/lib/focusSkills'
 import { gradeBand } from '@/lib/gradeBand'
 import { focusAreasByGrade } from '@/lib/focusAreas'
 import { scopeSequence, type ScopeBand, type ScopeSubject } from '@/lib/scopeSequence'
@@ -36,6 +37,9 @@ export interface Lesson {
   band: ScopeBand
   /** True when every skill in this subject's track is already mastered. */
   trackComplete: boolean
+  /** True when this lesson was surfaced from the student's focus list (a skill
+   *  missed on the practice SAT), ahead of the normal sequence walk. */
+  fromFocus: boolean
 }
 
 /** Display label for a slug, from focusAreas (the source of truth for names). */
@@ -44,10 +48,15 @@ export function skillLabel(band: ScopeBand, subject: ScopeSubject, slug: string)
 }
 
 /**
- * The next lesson for a subject: walk the sequence in order, skip mastered skills,
- * return the first not-yet-mastered one (the student loops on it until mastered).
- * If the whole track is mastered, returns the last skill with trackComplete=true
- * (kept for review; cross-band promotion is a Phase 5 reassessment concern).
+ * The next lesson for a subject. Focus skills come FIRST: if the student missed
+ * any of this subject's skills on the practice SAT (active student_focus_skills),
+ * we serve the earliest such skill in sequence order — ahead of the normal walk
+ * and regardless of its mastery (a missed skill may already be ≥60). This is
+ * non-destructive: mastery is never lowered to force it.
+ *
+ * Otherwise the normal walk: skip mastered skills, return the first not-yet-
+ * mastered one (the student loops on it until mastered). If the whole track is
+ * mastered, returns the last skill with trackComplete=true (kept for review).
  * Returns null only when the grade has no track (k-2).
  */
 export async function nextLesson(
@@ -60,7 +69,31 @@ export async function nextLesson(
   const seq = scopeSequence[band][subject]
   if (!seq.length) return null
 
-  const idBySlug = await resolveSkillIdsBySlug(seq)
+  const [idBySlug, focusIds] = await Promise.all([
+    resolveSkillIdsBySlug(seq),
+    getActiveFocusSkillIds(studentId),
+  ])
+
+  // Focus skills ahead of the walk, in scope-sequence order. A focus skill only
+  // surfaces here for the subject it belongs to (SAT misses are math skills, so
+  // they appear when the kid picks math).
+  if (focusIds.size) {
+    const focusSlug = seq.find((s) => {
+      const id = idBySlug.get(s)
+      return id ? focusIds.has(id) : false
+    })
+    if (focusSlug) {
+      return {
+        slug: focusSlug,
+        label: skillLabel(band, subject, focusSlug),
+        subject,
+        band,
+        trackComplete: false,
+        fromFocus: true,
+      }
+    }
+  }
+
   const ids = seq.map((s) => idBySlug.get(s)).filter((x): x is string => !!x)
   const masteryById = new Map<string, number>()
   if (ids.length) {
@@ -79,10 +112,10 @@ export async function nextLesson(
 
   const nextSlug = seq.find((s) => !mastered(s))
   if (nextSlug) {
-    return { slug: nextSlug, label: skillLabel(band, subject, nextSlug), subject, band, trackComplete: false }
+    return { slug: nextSlug, label: skillLabel(band, subject, nextSlug), subject, band, trackComplete: false, fromFocus: false }
   }
   const last = seq[seq.length - 1]
-  return { slug: last, label: skillLabel(band, subject, last), subject, band, trackComplete: true }
+  return { slug: last, label: skillLabel(band, subject, last), subject, band, trackComplete: true, fromFocus: false }
 }
 
 /** Whether the student has any mastery yet — drives the first-arrival diagnostic. */

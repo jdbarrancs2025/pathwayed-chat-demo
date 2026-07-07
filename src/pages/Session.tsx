@@ -14,6 +14,7 @@ import { NikkiFace } from '@/components/NikkiFace'
 import { MathText } from '@/components/MathText'
 import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
 import { recordSessionMastery } from '@/lib/skills'
+import { resolveFocusForSlug } from '@/lib/focusSkills'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import { transcribeAudio } from '@/lib/transcribe'
@@ -68,13 +69,20 @@ function lastAssistantId(msgs: ChatMessage[]): string | null {
   return null
 }
 
-function makeGreeting(name: string, subject: string, focusLabel?: string | null, isHomework?: boolean): string {
+function makeGreeting(
+  name: string,
+  subject: string,
+  focusLabel?: string | null,
+  isHomework?: boolean,
+  fromSat?: boolean,
+): string {
   if (subject === 'homework' || isHomework) {
     const subjPhrase = subject === 'homework' ? '' : ` ${subjectDisplayName(subject).toLowerCase()}`
     return `Hi ${name}! I'm Nikki. Upload a photo or PDF of your${subjPhrase} homework using the panel on the right, and we'll work through it together. You can also just tell me what it's about.`
   }
   if (focusLabel) {
-    return `Hi ${name}! I'm Nikki. Today we're working on ${focusLabel}. I might ask a quick question first to see what you already know, then we'll learn it together. Ready to start?`
+    const satPhrase = fromSat ? ` This came up in your SAT Math practice, so let's strengthen it.` : ''
+    return `Hi ${name}! I'm Nikki. Today we're working on ${focusLabel}.${satPhrase} I might ask a quick question first to see what you already know, then we'll learn it together. Ready to start?`
   }
   return `Hi ${name}! I'm Nikki. I'm glad you're here. What are we working on in ${subjectDisplayName(subject).toLowerCase()} today? You can ask me a question, or use the workspace on the right to show me your work.`
 }
@@ -83,6 +91,7 @@ interface ReadyState {
   student: Student
   initialMessages: ChatMessage[]
   focusLabel: string | null
+  focusSlug: string | null
   transcriptKey: string
   homeworkMode: boolean
 }
@@ -92,6 +101,7 @@ export function Session() {
   const [searchParams] = useSearchParams()
   const focusSlug = searchParams.get('skill')
   const isHomework = searchParams.get('mode') === 'homework'
+  const fromSat = searchParams.get('from') === 'sat'
   const navigate = useNavigate()
   const [ready, setReady] = useState<ReadyState | null>(null)
 
@@ -117,13 +127,19 @@ export function Session() {
         focusSlug && band && isScopeSubject(subject) ? skillLabel(band, subject, focusSlug) : null
       const initialMessages: ChatMessage[] = saved.length
         ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
-        : [{ id: 'greeting', role: 'assistant', content: makeGreeting(s.first_name, subject, focusLabel, isHomework) }]
-      setReady({ student: s, initialMessages, focusLabel, transcriptKey, homeworkMode: isHomework })
+        : [
+            {
+              id: 'greeting',
+              role: 'assistant',
+              content: makeGreeting(s.first_name, subject, focusLabel, isHomework, fromSat),
+            },
+          ]
+      setReady({ student: s, initialMessages, focusLabel, focusSlug, transcriptKey, homeworkMode: isHomework })
     })
     return () => {
       active = false
     }
-  }, [id, subject, focusSlug, isHomework, navigate])
+  }, [id, subject, focusSlug, isHomework, fromSat, navigate])
 
   if (!ready || !subject) {
     return (
@@ -141,6 +157,7 @@ export function Session() {
       subject={subject}
       initialMessages={ready.initialMessages}
       focusLabel={ready.focusLabel}
+      focusSlug={ready.focusSlug}
       transcriptKey={ready.transcriptKey}
       homeworkMode={ready.homeworkMode}
     />
@@ -152,6 +169,7 @@ function SessionView({
   subject,
   initialMessages,
   focusLabel,
+  focusSlug,
   transcriptKey,
   homeworkMode,
 }: {
@@ -159,6 +177,7 @@ function SessionView({
   subject: string
   initialMessages: ChatMessage[]
   focusLabel: string | null
+  focusSlug: string | null
   transcriptKey: string
   homeworkMode: boolean
 }) {
@@ -352,6 +371,14 @@ function SessionView({
     }
   }
 
+  // Practice-SAT Phase 2: completing a lesson on a focus skill resolves it (keyed
+  // off the launch slug, so it's reliable even when the HS mastery signal isn't).
+  // No-op for a non-focus lesson. Only on COMPLETION — leaving mid-lesson doesn't
+  // count as addressing it.
+  const resolveFocusIfAny = async () => {
+    if (focusSlug) await resolveFocusForSlug(student.id, focusSlug)
+  }
+
   // First completion of the visit: capture the rating (real mastery signal), then
   // return. The rating card ("Nice work, {name}!") is itself the positive close.
   const submitRating = async (rating: string, note: string) => {
@@ -359,6 +386,7 @@ function SessionView({
     markRatingUsed(student.id)
     await saveFeedback(student.id, subject, rating, note)
     await recordMastery(rating)
+    await resolveFocusIfAny()
     setSavingFeedback(false)
     returnToWelcome()
   }
@@ -368,6 +396,7 @@ function SessionView({
   const finishWithNiceWork = async () => {
     setNiceWork(true)
     await recordMastery(NEUTRAL_COMPLETION_RATING)
+    await resolveFocusIfAny()
     window.setTimeout(returnToWelcome, 900)
   }
 

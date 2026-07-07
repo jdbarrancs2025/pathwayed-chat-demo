@@ -96,7 +96,9 @@ export function SkillsBuilding() {
 
   const startLesson = () => {
     if (!student || !lesson) return
-    navigate(`/students/${student.id}/session/${lesson.subject}?skill=${encodeURIComponent(lesson.slug)}`)
+    // Carry the SAT-practice origin so Nikki names it in her greeting too.
+    const from = lesson.fromFocus ? '&from=sat' : ''
+    navigate(`/students/${student.id}/session/${lesson.subject}?skill=${encodeURIComponent(lesson.slug)}${from}`)
   }
 
   if (phase === 'loading' || !student) {
@@ -213,9 +215,11 @@ export function SkillsBuilding() {
                 <>
                   <h1 className="greet">Today we’re working on {lesson.label}.</h1>
                   <p className="muted">
-                    {lesson.trackComplete
-                      ? `You’ve mastered every ${lesson.subject} skill here — let’s keep ${lesson.label} sharp.`
-                      : `I’ll show you how it works and we’ll practice together.`}
+                    {lesson.fromFocus
+                      ? `This is one of the skills from your SAT Math practice — let’s strengthen it together.`
+                      : lesson.trackComplete
+                        ? `You’ve mastered every ${lesson.subject} skill here — let’s keep ${lesson.label} sharp.`
+                        : `I’ll show you how it works and we’ll practice together.`}
                   </p>
                 </>
               ) : (

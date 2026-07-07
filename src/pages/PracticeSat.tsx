@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router'
 import { getStudent, type Student } from '@/lib/students'
 import { scoreChoice, summarizeAttempts, type PracticeQuestion } from '@/lib/questions'
 import { assembleMathSection, canTakePracticeSat, PRACTICE_SAT_MATH_LENGTH } from '@/lib/practiceSat'
+import { recordSatMisses } from '@/lib/focusSkills'
 import { explainMisconception } from '@/lib/misconceptions'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
@@ -182,8 +183,18 @@ export function PracticeSat() {
     const nextAnswers = [...answers, selected]
     setAnswers(nextAnswers)
     setSelected(null)
-    if (isLast) setPhase('done')
-    else setIndex(index + 1)
+    if (isLast) {
+      // Phase 2: record the missed SKILLS as focus skills so the learning path
+      // serves them next. The only practice-SAT DB write; still no mastery or
+      // question_attempts writes. Best-effort, fire-and-forget.
+      const missedSkillIds = questions
+        .filter((q, i) => !scoreChoice(q.choices, nextAnswers[i]).isCorrect)
+        .map((q) => q.skill_id)
+      void recordSatMisses(student.id, missedSkillIds)
+      setPhase('done')
+    } else {
+      setIndex(index + 1)
+    }
   }
 
   return (
