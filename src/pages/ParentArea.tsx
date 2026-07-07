@@ -11,6 +11,7 @@ import {
   type SatProjectionPayload,
 } from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
+import { MASTERY_THRESHOLD } from '@/lib/lessonPath'
 import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
@@ -134,6 +135,17 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
   const { student, readiness, mastery, sat, lastActivity, placements } = data
   const pathway = readiness.pathway
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
+
+  // Mastery-by-subject collapse. Collapsed by default so the panel opens clean;
+  // the header still shows a "N of M mastered" summary without expanding.
+  const [openSubjects, setOpenSubjects] = useState<Set<string>>(new Set())
+  const toggleSubject = (subject: string) =>
+    setOpenSubjects((prev) => {
+      const next = new Set(prev)
+      if (next.has(subject)) next.delete(subject)
+      else next.add(subject)
+      return next
+    })
 
   return (
     <div className="panel">
@@ -261,30 +273,71 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
           {mastery.hasAny && (
             <div className="pd-section">
               <div className="pd-label">Mastery by subject</div>
-              {mastery.bySubject.map((group) => (
-                <div key={group.subject} className="subj-group">
-                  <div className="subj-head">
-                    <span className="dot" style={{ background: accentFor(group.subject) }} />
-                    {subjectDisplayName(group.subject)}
+              <p className="mastery-key">
+                These show how well {student.first_name} knows each skill so far, and grow as they practice.{' '}
+                <strong>60% or higher</strong> means they’ve mastered it and we move on; below that, we’re still
+                building. This is a learning estimate, not a test score.
+              </p>
+              {mastery.bySubject.map((group) => {
+                const total = group.skills.length
+                const masteredCount = group.skills.filter(
+                  (s) => s.mastery_percentage >= MASTERY_THRESHOLD,
+                ).length
+                const open = openSubjects.has(group.subject)
+                return (
+                  <div key={group.subject} className="subj-group">
+                    <button
+                      type="button"
+                      className="subj-head subj-toggle"
+                      aria-expanded={open}
+                      onClick={() => toggleSubject(group.subject)}
+                    >
+                      <span className="dot" style={{ background: accentFor(group.subject) }} />
+                      <span className="subj-name">{subjectDisplayName(group.subject)}</span>
+                      <span className="subj-summary">
+                        {masteredCount} of {total} mastered
+                      </span>
+                      <svg
+                        className={`chev ${open ? 'open' : ''}`}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    </button>
+                    {open &&
+                      group.skills.map((sk) => {
+                        const isMastered = sk.mastery_percentage >= MASTERY_THRESHOLD
+                        return (
+                          <div key={sk.skill_id} className="skill-row">
+                            <div className="skill-top">
+                              <span className="skill-name">{sk.name}</span>
+                              <span className="skill-right">
+                                <span className={`skill-state ${isMastered ? 'mastered' : 'building'}`}>
+                                  {isMastered ? 'Mastered' : 'Building'}
+                                </span>
+                                <span className="skill-pct">{sk.mastery_percentage}%</span>
+                              </span>
+                            </div>
+                            <div className="bar">
+                              <i
+                                style={{
+                                  width: `${sk.mastery_percentage}%`,
+                                  background: accentFor(group.subject),
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
                   </div>
-                  {group.skills.map((sk) => (
-                    <div key={sk.skill_id} className="skill-row">
-                      <div className="skill-top">
-                        <span className="skill-name">{sk.name}</span>
-                        <span className="skill-pct">{sk.mastery_percentage}%</span>
-                      </div>
-                      <div className="bar">
-                        <i
-                          style={{
-                            width: `${sk.mastery_percentage}%`,
-                            background: accentFor(group.subject),
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
 
