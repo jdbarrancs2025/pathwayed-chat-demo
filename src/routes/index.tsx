@@ -9,6 +9,7 @@ import { KidHome } from '@/pages/KidHome'
 import { SkillsBuilding } from '@/pages/SkillsBuilding'
 import { HomeworkStart } from '@/pages/HomeworkStart'
 import { Practice } from '@/pages/Practice'
+import { PracticeSat } from '@/pages/PracticeSat'
 import { Diagnostic } from '@/pages/Diagnostic'
 import { Session } from '@/pages/Session'
 import { ParentArea } from '@/pages/ParentArea'
@@ -39,6 +40,9 @@ export function AppRoutes() {
       <Route path="/students/:id/homework" element={<HomeworkStart />} />
       <Route path="/students/:id/session/:subject" element={<Session />} />
       <Route path="/students/:id/practice/:skill" element={<Practice />} />
+      {/* Practice SAT — Phase 1: HS-only, consent-gated, Math-only. The page
+          re-checks the gate and redirects anyone who fails it. */}
+      <Route path="/students/:id/practice-sat" element={<PracticeSat />} />
       {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
           verification route; not yet wired into onboarding. */}
       <Route path="/students/:id/diagnostic" element={<Diagnostic />} />

@@ -1796,6 +1796,13 @@
 .practice-choice.dim {
   opacity: 0.5;
 }
+/* Deferred selection (Practice SAT): highlight the pick without revealing
+   correctness — feedback waits for the end-of-test review. */
+.practice-choice.chosen {
+  border-color: var(--navy);
+  background: #eef2fb;
+  font-weight: 700;
+}
 .practice-feedback {
   margin-top: 16px;
   display: flex;
@@ -1846,6 +1853,32 @@
 .practice-score .muted {
   font-size: 22px;
   font-weight: 600;
+}
+/* Practice SAT end-of-test review of missed items. */
+.sat-review-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.sat-review-item:first-of-type {
+  border-top: none;
+}
+.sat-review-q {
+  font-size: 15.5px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.sat-review-n {
+  font-weight: 700;
+  color: var(--navy);
+  margin-right: 6px;
+}
+.sat-review-line {
+  font-size: 14.5px;
+  margin: 4px 0;
+}
+.sat-review-line + .practice-explain,
+.sat-review-line + .practice-solution {
+  margin-top: 8px;
 }
 .practice-encourage {
   font-size: 15px;

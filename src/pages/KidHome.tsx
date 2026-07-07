@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, gradeLabel, levelLabel, avatarModeOf, updateAvatarMode, type AvatarMode, type Student } from '@/lib/students'
+import { canTakePracticeSat } from '@/lib/practiceSat'
 import { HOMEWORK } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
@@ -134,6 +135,24 @@ export function KidHome() {
               <p>Bring an assignment and we’ll work through it together.</p>
             </div>
           </button>
+
+          {/* Practice SAT — HS only (grades 9–12) AND SAT-framing consent. Hidden
+              for everyone else; the route re-checks the same gate. */}
+          {canTakePracticeSat(student) && (
+            <button
+              type="button"
+              className="bigcard"
+              onClick={() => navigate(`/students/${student.id}/practice-sat`)}
+            >
+              <div className="ico" style={{ background: 'var(--navy)', color: '#fff', fontSize: 20 }}>
+                ✓
+              </div>
+              <div>
+                <h3>SAT Math Practice</h3>
+                <p>A short, SAT-style Math practice section — see how you’d do.</p>
+              </div>
+            </button>
+          )}
         </section>
 
         <div className="foot">
