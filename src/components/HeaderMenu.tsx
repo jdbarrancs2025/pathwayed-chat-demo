@@ -7,11 +7,15 @@ import '@/styles/app-screens.css'
  * The app-wide navigation menu: a three-line (hamburger) button that opens a
  * dropdown linking to Home/Dashboard, Settings, and Sign out. Self-contained so
  * it can drop into any header (TopMenu, PageLayout, …) and behave identically.
+ *
+ * `size` overrides the default 44px button for a specific screen (e.g. the larger
+ * welcome header). Omitted everywhere else, so other screens are unaffected.
  */
-export function HeaderMenu() {
+export function HeaderMenu({ size }: { size?: number } = {}) {
   const navigate = useNavigate()
   const { signOut } = useAuth()
   const [open, setOpen] = useState(false)
+  const iconSize = size ? Math.round(size * 0.5) : 22
 
   useEffect(() => {
     if (!open) return
@@ -42,8 +46,9 @@ export function HeaderMenu() {
         aria-label="Menu"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
+        style={size ? { width: size, height: size, borderRadius: Math.round(size * 0.27) } : undefined}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M3 6h18M3 12h18M3 18h18" />
         </svg>
       </button>
