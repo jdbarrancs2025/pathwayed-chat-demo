@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { getStudent, avatarModeOf, type Student } from '@/lib/students'
-import { loadTranscript, saveFeedback } from '@/lib/sessions'
+import { loadTranscript } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
 import { skillLabel, scopeBandForGrade, isScopeSubject } from '@/lib/lessonPath'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
@@ -9,7 +9,6 @@ import { useAudioRecorder } from '@/hooks/useAudioRecorder'
 import { useConversationMic } from '@/hooks/useConversationMic'
 import { CallStage, type CallState } from '@/components/CallStage'
 import { SessionWorkspace } from '@/components/SessionWorkspace'
-import { SessionFeedback } from '@/components/SessionFeedback'
 import { NikkiFace } from '@/components/NikkiFace'
 import { MathText } from '@/components/MathText'
 import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
@@ -22,27 +21,8 @@ import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
 
-// Rating cap: offer the end-of-lesson rating at most once per browser visit
-// ("session"), not once per lesson. sessionStorage is per-tab and clears when the
-// visit ends — exactly the granularity we want.
-const ratedKey = (studentId: string) => `pathwayed:ratedThisSession:${studentId}`
-function ratingUsedThisSession(studentId: string): boolean {
-  try {
-    return sessionStorage.getItem(ratedKey(studentId)) === '1'
-  } catch {
-    return false
-  }
-}
-function markRatingUsed(studentId: string): void {
-  try {
-    sessionStorage.setItem(ratedKey(studentId), '1')
-  } catch {
-    /* private mode / storage full — the cap is a nicety, ignore */
-  }
-}
-
-// Neutral mastery signal for a completed lesson when no rating was collected
-// (every completion after the first this visit). 'ok' maps to a mid accuracy —
+// Neutral mastery signal for a completed lesson (no rating is collected on
+// completion anymore). 'ok' maps to a mid accuracy —
 // completing counts as steady practice, not a strong or weak read.
 const NEUTRAL_COMPLETION_RATING = 'ok'
 
@@ -213,9 +193,7 @@ function SessionView({
   const [speaking, setSpeaking] = useState(false)
   const [draft, setDraft] = useState('')
   const [showLeaveWarning, setShowLeaveWarning] = useState(false)
-  const [showRating, setShowRating] = useState(false)
   const [niceWork, setNiceWork] = useState(false)
-  const [savingFeedback, setSavingFeedback] = useState(false)
   // A fresh lesson opens with just the greeting (id 'greeting'); seed null so it
   // auto-speaks on entry. A resumed lesson opens from saved messages; seed the
   // last assistant id so resuming doesn't replay it.
@@ -363,20 +341,6 @@ function SessionView({
     returnToWelcome()
   }
 
-  // Completing the lesson (the "Done" button). No forced rating per lesson: the
-  // rating is offered at most ONCE per visit (first completion); every later
-  // completion gets a brief "Nice work" close and a smooth return. A completed
-  // lesson never shows the leave warning — nothing is lost.
-  const completeLesson = () => {
-    stopSpeak(setSpeaking)
-    convoMic.stop()
-    if (ratingUsedThisSession(student.id)) {
-      void finishWithNiceWork()
-    } else {
-      setShowRating(true)
-    }
-  }
-
   // Practice-SAT Phase 2: completing a lesson on a focus skill resolves it (keyed
   // off the launch slug, so it's reliable even when the HS mastery signal isn't).
   // No-op for a non-focus lesson. Only on COMPLETION — leaving mid-lesson doesn't
@@ -385,21 +349,13 @@ function SessionView({
     if (focusSlug) await resolveFocusForSlug(student.id, focusSlug)
   }
 
-  // First completion of the visit: capture the rating (real mastery signal), then
-  // return. The rating card ("Nice work, {name}!") is itself the positive close.
-  const submitRating = async (rating: string, note: string) => {
-    setSavingFeedback(true)
-    markRatingUsed(student.id)
-    await saveFeedback(student.id, subject, rating, note)
-    await recordMastery(rating)
-    await resolveFocusIfAny()
-    setSavingFeedback(false)
-    returnToWelcome()
-  }
-
-  // Later completions this visit: brief positive close, neutral mastery signal,
-  // then a smooth auto-return. Mastery is awaited so the write isn't cut off.
-  const finishWithNiceWork = async () => {
+  // Completing the lesson (the "Done" button): a brief positive close, a neutral
+  // mastery signal (no rating is asked on completion anymore), then a smooth
+  // auto-return. Mastery is awaited so the write isn't cut off. A completed lesson
+  // never shows the leave warning — nothing is lost.
+  const completeLesson = async () => {
+    stopSpeak(setSpeaking)
+    convoMic.stop()
     setNiceWork(true)
     await recordMastery(NEUTRAL_COMPLETION_RATING)
     await resolveFocusIfAny()
@@ -450,7 +406,7 @@ function SessionView({
         <button
           type="button"
           title="Finish this lesson"
-          onClick={completeLesson}
+          onClick={() => void completeLesson()}
           style={{
             flexShrink: 0,
             padding: '11px 20px',
@@ -571,16 +527,6 @@ function SessionView({
           }}
         />
       </div>
-
-      {showRating && (
-        <SessionFeedback
-          childName={student.first_name}
-          mode={avatarMode}
-          saving={savingFeedback}
-          onDone={(rating, note) => void submitRating(rating, note)}
-          onKeepLearning={() => setShowRating(false)}
-        />
-      )}
 
       {showLeaveWarning && (
         <div className="feedback-overlay">

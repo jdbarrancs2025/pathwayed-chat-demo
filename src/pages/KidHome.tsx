@@ -61,7 +61,8 @@ export function KidHome() {
   return (
     <div className="kid-screen">
       <div className="shell">
-        <TopMenu />
+        {/* Welcome logo at 5x the default 52px mark (this screen only). */}
+        <TopMenu logoHeight={260} />
 
         <div
           style={{
@@ -73,7 +74,7 @@ export function KidHome() {
             marginBottom: 22,
           }}
         >
-          <NikkiFace mode={avatarModeOf(student)} size={104} />
+          <NikkiFace mode={avatarModeOf(student)} size={180} />
           <h1 className="greet">Hi, {student.first_name}!</h1>
           <p className="muted">Great to see you. What are we doing today?</p>
           <button
