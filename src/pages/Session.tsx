@@ -216,8 +216,14 @@ function SessionView({
   const [showRating, setShowRating] = useState(false)
   const [niceWork, setNiceWork] = useState(false)
   const [savingFeedback, setSavingFeedback] = useState(false)
-  // Seed with the last message already on screen so resuming doesn't replay it.
-  const spokenRef = useRef<string | null>(lastAssistantId(initialMessages))
+  // A fresh lesson opens with just the greeting (id 'greeting'); seed null so it
+  // auto-speaks on entry. A resumed lesson opens from saved messages; seed the
+  // last assistant id so resuming doesn't replay it.
+  const spokenRef = useRef<string | null>(
+    initialMessages.length === 1 && initialMessages[0].id === 'greeting'
+      ? null
+      : lastAssistantId(initialMessages),
+  )
   const feedRef = useRef<HTMLDivElement>(null)
 
   // Voice input. Reading uses continuous "conversation mode" (tap once, stays
@@ -256,7 +262,7 @@ function SessionView({
   useEffect(() => {
     if (muted || isLoading) return
     const last = messages[messages.length - 1]
-    if (last && last.role === 'assistant' && last.content && last.id !== 'greeting' && spokenRef.current !== last.id) {
+    if (last && last.role === 'assistant' && last.content && spokenRef.current !== last.id) {
       spokenRef.current = last.id
       const spoken = stripMarkdownForTTS(last.content)
       if (spoken) speak(spoken, setSpeaking)

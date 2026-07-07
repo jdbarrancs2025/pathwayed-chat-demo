@@ -268,9 +268,17 @@ function buildKidContextBlock(context: StudentContext): string {
         : 'You are helping them learn.'
   const guideLine = sg ? ` For this, ${sg.guide}.` : ''
 
+  // When today's lesson is a specific skill (skills-building / practice-SAT focus),
+  // name it and pin the session to it. Without this the model only knows the
+  // subject and, after the student says "yes", falls back to a generic opener.
+  const skillFocus =
+    context.subject !== 'homework' && context.focusAreas.length > 0
+      ? `\n- Today's lesson is specifically on: ${context.focusAreas.join(', ')}. Teach THIS skill today. Do NOT ask the student what they want to work on — you already know today's skill. Open by diagnosing what they already know about it with ONE short question on this skill, then teach it step by step following the teaching cycle.`
+      : ''
+
   return `CURRENT SESSION:
 - Student: ${name}, in ${wd}
-- ${focus}${guideLine}
+- ${focus}${guideLine}${skillFocus}
 
 Address ${name} warmly by name, and keep everything appropriate for ${wd}.`
 }
