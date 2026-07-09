@@ -1785,8 +1785,126 @@
   font-size: 13px;
   margin: 6px 0 8px;
 }
+/* Read-aloud controls above a served question (auto-read replay + mute). */
+.kid-screen .qaudio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.kid-screen .qaudio-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 1.6px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy);
+  font-size: 14.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.kid-screen .qaudio-replay.on {
+  border-color: var(--navy);
+  background: var(--line-2);
+}
+.kid-screen .qaudio-replay:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.kid-screen .qaudio-mute {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.6px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+}
+.kid-screen .qaudio-mute.muted {
+  color: var(--muted);
+  background: var(--line-2);
+}
+.kid-screen .qaudio-replay:focus-visible,
+.kid-screen .qaudio-mute:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
 .practice-q {
   padding: 18px;
+}
+/* K–2 pre-reader (audio-picture) UI: a big picture prompt + large tap tiles. */
+.kid-screen .picq {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.kid-screen .picq-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 18px;
+  background: var(--line-2);
+  border: 2px solid var(--line);
+  border-radius: var(--r-sm);
+  max-width: 100%;
+}
+.kid-screen .picq-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+/* Two-choice items get side-by-side; three or four use a 2-col grid. */
+.kid-screen .picq-tiles[data-count='2'] {
+  grid-template-columns: repeat(2, 1fr);
+}
+.kid-screen .picq-tile {
+  min-height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  border: 2.5px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.06s ease, border-color 0.12s ease;
+}
+.kid-screen .picq-tile:not(:disabled):active {
+  transform: scale(0.97);
+}
+.kid-screen .picq-tile.correct {
+  border-color: #2f9e44;
+  background: #ebfbee;
+}
+.kid-screen .picq-tile.chosen-wrong {
+  border-color: var(--orange);
+  background: #fdf0ec;
+}
+.kid-screen .picq-tile.dim {
+  opacity: 0.5;
+}
+.kid-screen .picq-num {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1;
+}
+.kid-screen .picq-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 220px;
 }
 /* Reading passage shown above the question stem (reading-set items). */
 .practice-passage {

@@ -189,6 +189,11 @@ export interface Database {
           name: string
           slug: string | null
           grade_band: Database['public']['Enums']['grade_band'] | null
+          // True Common Core grade (migration: re-level). grade_band is kept for
+          // back-compat; ccss_grade_num ('K'=0 .. 12) is the orderable placement key.
+          ccss_grade: string | null
+          ccss_code: string | null
+          ccss_grade_num: number | null
           sat_alignment: string | null
           prerequisite_skills: string[]
           description: string | null
@@ -202,6 +207,9 @@ export interface Database {
           name: string
           slug?: string | null
           grade_band?: Database['public']['Enums']['grade_band'] | null
+          ccss_grade?: string | null
+          ccss_code?: string | null
+          ccss_grade_num?: number | null
           sat_alignment?: string | null
           prerequisite_skills?: string[]
           description?: string | null
@@ -215,6 +223,9 @@ export interface Database {
           name?: string
           slug?: string | null
           grade_band?: Database['public']['Enums']['grade_band'] | null
+          ccss_grade?: string | null
+          ccss_code?: string | null
+          ccss_grade_num?: number | null
           sat_alignment?: string | null
           prerequisite_skills?: string[]
           description?: string | null
@@ -443,6 +454,10 @@ export interface Database {
           // Reading-set link (migration 0007): the passage this question is
           // asked about, or null for math/writing standalone stems.
           passage_id: string | null
+          // K–2 pre-reader (audio-picture) support: render mode + optional visual
+          // prompt. Existing rows default to 'text'.
+          render_mode: string
+          prompt: Json | null
           created_at: string
           updated_at: string
         }
@@ -458,6 +473,8 @@ export interface Database {
           solution?: string | null
           status?: Database['public']['Enums']['question_status']
           passage_id?: string | null
+          render_mode?: string
+          prompt?: Json | null
           created_at?: string
           updated_at?: string
         }
@@ -473,6 +490,8 @@ export interface Database {
           solution?: string | null
           status?: Database['public']['Enums']['question_status']
           passage_id?: string | null
+          render_mode?: string
+          prompt?: Json | null
           created_at?: string
           updated_at?: string
         }

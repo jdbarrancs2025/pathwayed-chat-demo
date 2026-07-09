@@ -19,7 +19,18 @@ import {
 } from '@/lib/diagnosticProgress'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
+import { QuestionAudio } from '@/components/QuestionAudio'
+import { PictureQuestion } from '@/components/PictureQuestion'
+import { useVoiceMuted } from '@/hooks/useVoiceMuted'
+import { useAutoRead } from '@/hooks/useAutoRead'
+import { stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
+
+/** Read-aloud text for a question: the passage (if any) then the stem. */
+function readableText(q: { passage: string | null; stem: string } | undefined): string {
+  if (!q) return ''
+  return [q.passage, q.stem].filter(Boolean).join('\n\n')
+}
 
 /**
  * Placement diagnostic — PHASE 2 (adaptive + placement). Still silent: present ->
@@ -57,6 +68,20 @@ export function Diagnostic() {
   const [started, setStarted] = useState(false)
   const [consent, setConsent] = useState(false) // parent OK to show above-grade / SAT framing
   const shownAtRef = useRef(0)
+
+  // Auto-read each question aloud once it's shown (after the parent starts the
+  // assessment — a user gesture), respecting the app-wide mute.
+  const [muted, toggleMuted] = useVoiceMuted()
+  const activeQuestion = questions?.[index]
+  const { speaking, replay } = useAutoRead({
+    questionId: started && !done ? activeQuestion?.id : null,
+    text: readableText(activeQuestion),
+    muted,
+  })
+  const onToggleMute = () => {
+    if (!muted) stopNikkiSpeech()
+    toggleMuted()
+  }
 
   useEffect(() => {
     if (!id) return
@@ -287,22 +312,36 @@ export function Diagnostic() {
         <div className="practice-progress muted">
           Question {index + 1} of {questions.length}
         </div>
+        <QuestionAudio muted={muted} speaking={speaking} onToggleMute={onToggleMute} onReplay={replay} />
         <div className="panel practice-q">
-          {current.passage && (
-            <div className="practice-passage">
-              <MathText content={current.passage} />
-            </div>
+          {current.render_mode === 'audio_picture' ? (
+            <PictureQuestion
+              prompt={current.prompt}
+              choices={current.choices}
+              answered={false}
+              selected={null}
+              onPick={handlePick}
+              showState={false}
+            />
+          ) : (
+            <>
+              {current.passage && (
+                <div className="practice-passage">
+                  <MathText content={current.passage} />
+                </div>
+              )}
+              <div className="practice-stem">
+                <MathText content={current.stem} />
+              </div>
+              <div className="practice-choices">
+                {current.choices.map((c, i) => (
+                  <button key={i} className="practice-choice" onClick={() => handlePick(i)}>
+                    <MathText content={c.text} />
+                  </button>
+                ))}
+              </div>
+            </>
           )}
-          <div className="practice-stem">
-            <MathText content={current.stem} />
-          </div>
-          <div className="practice-choices">
-            {current.choices.map((c, i) => (
-              <button key={i} className="practice-choice" onClick={() => handlePick(i)}>
-                <MathText content={c.text} />
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </div>

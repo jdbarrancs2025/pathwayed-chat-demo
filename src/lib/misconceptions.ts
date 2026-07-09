@@ -307,6 +307,183 @@ const EXPLANATIONS: Record<string, string> = {
     "That misjudges the author's attitude. Notice the words that signal how the author feels about the topic.",
   'wrong-word-meaning':
     'That is a common meaning of the word, but not the way it is used here. Reread the sentence and pick the meaning that fits this context.',
+
+  // math — grade-3 place value (3.NBT). Kid-friendly, one idea each.
+  'used-digit-not-value':
+    "That is the digit by itself, not what it's worth. A digit's value depends on its place — the 7 in 70 is worth 70, not 7.",
+  'used-value-not-digit':
+    'The question asks for the digit — one number from 0 to 9 — not its value. The digit is 8; 800 is what it is worth.',
+  'wrong-place-named':
+    'That digit is in a different place. Count the places from the right: ones, tens, hundreds.',
+  'read-wrong-digit':
+    'That is a different digit in the number. Find the one the question is asking about.',
+  'miscounted-place':
+    'Careful counting the places — you are off by one. Line up ones, then tens, then hundreds, starting from the right.',
+  'place-value-off-by-one':
+    'So close — that is one place too big or too small. Each place to the left is worth ten times more.',
+  'digits-reversed':
+    'The digits got turned around. Keep them in order — the digit on the left has the biggest value.',
+  'kept-the-zeros':
+    'When you put the parts together, the zeros overlap — do not write them all out. 300 + 6 is 306, not 3,006.',
+  'ignored-zero-placeholder':
+    'Do not skip the zero — it holds a place. Without it, the other digits slide into the wrong spots.',
+  'zero-place-misread':
+    'A zero in a place means there are none of that place — it is worth 0, not 10. It just holds the spot.',
+  'added-the-parts':
+    'It looks like you added the digits or the group counts. Put each part in its place instead of adding them together.',
+  'forgot-the-zero':
+    'When you multiply by tens, keep the ten: 3 times 40 is 12 tens, which is 120, not 12.',
+  'extra-zero':
+    'That has one too many zeros. Multiply by the tens once, not twice.',
+  'added-to-wrong-place':
+    'You changed the wrong place. "100 more" changes the hundreds digit, not the tens or ones.',
+  'wrong-amount-changed':
+    'That changes the number by the wrong amount — like adding 1 instead of 10, or 10 instead of 100. Match the size to what is being added.',
+  'subtracted-instead':
+    'It looks like you went the wrong way — that is less, but the question asks for more (or the other way around).',
+  'compared-wrong-place':
+    'Compare the biggest place first. Only move to the next place when those digits are the same.',
+  'thought-equal':
+    'Those numbers are not equal — the same digits in different places make different numbers.',
+  'picked-smallest':
+    'That is actually the smallest one. Check again which has the most in the biggest place.',
+  'no-change':
+    'That is just the number you started with. The question asks how many of a place, so do the step.',
+  'treated-extra-tens-as-digits':
+    'You can have more than 9 of a place — 12 tens is 120, not the digits "12." Regroup it into hundreds and tens.',
+  'counted-by-tens':
+    'That counts by tens, but this pattern jumps by hundreds — change the hundreds digit each time.',
+
+  // math — rounding (3.NBT.A.1)
+  'rounded-wrong-way':
+    'Check the digit to the right: 5 or more rounds up, 4 or less rounds down. It looks like you went the other way.',
+  'rounded-to-wrong-place':
+    'That is rounded to a different place. Round to the place the question names — the nearest ten, or the nearest hundred.',
+  'kept-original-number':
+    'That is the number you started with. Rounding means changing it to the nearest ten or hundred.',
+  'rounded-wrong-digit':
+    'Look at the digit just to the RIGHT of the place you are rounding to — that is the one that decides up or down.',
+
+  // math — multi-digit add/subtract (3.NBT.A.2, 4.NBT.B.4)
+  'forgot-to-regroup':
+    'When a column adds to 10 or more, carry the extra to the next place. It looks like the carry got left out.',
+  'subtracted-smaller-from-larger':
+    'You can’t just take the smaller digit from the larger in each column — regroup (borrow) from the next place instead.',
+  'regrouped-wrong':
+    'The regrouping (carrying or borrowing) slipped. Redo it one column at a time, right to left.',
+  'added-instead-of-subtracted':
+    'It looks like you added. This one asks you to subtract — take away, don’t combine.',
+  'subtracted-instead-of-added':
+    'It looks like you subtracted. This one asks you to add — combine the amounts.',
+
+  // math — multi-digit multiplication (4.NBT.B.5)
+  'partial-product-error':
+    'Multiply by each place and add the parts. It looks like one of the partial products (like the tens) was missed or misplaced.',
+
+  // math — long division (4.NBT.B.6)
+  'remainder-ignored':
+    'There is a remainder left over — don’t drop it. Check what is left after the last full group.',
+  'remainder-too-big':
+    'The remainder must be smaller than the divisor. If it isn’t, another group fits — bump the quotient up.',
+  'quotient-digit-off':
+    'One digit of the quotient is off by one. Check how many times the divisor fits at each step.',
+  'multiplied-instead-of-divided':
+    'It looks like you multiplied. This one asks how many equal groups fit — that’s division.',
+
+  // math — fractions: equivalence & comparison (4.NF.A)
+  'not-equivalent':
+    'Those fractions are not equal. To make an equivalent fraction, multiply (or divide) the top AND bottom by the same number.',
+  'multiplied-only-numerator':
+    'You changed only the top. To keep the same value, multiply the top and bottom by the same number.',
+  'multiplied-only-denominator':
+    'You changed only the bottom. To keep the same value, multiply the top and bottom by the same number.',
+  'compared-numerators-only':
+    'You looked only at the top numbers. With different bottoms, the size of each piece changes — compare with a common denominator or a picture.',
+  'bigger-denominator-bigger':
+    'A bigger bottom number means smaller pieces, not a bigger fraction. More pieces to make a whole means each piece is tinier.',
+
+  // math — fractions: add/subtract (like: 4.NF.B; unlike: 5.NF.A)
+  'added-the-denominators':
+    'Keep the bottom the same — it tells the size of the pieces. Add only the top numbers.',
+  'kept-wrong-denominator':
+    'The denominator (bottom) names the piece size and stays the same when the pieces are equal. Don’t change it while adding the tops.',
+  'no-common-denominator':
+    'You can only add or subtract fractions when the pieces are the same size. Rename them to a common denominator first.',
+  'added-across':
+    'Don’t add straight across (top+top and bottom+bottom). Give them a common denominator, then add just the tops.',
+
+  // math — fractions: multiply/divide (5.NF.B)
+  'cross-multiplied':
+    'To multiply fractions, go straight across: top times top, bottom times bottom. No cross-multiplying here.',
+  'forgot-to-invert':
+    'To divide by a fraction, flip the second fraction and multiply. It looks like it wasn’t flipped.',
+
+  // math — decimals: place value & comparison (5.NBT.A)
+  'compared-decimals-as-wholes':
+    'Line up the decimal points and compare place by place. 0.5 is bigger than 0.45 even though 45 looks larger.',
+  'longer-decimal-is-bigger':
+    'More digits after the point does not mean a bigger number. Compare tenths first, then hundredths.',
+  'wrong-decimal-place-value':
+    'Name the place carefully: the first digit after the point is tenths, the next is hundredths.',
+
+  // math — decimals: operations (5.NBT.B.7)
+  'misaligned-decimals':
+    'Line up the decimal points before adding or subtracting, so tenths go under tenths.',
+  'wrong-number-of-decimal-places':
+    'When multiplying decimals, count the total decimal places in both factors — the product has that many.',
+
+  // math — measurement, data & time (3.MD, 4.MD)
+  'read-clock-wrong':
+    'Read the hour hand and the minute hand carefully — the short hand is the hour, the long hand the minutes.',
+  'elapsed-time-miscount':
+    'Count the hours and minutes from the start to the end time — it’s easy to be off by an hour or by some minutes.',
+  'wrong-measure-unit':
+    'Check the unit the question asks for (like grams vs kilograms, or minutes vs hours) and match it.',
+  'misread-the-graph':
+    'Read the graph carefully — line each bar or picture up with the scale to get the right amount.',
+  'wrong-scale':
+    'Notice the scale: each step on this graph stands for more than one, so count by that amount.',
+
+  // math — geometry: shapes, lines, angles (3.G, 4.G, 4.MD.C)
+  'wrong-shape-name':
+    'Count the sides and check the angles — that name belongs to a different shape.',
+  'miscounted-sides':
+    'Recount the sides or corners carefully; the count is off by one.',
+  'wrong-attribute':
+    'That is a property of a different shape. Match the shape to the attribute the question describes.',
+  'not-a-right-angle':
+    'A right angle is a square corner (90 degrees). That angle is bigger or smaller than a square corner.',
+  'confused-lines-rays-segments':
+    'A line goes on forever both ways, a ray starts at a point and goes one way, and a segment has two endpoints. Check which this is.',
+  'wrong-symmetry-count':
+    'A line of symmetry folds the shape onto itself exactly. Recount how many folds work.',
+  'wrong-angle-type':
+    'Sort by size: less than a square corner is acute, a square corner is right, more than that is obtuse.',
+
+  // math — volume (5.MD.C)
+  'confused-volume-with-area':
+    'Area covers a flat surface (length times width). Volume fills a solid — multiply length times width times height.',
+  'added-the-dimensions':
+    'To find volume, MULTIPLY length, width, and height — don’t add them.',
+  'used-only-two-dimensions':
+    'That only used two dimensions. Volume needs all three: length times width times height.',
+
+  // math — coordinate plane (5.G.A)
+  'reversed-coordinates':
+    'Read the pair in order: the first number is across (x), the second is up (y). It looks like they got switched.',
+  'counted-from-wrong-axis':
+    'Start at 0 (the origin) and count across first, then up. Check which axis you started counting on.',
+  'off-by-one-on-grid':
+    'Recount the grid lines from 0 — the count is off by one.',
+
+  // math — numerical expressions / order of operations (5.OA.A)
+  'ignored-the-parentheses':
+    'Do the part inside the parentheses FIRST, then the rest.',
+  'went-left-to-right':
+    'Order of operations, not just left to right: handle parentheses, then multiply/divide, then add/subtract.',
+  // NOTE: K–2 pre-reader items (see preReaderTemplates.ts) intentionally carry NO
+  // misconception tokens — a wrong tap gets a warm "let's count together" spoken
+  // from the item's solution, not a diagnostic nudge.
 }
 
 /**

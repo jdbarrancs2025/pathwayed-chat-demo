@@ -12,7 +12,19 @@ import { recordPracticeResult } from '@/lib/skills'
 import { explainMisconception } from '@/lib/misconceptions'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
+import { QuestionAudio } from '@/components/QuestionAudio'
+import { PictureQuestion } from '@/components/PictureQuestion'
+import { useVoiceMuted } from '@/hooks/useVoiceMuted'
+import { useAutoRead } from '@/hooks/useAutoRead'
+import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
+
+/** Assemble the read-aloud text for a served question: the passage (if any) then
+ *  the stem. Choices are not read. */
+function readableText(q: { passage: string | null; stem: string } | undefined): string {
+  if (!q) return ''
+  return [q.passage, q.stem].filter(Boolean).join('\n\n')
+}
 
 const SESSION_LENGTH = 10
 
@@ -35,6 +47,19 @@ export function Practice() {
   const [shownAt, setShownAt] = useState(0)
   const [done, setDone] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  // Auto-read the question aloud in Nikki's voice (respecting the app-wide mute).
+  const [muted, toggleMuted] = useVoiceMuted()
+  const activeQuestion = questions?.[index]
+  const { speaking, replay } = useAutoRead({
+    questionId: done ? null : activeQuestion?.id,
+    text: readableText(activeQuestion),
+    muted,
+  })
+  const onToggleMute = () => {
+    if (!muted) stopNikkiSpeech() // muting → silence any current read immediately
+    toggleMuted()
+  }
 
   useEffect(() => {
     if (!id) return
@@ -96,6 +121,11 @@ export function Practice() {
       chosenMisconceptionToken: misconceptionToken,
       shownAtMs: shownAt,
     })
+    // Pre-reader items: Nikki SPEAKS the warm "let's count together" feedback,
+    // since the child can't read it. Respects the app-wide mute.
+    if (current.render_mode === 'audio_picture' && !muted && current.solution) {
+      void speakWithNikki(current.solution)
+    }
   }
 
   const handleNext = async () => {
@@ -166,30 +196,44 @@ export function Practice() {
         <div className="practice-progress muted">
           Question {index + 1} of {questions.length}
         </div>
+        <QuestionAudio muted={muted} speaking={speaking} onToggleMute={onToggleMute} onReplay={replay} />
         <div className="panel practice-q">
-          {current.passage && (
-            <div className="practice-passage">
-              <MathText content={current.passage} />
-            </div>
+          {current.render_mode === 'audio_picture' ? (
+            <PictureQuestion
+              prompt={current.prompt}
+              choices={current.choices}
+              answered={answered}
+              selected={selected}
+              onPick={handlePick}
+              showState
+            />
+          ) : (
+            <>
+              {current.passage && (
+                <div className="practice-passage">
+                  <MathText content={current.passage} />
+                </div>
+              )}
+              <div className="practice-stem">
+                <MathText content={current.stem} />
+              </div>
+              <div className="practice-choices">
+                {current.choices.map((c, i) => {
+                  const state = !answered ? '' : c.is_correct ? 'correct' : i === selected ? 'chosen-wrong' : 'dim'
+                  return (
+                    <button
+                      key={i}
+                      className={`practice-choice ${state}`}
+                      disabled={answered}
+                      onClick={() => handlePick(i)}
+                    >
+                      <MathText content={c.text} />
+                    </button>
+                  )
+                })}
+              </div>
+            </>
           )}
-          <div className="practice-stem">
-            <MathText content={current.stem} />
-          </div>
-          <div className="practice-choices">
-            {current.choices.map((c, i) => {
-              const state = !answered ? '' : c.is_correct ? 'correct' : i === selected ? 'chosen-wrong' : 'dim'
-              return (
-                <button
-                  key={i}
-                  className={`practice-choice ${state}`}
-                  disabled={answered}
-                  onClick={() => handlePick(i)}
-                >
-                  <MathText content={c.text} />
-                </button>
-              )
-            })}
-          </div>
 
           {answered && (
             <div className="practice-feedback">

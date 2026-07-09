@@ -9,10 +9,28 @@ import type { Json } from '@/lib/database.types'
  * scoring/aggregation helpers are unit-tested; the DB calls are best-effort.
  */
 
+/** A K–2 pre-reader answer tile: a big numeral, or a group of N picture icons
+ *  (rendered by the picture UI instead of a text label). */
+export interface PictureTile {
+  kind: 'number' | 'letter' | 'object_group'
+  value?: string // number & letter tiles
+  image?: string // object_group tiles (a curated KidIcon key)
+  count?: number // object_group tiles
+}
+
+/** The optional visual prompt for an audio-picture item (the group to count). */
+export interface PicturePrompt {
+  kind: 'object_group'
+  image: string
+  count: number
+}
+
 export interface PracticeChoice {
   text: string
   is_correct: boolean
   misconception_token?: string
+  /** Present only on audio-picture (K–2) items; the child taps this tile. */
+  tile?: PictureTile
 }
 
 export interface PracticeQuestion {
@@ -26,6 +44,10 @@ export interface PracticeQuestion {
   choices: PracticeChoice[]
   correct_answer: string
   solution: string | null
+  // 'text' (default) or 'audio_picture' (K–2 pre-reader: spoken prompt + tiles).
+  render_mode: string
+  // Visual prompt for audio-picture items (e.g. a group of objects to count).
+  prompt: PicturePrompt | null
 }
 
 // --- Pure scoring / aggregation (unit-tested) --------------------------------
@@ -54,6 +76,27 @@ export function summarizeAttempts(results: { isCorrect: boolean }[]): {
 
 // --- Read path: fetch published questions for a skill ------------------------
 
+function parseTile(raw: unknown): PictureTile | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined
+  const t = raw as Record<string, unknown>
+  if ((t.kind === 'number' || t.kind === 'letter') && typeof t.value === 'string') {
+    return { kind: t.kind, value: t.value }
+  }
+  if (t.kind === 'object_group' && typeof t.image === 'string' && typeof t.count === 'number') {
+    return { kind: 'object_group', image: t.image, count: t.count }
+  }
+  return undefined
+}
+
+function parsePrompt(raw: Json): PicturePrompt | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const p = raw as Record<string, unknown>
+  if (p.kind === 'object_group' && typeof p.image === 'string' && typeof p.count === 'number') {
+    return { kind: 'object_group', image: p.image, count: p.count }
+  }
+  return null
+}
+
 function parseChoices(raw: Json): PracticeChoice[] {
   if (!Array.isArray(raw)) return []
   const out: PracticeChoice[] = []
@@ -61,10 +104,12 @@ function parseChoices(raw: Json): PracticeChoice[] {
     if (!c || typeof c !== 'object' || Array.isArray(c)) continue
     const obj = c as Record<string, unknown>
     if (typeof obj.text !== 'string' || typeof obj.is_correct !== 'boolean') continue
+    const tile = parseTile(obj.tile)
     out.push({
       text: obj.text,
       is_correct: obj.is_correct,
       ...(typeof obj.misconception_token === 'string' ? { misconception_token: obj.misconception_token } : {}),
+      ...(tile ? { tile } : {}),
     })
   }
   return out
@@ -91,7 +136,7 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
 
   const { data, error } = await supabase
     .from('generated_questions')
-    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id')
+    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id, render_mode, prompt')
     .eq('skill_id', skillId)
     .eq('status', 'published')
   if (error) {
@@ -128,6 +173,8 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
       choices,
       correct_answer: row.correct_answer,
       solution: row.solution,
+      render_mode: typeof row.render_mode === 'string' ? row.render_mode : 'text',
+      prompt: parsePrompt(row.prompt),
     })
   }
   return shuffle(parsed).slice(0, limit)
@@ -141,6 +188,10 @@ export interface PracticeableSkill {
   name: string
   subject: string
   grade_band: string | null
+  // True Common Core grade (re-level). Kept alongside grade_band; ccss_grade_num
+  // ('K'=0 .. 12) is the orderable key used to sequence skills grade-appropriately.
+  ccss_grade: string | null
+  ccss_grade_num: number | null
 }
 
 // Display order for grouping the practice picker by subject (mirrors the
@@ -169,7 +220,7 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
 
   const { data: skillRows, error: sError } = await supabase
     .from('skills')
-    .select('id, slug, name, subject, grade_band')
+    .select('id, slug, name, subject, grade_band, ccss_grade, ccss_grade_num')
     .in('id', skillIds)
   if (sError) {
     console.error('listPracticeableSkills: skills read failed', sError)
@@ -179,14 +230,31 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   const skills: PracticeableSkill[] = []
   for (const s of skillRows ?? []) {
     if (!s.slug || !s.name) continue // need a slug to route practice to
-    skills.push({ skill_id: s.id, slug: s.slug, name: s.name, subject: s.subject, grade_band: s.grade_band })
+    skills.push({
+      skill_id: s.id,
+      slug: s.slug,
+      name: s.name,
+      subject: s.subject,
+      grade_band: s.grade_band,
+      ccss_grade: s.ccss_grade,
+      ccss_grade_num: s.ccss_grade_num,
+    })
   }
 
   const orderOf = (subject: string) => {
     const i = PRACTICE_SUBJECT_ORDER.indexOf(subject)
     return i === -1 ? PRACTICE_SUBJECT_ORDER.length : i
   }
-  return skills.sort((a, b) => orderOf(a.subject) - orderOf(b.subject) || a.name.localeCompare(b.name))
+  // Order by subject, then TRUE Common Core grade (ccss_grade_num), then name.
+  // Skills without a ccss grade sort last within a subject, so anything untagged
+  // falls back to the prior name ordering rather than jumping to the front.
+  const gradeKey = (n: number | null) => (n == null ? Number.POSITIVE_INFINITY : n)
+  return skills.sort(
+    (a, b) =>
+      orderOf(a.subject) - orderOf(b.subject) ||
+      gradeKey(a.ccss_grade_num) - gradeKey(b.ccss_grade_num) ||
+      a.name.localeCompare(b.name),
+  )
 }
 
 /**
@@ -213,9 +281,12 @@ export async function nextPracticeSkill(studentId: string): Promise<Practiceable
 
 // --- Read path: placement diagnostic set -------------------------------------
 
-/** A diagnostic item carries its skill's grade_band so the page can score by band. */
+/** A diagnostic item carries its skill's grade_band (used today for band scoring)
+ *  and its true Common Core grade (available for grade-accurate placement). */
 export interface DiagnosticQuestion extends PracticeQuestion {
   grade_band: string | null
+  ccss_grade: string | null
+  ccss_grade_num: number | null
 }
 
 /**
@@ -229,7 +300,12 @@ export async function fetchDiagnosticQuestions(skills: PracticeableSkill[]): Pro
   const sets = await Promise.all(
     skills.map(async (s) => {
       const qs = await fetchPracticeQuestions(s.slug, 1)
-      return qs.map((q) => ({ ...q, grade_band: s.grade_band }))
+      return qs.map((q) => ({
+        ...q,
+        grade_band: s.grade_band,
+        ccss_grade: s.ccss_grade,
+        ccss_grade_num: s.ccss_grade_num,
+      }))
     }),
   )
   return shuffle(sets.flat())

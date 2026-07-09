@@ -16,6 +16,7 @@ import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
 import { recordSessionMastery } from '@/lib/skills'
 import { resolveFocusForSlug } from '@/lib/focusSkills'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
+import { getVoiceMuted, setVoiceMuted } from '@/lib/voicePrefs'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import { transcribeAudio } from '@/lib/transcribe'
 import '@/styles/app-screens.css'
@@ -205,8 +206,10 @@ function SessionView({
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])
-  // Nikki auto-speaks her responses by default; this mutes that (in-session).
-  const [muted, setMuted] = useState(false)
+  // Nikki auto-speaks her responses by default; this mutes that. Seeded from and
+  // written back to the app-wide voice-mute preference, so a child's "read aloud
+  // off" choice carries between the lesson, the diagnostic, and practice.
+  const [muted, setMuted] = useState(getVoiceMuted)
   const [speaking, setSpeaking] = useState(false)
   const [draft, setDraft] = useState('')
   const [showLeaveWarning, setShowLeaveWarning] = useState(false)
@@ -321,6 +324,7 @@ function SessionView({
         // Unmuting: don't replay the message already on screen — only new ones.
         spokenRef.current = lastAssistantId(messages)
       }
+      setVoiceMuted(next) // persist app-wide (diagnostic/practice honor the same flag)
       return next
     })
   }
