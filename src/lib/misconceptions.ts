@@ -174,6 +174,12 @@ const EXPLANATIONS: Record<string, string> = {
     "That is an \"-ing\" form, which can't be the main verb by itself — it would leave the sentence unfinished. Use a complete verb.",
   'used-infinitive':
     'That is the "to ___" form, which can\'t serve as the main verb here. Use a verb that matches the subject.',
+  'singular-verb-for-plural':
+    'The subject here is plural, so it needs a plural verb. A singular verb form does not match.',
+  'matched-farther-subject':
+    'With "neither … nor" or "either … or," the verb agrees with the subject CLOSER to it, not the one farther away. Match the verb to the nearer subject.',
+  'treated-unit-as-plural':
+    'This subject names a single thing or amount (like one dish, or one sum of money), so it takes a singular verb even though it looks plural or is joined by "and."',
 
   // grammar — punctuation
   'missing-comma':
@@ -194,6 +200,12 @@ const EXPLANATIONS: Record<string, string> = {
     "An exclamation point is for strong emphasis, which doesn't fit a plain statement like this. End it with a period.",
   'missing-end-punctuation':
     'Every sentence needs end punctuation — this one should finish with a period.',
+  'missing-question-mark':
+    'This sentence asks a direct question, so it must end with a question mark, not a period.',
+  'comma-splits-subject-verb':
+    'No comma belongs between a subject and its verb — a comma here wrongly splits the main parts of the sentence.',
+  'unneeded-restrictive-comma':
+    'This clause is essential — it identifies which one — so it should NOT be set off with a comma.',
 
   // grammar — sentence structure / boundaries
   'creates-a-fragment':
@@ -208,6 +220,8 @@ const EXPLANATIONS: Record<string, string> = {
     'A complete clause that introduces a list or explanation needs a colon before it.',
   'unpaired-dash':
     'A dash that sets off an aside in the middle of a sentence needs a matching partner — use a pair of dashes, or a pair of commas, not one lone dash.',
+  'colon-after-incomplete-clause':
+    'A colon must follow a complete sentence. It can\'t come right after a verb, a preposition, or a phrase like "such as."',
 
   // grammar — pronouns
   'pronoun-matches-nearby-noun':
@@ -226,6 +240,8 @@ const EXPLANATIONS: Record<string, string> = {
     'That is a contraction (it\'s = "it is," they\'re = "they are," who\'s = "who is"), but a possessive is needed here.',
   'wrong-word-homophone':
     'That word sounds the same but means something different (there = a place, their = belonging to them). Pick the one that fits.',
+  'vague-pronoun-reference':
+    'This pronoun does not clearly point to one specific noun, so the reference is unclear. Name the thing directly instead.',
 
   // grammar — verb tense/form
   'wrong-tense-for-context':
@@ -234,6 +250,10 @@ const EXPLANATIONS: Record<string, string> = {
     'Keep the tense consistent — this verb jumps to a different time than the rest of the sentence.',
   'wrong-past-participle':
     'That is not the correct past form of the verb. After "has," "have," or "had," use the past participle (for example, "gone," not "went").',
+  'nonstandard-past-tense':
+    'That is not the standard past-tense form of the verb. Use the correct simple past (for example, "fell," not "falled").',
+  'subjunctive-error':
+    'A hypothetical "if" statement uses the subjunctive "were," not "was" — for example, "if it were open."',
 
   // grammar — possessives & apostrophes
   'possessive-missing-apostrophe':
@@ -248,6 +268,10 @@ const EXPLANATIONS: Record<string, string> = {
     '"Whose" shows possession; "who\'s" means "who is." This spot needs the possessive.',
   'wrong-number-noun':
     'Check whether the noun should be singular or plural here — the sentence calls for the other one.',
+  'possessive-for-contraction':
+    'This spot needs a contraction (it\'s = "it is"), but a possessive was used instead. Read it back as the two full words to check.',
+  'wrong-joint-possession':
+    'When two people own one thing together, only the LAST name takes the apostrophe (Mia and Carlos\'s bakery); when they own things separately, EACH name does.',
 
   // grammar — modifier placement
   'dangling-modifier':
