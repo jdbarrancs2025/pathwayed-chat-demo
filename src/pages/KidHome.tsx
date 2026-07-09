@@ -133,8 +133,8 @@ export function KidHome() {
               dangerouslySetInnerHTML={{ __html: HOMEWORK.icon }}
             />
             <div>
-              <h3>Homework</h3>
-              <p>Bring an assignment and we’ll work through it together.</p>
+              <h3>Homework help</h3>
+              <p>Stuck on an assignment? Bring it here and Nikki will help you (or your child) work through it and really understand it.</p>
             </div>
           </button>
 

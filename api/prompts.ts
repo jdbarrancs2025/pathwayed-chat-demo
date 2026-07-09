@@ -261,6 +261,19 @@ function workingDescription(grade?: string, level?: string): string {
 }
 
 /**
+ * Age-appropriate target work window for a focused skills-building lesson, so the
+ * session has a beginning/middle/end. A GUIDE for pacing, never a hard timer.
+ * Elementary/K–5 get a shorter window (shorter attention span) than 6–12.
+ */
+function targetSessionWindow(grade?: string): { window: string; who: string } {
+  const band = gradeBand(grade)
+  if (band === '6-8' || band === '9-12') {
+    return { window: 'about 20 minutes', who: 'a middle or high school student' }
+  }
+  return { window: 'about 10 to 15 minutes', who: 'a younger student, whose attention span is shorter' }
+}
+
+/**
  * Build the child- and subject-aware context block for the kid tutoring session.
  */
 function buildKidContextBlock(context: StudentContext): string {
@@ -295,11 +308,26 @@ function buildKidContextBlock(context: StudentContext): string {
       ? `\n- The writing prompt the student is responding to is: "${context.writingPrompt}". Coach their paragraph against THIS prompt.`
       : ''
 
+  // SESSION ARC — a focused skills-building lesson aims for a real chunk of work
+  // within an age-appropriate window, then wraps on a natural milestone with a win
+  // and an offer to continue. Not applied to homework, open practice, or the
+  // writing studio (composition runs its own open-ended revise flow).
+  const isFocusLesson = context.subject !== 'homework' && context.focusAreas.length > 0
+  const { window: sessionWindow, who: sessionWho } = targetSessionWindow(context.grade)
+  const arc =
+    isFocusLesson && !composition
+      ? `\n\nSESSION ARC — give today a clear beginning, middle, and end:
+- Aim for a focused chunk of real work today — ${sessionWindow} of practice for ${sessionWho} — then bring the lesson to a natural finish. This is a GUIDE for pacing, NOT a timer: never cut the student off mid-thought or mid-explanation, and don't stop at a fixed number of questions.
+- Build a clear middle and end: teach and practice until the student has genuinely worked through a meaningful chunk of the skill. As you reach that amount of work AND a natural stopping point, WRAP UP — don't run on open-endedly.
+- To wrap up: celebrate a specific win from today ("Nice work today — you got through ___!"), then OFFER the choice to keep going: "Want to keep going, or is this a good place to stop for today?" If they want more, continue toward the next small milestone.
+- This coexists with everything else: the student can finish anytime with their Done button, and if they tire or get frustrated the gentle-break guidance comes first. Always end warmly, never mid-step.`
+      : ''
+
   return `CURRENT SESSION:
 - Student: ${name}, in ${wd}
 - ${focus}${guideLine}${skillFocus}${writingPromptLine}
 
-Address ${name} warmly by name, and keep everything appropriate for ${wd}.`
+Address ${name} warmly by name, and keep everything appropriate for ${wd}.${arc}`
 }
 
 function isElementaryGrade(grade?: string): boolean {
