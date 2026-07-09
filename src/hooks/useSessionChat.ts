@@ -13,6 +13,12 @@ interface UseSessionChatOptions {
   level: string
   /** Focus areas for the tutor prompt (e.g. today's skill label). Defaults to []. */
   focusAreas?: string[]
+  /** Focus skill SLUG (e.g. 'paragraph-writing') — selects the writing-composition
+   *  coaching module server-side. */
+  focusSkill?: string | null
+  /** For a writing-composition lesson: the exact prompt the student writes to, so
+   *  Nikki coaches against the same prompt shown in the writing space. */
+  writingPrompt?: string | null
   /** Storage key for the transcript. Defaults to `subject`; skills-building
    *  lessons pass `subject:skill` so each skill has its own fresh transcript. */
   transcriptKey?: string
@@ -122,6 +128,8 @@ export function useSessionChat(opts: UseSessionChatOptions) {
               childName: o.childName,
               grade: o.grade,
               level: o.level,
+              focusSkill: o.focusSkill ?? undefined,
+              writingPrompt: o.writingPrompt ?? undefined,
             },
           }),
         })
@@ -192,6 +200,8 @@ export function useSessionChat(opts: UseSessionChatOptions) {
               childName: o.childName,
               grade: o.grade,
               level: o.level,
+              focusSkill: o.focusSkill ?? undefined,
+              writingPrompt: o.writingPrompt ?? undefined,
             },
             image: { data: imageB64, mediaType },
           }),

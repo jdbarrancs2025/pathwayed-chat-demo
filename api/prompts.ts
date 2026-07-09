@@ -1,6 +1,7 @@
 import { TEACHING_CYCLE, gradeBand } from "./teaching-cycle.js"
 import { getSubjectModule } from "./subject-modules.js"
 import { getMisconceptionGuidance } from "./misconceptions.js"
+import { isCompositionSkill, getWritingCompositionModule } from "./writing-composition.js"
 
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support" | "kid-tutor"
 
@@ -13,6 +14,12 @@ export interface StudentContext {
   childName?: string
   grade?: string
   level?: string
+  /** Focus skill SLUG (e.g. 'paragraph-writing'). Selects the LLM-coached
+   *  writing-composition module when it names a composition skill. */
+  focusSkill?: string
+  /** For a writing-composition lesson: the exact prompt the student is writing
+   *  to, so Nikki coaches against the same prompt shown in the writing space. */
+  writingPrompt?: string
 }
 
 /**
@@ -268,17 +275,29 @@ function buildKidContextBlock(context: StudentContext): string {
         : 'You are helping them learn.'
   const guideLine = sg ? ` For this, ${sg.guide}.` : ''
 
+  // A writing-composition lesson runs the writing studio (see the composition
+  // module): the student writes to a fixed prompt and shares it for coaching, so
+  // the "diagnose with one question" opener does NOT apply here.
+  const composition = isCompositionSkill(context.focusSkill)
+
   // When today's lesson is a specific skill (skills-building / practice-SAT focus),
   // name it and pin the session to it. Without this the model only knows the
   // subject and, after the student says "yes", falls back to a generic opener.
   const skillFocus =
     context.subject !== 'homework' && context.focusAreas.length > 0
-      ? `\n- Today's lesson is specifically on: ${context.focusAreas.join(', ')}. Teach THIS skill today. Do NOT ask the student what they want to work on — you already know today's skill. Open by diagnosing what they already know about it with ONE short question on this skill, then teach it step by step following the teaching cycle.`
+      ? composition
+        ? `\n- Today's lesson is specifically on: ${context.focusAreas.join(', ')}. This is a WRITING STUDIO — the student writes to the prompt below and shares it for your coaching (see the paragraph-writing module). Do NOT ask what they want to work on and do NOT open with a quiz.`
+        : `\n- Today's lesson is specifically on: ${context.focusAreas.join(', ')}. Teach THIS skill today. Do NOT ask the student what they want to work on — you already know today's skill. Open by diagnosing what they already know about it with ONE short question on this skill, then teach it step by step following the teaching cycle.`
+      : ''
+
+  const writingPromptLine =
+    composition && context.writingPrompt
+      ? `\n- The writing prompt the student is responding to is: "${context.writingPrompt}". Coach their paragraph against THIS prompt.`
       : ''
 
   return `CURRENT SESSION:
 - Student: ${name}, in ${wd}
-- ${focus}${guideLine}${skillFocus}
+- ${focus}${guideLine}${skillFocus}${writingPromptLine}
 
 Address ${name} warmly by name, and keep everything appropriate for ${wd}.`
 }
@@ -321,6 +340,15 @@ export function getCombinedSystemPrompt(mode: Mode, context?: StudentContext): s
     const subjectModule = getSubjectModule(context.subject, band)
     if (subjectModule) {
       prompt += `\n\n---\n\n${subjectModule}`
+    }
+    // Writing-composition lessons specialize the writing session into the
+    // LLM-coached writing studio (rubric + coach-not-score + gentle break),
+    // composed on top of the generic writing module above.
+    if (isCompositionSkill(context.focusSkill)) {
+      const compositionModule = getWritingCompositionModule(context.focusSkill, band)
+      if (compositionModule) {
+        prompt += `\n\n---\n\n${compositionModule}`
+      }
     }
     const misconceptions = getMisconceptionGuidance(context.subject, band)
     if (misconceptions) {

@@ -4,6 +4,7 @@ import { getStudent, avatarModeOf, type Student } from '@/lib/students'
 import { loadTranscript } from '@/lib/sessions'
 import { subjectDisplayName } from '@/lib/subjects'
 import { skillLabel, scopeBandForGrade, isScopeSubject } from '@/lib/lessonPath'
+import { isCompositionSkill, pickWritingPrompt } from '@/lib/writingComposition'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
 import { useAudioRecorder } from '@/hooks/useAudioRecorder'
 import { useConversationMic } from '@/hooks/useConversationMic'
@@ -55,10 +56,14 @@ function makeGreeting(
   focusLabel?: string | null,
   isHomework?: boolean,
   fromSat?: boolean,
+  isComposition?: boolean,
 ): string {
   if (subject === 'homework' || isHomework) {
     const subjPhrase = subject === 'homework' ? '' : ` ${subjectDisplayName(subject).toLowerCase()}`
     return `Hi ${name}! I'm Nikki. Upload a photo or PDF of your${subjPhrase} homework using the panel on the right, and we'll work through it together. You can also just tell me what it's about.`
+  }
+  if (isComposition) {
+    return `Hi ${name}! I'm Nikki. Today we're going to write a paragraph together. I've put a writing prompt in your writing space on the right — read it, give it your best try, and then tap "Share with Nikki." I'll tell you what's working and help you make it even stronger. Take your time — ready when you are!`
   }
   if (focusLabel) {
     const satPhrase = fromSat ? ` This came up in your SAT Math practice, so let's strengthen it.` : ''
@@ -74,6 +79,8 @@ interface ReadyState {
   focusSlug: string | null
   transcriptKey: string
   homeworkMode: boolean
+  /** Original writing prompt for a writing-composition lesson, else null. */
+  writingPrompt: string | null
 }
 
 export function Session() {
@@ -105,16 +112,21 @@ export function Session() {
       const band = scopeBandForGrade(s.grade)
       const focusLabel =
         focusSlug && band && isScopeSubject(subject) ? skillLabel(band, subject, focusSlug) : null
+      // Writing-composition lessons run the writing studio: pick the original
+      // prompt (stable per student+skill) shown in the writing space and coached
+      // against by Nikki.
+      const isComposition = subject === 'writing' && isCompositionSkill(focusSlug)
+      const writingPrompt = isComposition && focusSlug ? pickWritingPrompt(focusSlug, s.id) : null
       const initialMessages: ChatMessage[] = saved.length
         ? saved.map((m, i) => ({ id: `saved-${i}`, role: m.role, content: m.content }))
         : [
             {
               id: 'greeting',
               role: 'assistant',
-              content: makeGreeting(s.first_name, subject, focusLabel, isHomework, fromSat),
+              content: makeGreeting(s.first_name, subject, focusLabel, isHomework, fromSat, isComposition),
             },
           ]
-      setReady({ student: s, initialMessages, focusLabel, focusSlug, transcriptKey, homeworkMode: isHomework })
+      setReady({ student: s, initialMessages, focusLabel, focusSlug, transcriptKey, homeworkMode: isHomework, writingPrompt })
     })
     return () => {
       active = false
@@ -140,6 +152,7 @@ export function Session() {
       focusSlug={ready.focusSlug}
       transcriptKey={ready.transcriptKey}
       homeworkMode={ready.homeworkMode}
+      writingPrompt={ready.writingPrompt}
     />
   )
 }
@@ -152,6 +165,7 @@ function SessionView({
   focusSlug,
   transcriptKey,
   homeworkMode,
+  writingPrompt,
 }: {
   student: Student
   subject: string
@@ -160,6 +174,7 @@ function SessionView({
   focusSlug: string | null
   transcriptKey: string
   homeworkMode: boolean
+  writingPrompt: string | null
 }) {
   const navigate = useNavigate()
   const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
@@ -169,6 +184,8 @@ function SessionView({
     grade: student.grade,
     level: student.level,
     focusAreas: focusLabel ? [focusLabel] : [],
+    focusSkill: focusSlug,
+    writingPrompt,
     transcriptKey,
     initialMessages,
   })
@@ -517,6 +534,7 @@ function SessionView({
           level={student.level}
           paneActive={pane === 'work' || isWide}
           homeworkMode={homeworkMode}
+          writingPrompt={writingPrompt}
           onSendText={(t) => {
             setPane('chat')
             void sendMessage(t)

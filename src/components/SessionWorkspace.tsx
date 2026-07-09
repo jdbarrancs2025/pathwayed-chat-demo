@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { Notepad } from '@/components/workspace/Notepad'
 import { Flashcards } from '@/components/workspace/Flashcards'
 import { HomeworkUpload } from '@/components/workspace/HomeworkUpload'
+import { WritingSpace } from '@/components/workspace/WritingSpace'
 import type { ImageTurn } from '@/lib/image'
 
-type Tool = 'note' | 'cards' | 'home'
+type Tool = 'note' | 'cards' | 'home' | 'write'
 
 /** Subject-specific tool set. In homework mode the photo/PDF upload is added as
  *  the leading tool, so the student gets the subject's interface AND can hand
- *  Nikki their assignment. */
-function toolsFor(subject: string, homeworkMode: boolean): Tool[] {
+ *  Nikki their assignment. A writing-composition lesson gets the dedicated
+ *  writing studio only (its own prompt + paragraph area). */
+function toolsFor(subject: string, homeworkMode: boolean, composition: boolean): Tool[] {
+  if (composition) return ['write']
   if (subject === 'homework') return ['home']
   // Reading: Flashcards is primary; the note tool is a simple write + snap-a-page.
   const base: Tool[] = subject === 'reading' ? ['cards', 'note'] : subject === 'science' ? ['note', 'cards'] : ['note']
@@ -25,6 +28,7 @@ const TAB_LABEL: Record<Tool, string> = {
   note: '✏️ Notepad',
   cards: '🃏 Flashcards',
   home: '📄 Homework',
+  write: '✍️ Writing',
 }
 
 interface SessionWorkspaceProps {
@@ -38,6 +42,9 @@ interface SessionWorkspaceProps {
   paneActive: boolean
   /** Homework flow: surface the photo/PDF upload alongside the subject tools. */
   homeworkMode?: boolean
+  /** Writing-composition lesson: the original prompt for the writing studio.
+   *  When set, the workspace is the dedicated writing space. */
+  writingPrompt?: string | null
   onSendText: (text: string) => void
   onSendImage: (turn: ImageTurn) => void
 }
@@ -49,10 +56,12 @@ export function SessionWorkspace({
   level,
   paneActive,
   homeworkMode = false,
+  writingPrompt = null,
   onSendText,
   onSendImage,
 }: SessionWorkspaceProps) {
-  const tools = toolsFor(subject, homeworkMode)
+  const composition = !!writingPrompt
+  const tools = toolsFor(subject, homeworkMode, composition)
   const [tab, setTab] = useState<Tool>(tools[0])
   const active = tools.includes(tab) ? tab : tools[0]
 
@@ -69,6 +78,9 @@ export function SessionWorkspace({
       )}
       <div className="wsbody">
         <div className="wsbody-inner">
+          {active === 'write' && writingPrompt && (
+            <WritingSpace prompt={writingPrompt} onSendText={onSendText} />
+          )}
           {active === 'note' && (
             <Notepad subject={subject} paneActive={paneActive} onSendText={onSendText} onSendImage={onSendImage} />
           )}
