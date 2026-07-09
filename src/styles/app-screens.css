@@ -1753,6 +1753,18 @@
 .practice-q {
   padding: 18px;
 }
+/* Reading passage shown above the question stem (reading-set items). */
+.practice-passage {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: #f4f6fb;
+  border-left: 3px solid var(--navy);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  white-space: pre-line; /* preserve any authored paragraph breaks */
+}
 .practice-stem {
   font-size: 22px;
   font-weight: 600;

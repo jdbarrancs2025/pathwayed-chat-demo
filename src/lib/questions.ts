@@ -20,6 +20,9 @@ export interface PracticeQuestion {
   skill_id: string
   sat_alignment: string | null
   stem: string
+  // The reading passage this question is asked about, or null for standalone
+  // (math/writing) stems. Rendered above the stem by the practice/diagnostic UI.
+  passage: string | null
   choices: PracticeChoice[]
   correct_answer: string
   solution: string | null
@@ -88,16 +91,32 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
 
   const { data, error } = await supabase
     .from('generated_questions')
-    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution')
+    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id')
     .eq('skill_id', skillId)
     .eq('status', 'published')
   if (error) {
     console.error('fetchPracticeQuestions failed', error)
     return []
   }
+  const rows = data ?? []
+
+  // Resolve passages in one follow-up query (a reading set shares one passage
+  // across several questions, so we fetch each distinct passage once). Best-effort:
+  // a passage read failure just leaves the passage null — the question still serves.
+  const passageIds = [...new Set(rows.map((r) => r.passage_id).filter((v): v is string => !!v))]
+  const passageById = new Map<string, string>()
+  if (passageIds.length) {
+    const { data: pRows, error: pError } = await supabase
+      .from('passages')
+      .select('id, body')
+      .in('id', passageIds)
+      .eq('status', 'published')
+    if (pError) console.error('fetchPracticeQuestions: passages read failed', pError)
+    for (const p of pRows ?? []) passageById.set(p.id, p.body)
+  }
 
   const parsed: PracticeQuestion[] = []
-  for (const row of data ?? []) {
+  for (const row of rows) {
     const choices = parseChoices(row.choices)
     if (choices.length < 2) continue // skip anything malformed
     parsed.push({
@@ -105,6 +124,7 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
       skill_id: row.skill_id,
       sat_alignment: row.sat_alignment,
       stem: row.stem,
+      passage: row.passage_id ? passageById.get(row.passage_id) ?? null : null,
       choices,
       correct_answer: row.correct_answer,
       solution: row.solution,

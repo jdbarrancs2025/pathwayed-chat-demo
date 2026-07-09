@@ -280,6 +280,33 @@ const EXPLANATIONS: Record<string, string> = {
     'An opener like "it" or "there" cannot be what the opening phrase describes. Begin the main clause with the real doer.',
   'wrong-subject-for-modifier':
     "The opening phrase should describe the sentence's subject, but here the subject is an -ing action or the wrong noun. Start with who or what the phrase is really about.",
+
+  // reading — comprehension (passage-based). Shared across all reading skills so
+  // Stage-4 explanations stay coherent.
+  'contradicts-text':
+    'That choice goes against what the passage actually says. Look back for the exact line — the right answer agrees with the text, not against it.',
+  'unsupported-inference':
+    'That may sound reasonable, but the passage does not give enough to support it. Pick the choice the text actually backs up.',
+  'plausible-but-unstated':
+    'That could be true in real life, but the passage never says it. Answer only from what is on the page.',
+  'out-of-scope':
+    'That brings in something the passage never discusses. Stay with the topic the text actually covers.',
+  'too-broad':
+    'That choice claims more than the passage supports — a word like "all," "always," or "only" often gives it away. Match the size of the claim to the text.',
+  'too-narrow':
+    'That is just one small detail, not the overall point. The main idea covers what the whole passage is about.',
+  'detail-not-main-idea':
+    'That is a true detail from the passage, but it is not the main point. Ask what the passage is mostly about.',
+  'reverses-relationship':
+    'That choice flips the cause and effect (or the comparison) around. Check which thing leads to which in the passage.',
+  'wrong-evidence':
+    'That fact does not actually support the claim in question. Find the choice that directly backs up the specific point.',
+  'partly-right':
+    'Part of that choice matches the passage, but another part does not. The best answer has to be right the whole way through.',
+  'misreads-tone':
+    "That misjudges the author's attitude. Notice the words that signal how the author feels about the topic.",
+  'wrong-word-meaning':
+    'That is a common meaning of the word, but not the way it is used here. Reread the sentence and pick the meaning that fits this context.',
 }
 
 /**

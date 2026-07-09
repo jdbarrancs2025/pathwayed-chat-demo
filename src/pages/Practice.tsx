@@ -167,6 +167,11 @@ export function Practice() {
           Question {index + 1} of {questions.length}
         </div>
         <div className="panel practice-q">
+          {current.passage && (
+            <div className="practice-passage">
+              <MathText content={current.passage} />
+            </div>
+          )}
           <div className="practice-stem">
             <MathText content={current.stem} />
           </div>

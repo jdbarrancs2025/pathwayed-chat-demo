@@ -385,6 +385,49 @@ export interface Database {
         }
         Relationships: []
       }
+      // Original reading stimuli (Phase 2). One passage backs many
+      // generated_questions rows via generated_questions.passage_id; only
+      // status='published' rows are client-readable (RLS mirrors
+      // generated_questions).
+      passages: {
+        Row: {
+          id: string
+          code: string | null
+          skill_id: string
+          sat_alignment: string | null
+          grade_band: Database['public']['Enums']['grade_band'] | null
+          title: string | null
+          body: string
+          status: Database['public']['Enums']['question_status']
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code?: string | null
+          skill_id: string
+          sat_alignment?: string | null
+          grade_band?: Database['public']['Enums']['grade_band'] | null
+          title?: string | null
+          body: string
+          status?: Database['public']['Enums']['question_status']
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string | null
+          skill_id?: string
+          sat_alignment?: string | null
+          grade_band?: Database['public']['Enums']['grade_band'] | null
+          title?: string | null
+          body?: string
+          status?: Database['public']['Enums']['question_status']
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       generated_questions: {
         Row: {
           id: string
@@ -397,6 +440,9 @@ export interface Database {
           correct_answer: string
           solution: string | null
           status: Database['public']['Enums']['question_status']
+          // Reading-set link (migration 0007): the passage this question is
+          // asked about, or null for math/writing standalone stems.
+          passage_id: string | null
           created_at: string
           updated_at: string
         }
@@ -411,6 +457,7 @@ export interface Database {
           correct_answer: string
           solution?: string | null
           status?: Database['public']['Enums']['question_status']
+          passage_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -425,6 +472,7 @@ export interface Database {
           correct_answer?: string
           solution?: string | null
           status?: Database['public']['Enums']['question_status']
+          passage_id?: string | null
           created_at?: string
           updated_at?: string
         }
