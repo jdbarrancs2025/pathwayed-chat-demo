@@ -9,13 +9,13 @@ function quantityOf(tile: { kind: string; value?: string; count?: number }): num
 }
 
 describe.each(PRE_READER_SKILLS.map((s) => [s.slug, s] as const))('%s — pre-reader (audio-picture) guarantees', (_slug, skill) => {
-  it('is tagged Kindergarten (K), the k-2 band, and the audio_picture render mode', () => {
+  it('is tagged K-2 (K/1/2), the k-2 band, and the audio_picture render mode', () => {
     expect(['math', 'reading']).toContain(skill.subject)
     expect(skill.renderMode).toBe('audio_picture')
-    expect(skill.ccssGrade).toBe('K')
-    expect(skill.ccssGradeNum).toBe(0)
-    // Kindergarten math (K.CC / K.G / …) or reading foundational (RF.K).
-    expect(skill.ccssCode).toMatch(/^CCSS\.(MATH\.CONTENT\.K|ELA-LITERACY\.RF\.K)/)
+    expect(['K', '1', '2']).toContain(skill.ccssGrade)
+    expect([0, 1, 2]).toContain(skill.ccssGradeNum)
+    // K-2 math (K.CC / K.G / 1.OA / 1.NBT / 2.NBT / 2.MD …) or reading (RF / RI).
+    expect(skill.ccssCode).toMatch(/^CCSS\.(MATH\.CONTENT\.[K12]|ELA-LITERACY\.(RF|RI)\.[K12])/)
     expect(skill.gradeBand).toBe('k-2')
     expect(skill.items.length).toBeGreaterThanOrEqual(4)
   })

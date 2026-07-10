@@ -94,6 +94,9 @@ const numChoice = (v: number, correct = false): PreReaderChoice => ({ text: Stri
 const ltrChoice = (v: string, correct = false): PreReaderChoice => ({ text: v, is_correct: correct, tile: ltr(v) })
 const shapeChoice = (name: KidImage, correct = false): PreReaderChoice => ({ text: name, is_correct: correct, tile: grp(name, 1) })
 const grpChoice = (image: KidImage, count: number, correct = false): PreReaderChoice => ({ text: String(count), is_correct: correct, tile: grp(image, count) })
+// A single-picture answer whose spoken label is the object's name (reused for
+// shapes, coins, and reading-comprehension "tap the picture" answers).
+const picChoice = shapeChoice
 
 // ============================================================================
 // Kindergarten — Counting (CCSS K.CC.B.5): count to answer "how many?", and
@@ -512,12 +515,174 @@ const COMPARING_NUMBERS_K: PreReaderSkill = {
   ],
 }
 
+// ============================================================================
+// GRADE 1
+// ============================================================================
+
+// Addition within 20 (CCSS 1.OA.C.6): audio arithmetic, tap the number. Some
+// items show the first group as a picture prompt. Distractors are near-misses
+// (off-by 1..3) — the default (counting) variant.
+const ADDITION_WITHIN_20_G1: PreReaderSkill = {
+  slug: 'addition-within-20', name: 'Addition within 20', subject: 'math',
+  ccssGrade: '1', ccssGradeNum: 1, ccssCode: 'CCSS.MATH.CONTENT.1.OA.C.6',
+  satAlignment: 'problem-solving-data-analysis', gradeBand: 'k-2',
+  domainKey: 'dom-math-oa', domainName: 'Operations & Algebraic Thinking', parentSubjectKey: 'subj-math',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', stem: 'Here are 2 apples. Add 1 more. How many in all? Tap the answer.', prompt: { kind: 'object_group', image: 'apple', count: 2 }, choices: [numChoice(3, true), numChoice(2), numChoice(4)], solution: '2 and 1 more is 3! Nice adding!' },
+    { slot: 2, difficulty: 'easy', stem: 'What is 3 plus 2? Tap the answer.', prompt: null, choices: [numChoice(5, true), numChoice(4), numChoice(6)], solution: '3 plus 2 is 5! Great!' },
+    { slot: 3, difficulty: 'easy', stem: 'Here are 4 stars. Add 3 more. How many in all? Tap the answer.', prompt: { kind: 'object_group', image: 'star', count: 4 }, choices: [numChoice(7, true), numChoice(6), numChoice(8), numChoice(5)], solution: '4 and 3 more is 7! Nice counting on!' },
+    { slot: 4, difficulty: 'easy', stem: 'What is 5 plus 2? Tap the answer.', prompt: null, choices: [numChoice(7, true), numChoice(6), numChoice(8)], solution: '5 plus 2 is 7! Well done!' },
+    { slot: 5, difficulty: 'easy', stem: 'Here are 3 balls. Add 3 more. How many in all? Tap the answer.', prompt: { kind: 'object_group', image: 'ball', count: 3 }, choices: [numChoice(6, true), numChoice(5), numChoice(7), numChoice(4)], solution: '3 and 3 more is 6! Great!' },
+    { slot: 6, difficulty: 'medium', stem: 'What is 6 plus 2? Tap the answer.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(9), numChoice(6)], solution: '6 plus 2 is 8! Nice!' },
+    { slot: 7, difficulty: 'medium', stem: 'What is 4 plus 4? Tap the answer.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(9), numChoice(10)], solution: '4 plus 4 is 8! Well done!' },
+    { slot: 8, difficulty: 'medium', stem: 'What is 5 plus 5? Tap the answer.', prompt: null, choices: [numChoice(10, true), numChoice(9), numChoice(11), numChoice(8)], solution: '5 plus 5 is 10! Great!' },
+    { slot: 9, difficulty: 'medium', stem: 'What is 7 plus 2? Tap the answer.', prompt: null, choices: [numChoice(9, true), numChoice(8), numChoice(10), numChoice(7)], solution: '7 plus 2 is 9! Nice!' },
+    { slot: 10, difficulty: 'medium', stem: 'What is 6 plus 3? Tap the answer.', prompt: null, choices: [numChoice(9, true), numChoice(8), numChoice(10), numChoice(7)], solution: '6 plus 3 is 9! Well done!' },
+    { slot: 11, difficulty: 'medium', stem: 'What is 8 plus 2? Tap the answer.', prompt: null, choices: [numChoice(10, true), numChoice(9), numChoice(11), numChoice(12)], solution: '8 plus 2 is 10! Great!' },
+    { slot: 12, difficulty: 'medium', stem: 'What is 5 plus 4? Tap the answer.', prompt: null, choices: [numChoice(9, true), numChoice(8), numChoice(10), numChoice(7)], solution: '5 plus 4 is 9! Nice!' },
+    { slot: 13, difficulty: 'medium', stem: 'What is 7 plus 3? Tap the answer.', prompt: null, choices: [numChoice(10, true), numChoice(9), numChoice(11), numChoice(8)], solution: '7 plus 3 is 10! Well done!' },
+    { slot: 14, difficulty: 'medium', stem: 'What is 8 plus 4? Tap the answer.', prompt: null, choices: [numChoice(12, true), numChoice(11), numChoice(13), numChoice(10)], solution: '8 plus 4 is 12! Great!' },
+    { slot: 15, difficulty: 'medium', stem: 'What is 9 plus 3? Tap the answer.', prompt: null, choices: [numChoice(12, true), numChoice(11), numChoice(13), numChoice(10)], solution: '9 plus 3 is 12! Nice!' },
+    { slot: 16, difficulty: 'medium', stem: 'What is 7 plus 5? Tap the answer.', prompt: null, choices: [numChoice(12, true), numChoice(11), numChoice(13), numChoice(14)], solution: '7 plus 5 is 12! Well done!' },
+    { slot: 17, difficulty: 'medium', stem: 'What is 6 plus 6? Tap the answer.', prompt: null, choices: [numChoice(12, true), numChoice(11), numChoice(13), numChoice(10)], solution: '6 plus 6 is 12! Great!' },
+    { slot: 18, difficulty: 'hard', stem: 'What is 8 plus 5? Tap the answer.', prompt: null, choices: [numChoice(13, true), numChoice(12), numChoice(14), numChoice(11)], solution: '8 plus 5 is 13! Nice adding!' },
+    { slot: 19, difficulty: 'hard', stem: 'What is 9 plus 4? Tap the answer.', prompt: null, choices: [numChoice(13, true), numChoice(12), numChoice(14), numChoice(11)], solution: '9 plus 4 is 13! Well done!' },
+    { slot: 20, difficulty: 'hard', stem: 'What is 7 plus 7? Tap the answer.', prompt: null, choices: [numChoice(14, true), numChoice(13), numChoice(15), numChoice(12)], solution: '7 plus 7 is 14! Great!' },
+    { slot: 21, difficulty: 'hard', stem: 'What is 8 plus 6? Tap the answer.', prompt: null, choices: [numChoice(14, true), numChoice(13), numChoice(15), numChoice(12)], solution: '8 plus 6 is 14! Nice!' },
+    { slot: 22, difficulty: 'hard', stem: 'What is 9 plus 6? Tap the answer.', prompt: null, choices: [numChoice(15, true), numChoice(14), numChoice(16), numChoice(13)], solution: '9 plus 6 is 15! Well done!' },
+    { slot: 23, difficulty: 'hard', stem: 'What is 8 plus 8? Tap the answer.', prompt: null, choices: [numChoice(16, true), numChoice(15), numChoice(17), numChoice(14)], solution: '8 plus 8 is 16! Great!' },
+    { slot: 24, difficulty: 'hard', stem: 'What is 9 plus 7? Tap the answer.', prompt: null, choices: [numChoice(16, true), numChoice(15), numChoice(17), numChoice(14)], solution: '9 plus 7 is 16! Nice!' },
+    { slot: 25, difficulty: 'hard', stem: 'What is 9 plus 8? Tap the answer.', prompt: null, choices: [numChoice(17, true), numChoice(16), numChoice(18), numChoice(15)], solution: '9 plus 8 is 17! Well done!' },
+    { slot: 26, difficulty: 'hard', stem: 'What is 9 plus 9? Tap the answer.', prompt: null, choices: [numChoice(18, true), numChoice(17), numChoice(19), numChoice(16)], solution: '9 plus 9 is 18! Great adding!' },
+  ],
+}
+
+// Subtraction within 20 (CCSS 1.OA.C.6): audio arithmetic, tap the number.
+const SUBTRACTION_WITHIN_20_G1: PreReaderSkill = {
+  slug: 'subtraction-within-20', name: 'Subtraction within 20', subject: 'math',
+  ccssGrade: '1', ccssGradeNum: 1, ccssCode: 'CCSS.MATH.CONTENT.1.OA.C.6',
+  satAlignment: 'problem-solving-data-analysis', gradeBand: 'k-2',
+  domainKey: 'dom-math-oa', domainName: 'Operations & Algebraic Thinking', parentSubjectKey: 'subj-math',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', stem: 'Here are 5 apples. Take away 2. How many are left? Tap the answer.', prompt: { kind: 'object_group', image: 'apple', count: 5 }, choices: [numChoice(3, true), numChoice(2), numChoice(4)], solution: '5 take away 2 is 3! Nice!' },
+    { slot: 2, difficulty: 'easy', stem: 'What is 4 minus 1? Tap the answer.', prompt: null, choices: [numChoice(3, true), numChoice(2), numChoice(4), numChoice(5)], solution: '4 minus 1 is 3! Great!' },
+    { slot: 3, difficulty: 'easy', stem: 'Here are 6 balls. Take away 2. How many are left? Tap the answer.', prompt: { kind: 'object_group', image: 'ball', count: 6 }, choices: [numChoice(4, true), numChoice(3), numChoice(5), numChoice(6)], solution: '6 take away 2 is 4! Well done!' },
+    { slot: 4, difficulty: 'easy', stem: 'What is 5 minus 1? Tap the answer.', prompt: null, choices: [numChoice(4, true), numChoice(3), numChoice(5)], solution: '5 minus 1 is 4! Nice!' },
+    { slot: 5, difficulty: 'easy', stem: 'What is 3 minus 1? Tap the answer.', prompt: null, choices: [numChoice(2, true), numChoice(1), numChoice(3)], solution: '3 minus 1 is 2! Great!' },
+    { slot: 6, difficulty: 'medium', stem: 'What is 7 minus 3? Tap the answer.', prompt: null, choices: [numChoice(4, true), numChoice(3), numChoice(5), numChoice(6)], solution: '7 minus 3 is 4! Well done!' },
+    { slot: 7, difficulty: 'medium', stem: 'What is 8 minus 2? Tap the answer.', prompt: null, choices: [numChoice(6, true), numChoice(5), numChoice(7), numChoice(4)], solution: '8 minus 2 is 6! Nice!' },
+    { slot: 8, difficulty: 'medium', stem: 'What is 6 minus 3? Tap the answer.', prompt: null, choices: [numChoice(3, true), numChoice(2), numChoice(4), numChoice(5)], solution: '6 minus 3 is 3! Great!' },
+    { slot: 9, difficulty: 'medium', stem: 'What is 9 minus 4? Tap the answer.', prompt: null, choices: [numChoice(5, true), numChoice(4), numChoice(6), numChoice(7)], solution: '9 minus 4 is 5! Well done!' },
+    { slot: 10, difficulty: 'medium', stem: 'What is 7 minus 2? Tap the answer.', prompt: null, choices: [numChoice(5, true), numChoice(4), numChoice(6), numChoice(3)], solution: '7 minus 2 is 5! Nice!' },
+    { slot: 11, difficulty: 'medium', stem: 'What is 10 minus 4? Tap the answer.', prompt: null, choices: [numChoice(6, true), numChoice(5), numChoice(7), numChoice(8)], solution: '10 minus 4 is 6! Great!' },
+    { slot: 12, difficulty: 'medium', stem: 'What is 8 minus 5? Tap the answer.', prompt: null, choices: [numChoice(3, true), numChoice(2), numChoice(4), numChoice(5)], solution: '8 minus 5 is 3! Well done!' },
+    { slot: 13, difficulty: 'medium', stem: 'What is 9 minus 3? Tap the answer.', prompt: null, choices: [numChoice(6, true), numChoice(5), numChoice(7), numChoice(4)], solution: '9 minus 3 is 6! Nice!' },
+    { slot: 14, difficulty: 'medium', stem: 'What is 10 minus 3? Tap the answer.', prompt: null, choices: [numChoice(7, true), numChoice(6), numChoice(8), numChoice(9)], solution: '10 minus 3 is 7! Great!' },
+    { slot: 15, difficulty: 'hard', stem: 'What is 12 minus 4? Tap the answer.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(9), numChoice(10)], solution: '12 minus 4 is 8! Well done!' },
+    { slot: 16, difficulty: 'hard', stem: 'What is 11 minus 5? Tap the answer.', prompt: null, choices: [numChoice(6, true), numChoice(5), numChoice(7), numChoice(8)], solution: '11 minus 5 is 6! Nice!' },
+    { slot: 17, difficulty: 'hard', stem: 'What is 13 minus 4? Tap the answer.', prompt: null, choices: [numChoice(9, true), numChoice(8), numChoice(10), numChoice(7)], solution: '13 minus 4 is 9! Great!' },
+    { slot: 18, difficulty: 'hard', stem: 'What is 12 minus 5? Tap the answer.', prompt: null, choices: [numChoice(7, true), numChoice(6), numChoice(8), numChoice(9)], solution: '12 minus 5 is 7! Well done!' },
+    { slot: 19, difficulty: 'hard', stem: 'What is 14 minus 6? Tap the answer.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(9), numChoice(10)], solution: '14 minus 6 is 8! Nice!' },
+    { slot: 20, difficulty: 'hard', stem: 'What is 15 minus 7? Tap the answer.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(9), numChoice(6)], solution: '15 minus 7 is 8! Great!' },
+    { slot: 21, difficulty: 'medium', stem: 'What is 11 minus 4? Tap the answer.', prompt: null, choices: [numChoice(7, true), numChoice(6), numChoice(8), numChoice(9)], solution: '11 minus 4 is 7! Well done!' },
+    { slot: 22, difficulty: 'hard', stem: 'What is 13 minus 6? Tap the answer.', prompt: null, choices: [numChoice(7, true), numChoice(6), numChoice(8), numChoice(9)], solution: '13 minus 6 is 7! Nice!' },
+    { slot: 23, difficulty: 'hard', stem: 'What is 16 minus 8? Tap the answer.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(9), numChoice(10)], solution: '16 minus 8 is 8! Great!' },
+    { slot: 24, difficulty: 'medium', stem: 'What is 10 minus 6? Tap the answer.', prompt: null, choices: [numChoice(4, true), numChoice(3), numChoice(5), numChoice(6)], solution: '10 minus 6 is 4! Well done!' },
+    { slot: 25, difficulty: 'hard', stem: 'What is 14 minus 5? Tap the answer.', prompt: null, choices: [numChoice(9, true), numChoice(8), numChoice(10), numChoice(7)], solution: '14 minus 5 is 9! Nice!' },
+    { slot: 26, difficulty: 'hard', stem: 'What is 18 minus 9? Tap the answer.', prompt: null, choices: [numChoice(9, true), numChoice(8), numChoice(10), numChoice(7)], solution: '18 minus 9 is 9! Great subtracting!' },
+  ],
+}
+
+// Place value to 100 (CCSS 1.NBT.B.2, with .A.1 / .C.5): tens & ones, ten more/
+// less, and the counting sequence. Number tiles; `match` variant (distractors are
+// place-value confusions like a digit swap, not off-by-one).
+const PLACE_VALUE_TO_100_G1: PreReaderSkill = {
+  slug: 'place-value-to-100', name: 'Place Value to 100', subject: 'math',
+  ccssGrade: '1', ccssGradeNum: 1, ccssCode: 'CCSS.MATH.CONTENT.1.NBT.B.2',
+  satAlignment: 'problem-solving-data-analysis', gradeBand: 'k-2',
+  domainKey: 'dom-math-nbt', domainName: 'Number & Operations in Base Ten', parentSubjectKey: 'subj-math',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', variant: 'match', stem: 'What number is 2 tens and 3 ones? Tap it.', prompt: null, choices: [numChoice(23, true), numChoice(32), numChoice(20), numChoice(25)], solution: '2 tens and 3 ones make 23! Nice!' },
+    { slot: 2, difficulty: 'medium', variant: 'match', stem: 'What number is 3 tens and 4 ones? Tap it.', prompt: null, choices: [numChoice(34, true), numChoice(43), numChoice(30), numChoice(35)], solution: '3 tens and 4 ones make 34! Great!' },
+    { slot: 3, difficulty: 'medium', variant: 'match', stem: 'What number is 4 tens and 1 one? Tap it.', prompt: null, choices: [numChoice(41, true), numChoice(14), numChoice(40), numChoice(44)], solution: '4 tens and 1 one make 41! Well done!' },
+    { slot: 4, difficulty: 'medium', variant: 'match', stem: 'What number is 5 tens and 6 ones? Tap it.', prompt: null, choices: [numChoice(56, true), numChoice(65), numChoice(50), numChoice(55)], solution: '5 tens and 6 ones make 56! Nice!' },
+    { slot: 5, difficulty: 'medium', variant: 'match', stem: 'What number is 1 ten and 7 ones? Tap it.', prompt: null, choices: [numChoice(17, true), numChoice(71), numChoice(10), numChoice(18)], solution: '1 ten and 7 ones make 17! Great!' },
+    { slot: 6, difficulty: 'medium', variant: 'match', stem: 'What number is 6 tens and 0 ones? Tap it.', prompt: null, choices: [numChoice(60, true), numChoice(6), numChoice(16), numChoice(50)], solution: '6 tens and no ones make 60! Well done!' },
+    { slot: 7, difficulty: 'medium', variant: 'match', stem: 'What number is 7 tens and 2 ones? Tap it.', prompt: null, choices: [numChoice(72, true), numChoice(27), numChoice(70), numChoice(73)], solution: '7 tens and 2 ones make 72! Nice!' },
+    { slot: 8, difficulty: 'hard', variant: 'match', stem: 'What number is 8 tens and 5 ones? Tap it.', prompt: null, choices: [numChoice(85, true), numChoice(58), numChoice(80), numChoice(88)], solution: '8 tens and 5 ones make 85! Great!' },
+    { slot: 9, difficulty: 'hard', variant: 'match', stem: 'What number is 9 tens and 9 ones? Tap it.', prompt: null, choices: [numChoice(99, true), numChoice(90), numChoice(89), numChoice(9)], solution: '9 tens and 9 ones make 99! Well done!' },
+    { slot: 10, difficulty: 'easy', variant: 'match', stem: 'How many tens are in 30? Tap the number.', prompt: null, choices: [numChoice(3, true), numChoice(2), numChoice(4), numChoice(30)], solution: 'There are 3 tens in 30! Nice!' },
+    { slot: 11, difficulty: 'easy', variant: 'match', stem: 'How many tens are in 50? Tap the number.', prompt: null, choices: [numChoice(5, true), numChoice(4), numChoice(6), numChoice(50)], solution: 'There are 5 tens in 50! Great!' },
+    { slot: 12, difficulty: 'medium', variant: 'match', stem: 'How many tens are in 70? Tap the number.', prompt: null, choices: [numChoice(7, true), numChoice(6), numChoice(8), numChoice(70)], solution: 'There are 7 tens in 70! Well done!' },
+    { slot: 13, difficulty: 'medium', variant: 'match', stem: 'How many tens are in 24? Tap the number.', prompt: null, choices: [numChoice(2, true), numChoice(4), numChoice(3), numChoice(24)], solution: '24 has 2 tens! Nice!' },
+    { slot: 14, difficulty: 'medium', variant: 'match', stem: 'How many ones are in 46? Tap the number.', prompt: null, choices: [numChoice(6, true), numChoice(4), numChoice(7), numChoice(5)], solution: '46 has 6 ones! Great!' },
+    { slot: 15, difficulty: 'medium', variant: 'match', stem: 'How many ones are in 38? Tap the number.', prompt: null, choices: [numChoice(8, true), numChoice(3), numChoice(9), numChoice(7)], solution: '38 has 8 ones! Well done!' },
+    { slot: 16, difficulty: 'medium', variant: 'match', stem: 'How many ones are in 51? Tap the number.', prompt: null, choices: [numChoice(1, true), numChoice(5), numChoice(2), numChoice(0)], solution: '51 has 1 one! Nice!' },
+    { slot: 17, difficulty: 'easy', variant: 'match', stem: 'What is 4 tens? Tap the number.', prompt: null, choices: [numChoice(40, true), numChoice(4), numChoice(14), numChoice(44)], solution: '4 tens is 40! Great!' },
+    { slot: 18, difficulty: 'medium', variant: 'match', stem: 'What is 8 tens? Tap the number.', prompt: null, choices: [numChoice(80, true), numChoice(8), numChoice(18), numChoice(88)], solution: '8 tens is 80! Well done!' },
+    { slot: 19, difficulty: 'medium', variant: 'match', stem: 'What is 10 more than 30? Tap the number.', prompt: null, choices: [numChoice(40, true), numChoice(20), numChoice(31), numChoice(50)], solution: '10 more than 30 is 40! Nice!' },
+    { slot: 20, difficulty: 'medium', variant: 'match', stem: 'What is 10 more than 45? Tap the number.', prompt: null, choices: [numChoice(55, true), numChoice(35), numChoice(46), numChoice(44)], solution: '10 more than 45 is 55! Great!' },
+    { slot: 21, difficulty: 'medium', variant: 'match', stem: 'What is 10 less than 60? Tap the number.', prompt: null, choices: [numChoice(50, true), numChoice(70), numChoice(59), numChoice(40)], solution: '10 less than 60 is 50! Well done!' },
+    { slot: 22, difficulty: 'hard', variant: 'match', stem: 'What is 10 less than 28? Tap the number.', prompt: null, choices: [numChoice(18, true), numChoice(38), numChoice(27), numChoice(8)], solution: '10 less than 28 is 18! Nice!' },
+    { slot: 23, difficulty: 'medium', variant: 'match', stem: 'What number comes right after 49? Tap it.', prompt: null, choices: [numChoice(50, true), numChoice(48), numChoice(40), numChoice(59)], solution: 'After 49 comes 50! Great!' },
+    { slot: 24, difficulty: 'medium', variant: 'match', stem: 'What number comes right after 79? Tap it.', prompt: null, choices: [numChoice(80, true), numChoice(78), numChoice(70), numChoice(89)], solution: 'After 79 comes 80! Well done!' },
+    { slot: 25, difficulty: 'medium', variant: 'match', stem: 'What number comes right before 30? Tap it.', prompt: null, choices: [numChoice(29, true), numChoice(31), numChoice(28), numChoice(20)], solution: 'Before 30 comes 29! Nice!' },
+    { slot: 26, difficulty: 'hard', variant: 'match', stem: 'What number is 3 tens and 8 ones? Tap it.', prompt: null, choices: [numChoice(38, true), numChoice(83), numChoice(30), numChoice(28)], solution: '3 tens and 8 ones make 38! Great!' },
+  ],
+}
+
+// Main Idea, Grade 1 (CCSS RI.1.2) — AUDIO-PASSAGE: Nikki reads a short original
+// story aloud, then asks what it is mostly about; the child taps the picture.
+// `match` variant (distractors are pictures NOT in the story). SHORT + concrete.
+const MAIN_IDEA_G1: PreReaderSkill = {
+  slug: 'main-idea-1', name: 'Main Idea (Grade 1)', subject: 'reading',
+  ccssGrade: '1', ccssGradeNum: 1, ccssCode: 'CCSS.ELA-LITERACY.RI.1.2',
+  satAlignment: 'information-and-ideas', gradeBand: 'k-2',
+  domainKey: 'dom-reading-ri', domainName: 'Reading: Informational Text', parentSubjectKey: 'subj-reading',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', variant: 'match', stem: 'Listen to the story. Meg has a red ball. She bounces it up and down all day. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('ball', true), picChoice('cat'), picChoice('tree')], solution: 'This story is all about the ball! Great listening!' },
+    { slot: 2, difficulty: 'easy', variant: 'match', stem: 'Listen. A little duck swims in the pond. It says quack, quack. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('duck', true), picChoice('ball'), picChoice('sun')], solution: 'The story is all about the duck! Nice!' },
+    { slot: 3, difficulty: 'easy', variant: 'match', stem: 'Listen. The sun is bright today. It makes the sky warm and yellow. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('sun', true), picChoice('fish'), picChoice('hat')], solution: 'The story is all about the sun! Well done!' },
+    { slot: 4, difficulty: 'easy', variant: 'match', stem: 'Listen. Sam plants a tree. He gives it water so it can grow tall. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('tree', true), picChoice('ball'), picChoice('duck')], solution: 'The story is all about the tree! Great!' },
+    { slot: 5, difficulty: 'easy', variant: 'match', stem: 'Listen. The cat naps on the mat. It is soft and warm. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('cat', true), picChoice('bus'), picChoice('star')], solution: 'The story is all about the cat! Nice!' },
+    { slot: 6, difficulty: 'easy', variant: 'match', stem: 'Listen. A pig rolls in the mud. It is happy and messy. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('pig', true), picChoice('kite'), picChoice('moon')], solution: 'The story is all about the pig! Well done!' },
+    { slot: 7, difficulty: 'medium', variant: 'match', stem: 'Listen. Ana flies a kite. It goes high up in the wind. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('kite', true), picChoice('apple'), picChoice('fish')], solution: 'The story is all about the kite! Great!' },
+    { slot: 8, difficulty: 'medium', variant: 'match', stem: 'Listen. The fish swims in the tank. It blows tiny bubbles. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('fish', true), picChoice('tree'), picChoice('van')], solution: 'The story is all about the fish! Nice!' },
+    { slot: 9, difficulty: 'medium', variant: 'match', stem: 'Listen. Ben gets a gift. He opens the box and smiles big. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('gift', true), picChoice('sun'), picChoice('duck')], solution: 'The story is all about the gift! Well done!' },
+    { slot: 10, difficulty: 'medium', variant: 'match', stem: 'Listen. An apple grows on the tree. It turns red and sweet. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('apple', true), picChoice('ball'), picChoice('cat')], solution: 'The story is all about the apple! Great!' },
+    { slot: 11, difficulty: 'medium', variant: 'match', stem: 'Listen. The bus takes the kids to school. It is big and yellow. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('bus', true), picChoice('pig'), picChoice('star')], solution: 'The story is all about the bus! Nice!' },
+    { slot: 12, difficulty: 'medium', variant: 'match', stem: 'Listen. A flower opens in the garden. Bees come to say hello. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('flower', true), picChoice('sock'), picChoice('moon')], solution: 'The story is all about the flower! Well done!' },
+    { slot: 13, difficulty: 'medium', variant: 'match', stem: 'Listen. The moon shines at night. It is round and white. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('moon', true), picChoice('ball'), picChoice('cat')], solution: 'The story is all about the moon! Great!' },
+    { slot: 14, difficulty: 'medium', variant: 'match', stem: 'Listen. Tim wears his hat. It keeps the sun off his head. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('hat', true), picChoice('duck'), picChoice('tree')], solution: 'The story is all about the hat! Nice!' },
+    { slot: 15, difficulty: 'medium', variant: 'match', stem: 'Listen. A van drives down the road. It carries lots of boxes. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('van', true), picChoice('fish'), picChoice('sun')], solution: 'The story is all about the van! Well done!' },
+    { slot: 16, difficulty: 'medium', variant: 'match', stem: 'Listen. The star twinkles in the dark sky. It is far, far away. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('star', true), picChoice('pig'), picChoice('kite')], solution: 'The story is all about the star! Great!' },
+    { slot: 17, difficulty: 'hard', variant: 'match', stem: 'Listen. Lily builds a house with blocks. It has a door and a roof. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('house', true), picChoice('ball'), picChoice('fish')], solution: 'The story is all about the house! Nice!' },
+    { slot: 18, difficulty: 'hard', variant: 'match', stem: 'Listen. A ring sparkles on Mom’s hand. It is shiny and gold. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('ring', true), picChoice('bus'), picChoice('apple')], solution: 'The story is all about the ring! Well done!' },
+    { slot: 19, difficulty: 'hard', variant: 'match', stem: 'Listen. A leaf falls from the tree. It floats down to the ground. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('leaf', true), picChoice('ball'), picChoice('duck')], solution: 'The story is all about the leaf! Great!' },
+    { slot: 20, difficulty: 'hard', variant: 'match', stem: 'Listen. A sock is missing! Ravi looks under the bed for it. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('sock', true), picChoice('fish'), picChoice('sun')], solution: 'The story is all about the sock! Nice!' },
+    { slot: 21, difficulty: 'medium', variant: 'match', stem: 'Listen. The mug is full of warm milk. It keeps Nia cozy. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('mug', true), picChoice('ball'), picChoice('tree')], solution: 'The story is all about the mug! Well done!' },
+    { slot: 22, difficulty: 'hard', variant: 'match', stem: 'Listen. A tent stands in the yard. The kids camp inside it. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('tent', true), picChoice('duck'), picChoice('apple')], solution: 'The story is all about the tent! Great!' },
+    { slot: 23, difficulty: 'hard', variant: 'match', stem: 'Listen. The key opens the little box. Inside is a surprise! What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('key', true), picChoice('pig'), picChoice('sun')], solution: 'The story is all about the key! Nice!' },
+    { slot: 24, difficulty: 'hard', variant: 'match', stem: 'Listen. A jet flies across the sky. It leaves a long white trail. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('jet', true), picChoice('cat'), picChoice('ball')], solution: 'The story is all about the jet! Well done!' },
+    { slot: 25, difficulty: 'medium', variant: 'match', stem: 'Listen. A pot of soup cooks on the stove. It smells so good. What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('pot', true), picChoice('star'), picChoice('duck')], solution: 'The story is all about the pot! Great!' },
+    { slot: 26, difficulty: 'medium', variant: 'match', stem: 'Listen. The yo-yo goes down and up on its string. Round and round! What is the story mostly about? Tap the picture.', prompt: null, choices: [picChoice('yoyo', true), picChoice('fish'), picChoice('tree')], solution: 'The story is all about the yo-yo! Nice!' },
+  ],
+}
+
 export const PRE_READER_SKILLS: PreReaderSkill[] = [
   COUNTING_K,
   LETTER_SOUNDS_K,
   LETTER_NAMING_K,
   SHAPES_K,
   COMPARING_NUMBERS_K,
+  ADDITION_WITHIN_20_G1,
+  SUBTRACTION_WITHIN_20_G1,
+  PLACE_VALUE_TO_100_G1,
+  MAIN_IDEA_G1,
 ]
 
 // --- Deterministic build of a served item (shuffle the tiles) ----------------
