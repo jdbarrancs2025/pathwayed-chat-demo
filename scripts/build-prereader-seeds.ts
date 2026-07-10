@@ -50,10 +50,16 @@ const HEADER = `-- PathwayEd — Question Engine: K-2 PRE-READER (audio-picture)
 begin;
 `
 
+// Optional subset publish: PRESEED_ONLY=slug1,slug2 emits only those skills (used
+// to publish math ahead of reading); PRESEED_OUT overrides the output path so the
+// full seeds/0010 stays intact. Default (no env) = the complete 0010 seed.
+const only = process.env.PRESEED_ONLY ? new Set(process.env.PRESEED_ONLY.split(',').map((s) => s.trim())) : null
+const skills = only ? PRE_READER_SKILLS.filter((s) => only.has(s.slug)) : PRE_READER_SKILLS
+
 let sql = HEADER
 let count = 0
 const domainsSeen = new Set<string>()
-for (const skill of PRE_READER_SKILLS) {
+for (const skill of skills) {
   if (!domainsSeen.has(skill.domainKey)) {
     domainsSeen.add(skill.domainKey)
     sql += `\ninsert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, prerequisite_skills)
@@ -83,5 +89,6 @@ on conflict (id) do update set
 }
 sql += '\ncommit;\n'
 
-writeFileSync(join(seedsDir, '0010_prereader_questions.sql'), sql)
-console.log(`Wrote seeds/0010 (${count} pre-reader items across ${PRE_READER_SKILLS.length} skill(s)).`)
+const outPath = process.env.PRESEED_OUT ? join(here, '..', process.env.PRESEED_OUT) : join(seedsDir, '0010_prereader_questions.sql')
+writeFileSync(outPath, sql)
+console.log(`Wrote ${outPath} (${count} pre-reader items across ${skills.length} skill(s)).`)
