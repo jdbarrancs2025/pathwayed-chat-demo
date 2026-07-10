@@ -1,90 +1,112 @@
-import { gradeBand, type GradeBand } from '@/lib/gradeBand'
-
 /**
- * Placement diagnostic — Phase 2 pure logic (no DB, unit-tested). Decides which
- * grade bands to sample (adaptive), whether to extend to the band above, and a
- * plain-language placement summary. The actual fetch/seed live in questions.ts
- * and skills.ts; keeping this pure makes the placement rules inspectable.
+ * Placement diagnostic — pure logic (no DB, unit-tested). GRADE-ANCHORED: the
+ * assessment starts at the student's ACTUAL grade (CCSS grade) and adapts UP or
+ * DOWN one grade at a time to locate their true working level — rather than
+ * anchoring to a coarse grade BAND. The fetch/seed live in Diagnostic.tsx and
+ * skills.ts; keeping this pure makes the placement rules inspectable and tested.
  */
 
 export interface DiagnosticResult {
   skillId: string
-  band: string // the sampled skill's grade_band
+  gradeNum: number // the served skill's true CCSS grade (K=0 .. 12)
   isCorrect: boolean
 }
 
-// A strong at-grade showing earns above-grade questions (don't trap a strong kid
-// at grade pace). Tunable.
-export const EXTEND_THRESHOLD = 0.7
+/** Answer a rung at/above this fraction correct and we probe UP a grade. */
+export const UP_THRESHOLD = 0.7
+/** Answer a rung below this and we drop DOWN a grade. In between = settle here. */
+export const DOWN_THRESHOLD = 0.5
+/** Never probe more than this many grades from the enrolled grade in one
+ *  direction — a child rarely places more than a few grades off, and it bounds
+ *  the assessment length. */
+export const MAX_STEPS = 3
 
-const BAND_ORDER: GradeBand[] = ['k-2', '3-5', '6-8', '9-12']
+export type LadderDirection = 'none' | 'up' | 'down'
 
-/**
- * Bands to sample for a student: the at-grade band + the band below (current
- * level + prerequisites) as the initial set, and the band above as the adaptive
- * extension. Bands with no practiceable skills are simply absent after the caller
- * intersects with the published-question set.
- */
-export function diagnosticBands(grade: string): { initial: GradeBand[]; extension: GradeBand[] } {
-  const at = gradeBand(grade)
-  const i = BAND_ORDER.indexOf(at)
-  const below = i > 0 ? [BAND_ORDER[i - 1]] : []
-  const above = i < BAND_ORDER.length - 1 ? [BAND_ORDER[i + 1]] : []
-  return { initial: [...below, at], extension: above }
+/** Student grade string ('K','1'..'12') → numeric CCSS grade (K=0). Unknown → 0. */
+export function studentGradeNum(grade: string): number {
+  if (grade === 'K') return 0
+  const n = parseInt(grade, 10)
+  return Number.isNaN(n) ? 0 : Math.max(0, Math.min(12, n))
 }
 
-/** Fraction correct within a subset (null if the subset is empty). */
-function fractionCorrect(results: DiagnosticResult[]): number | null {
-  if (!results.length) return null
-  return results.filter((r) => r.isCorrect).length / results.length
+/** Distinct grade numbers that actually have content, ascending. */
+export function availableGrades(gradeNums: number[]): number[] {
+  return [...new Set(gradeNums)].sort((a, b) => a - b)
 }
 
 /**
- * Extend upward to the above-grade band only if the student answered the AT-GRADE
- * questions well (>= EXTEND_THRESHOLD correct). No at-grade evidence -> no extend.
+ * Where to START: the student's own grade if it has content; otherwise the
+ * nearest available grade at-or-below (so a grade with a content gap — e.g. 1/2
+ * today — degrades to the closest lower rung rather than showing nothing);
+ * failing that, the lowest available grade. null when nothing is available.
  */
-export function shouldExtend(results: DiagnosticResult[], atBand: string): boolean {
-  const f = fractionCorrect(results.filter((r) => r.band === atBand))
-  return f !== null && f >= EXTEND_THRESHOLD
+export function startGrade(studentGrade: number, available: number[]): number | null {
+  if (!available.length) return null
+  if (available.includes(studentGrade)) return studentGrade
+  const atOrBelow = available.filter((g) => g <= studentGrade)
+  if (atOrBelow.length) return Math.max(...atOrBelow)
+  return Math.min(...available)
 }
 
-export interface Placement {
-  label: string
-  /** True when the label reflects above-grade readiness (consent gate softens it). */
-  aboveGrade: boolean
-  correct: number
-  total: number
+/** Fraction correct on the questions served for one grade rung (null if none). */
+export function rungAccuracy(results: DiagnosticResult[], gradeNum: number): number | null {
+  const rung = results.filter((r) => r.gradeNum === gradeNum)
+  if (!rung.length) return null
+  return rung.filter((r) => r.isCorrect).length / rung.length
+}
+
+export interface NextRungInput {
+  currentGrade: number
+  accuracy: number // fraction correct on the rung just finished
+  available: number[]
+  visited: number[]
+  direction: LadderDirection
+  stepsTaken: number
 }
 
 /**
- * Plain-language placement summary from the answered set (display only; the real
- * placement is the seeded mastery + readiness). Uses at-grade performance first,
- * then above/below evidence to pick a friendly, non-judgmental label.
+ * The adaptive step after finishing a rung. Climbs while the student is strong,
+ * descends while they struggle, and SETTLES (returns grade: null) once the level
+ * is bracketed — bounded by MAX_STEPS, the available grades, and never revisiting
+ * a grade. Direction is locked in at the first (start-rung) decision so the walk
+ * can't oscillate.
  */
-export function placement(results: DiagnosticResult[], atBand: string): Placement {
-  const total = results.length
-  const correct = results.filter((r) => r.isCorrect).length
-  const at = BAND_ORDER.indexOf(atBand as GradeBand)
+export function nextRung(input: NextRungInput): { grade: number | null; direction: LadderDirection } {
+  const { currentGrade, accuracy, available, visited, direction, stepsTaken } = input
+  const nextUp = available.filter((g) => g > currentGrade && !visited.includes(g)).sort((a, b) => a - b)[0]
+  const nextDown = available.filter((g) => g < currentGrade && !visited.includes(g)).sort((a, b) => b - a)[0]
 
-  const atFrac = fractionCorrect(results.filter((r) => r.band === atBand))
-  const aboveFrac = fractionCorrect(results.filter((r) => BAND_ORDER.indexOf(r.band as GradeBand) > at))
-  const belowFrac = fractionCorrect(results.filter((r) => BAND_ORDER.indexOf(r.band as GradeBand) < at))
-
-  // Self-contained sentences so the completion screen can show them directly
-  // (no "we'll start you <label>" framing, which doubled words like "start you
-  // starting with…"). `aboveGrade` marks labels the consent gate should soften.
-  let label: string
-  let aboveGrade = false
-  if (aboveFrac !== null && aboveFrac >= 0.6) {
-    label = "You're ready for some above-grade challenges."
-    aboveGrade = true
-  } else if (atFrac !== null && atFrac >= EXTEND_THRESHOLD) {
-    label = "You're right on grade level."
-  } else if (belowFrac !== null && belowFrac >= 0.5) {
-    label = "We'll build up your grade-level foundations."
-  } else {
-    label = "We'll start with the core basics."
+  // First decision (at the start rung): pick a direction from performance.
+  if (direction === 'none') {
+    if (accuracy >= UP_THRESHOLD && nextUp != null) return { grade: nextUp, direction: 'up' }
+    if (accuracy < DOWN_THRESHOLD && nextDown != null) return { grade: nextDown, direction: 'down' }
+    return { grade: null, direction: 'none' } // settled at the start grade
   }
 
-  return { label, aboveGrade, correct, total }
+  // Keep climbing only while the student is still strong.
+  if (direction === 'up') {
+    if (accuracy >= UP_THRESHOLD && nextUp != null && stepsTaken < MAX_STEPS) return { grade: nextUp, direction: 'up' }
+    return { grade: null, direction: 'up' } // stop; true level = highest rung passed
+  }
+
+  // Keep descending until the student can handle a rung (>= DOWN_THRESHOLD).
+  if (accuracy < DOWN_THRESHOLD && nextDown != null && stepsTaken < MAX_STEPS) return { grade: nextDown, direction: 'down' }
+  return { grade: null, direction: 'down' } // stop; settle at the first handled rung
+}
+
+/**
+ * The student's settled working grade from the answered rungs: if they climbed,
+ * the highest grade they still passed (>= UP_THRESHOLD); if they descended, the
+ * highest grade they could handle (>= DOWN_THRESHOLD); otherwise the lowest grade
+ * attempted (or the start grade). Display/observability only — the real placement
+ * is the seeded per-skill mastery.
+ */
+export function settledGrade(results: DiagnosticResult[], startGradeNum: number): number {
+  const grades = availableGrades(results.map((r) => r.gradeNum))
+  const passedUp = grades.filter((g) => (rungAccuracy(results, g) ?? 0) >= UP_THRESHOLD)
+  if (passedUp.length) return Math.max(...passedUp)
+  const handled = grades.filter((g) => (rungAccuracy(results, g) ?? 0) >= DOWN_THRESHOLD)
+  if (handled.length) return Math.max(...handled)
+  return grades.length ? Math.min(...grades) : startGradeNum
 }

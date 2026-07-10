@@ -10,8 +10,16 @@ import {
   type PracticeableSkill,
 } from '@/lib/questions'
 import { seedDiagnosticMastery } from '@/lib/skills'
-import { diagnosticBands, shouldExtend, type DiagnosticResult } from '@/lib/diagnostic'
-import { gradeBand } from '@/lib/gradeBand'
+import {
+  studentGradeNum,
+  availableGrades,
+  startGrade,
+  rungAccuracy,
+  nextRung,
+  settledGrade,
+  type DiagnosticResult,
+  type LadderDirection,
+} from '@/lib/diagnostic'
 import {
   loadDiagnosticProgress,
   saveDiagnosticProgress,
@@ -35,10 +43,10 @@ function readableText(q: { passage: string | null; stem: string } | undefined): 
 /**
  * Placement diagnostic — PHASE 2 (adaptive + placement). Still silent: present ->
  * record -> advance, with NO teaching feedback. Differences from Phase 1:
- *  - ADAPTIVE sampling: starts with the band below + at-grade band; if the
- *    student answers the at-grade questions well (shouldExtend), it extends up to
- *    the band above. Struggling kids get a short at-and-below check; strong kids
- *    earn into above-grade questions.
+ *  - GRADE-ANCHORED ADAPTIVE sampling: starts at the student's ACTUAL grade
+ *    (CCSS grade), then adapts one grade at a time — UP while they answer well,
+ *    DOWN while they struggle — to locate their true working level, instead of
+ *    anchoring to a coarse grade band. Bounds/decisions live in nextRung.
  *  - PLACEMENT: at the end it seeds student_skill_mastery from the answers
  *    (correct 60 / wrong 25) and recomputes readiness, so the dashboard/path pick
  *    up at the student's real level. A plain summary is shown on completion.
@@ -58,12 +66,16 @@ export function Diagnostic() {
 
   const [student, setStudent] = useState<Student | null>(null)
   const [questions, setQuestions] = useState<DiagnosticQuestion[] | null>(null)
-  const [atBand, setAtBand] = useState('')
-  const [extensionSkills, setExtensionSkills] = useState<PracticeableSkill[]>([])
+  // Grade-ladder state: the skill pool, which grades have content, and the walk.
+  const [allSkills, setAllSkills] = useState<PracticeableSkill[]>([])
+  const [available, setAvailable] = useState<number[]>([])
+  const [currentGrade, setCurrentGrade] = useState(0)
+  const [direction, setDirection] = useState<LadderDirection>('none')
+  const [stepsTaken, setStepsTaken] = useState(0)
+  const [visited, setVisited] = useState<number[]>([])
   const [index, setIndex] = useState(0)
   const [results, setResults] = useState<DiagnosticResult[]>([])
-  const [extended, setExtended] = useState(false)
-  const [busy, setBusy] = useState(false) // fetching the extension, or seeding at the end
+  const [busy, setBusy] = useState(false) // fetching the next rung, or seeding at the end
   const [done, setDone] = useState(false)
   const [started, setStarted] = useState(false)
   const [consent, setConsent] = useState(false) // parent OK to show above-grade / SAT framing
@@ -103,33 +115,39 @@ export function Diagnostic() {
         setConsent(saved.consent)
         setStarted(saved.started)
         setQuestions(saved.questions)
-        setAtBand(saved.atBand)
-        setExtensionSkills(saved.extensionSkills)
+        setAllSkills(saved.allSkills)
+        setAvailable(saved.available)
+        setCurrentGrade(saved.currentGrade)
+        setDirection(saved.direction)
+        setStepsTaken(saved.stepsTaken)
+        setVisited(saved.visited)
         setIndex(saved.index)
         setResults(saved.results)
-        setExtended(saved.extended)
         return
       }
 
-      // Fresh assembly.
+      // Fresh assembly — GRADE-ANCHORED: start at the student's real grade rung
+      // (the skills whose true CCSS grade equals the student's grade), degrading
+      // to the nearest grade that has content when the exact grade has a gap.
       const practiceable = await listPracticeableSkills()
       if (!active) return
-      const inBand = (bands: string[]) => (sk: PracticeableSkill) => !!sk.grade_band && bands.includes(sk.grade_band)
-      const { initial, extension } = diagnosticBands(s.grade)
-      let initialSkills = practiceable.filter(inBand(initial))
-      let extSkills = practiceable.filter(inBand(extension))
-      let at = gradeBand(s.grade) as string
-      // If the grade's own band has no practiceable skills (e.g. K-2 math), start
-      // at the next band up and don't extend further.
-      if (!initialSkills.length && extSkills.length) {
-        initialSkills = extSkills
-        at = extension[0] ?? at
-        extSkills = []
+      const avail = availableGrades(
+        practiceable.map((sk) => sk.ccss_grade_num).filter((n): n is number => n != null),
+      )
+      const start = startGrade(studentGradeNum(s.grade), avail)
+      setAllSkills(practiceable)
+      setAvailable(avail)
+      if (start == null) {
+        setQuestions([]) // nothing published to place against → empty-state screen
+        return
       }
-      const qs = await fetchDiagnosticQuestions(initialSkills)
+      const rungSkills = practiceable.filter((sk) => sk.ccss_grade_num === start)
+      const qs = await fetchDiagnosticQuestions(rungSkills)
       if (!active) return
-      setAtBand(at)
-      setExtensionSkills(extSkills)
+      setCurrentGrade(start)
+      setDirection('none')
+      setStepsTaken(0)
+      setVisited([start])
       setQuestions(qs)
     })()
     return () => {
@@ -145,13 +163,30 @@ export function Diagnostic() {
       consent,
       started,
       questions,
-      atBand,
-      extensionSkills,
+      allSkills,
+      available,
+      currentGrade,
+      direction,
+      stepsTaken,
+      visited,
       index,
       results,
-      extended,
     })
-  }, [student, started, done, questions, atBand, extensionSkills, index, results, extended, consent])
+  }, [
+    student,
+    started,
+    done,
+    questions,
+    allSkills,
+    available,
+    currentGrade,
+    direction,
+    stepsTaken,
+    visited,
+    index,
+    results,
+    consent,
+  ])
 
   // Stamp the presented-at time whenever a new question is shown, including when
   // the quiz starts (so reading the consent intro isn't counted). Date.now() is
@@ -172,8 +207,9 @@ export function Diagnostic() {
   const finish = async (allResults: DiagnosticResult[], stu: Student) => {
     setBusy(true)
     // The real placement is the seeded mastery (behind the scenes); the kid never
-    // sees a score or band. Parent-facing per-subject bands are derived separately
-    // from the stored diagnostic attempts.
+    // sees a score or grade. The settled working grade is logged for observability;
+    // parent-facing summaries are derived separately from the stored attempts.
+    console.info('[diagnostic] settled working grade', settledGrade(allResults, studentGradeNum(stu.grade)))
     await seedDiagnosticMastery(
       stu.id,
       allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
@@ -183,15 +219,23 @@ export function Diagnostic() {
     setDone(true)
   }
 
-  // After the last question in the current list: adaptively extend upward, or finish.
-  const afterList = async (allResults: DiagnosticResult[], stu: Student) => {
-    if (!extended && extensionSkills.length && shouldExtend(allResults, atBand)) {
+  // After the last question of a grade rung: adapt UP (if strong) or DOWN (if
+  // struggling) to the next grade to find the student's true level, or settle
+  // and finish. Grade selection/bounds live in nextRung (pure, tested).
+  const advanceLadder = async (allResults: DiagnosticResult[], stu: Student) => {
+    const accuracy = rungAccuracy(allResults, currentGrade) ?? 0
+    const step = nextRung({ currentGrade, accuracy, available, visited, direction, stepsTaken })
+    if (step.grade != null) {
       setBusy(true)
-      const more = await fetchDiagnosticQuestions(extensionSkills)
-      setExtended(true)
+      const rungSkills = allSkills.filter((sk) => sk.ccss_grade_num === step.grade)
+      const more = await fetchDiagnosticQuestions(rungSkills)
       setBusy(false)
       if (more.length) {
         setQuestions((qs) => [...(qs ?? []), ...more])
+        setCurrentGrade(step.grade)
+        setDirection(step.direction)
+        setStepsTaken((n) => n + 1)
+        setVisited((v) => [...v, step.grade as number])
         setIndex((i) => i + 1)
         return
       }
@@ -216,12 +260,15 @@ export function Diagnostic() {
       shownAtMs: shownAtRef.current,
       isDiagnostic: true,
     })
-    const nextResults = [...results, { skillId: current.skill_id, band: current.grade_band ?? '', isCorrect }]
+    const nextResults: DiagnosticResult[] = [
+      ...results,
+      { skillId: current.skill_id, gradeNum: current.ccss_grade_num ?? currentGrade, isCorrect },
+    ]
     setResults(nextResults)
     if (index + 1 < questions.length) {
       setIndex(index + 1)
     } else {
-      void afterList(nextResults, student)
+      void advanceLadder(nextResults, student)
     }
   }
 
