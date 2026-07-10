@@ -12,6 +12,8 @@ import type { DiagnosticResult, LadderDirection } from '@/lib/diagnostic'
 export interface DiagnosticProgress {
   consent: boolean
   started: boolean
+  // K-2 initial-placement mode: a short, playful audio-picture set (no ladder).
+  early: boolean
   questions: DiagnosticQuestion[]
   // The full practiceable-skill pool + the grades that have content, so the
   // grade ladder can fetch further rungs on resume without re-deriving them.

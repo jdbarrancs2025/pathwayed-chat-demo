@@ -311,6 +311,44 @@ export async function fetchDiagnosticQuestions(skills: PracticeableSkill[]): Pro
   return shuffle(sets.flat())
 }
 
+/**
+ * K-2 initial-placement set: a SHORT (~`target`) audio-picture set drawn ONLY
+ * from the given early-grade skills (counting, letter-sounds) — several questions
+ * per skill, shuffled and capped. Reuses the normal per-skill serve path, so items
+ * carry render_mode='audio_picture' + prompt exactly like a lesson. Returns [] if
+ * no early-grade skills are published. Used to keep the youngest placement short,
+ * grade-appropriate, and never pulling higher-grade text.
+ */
+export async function fetchEarlyGradeDiagnostic(
+  skills: PracticeableSkill[],
+  target: number,
+): Promise<DiagnosticQuestion[]> {
+  if (!skills.length) return []
+  // A few questions from EVERY early skill so placement always reads BOTH early
+  // math (counting) AND early literacy (phonics) — balanced and bounded short
+  // (2-4 per skill), never relying on a cap that could drop a whole skill.
+  const perSkill = Math.min(4, Math.max(2, Math.floor(target / skills.length)))
+  const sets = await Promise.all(
+    skills.map(async (s) => {
+      const qs = await fetchPracticeQuestions(s.slug, perSkill)
+      return qs.map((q) => ({
+        ...q,
+        grade_band: s.grade_band,
+        ccss_grade: s.ccss_grade,
+        ccss_grade_num: s.ccss_grade_num,
+      }))
+    }),
+  )
+  // Round-robin across skills so counting and phonics alternate (gentle variety),
+  // and BOTH are always represented — no skill is dropped by a length cap.
+  const maxLen = Math.max(...sets.map((s) => s.length))
+  const out: DiagnosticQuestion[] = []
+  for (let i = 0; i < maxLen; i++) {
+    for (const set of sets) if (set[i]) out.push(set[i])
+  }
+  return out
+}
+
 // --- Write path: append-only question_attempts -------------------------------
 
 export interface QuestionAttemptInput {

@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
-import { getStudent, setAboveGradeConsent, type Student } from '@/lib/students'
+import { getStudent, setAboveGradeConsent, avatarModeOf, type Student } from '@/lib/students'
 import {
   fetchDiagnosticQuestions,
+  fetchEarlyGradeDiagnostic,
   listPracticeableSkills,
   recordQuestionAttempt,
   scoreChoice,
   type DiagnosticQuestion,
+  type PracticeQuestion,
   type PracticeableSkill,
 } from '@/lib/questions'
 import { seedDiagnosticMastery } from '@/lib/skills'
@@ -27,6 +29,7 @@ import {
 } from '@/lib/diagnosticProgress'
 import { MathText } from '@/components/MathText'
 import { TopMenu } from '@/components/TopMenu'
+import { NikkiFace } from '@/components/NikkiFace'
 import { QuestionAudio } from '@/components/QuestionAudio'
 import { PictureQuestion } from '@/components/PictureQuestion'
 import { useVoiceMuted } from '@/hooks/useVoiceMuted'
@@ -34,9 +37,20 @@ import { useAutoRead } from '@/hooks/useAutoRead'
 import { stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
 
-/** Read-aloud text for a question: the passage (if any) then the stem. */
-function readableText(q: { passage: string | null; stem: string } | undefined): string {
+/**
+ * Read-aloud text for a question. For audio-picture (K-2) items, Nikki reads the
+ * spoken prompt AND names each answer tile — a pre-reader can't read the
+ * numbers/letters/pictures they tap, so the choices must be voiced too. For text
+ * items (grades 3-12) it stays passage+stem only; choices are not read there.
+ */
+function readableText(q: PracticeQuestion | undefined): string {
   if (!q) return ''
+  if (q.render_mode === 'audio_picture') {
+    const labels = q.choices.map((c) => c.text).filter(Boolean)
+    const spoken =
+      labels.length > 1 ? `${labels.slice(0, -1).join(', ')}, or ${labels[labels.length - 1]}` : labels.join('')
+    return spoken ? `${q.stem} Is it ${spoken}?` : q.stem
+  }
   return [q.passage, q.stem].filter(Boolean).join('\n\n')
 }
 
@@ -59,6 +73,12 @@ function resolveReturn(raw: string | null, studentId: string): string {
   return `/students/${studentId}`
 }
 
+/** Grades at/below this (K, 1, 2) get the short, playful audio-picture placement. */
+const EARLY_GRADE_MAX = 2
+/** K-2 placement budget — short and gentle (~a few per early skill; with counting
+ *  + phonics this is 3 each = 6 questions), not a test. */
+const EARLY_TARGET = 6
+
 export function Diagnostic() {
   const { id } = useParams<{ id: string }>()
   const [searchParams] = useSearchParams()
@@ -66,6 +86,8 @@ export function Diagnostic() {
 
   const [student, setStudent] = useState<Student | null>(null)
   const [questions, setQuestions] = useState<DiagnosticQuestion[] | null>(null)
+  // K-2 initial placement: a short, playful audio-picture set (no grade ladder).
+  const [early, setEarly] = useState(false)
   // Grade-ladder state: the skill pool, which grades have content, and the walk.
   const [allSkills, setAllSkills] = useState<PracticeableSkill[]>([])
   const [available, setAvailable] = useState<number[]>([])
@@ -114,6 +136,7 @@ export function Diagnostic() {
       if (saved) {
         setConsent(saved.consent)
         setStarted(saved.started)
+        setEarly(saved.early)
         setQuestions(saved.questions)
         setAllSkills(saved.allSkills)
         setAvailable(saved.available)
@@ -126,11 +149,29 @@ export function Diagnostic() {
         return
       }
 
-      // Fresh assembly — GRADE-ANCHORED: start at the student's real grade rung
-      // (the skills whose true CCSS grade equals the student's grade), degrading
-      // to the nearest grade that has content when the exact grade has a gap.
       const practiceable = await listPracticeableSkills()
       if (!active) return
+
+      // K-2 initial placement: a SHORT, gentle, audio-picture set drawn ONLY from
+      // K-2 skills (counting, phonics) — never higher-grade text, and no ladder.
+      if (studentGradeNum(s.grade) <= EARLY_GRADE_MAX) {
+        const k2Skills = practiceable.filter((sk) => (sk.ccss_grade_num ?? 99) <= EARLY_GRADE_MAX)
+        const qs = await fetchEarlyGradeDiagnostic(k2Skills, EARLY_TARGET)
+        if (!active) return
+        setEarly(true)
+        setAllSkills(k2Skills)
+        setAvailable(availableGrades(k2Skills.map((sk) => sk.ccss_grade_num).filter((n): n is number => n != null)))
+        setCurrentGrade(studentGradeNum(s.grade))
+        setDirection('none')
+        setStepsTaken(0)
+        setVisited([studentGradeNum(s.grade)])
+        setQuestions(qs)
+        return
+      }
+
+      // Grades 3-12 — GRADE-ANCHORED ladder: start at the student's real grade rung
+      // (the skills whose true CCSS grade equals the student's grade), degrading
+      // to the nearest grade that has content when the exact grade has a gap.
       const avail = availableGrades(
         practiceable.map((sk) => sk.ccss_grade_num).filter((n): n is number => n != null),
       )
@@ -162,6 +203,7 @@ export function Diagnostic() {
     saveDiagnosticProgress(student.id, {
       consent,
       started,
+      early,
       questions,
       allSkills,
       available,
@@ -175,6 +217,7 @@ export function Diagnostic() {
   }, [
     student,
     started,
+    early,
     done,
     questions,
     allSkills,
@@ -203,6 +246,10 @@ export function Diagnostic() {
     void setAboveGradeConsent(student.id, ok)
     setStarted(true)
   }
+
+  // K-2 begin: no parent/SAT framing — just start the playful game. The tap is
+  // the user gesture that lets Nikki's audio autoplay.
+  const beginEarly = () => setStarted(true)
 
   const finish = async (allResults: DiagnosticResult[], stu: Student) => {
     setBusy(true)
@@ -267,6 +314,9 @@ export function Diagnostic() {
     setResults(nextResults)
     if (index + 1 < questions.length) {
       setIndex(index + 1)
+    } else if (early) {
+      // K-2 is a fixed short set — no ladder; just finish and place.
+      void finish(nextResults, student)
     } else {
       void advanceLadder(nextResults, student)
     }
@@ -304,14 +354,42 @@ export function Diagnostic() {
       <div className="kid-screen">
         <div className="shell">
           <TopMenu />
-          <h1 className="greet">Perfect — I know just where to start you!</h1>
-          <p className="muted">Great effort, {student.first_name}. Let’s jump into your first lesson.</p>
+          <h1 className="greet">
+            {early ? `Yay — great job, ${student.first_name}!` : 'Perfect — I know just where to start you!'}
+          </h1>
+          <p className="muted">
+            {early ? 'Let’s go learn together!' : `Great effort, ${student.first_name}. Let’s jump into your first lesson.`}
+          </p>
           <button
             className="btn btn-navy"
             style={{ marginTop: 14 }}
-            onClick={() => navigate(resolveReturn(searchParams.get('return'), student.id))}
+            onClick={() =>
+              navigate(early ? `/students/${student.id}/learn` : resolveReturn(searchParams.get('return'), student.id))
+            }
           >
             Let’s go →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // K-2: a warm, playful start — no parent/SAT framing. The tap starts the game
+  // and unlocks Nikki's read-aloud (autoplay needs a user gesture).
+  if (!started && early) {
+    return (
+      <div className="kid-screen">
+        <div className="shell">
+          <TopMenu />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
+            <NikkiFace mode={avatarModeOf(student)} size={96} />
+            <h1 className="greet">Let’s play, {student.first_name}!</h1>
+            <p className="muted">
+              A quick counting and letters game. I’ll say each one out loud — just tap the picture. Ready?
+            </p>
+          </div>
+          <button className="btn btn-navy" style={{ marginTop: 14 }} onClick={beginEarly}>
+            Let’s play →
           </button>
         </div>
       </div>
@@ -355,10 +433,14 @@ export function Diagnostic() {
     <div className="kid-screen">
       <div className="shell">
         <TopMenu />
-        <p className="practice-solo">Just do your best — this helps us find the right level for you.</p>
-        <div className="practice-progress muted">
-          Question {index + 1} of {questions.length}
-        </div>
+        <p className="practice-solo">
+          {early ? 'Listen to Nikki, then tap your answer!' : 'Just do your best — this helps us find the right level for you.'}
+        </p>
+        {!early && (
+          <div className="practice-progress muted">
+            Question {index + 1} of {questions.length}
+          </div>
+        )}
         <QuestionAudio muted={muted} speaking={speaking} onToggleMute={onToggleMute} onReplay={replay} />
         <div className="panel practice-q">
           {current.render_mode === 'audio_picture' ? (
