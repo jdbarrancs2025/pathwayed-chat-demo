@@ -13,6 +13,10 @@ import {
 import type { ScopeSubject } from '@/lib/scopeSequence'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
+import { QuestionAudio } from '@/components/QuestionAudio'
+import { useAutoRead } from '@/hooks/useAutoRead'
+import { useVoiceMuted } from '@/hooks/useVoiceMuted'
+import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
 
 // Remember the subject the kid last built, so a return visit leads with it.
@@ -113,6 +117,38 @@ export function SkillsBuilding() {
     navigate(`/students/${student.id}/session/${lesson.subject}?skill=${encodeURIComponent(lesson.slug)}${from}`)
   }
 
+  // Subjects to offer (only those with a track for this band — K has math +
+  // reading, not writing), leading with the one the kid was last in. Derived
+  // above the loading early-return because the auto-read hook below needs the
+  // option names (hooks must run on every render, before any return).
+  const band = student ? scopeBandForGrade(student.grade) : null
+  const available = band ? scopeSubjectsForBand(band) : SCOPE_SUBJECTS
+  const orderedSubjects: ScopeSubject[] =
+    lastSubject && available.includes(lastSubject)
+      ? [lastSubject, ...available.filter((s) => s !== lastSubject)]
+      : available
+
+  // K-2 pre-readers can't read the subject labels yet, so Nikki reads the
+  // options aloud when the picker loads and reads a card when it's focused or
+  // tapped — reusing the app-wide ElevenLabs path + mute. Grades 3-12 get no
+  // auto-read here (isK2Pick is false → questionId null → nothing reads).
+  const [muted, toggleMuted] = useVoiceMuted()
+  const isK2Pick = phase === 'pick' && band === 'k-2'
+  const optionsText = orderedSubjects.map((s) => subjectDefs.get(s)?.name ?? s).join('. ')
+  const { speaking, replay } = useAutoRead({
+    questionId: isK2Pick && student ? `pick:${student.id}` : null,
+    text: isK2Pick ? `What do you want to build today? ${optionsText}.` : '',
+    muted,
+  })
+  const onToggleMute = () => {
+    if (!muted) stopNikkiSpeech()
+    toggleMuted()
+  }
+  const readCard = (subj: ScopeSubject) => {
+    if (!isK2Pick || muted) return
+    void speakWithNikki(subjectDefs.get(subj)?.name ?? subj)
+  }
+
   if (phase === 'loading' || !student) {
     return (
       <div className="kid-screen">
@@ -122,15 +158,6 @@ export function SkillsBuilding() {
       </div>
     )
   }
-
-  // Subjects to offer (only those with a track for this band — K has math +
-  // reading, not writing), leading with the one the kid was last in.
-  const band = scopeBandForGrade(student.grade)
-  const available = band ? scopeSubjectsForBand(band) : SCOPE_SUBJECTS
-  const orderedSubjects: ScopeSubject[] =
-    lastSubject && available.includes(lastSubject)
-      ? [lastSubject, ...available.filter((s) => s !== lastSubject)]
-      : available
 
   return (
     <div className="kid-screen">
@@ -192,15 +219,24 @@ export function SkillsBuilding() {
         {phase === 'pick' && (
           <>
             <div style={hero}>
-              <NikkiFace mode={avatarModeOf(student)} size={96} />
+              <NikkiFace mode={avatarModeOf(student)} size={96} state={speaking ? 'speaking' : 'idle'} />
               <h1 className="greet">What do you want to build today?</h1>
               <p className="muted">Pick a subject and I’ll pull up your next lesson.</p>
             </div>
+            {isK2Pick && (
+              <QuestionAudio muted={muted} speaking={speaking} onToggleMute={onToggleMute} onReplay={replay} />
+            )}
             <section className="opener">
               {orderedSubjects.map((subj, i) => {
                 const def = subjectDefs.get(subj)
                 return (
-                  <button key={subj} type="button" className="bigcard" onClick={() => pickSubject(subj)}>
+                  <button
+                    key={subj}
+                    type="button"
+                    className="bigcard"
+                    onClick={() => pickSubject(subj)}
+                    onFocus={isK2Pick ? () => readCard(subj) : undefined}
+                  >
                     {i === 0 && lastSubject && <span className="resume">Continue</span>}
                     <div
                       className="ico"
