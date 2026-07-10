@@ -2457,5 +2457,804 @@ on conflict (id) do update set
   skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
   stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
   status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-addition-within-100')::uuid, 'skill', md5('pe-aos:dom-math-nbt')::uuid, 'math', 'Addition within 100', 'addition-within-100', 'k-2', 'problem-solving-data-analysis', '2', 2, 'CCSS.MATH.CONTENT.2.NBT.B.5', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+
+-- addition-within-100 (Addition within 100, grade 2, CCSS.MATH.CONTENT.2.NBT.B.5) — 26 audio-picture items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('8cd8792f-b4bd-57de-9bb4-ff71619161ef', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'easy', $q$What is 24 plus 13? Tap the answer.$q$, $q$[{"text":"27","is_correct":false,"tile":{"kind":"number","value":"27"}},{"text":"37","is_correct":true,"tile":{"kind":"number","value":"37"}},{"text":"36","is_correct":false,"tile":{"kind":"number","value":"36"}},{"text":"47","is_correct":false,"tile":{"kind":"number","value":"47"}}]$q$::jsonb, $q$37$q$, $q$24 plus 13 is 37! Nice adding!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('a927b21a-bf8e-5dd1-bf62-85c42013c21e', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'easy', $q$What is 31 plus 25? Tap the answer.$q$, $q$[{"text":"56","is_correct":true,"tile":{"kind":"number","value":"56"}},{"text":"66","is_correct":false,"tile":{"kind":"number","value":"66"}},{"text":"55","is_correct":false,"tile":{"kind":"number","value":"55"}},{"text":"46","is_correct":false,"tile":{"kind":"number","value":"46"}}]$q$::jsonb, $q$56$q$, $q$31 plus 25 is 56! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('7f5ee9ce-3481-58a6-86e2-8a51ad7ee00b', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'easy', $q$What is 42 plus 16? Tap the answer.$q$, $q$[{"text":"68","is_correct":false,"tile":{"kind":"number","value":"68"}},{"text":"58","is_correct":true,"tile":{"kind":"number","value":"58"}},{"text":"48","is_correct":false,"tile":{"kind":"number","value":"48"}},{"text":"57","is_correct":false,"tile":{"kind":"number","value":"57"}}]$q$::jsonb, $q$58$q$, $q$42 plus 16 is 58! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('29b54bbf-7af2-5c54-af97-942101b40de4', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'easy', $q$What is 53 plus 24? Tap the answer.$q$, $q$[{"text":"77","is_correct":true,"tile":{"kind":"number","value":"77"}},{"text":"76","is_correct":false,"tile":{"kind":"number","value":"76"}},{"text":"87","is_correct":false,"tile":{"kind":"number","value":"87"}},{"text":"67","is_correct":false,"tile":{"kind":"number","value":"67"}}]$q$::jsonb, $q$77$q$, $q$53 plus 24 is 77! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('a624ddb5-7c43-55d6-abd8-0c719a524403', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'easy', $q$What is 20 plus 30? Tap the answer.$q$, $q$[{"text":"40","is_correct":false,"tile":{"kind":"number","value":"40"}},{"text":"51","is_correct":false,"tile":{"kind":"number","value":"51"}},{"text":"60","is_correct":false,"tile":{"kind":"number","value":"60"}},{"text":"50","is_correct":true,"tile":{"kind":"number","value":"50"}}]$q$::jsonb, $q$50$q$, $q$20 plus 30 is 50! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('7d1b811f-902e-5d13-ab5f-55c65f251980', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'easy', $q$What is 45 plus 14? Tap the answer.$q$, $q$[{"text":"49","is_correct":false,"tile":{"kind":"number","value":"49"}},{"text":"69","is_correct":false,"tile":{"kind":"number","value":"69"}},{"text":"58","is_correct":false,"tile":{"kind":"number","value":"58"}},{"text":"59","is_correct":true,"tile":{"kind":"number","value":"59"}}]$q$::jsonb, $q$59$q$, $q$45 plus 14 is 59! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('1eb2d4db-0daa-57b2-8000-d724a55893ee', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 27 plus 12? Tap the answer.$q$, $q$[{"text":"49","is_correct":false,"tile":{"kind":"number","value":"49"}},{"text":"38","is_correct":false,"tile":{"kind":"number","value":"38"}},{"text":"39","is_correct":true,"tile":{"kind":"number","value":"39"}},{"text":"29","is_correct":false,"tile":{"kind":"number","value":"29"}}]$q$::jsonb, $q$39$q$, $q$27 plus 12 is 39! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('86e0390d-1dce-5978-bd0d-d8ae83e0a816', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 34 plus 23? Tap the answer.$q$, $q$[{"text":"47","is_correct":false,"tile":{"kind":"number","value":"47"}},{"text":"56","is_correct":false,"tile":{"kind":"number","value":"56"}},{"text":"57","is_correct":true,"tile":{"kind":"number","value":"57"}},{"text":"67","is_correct":false,"tile":{"kind":"number","value":"67"}}]$q$::jsonb, $q$57$q$, $q$34 plus 23 is 57! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('9cd47af5-62e6-57e0-bbf4-797b8adc412b', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 16 plus 22? Tap the answer.$q$, $q$[{"text":"38","is_correct":true,"tile":{"kind":"number","value":"38"}},{"text":"37","is_correct":false,"tile":{"kind":"number","value":"37"}},{"text":"28","is_correct":false,"tile":{"kind":"number","value":"28"}},{"text":"48","is_correct":false,"tile":{"kind":"number","value":"48"}}]$q$::jsonb, $q$38$q$, $q$16 plus 22 is 38! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('825405e6-2ceb-594f-a1e6-48338bdb1cda', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 50 plus 25? Tap the answer.$q$, $q$[{"text":"74","is_correct":false,"tile":{"kind":"number","value":"74"}},{"text":"85","is_correct":false,"tile":{"kind":"number","value":"85"}},{"text":"75","is_correct":true,"tile":{"kind":"number","value":"75"}},{"text":"65","is_correct":false,"tile":{"kind":"number","value":"65"}}]$q$::jsonb, $q$75$q$, $q$50 plus 25 is 75! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('34418548-3505-5179-87ff-3f9c48458769', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 25 plus 25? Tap the answer.$q$, $q$[{"text":"60","is_correct":false,"tile":{"kind":"number","value":"60"}},{"text":"49","is_correct":false,"tile":{"kind":"number","value":"49"}},{"text":"50","is_correct":true,"tile":{"kind":"number","value":"50"}},{"text":"40","is_correct":false,"tile":{"kind":"number","value":"40"}}]$q$::jsonb, $q$50$q$, $q$25 plus 25 is 50! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('886bc358-61a6-5867-b8f8-258527584ff0', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 33 plus 33? Tap the answer.$q$, $q$[{"text":"76","is_correct":false,"tile":{"kind":"number","value":"76"}},{"text":"65","is_correct":false,"tile":{"kind":"number","value":"65"}},{"text":"56","is_correct":false,"tile":{"kind":"number","value":"56"}},{"text":"66","is_correct":true,"tile":{"kind":"number","value":"66"}}]$q$::jsonb, $q$66$q$, $q$33 plus 33 is 66! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('ecfaf607-3705-593c-9960-14d0eacbeba9', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 40 plus 40? Tap the answer.$q$, $q$[{"text":"70","is_correct":false,"tile":{"kind":"number","value":"70"}},{"text":"80","is_correct":true,"tile":{"kind":"number","value":"80"}},{"text":"81","is_correct":false,"tile":{"kind":"number","value":"81"}},{"text":"90","is_correct":false,"tile":{"kind":"number","value":"90"}}]$q$::jsonb, $q$80$q$, $q$40 plus 40 is 80! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('106e3826-6073-5955-9ed6-6fb883d0795e', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 28 plus 15? Tap the answer.$q$, $q$[{"text":"44","is_correct":false,"tile":{"kind":"number","value":"44"}},{"text":"33","is_correct":false,"tile":{"kind":"number","value":"33"}},{"text":"43","is_correct":true,"tile":{"kind":"number","value":"43"}},{"text":"42","is_correct":false,"tile":{"kind":"number","value":"42"}}]$q$::jsonb, $q$43$q$, $q$28 plus 15 is 43! Great regrouping!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('5a8dffc8-fa68-5a60-96e0-793612ae8c36', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 37 plus 18? Tap the answer.$q$, $q$[{"text":"56","is_correct":false,"tile":{"kind":"number","value":"56"}},{"text":"45","is_correct":false,"tile":{"kind":"number","value":"45"}},{"text":"54","is_correct":false,"tile":{"kind":"number","value":"54"}},{"text":"55","is_correct":true,"tile":{"kind":"number","value":"55"}}]$q$::jsonb, $q$55$q$, $q$37 plus 18 is 55! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('077be90d-3427-5902-b0e8-534ebe281f02', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 46 plus 27? Tap the answer.$q$, $q$[{"text":"73","is_correct":true,"tile":{"kind":"number","value":"73"}},{"text":"72","is_correct":false,"tile":{"kind":"number","value":"72"}},{"text":"74","is_correct":false,"tile":{"kind":"number","value":"74"}},{"text":"63","is_correct":false,"tile":{"kind":"number","value":"63"}}]$q$::jsonb, $q$73$q$, $q$46 plus 27 is 73! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('e7c654ec-ab3a-585e-8d45-1a88c2f376f7', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 29 plus 26? Tap the answer.$q$, $q$[{"text":"54","is_correct":false,"tile":{"kind":"number","value":"54"}},{"text":"56","is_correct":false,"tile":{"kind":"number","value":"56"}},{"text":"45","is_correct":false,"tile":{"kind":"number","value":"45"}},{"text":"55","is_correct":true,"tile":{"kind":"number","value":"55"}}]$q$::jsonb, $q$55$q$, $q$29 plus 26 is 55! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('240269b9-b421-5434-a574-07952e1f0781', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 58 plus 14? Tap the answer.$q$, $q$[{"text":"72","is_correct":true,"tile":{"kind":"number","value":"72"}},{"text":"62","is_correct":false,"tile":{"kind":"number","value":"62"}},{"text":"73","is_correct":false,"tile":{"kind":"number","value":"73"}},{"text":"71","is_correct":false,"tile":{"kind":"number","value":"71"}}]$q$::jsonb, $q$72$q$, $q$58 plus 14 is 72! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('3acb5395-97e3-593a-bc9c-7faaa1fb3d3b', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 35 plus 29? Tap the answer.$q$, $q$[{"text":"54","is_correct":false,"tile":{"kind":"number","value":"54"}},{"text":"63","is_correct":false,"tile":{"kind":"number","value":"63"}},{"text":"64","is_correct":true,"tile":{"kind":"number","value":"64"}},{"text":"65","is_correct":false,"tile":{"kind":"number","value":"65"}}]$q$::jsonb, $q$64$q$, $q$35 plus 29 is 64! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('a8e0de8d-96a4-5d75-a6a0-11aa0da72605', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 47 plus 38? Tap the answer.$q$, $q$[{"text":"85","is_correct":true,"tile":{"kind":"number","value":"85"}},{"text":"84","is_correct":false,"tile":{"kind":"number","value":"84"}},{"text":"86","is_correct":false,"tile":{"kind":"number","value":"86"}},{"text":"75","is_correct":false,"tile":{"kind":"number","value":"75"}}]$q$::jsonb, $q$85$q$, $q$47 plus 38 is 85! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('2e03fb98-dbf7-58de-9fca-e0866d1df1d4', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 26 plus 49? Tap the answer.$q$, $q$[{"text":"74","is_correct":false,"tile":{"kind":"number","value":"74"}},{"text":"65","is_correct":false,"tile":{"kind":"number","value":"65"}},{"text":"76","is_correct":false,"tile":{"kind":"number","value":"76"}},{"text":"75","is_correct":true,"tile":{"kind":"number","value":"75"}}]$q$::jsonb, $q$75$q$, $q$26 plus 49 is 75! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('a28d4934-12f8-57bc-8e8f-8ac23b56a56b', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 55 plus 27? Tap the answer.$q$, $q$[{"text":"82","is_correct":true,"tile":{"kind":"number","value":"82"}},{"text":"72","is_correct":false,"tile":{"kind":"number","value":"72"}},{"text":"83","is_correct":false,"tile":{"kind":"number","value":"83"}},{"text":"81","is_correct":false,"tile":{"kind":"number","value":"81"}}]$q$::jsonb, $q$82$q$, $q$55 plus 27 is 82! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('b781418d-5ad5-519f-aedf-10a8cefacb09', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 39 plus 43? Tap the answer.$q$, $q$[{"text":"82","is_correct":true,"tile":{"kind":"number","value":"82"}},{"text":"72","is_correct":false,"tile":{"kind":"number","value":"72"}},{"text":"83","is_correct":false,"tile":{"kind":"number","value":"83"}},{"text":"81","is_correct":false,"tile":{"kind":"number","value":"81"}}]$q$::jsonb, $q$82$q$, $q$39 plus 43 is 82! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('7283cf8b-19ca-5271-bb88-73c25402726b', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'hard', $q$What is 64 plus 28? Tap the answer.$q$, $q$[{"text":"91","is_correct":false,"tile":{"kind":"number","value":"91"}},{"text":"92","is_correct":true,"tile":{"kind":"number","value":"92"}},{"text":"82","is_correct":false,"tile":{"kind":"number","value":"82"}},{"text":"93","is_correct":false,"tile":{"kind":"number","value":"93"}}]$q$::jsonb, $q$92$q$, $q$64 plus 28 is 92! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('5e79f6d2-0f66-52b6-9c82-e4f2a224cd3a', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 18 plus 18? Tap the answer.$q$, $q$[{"text":"36","is_correct":true,"tile":{"kind":"number","value":"36"}},{"text":"37","is_correct":false,"tile":{"kind":"number","value":"37"}},{"text":"35","is_correct":false,"tile":{"kind":"number","value":"35"}},{"text":"26","is_correct":false,"tile":{"kind":"number","value":"26"}}]$q$::jsonb, $q$36$q$, $q$18 plus 18 is 36! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('ccf7b176-01c4-5a29-9d59-39575e3135af', null, (select id from public.skills where slug = 'addition-within-100'),
+   'problem-solving-data-analysis', 'medium', $q$What is 60 plus 35? Tap the answer.$q$, $q$[{"text":"95","is_correct":true,"tile":{"kind":"number","value":"95"}},{"text":"94","is_correct":false,"tile":{"kind":"number","value":"94"}},{"text":"85","is_correct":false,"tile":{"kind":"number","value":"85"}},{"text":"96","is_correct":false,"tile":{"kind":"number","value":"96"}}]$q$::jsonb, $q$95$q$, $q$60 plus 35 is 95! Great adding!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, prerequisite_skills)
+values (md5('pe-aos:dom-math-md')::uuid, 'domain', md5('pe-aos:subj-math')::uuid, 'math', 'Measurement & Data', null, 'k-2', null, '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, grade_band=excluded.grade_band;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-money-place-value')::uuid, 'skill', md5('pe-aos:dom-math-md')::uuid, 'math', 'Money & Place Value', 'money-place-value', 'k-2', 'problem-solving-data-analysis', '2', 2, 'CCSS.MATH.CONTENT.2.MD.C.8', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+
+-- money-place-value (Money & Place Value, grade 2, CCSS.MATH.CONTENT.2.MD.C.8) — 26 audio-picture items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('dfb82122-bd12-5d33-bacf-7e6c6dbd5a89', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$How many cents is a penny worth? Tap the number.$q$, $q$[{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}},{"text":"1","is_correct":true,"tile":{"kind":"number","value":"1"}},{"text":"5","is_correct":false,"tile":{"kind":"number","value":"5"}},{"text":"10","is_correct":false,"tile":{"kind":"number","value":"10"}}]$q$::jsonb, $q$1$q$, $q$A penny is 1 cent! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('b71b41d7-018b-5323-baf0-b06967296b08', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$How many cents is a nickel worth? Tap the number.$q$, $q$[{"text":"5","is_correct":true,"tile":{"kind":"number","value":"5"}},{"text":"10","is_correct":false,"tile":{"kind":"number","value":"10"}},{"text":"1","is_correct":false,"tile":{"kind":"number","value":"1"}},{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}}]$q$::jsonb, $q$5$q$, $q$A nickel is 5 cents! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('f817e3a9-42fa-56f8-b24d-c45b8ec10561', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$How many cents is a dime worth? Tap the number.$q$, $q$[{"text":"5","is_correct":false,"tile":{"kind":"number","value":"5"}},{"text":"10","is_correct":true,"tile":{"kind":"number","value":"10"}},{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}},{"text":"1","is_correct":false,"tile":{"kind":"number","value":"1"}}]$q$::jsonb, $q$10$q$, $q$A dime is 10 cents! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('09df0422-e01f-5176-a9e5-471d45d0e17e', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$How many cents is a quarter worth? Tap the number.$q$, $q$[{"text":"25","is_correct":true,"tile":{"kind":"number","value":"25"}},{"text":"1","is_correct":false,"tile":{"kind":"number","value":"1"}},{"text":"5","is_correct":false,"tile":{"kind":"number","value":"5"}},{"text":"10","is_correct":false,"tile":{"kind":"number","value":"10"}}]$q$::jsonb, $q$25$q$, $q$A quarter is 25 cents! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('5e1a0aa7-8dff-5359-ac4b-80ad6b9bf50c', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$Which coin is worth 10 cents? Tap it.$q$, $q$[{"text":"nickel","is_correct":false,"tile":{"kind":"object_group","image":"nickel","count":1}},{"text":"penny","is_correct":false,"tile":{"kind":"object_group","image":"penny","count":1}},{"text":"dime","is_correct":true,"tile":{"kind":"object_group","image":"dime","count":1}}]$q$::jsonb, $q$dime$q$, $q$The dime is worth 10 cents! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('9a6a982d-fe8d-57bb-8417-7aeeccdc4e6a', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$Which coin is worth 5 cents? Tap it.$q$, $q$[{"text":"penny","is_correct":false,"tile":{"kind":"object_group","image":"penny","count":1}},{"text":"dime","is_correct":false,"tile":{"kind":"object_group","image":"dime","count":1}},{"text":"nickel","is_correct":true,"tile":{"kind":"object_group","image":"nickel","count":1}}]$q$::jsonb, $q$nickel$q$, $q$The nickel is worth 5 cents! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('b1bfe031-a8b0-50dd-9608-9f18f7f25dfa', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Which coin is worth 25 cents? Tap it.$q$, $q$[{"text":"dime","is_correct":false,"tile":{"kind":"object_group","image":"dime","count":1}},{"text":"quarter","is_correct":true,"tile":{"kind":"object_group","image":"quarter","count":1}},{"text":"nickel","is_correct":false,"tile":{"kind":"object_group","image":"nickel","count":1}}]$q$::jsonb, $q$quarter$q$, $q$The quarter is worth 25 cents! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('84ecf226-9ece-55c2-92fa-105c81abdcc8', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$Which coin is worth 1 cent? Tap it.$q$, $q$[{"text":"nickel","is_correct":false,"tile":{"kind":"object_group","image":"nickel","count":1}},{"text":"penny","is_correct":true,"tile":{"kind":"object_group","image":"penny","count":1}},{"text":"dime","is_correct":false,"tile":{"kind":"object_group","image":"dime","count":1}}]$q$::jsonb, $q$penny$q$, $q$The penny is worth 1 cent! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('5b53c093-17c8-5b4f-b449-4252f4744ece', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Here are 2 dimes. How many cents in all? Tap the number.$q$, $q$[{"text":"20","is_correct":true,"tile":{"kind":"number","value":"20"}},{"text":"10","is_correct":false,"tile":{"kind":"number","value":"10"}},{"text":"2","is_correct":false,"tile":{"kind":"number","value":"2"}},{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}}]$q$::jsonb, $q$20$q$, $q$2 dimes is 20 cents! Well done!$q$,
+   'published', 'audio_picture', $q${"kind":"object_group","image":"dime","count":2}$q$::jsonb)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('cf231d99-4c8e-59e4-bf81-00636e9d3a12', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Here are 3 nickels. How many cents in all? Tap the number.$q$, $q$[{"text":"10","is_correct":false,"tile":{"kind":"number","value":"10"}},{"text":"20","is_correct":false,"tile":{"kind":"number","value":"20"}},{"text":"15","is_correct":true,"tile":{"kind":"number","value":"15"}},{"text":"3","is_correct":false,"tile":{"kind":"number","value":"3"}}]$q$::jsonb, $q$15$q$, $q$3 nickels is 15 cents! Nice!$q$,
+   'published', 'audio_picture', $q${"kind":"object_group","image":"nickel","count":3}$q$::jsonb)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('a6c97c96-0cb6-5a9c-bf5e-26b3ca9e6294', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Here are 2 nickels. How many cents in all? Tap the number.$q$, $q$[{"text":"15","is_correct":false,"tile":{"kind":"number","value":"15"}},{"text":"5","is_correct":false,"tile":{"kind":"number","value":"5"}},{"text":"10","is_correct":true,"tile":{"kind":"number","value":"10"}},{"text":"2","is_correct":false,"tile":{"kind":"number","value":"2"}}]$q$::jsonb, $q$10$q$, $q$2 nickels is 10 cents! Great!$q$,
+   'published', 'audio_picture', $q${"kind":"object_group","image":"nickel","count":2}$q$::jsonb)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('59063cb1-7646-5a1e-b277-f3b60c47de90', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Here are 4 pennies. How many cents in all? Tap the number.$q$, $q$[{"text":"5","is_correct":false,"tile":{"kind":"number","value":"5"}},{"text":"3","is_correct":false,"tile":{"kind":"number","value":"3"}},{"text":"40","is_correct":false,"tile":{"kind":"number","value":"40"}},{"text":"4","is_correct":true,"tile":{"kind":"number","value":"4"}}]$q$::jsonb, $q$4$q$, $q$4 pennies is 4 cents! Well done!$q$,
+   'published', 'audio_picture', $q${"kind":"object_group","image":"penny","count":4}$q$::jsonb)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('847bb43d-6064-5ad3-a223-6400b2b0792a', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'hard', $q$Here are 2 quarters. How many cents in all? Tap the number.$q$, $q$[{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}},{"text":"50","is_correct":true,"tile":{"kind":"number","value":"50"}},{"text":"20","is_correct":false,"tile":{"kind":"number","value":"20"}},{"text":"75","is_correct":false,"tile":{"kind":"number","value":"75"}}]$q$::jsonb, $q$50$q$, $q$2 quarters is 50 cents! Nice!$q$,
+   'published', 'audio_picture', $q${"kind":"object_group","image":"quarter","count":2}$q$::jsonb)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('ea61ab1a-77a5-57d9-9c07-dff0b518d562', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'hard', $q$Here are 3 dimes. How many cents in all? Tap the number.$q$, $q$[{"text":"3","is_correct":false,"tile":{"kind":"number","value":"3"}},{"text":"20","is_correct":false,"tile":{"kind":"number","value":"20"}},{"text":"30","is_correct":true,"tile":{"kind":"number","value":"30"}},{"text":"40","is_correct":false,"tile":{"kind":"number","value":"40"}}]$q$::jsonb, $q$30$q$, $q$3 dimes is 30 cents! Great counting!$q$,
+   'published', 'audio_picture', $q${"kind":"object_group","image":"dime","count":3}$q$::jsonb)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('109ee3a0-9015-5c7c-a62b-df5a0e1a61c8', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$Which coin is worth the most? Tap it.$q$, $q$[{"text":"penny","is_correct":false,"tile":{"kind":"object_group","image":"penny","count":1}},{"text":"dime","is_correct":false,"tile":{"kind":"object_group","image":"dime","count":1}},{"text":"quarter","is_correct":true,"tile":{"kind":"object_group","image":"quarter","count":1}}]$q$::jsonb, $q$quarter$q$, $q$The quarter is worth the most! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('43706284-ae55-5d45-8004-175080303660', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$Which coin is worth the least? Tap it.$q$, $q$[{"text":"penny","is_correct":true,"tile":{"kind":"object_group","image":"penny","count":1}},{"text":"dime","is_correct":false,"tile":{"kind":"object_group","image":"dime","count":1}},{"text":"quarter","is_correct":false,"tile":{"kind":"object_group","image":"quarter","count":1}}]$q$::jsonb, $q$penny$q$, $q$The penny is worth the least! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('196570d0-4491-56da-9543-25aea390b5c9', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$What number is 1 hundred, 2 tens, and 3 ones? Tap it.$q$, $q$[{"text":"132","is_correct":false,"tile":{"kind":"number","value":"132"}},{"text":"120","is_correct":false,"tile":{"kind":"number","value":"120"}},{"text":"321","is_correct":false,"tile":{"kind":"number","value":"321"}},{"text":"123","is_correct":true,"tile":{"kind":"number","value":"123"}}]$q$::jsonb, $q$123$q$, $q$1 hundred, 2 tens, 3 ones make 123! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('31803c58-615f-539d-87bc-01cc07eb504a', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'hard', $q$What number is 2 hundreds, 0 tens, and 5 ones? Tap it.$q$, $q$[{"text":"205","is_correct":true,"tile":{"kind":"number","value":"205"}},{"text":"250","is_correct":false,"tile":{"kind":"number","value":"250"}},{"text":"502","is_correct":false,"tile":{"kind":"number","value":"502"}},{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}}]$q$::jsonb, $q$205$q$, $q$2 hundreds and 5 ones make 205! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('e5bc9b49-fba3-58ac-81dd-e145741780f8', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'hard', $q$What number is 3 hundreds, 4 tens, and 0 ones? Tap it.$q$, $q$[{"text":"304","is_correct":false,"tile":{"kind":"number","value":"304"}},{"text":"34","is_correct":false,"tile":{"kind":"number","value":"34"}},{"text":"340","is_correct":true,"tile":{"kind":"number","value":"340"}},{"text":"430","is_correct":false,"tile":{"kind":"number","value":"430"}}]$q$::jsonb, $q$340$q$, $q$3 hundreds and 4 tens make 340! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('fe672a27-ccdf-5d23-97bf-6eec39c89653', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$How many hundreds are in 500? Tap the number.$q$, $q$[{"text":"5","is_correct":true,"tile":{"kind":"number","value":"5"}},{"text":"6","is_correct":false,"tile":{"kind":"number","value":"6"}},{"text":"500","is_correct":false,"tile":{"kind":"number","value":"500"}},{"text":"4","is_correct":false,"tile":{"kind":"number","value":"4"}}]$q$::jsonb, $q$5$q$, $q$There are 5 hundreds in 500! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('276a962b-6c43-5c3a-ba59-c7d0487e4ef1', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$What is 100 more than 300? Tap the number.$q$, $q$[{"text":"301","is_correct":false,"tile":{"kind":"number","value":"301"}},{"text":"200","is_correct":false,"tile":{"kind":"number","value":"200"}},{"text":"500","is_correct":false,"tile":{"kind":"number","value":"500"}},{"text":"400","is_correct":true,"tile":{"kind":"number","value":"400"}}]$q$::jsonb, $q$400$q$, $q$100 more than 300 is 400! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('f91a0625-fd7c-55f3-a69a-736831c6aa85', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$What is 10 more than 240? Tap the number.$q$, $q$[{"text":"250","is_correct":true,"tile":{"kind":"number","value":"250"}},{"text":"230","is_correct":false,"tile":{"kind":"number","value":"230"}},{"text":"340","is_correct":false,"tile":{"kind":"number","value":"340"}},{"text":"241","is_correct":false,"tile":{"kind":"number","value":"241"}}]$q$::jsonb, $q$250$q$, $q$10 more than 240 is 250! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('230ab6f2-f78b-52a3-9de4-e33840cc33f5', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Skip count by 5: 5, 10, 15, and then? Tap the next number.$q$, $q$[{"text":"20","is_correct":true,"tile":{"kind":"number","value":"20"}},{"text":"16","is_correct":false,"tile":{"kind":"number","value":"16"}},{"text":"30","is_correct":false,"tile":{"kind":"number","value":"30"}},{"text":"25","is_correct":false,"tile":{"kind":"number","value":"25"}}]$q$::jsonb, $q$20$q$, $q$After 15 comes 20! Great skip counting!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('0df4d15b-9b5b-53e3-a84e-8e422a371d88', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'medium', $q$Skip count by 10: 10, 20, 30, and then? Tap the next number.$q$, $q$[{"text":"35","is_correct":false,"tile":{"kind":"number","value":"35"}},{"text":"40","is_correct":true,"tile":{"kind":"number","value":"40"}},{"text":"31","is_correct":false,"tile":{"kind":"number","value":"31"}},{"text":"50","is_correct":false,"tile":{"kind":"number","value":"50"}}]$q$::jsonb, $q$40$q$, $q$After 30 comes 40! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('0779be3a-3ef6-5e2d-87da-cbec3053fd2f', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'easy', $q$Skip count by 2: 2, 4, 6, and then? Tap the next number.$q$, $q$[{"text":"8","is_correct":true,"tile":{"kind":"number","value":"8"}},{"text":"9","is_correct":false,"tile":{"kind":"number","value":"9"}},{"text":"10","is_correct":false,"tile":{"kind":"number","value":"10"}},{"text":"7","is_correct":false,"tile":{"kind":"number","value":"7"}}]$q$::jsonb, $q$8$q$, $q$After 6 comes 8! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('89e47a40-9550-5173-a3a3-d12568551c4a', null, (select id from public.skills where slug = 'money-place-value'),
+   'problem-solving-data-analysis', 'hard', $q$What number is 4 hundreds, 5 tens, and 6 ones? Tap it.$q$, $q$[{"text":"456","is_correct":true,"tile":{"kind":"number","value":"456"}},{"text":"465","is_correct":false,"tile":{"kind":"number","value":"465"}},{"text":"654","is_correct":false,"tile":{"kind":"number","value":"654"}},{"text":"450","is_correct":false,"tile":{"kind":"number","value":"450"}}]$q$::jsonb, $q$456$q$, $q$4 hundreds, 5 tens, 6 ones make 456! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-reading-comprehension-2')::uuid, 'skill', md5('pe-aos:dom-reading-ri')::uuid, 'reading', 'Reading Comprehension (Grade 2)', 'reading-comprehension-2', 'k-2', 'information-and-ideas', '2', 2, 'CCSS.ELA-LITERACY.RI.2.1', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+
+-- reading-comprehension-2 (Reading Comprehension (Grade 2), grade 2, CCSS.ELA-LITERACY.RI.2.1) — 26 audio-picture items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('0676cda2-3655-5cb5-bfef-89863b1b6bb9', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'easy', $q$Listen. A cat and a duck went to the pond. The duck jumped in and swam. The cat sat by the water and watched. Who swam in the pond? Tap the picture.$q$, $q$[{"text":"pig","is_correct":false,"tile":{"kind":"object_group","image":"pig","count":1}},{"text":"duck","is_correct":true,"tile":{"kind":"object_group","image":"duck","count":1}},{"text":"cat","is_correct":false,"tile":{"kind":"object_group","image":"cat","count":1}}]$q$::jsonb, $q$duck$q$, $q$The duck swam in the pond! Great listening!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('1e05d21e-da22-5d77-83d5-196e8287d893', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'easy', $q$Listen. Ben had an apple and a ball. He ate the apple for a snack. Then he played with the ball. What did Ben eat? Tap the picture.$q$, $q$[{"text":"apple","is_correct":true,"tile":{"kind":"object_group","image":"apple","count":1}},{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"fish","is_correct":false,"tile":{"kind":"object_group","image":"fish","count":1}}]$q$::jsonb, $q$apple$q$, $q$Ben ate the apple! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('345e9636-ea04-5404-ab06-5359640a984e', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'easy', $q$Listen. The kids went to the park. They flew a kite up high. Then it rained, so they ran home. What did the kids fly? Tap the picture.$q$, $q$[{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"duck","is_correct":false,"tile":{"kind":"object_group","image":"duck","count":1}},{"text":"kite","is_correct":true,"tile":{"kind":"object_group","image":"kite","count":1}}]$q$::jsonb, $q$kite$q$, $q$The kids flew a kite! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('0172bf36-c01f-5192-94ef-1d8486ee5686', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'easy', $q$Listen. Mom drove the van to the store. She bought a big pot for soup. At home she made dinner. What did Mom buy? Tap the picture.$q$, $q$[{"text":"pot","is_correct":true,"tile":{"kind":"object_group","image":"pot","count":1}},{"text":"van","is_correct":false,"tile":{"kind":"object_group","image":"van","count":1}},{"text":"hat","is_correct":false,"tile":{"kind":"object_group","image":"hat","count":1}}]$q$::jsonb, $q$pot$q$, $q$Mom bought a pot! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('27700151-0317-587e-88b7-965388c9b32f', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'easy', $q$Listen. A pig and a duck are friends. The pig likes the mud. The duck likes the water. Who likes the mud? Tap the picture.$q$, $q$[{"text":"cat","is_correct":false,"tile":{"kind":"object_group","image":"cat","count":1}},{"text":"duck","is_correct":false,"tile":{"kind":"object_group","image":"duck","count":1}},{"text":"pig","is_correct":true,"tile":{"kind":"object_group","image":"pig","count":1}}]$q$::jsonb, $q$pig$q$, $q$The pig likes the mud! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('fccd756b-08f4-5bca-a9b7-e9f1376f02f0', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. Lin got a gift in a box. Inside was a soft hat. She put it on her head. What was inside the gift box? Tap the picture.$q$, $q$[{"text":"gift","is_correct":false,"tile":{"kind":"object_group","image":"gift","count":1}},{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"hat","is_correct":true,"tile":{"kind":"object_group","image":"hat","count":1}}]$q$::jsonb, $q$hat$q$, $q$A hat was inside! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('6c6a5919-5c89-5bdd-9018-ef5fc97f31e0', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. The cat was cold. It found a warm house and went inside. It slept by the door. Where did the cat go? Tap the picture.$q$, $q$[{"text":"tree","is_correct":false,"tile":{"kind":"object_group","image":"tree","count":1}},{"text":"house","is_correct":true,"tile":{"kind":"object_group","image":"house","count":1}},{"text":"bus","is_correct":false,"tile":{"kind":"object_group","image":"bus","count":1}}]$q$::jsonb, $q$house$q$, $q$The cat went into the house! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('c1568e2c-d1f0-5653-92b6-37d2847bbc15', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. A duck made a nest under the tree. It kept its eggs warm there. Where did the duck make its nest? Tap the picture.$q$, $q$[{"text":"house","is_correct":false,"tile":{"kind":"object_group","image":"house","count":1}},{"text":"tree","is_correct":true,"tile":{"kind":"object_group","image":"tree","count":1}},{"text":"tent","is_correct":false,"tile":{"kind":"object_group","image":"tent","count":1}}]$q$::jsonb, $q$tree$q$, $q$Under the tree! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('cc1de10d-13c1-5ce1-a44a-c6cac153acb3', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. The family went camping. They set up a tent in the woods. They slept inside it. Where did the family sleep? Tap the picture.$q$, $q$[{"text":"tent","is_correct":true,"tile":{"kind":"object_group","image":"tent","count":1}},{"text":"house","is_correct":false,"tile":{"kind":"object_group","image":"house","count":1}},{"text":"van","is_correct":false,"tile":{"kind":"object_group","image":"van","count":1}}]$q$::jsonb, $q$tent$q$, $q$They slept in the tent! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('3765518b-45bc-5228-bd06-21bdd4286236', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. Sam has a red ball and a blue kite. On windy days he flies the kite. On sunny days he kicks the ball. What does Sam fly on windy days? Tap the picture.$q$, $q$[{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"kite","is_correct":true,"tile":{"kind":"object_group","image":"kite","count":1}},{"text":"sun","is_correct":false,"tile":{"kind":"object_group","image":"sun","count":1}}]$q$::jsonb, $q$kite$q$, $q$Sam flies the kite on windy days! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('cd5b2e28-eba6-5d1f-8aa8-5b9b30db0ba1', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. A cat chased a ball across the room. The ball rolled under the bed. What did the cat chase? Tap the picture.$q$, $q$[{"text":"fish","is_correct":false,"tile":{"kind":"object_group","image":"fish","count":1}},{"text":"ball","is_correct":true,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"duck","is_correct":false,"tile":{"kind":"object_group","image":"duck","count":1}}]$q$::jsonb, $q$ball$q$, $q$The cat chased the ball! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('51aaa119-315d-5a0a-bd5d-c37567807088', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. Ana picked a flower and a leaf in the garden. She gave the flower to her mom. What did Ana give to her mom? Tap the picture.$q$, $q$[{"text":"leaf","is_correct":false,"tile":{"kind":"object_group","image":"leaf","count":1}},{"text":"apple","is_correct":false,"tile":{"kind":"object_group","image":"apple","count":1}},{"text":"flower","is_correct":true,"tile":{"kind":"object_group","image":"flower","count":1}}]$q$::jsonb, $q$flower$q$, $q$Ana gave the flower! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('8ac41bb7-a9e3-5a05-a9bc-a986c3fa7dbb', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. It was dark out. Ravi looked up at the round, white moon in the sky. What did Ravi look at? Tap the picture.$q$, $q$[{"text":"moon","is_correct":true,"tile":{"kind":"object_group","image":"moon","count":1}},{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"sun","is_correct":false,"tile":{"kind":"object_group","image":"sun","count":1}}]$q$::jsonb, $q$moon$q$, $q$Ravi looked at the moon! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('c0c52b39-b5da-5f9f-91a5-a447df2782a0', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. The bus was full of kids. It stopped at the school. The kids got off and went inside. What was full of kids? Tap the picture.$q$, $q$[{"text":"van","is_correct":false,"tile":{"kind":"object_group","image":"van","count":1}},{"text":"bus","is_correct":true,"tile":{"kind":"object_group","image":"bus","count":1}},{"text":"house","is_correct":false,"tile":{"kind":"object_group","image":"house","count":1}}]$q$::jsonb, $q$bus$q$, $q$The bus was full of kids! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('93519954-bd6c-55a2-bfb2-26da893fae5f', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. A pig sat in the sun. It got too hot, so it went to sit under a tree. Where did the pig go to cool off? Tap the picture.$q$, $q$[{"text":"tent","is_correct":false,"tile":{"kind":"object_group","image":"tent","count":1}},{"text":"house","is_correct":false,"tile":{"kind":"object_group","image":"house","count":1}},{"text":"tree","is_correct":true,"tile":{"kind":"object_group","image":"tree","count":1}}]$q$::jsonb, $q$tree$q$, $q$The pig went under the tree! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('d92c97f4-a310-5d65-87c3-1e24bfcadec4', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. Nia lost her sock. She looked in the box and under the mug. She found it in her shoe. What did Nia lose? Tap the picture.$q$, $q$[{"text":"sock","is_correct":true,"tile":{"kind":"object_group","image":"sock","count":1}},{"text":"hat","is_correct":false,"tile":{"kind":"object_group","image":"hat","count":1}},{"text":"mug","is_correct":false,"tile":{"kind":"object_group","image":"mug","count":1}}]$q$::jsonb, $q$sock$q$, $q$Nia lost her sock! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('ae612a39-54ab-5359-aa1d-a27f5e19b734', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. The key was tiny and gold. It opened the little door on the toy house. What did the key open? Tap the picture.$q$, $q$[{"text":"gift","is_correct":false,"tile":{"kind":"object_group","image":"gift","count":1}},{"text":"tent","is_correct":false,"tile":{"kind":"object_group","image":"tent","count":1}},{"text":"door","is_correct":true,"tile":{"kind":"object_group","image":"door","count":1}}]$q$::jsonb, $q$door$q$, $q$The key opened the door! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('fb504df0-0e4e-5078-a65c-903e82df67c0', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. A jet flew over the house. It was loud and fast. The cat hid under the bed. What flew over the house? Tap the picture.$q$, $q$[{"text":"jet","is_correct":true,"tile":{"kind":"object_group","image":"jet","count":1}},{"text":"bus","is_correct":false,"tile":{"kind":"object_group","image":"bus","count":1}},{"text":"kite","is_correct":false,"tile":{"kind":"object_group","image":"kite","count":1}}]$q$::jsonb, $q$jet$q$, $q$A jet flew over! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('7df9c110-1907-5fc4-9638-0309f1207c32', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. Meg made soup in a big pot. She added carrots and beans. It smelled great. What did Meg make the soup in? Tap the picture.$q$, $q$[{"text":"mug","is_correct":false,"tile":{"kind":"object_group","image":"mug","count":1}},{"text":"pot","is_correct":true,"tile":{"kind":"object_group","image":"pot","count":1}},{"text":"hat","is_correct":false,"tile":{"kind":"object_group","image":"hat","count":1}}]$q$::jsonb, $q$pot$q$, $q$Meg made soup in the pot! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('b6c3960b-c109-553d-a038-9b4c2d7c00b6', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. The duck and the fish live in the pond. The duck swims on top. The fish swims down deep. Who swims down deep? Tap the picture.$q$, $q$[{"text":"pig","is_correct":false,"tile":{"kind":"object_group","image":"pig","count":1}},{"text":"duck","is_correct":false,"tile":{"kind":"object_group","image":"duck","count":1}},{"text":"fish","is_correct":true,"tile":{"kind":"object_group","image":"fish","count":1}}]$q$::jsonb, $q$fish$q$, $q$The fish swims down deep! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('e82270af-a016-5b6a-ad44-af21c675e13a', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. Tom wore a warm cap and a scarf. The cap kept his ears warm. What kept Tom’s ears warm? Tap the picture.$q$, $q$[{"text":"sock","is_correct":false,"tile":{"kind":"object_group","image":"sock","count":1}},{"text":"mug","is_correct":false,"tile":{"kind":"object_group","image":"mug","count":1}},{"text":"cap","is_correct":true,"tile":{"kind":"object_group","image":"cap","count":1}}]$q$::jsonb, $q$cap$q$, $q$The cap kept his ears warm! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('d0ec12c8-6baf-5043-a5ea-3ba359a51c0c', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. A yo-yo spun down the string and back up again. The kids clapped. What spun down the string? Tap the picture.$q$, $q$[{"text":"yoyo","is_correct":true,"tile":{"kind":"object_group","image":"yoyo","count":1}},{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"ring","is_correct":false,"tile":{"kind":"object_group","image":"ring","count":1}}]$q$::jsonb, $q$yoyo$q$, $q$The yo-yo spun down the string! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('7db1bdcc-cf6a-5c17-896a-ab312311b8b8', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'medium', $q$Listen. The tree had red apples. Ben climbed up and picked one. Then he took a big bite. What did Ben pick from the tree? Tap the picture.$q$, $q$[{"text":"apple","is_correct":true,"tile":{"kind":"object_group","image":"apple","count":1}},{"text":"flower","is_correct":false,"tile":{"kind":"object_group","image":"flower","count":1}},{"text":"leaf","is_correct":false,"tile":{"kind":"object_group","image":"leaf","count":1}}]$q$::jsonb, $q$apple$q$, $q$Ben picked an apple! Great!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('86a61e76-4b76-528a-8462-4c09d0f409dc', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. A ring rolled off the table. It rolled under the door. Dad found it there. What rolled under the door? Tap the picture.$q$, $q$[{"text":"ring","is_correct":true,"tile":{"kind":"object_group","image":"ring","count":1}},{"text":"ball","is_correct":false,"tile":{"kind":"object_group","image":"ball","count":1}},{"text":"key","is_correct":false,"tile":{"kind":"object_group","image":"key","count":1}}]$q$::jsonb, $q$ring$q$, $q$The ring rolled under the door! Well done!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('eb677fef-8a97-5a6f-98dc-01ee9f599efa', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'hard', $q$Listen. The kite got stuck in the tall tree. Dad reached up and got it down. Where did the kite get stuck? Tap the picture.$q$, $q$[{"text":"tent","is_correct":false,"tile":{"kind":"object_group","image":"tent","count":1}},{"text":"house","is_correct":false,"tile":{"kind":"object_group","image":"house","count":1}},{"text":"tree","is_correct":true,"tile":{"kind":"object_group","image":"tree","count":1}}]$q$::jsonb, $q$tree$q$, $q$The kite got stuck in the tree! Nice!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status, render_mode, prompt)
+values
+  ('526a39ab-a7fa-5a7e-a348-c0ed763ae316', null, (select id from public.skills where slug = 'reading-comprehension-2'),
+   'information-and-ideas', 'easy', $q$Listen. The sun came up in the morning. It was bright and warm. The flowers opened up. What came up in the morning? Tap the picture.$q$, $q$[{"text":"moon","is_correct":false,"tile":{"kind":"object_group","image":"moon","count":1}},{"text":"sun","is_correct":true,"tile":{"kind":"object_group","image":"sun","count":1}},{"text":"star","is_correct":false,"tile":{"kind":"object_group","image":"star","count":1}}]$q$::jsonb, $q$sun$q$, $q$The sun came up! Great listening!$q$,
+   'published', 'audio_picture', null)
+on conflict (id) do update set
+  skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment, difficulty=excluded.difficulty,
+  stem=excluded.stem, choices=excluded.choices, correct_answer=excluded.correct_answer, solution=excluded.solution,
+  status=excluded.status, render_mode=excluded.render_mode, prompt=excluded.prompt;
 
 commit;

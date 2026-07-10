@@ -30,6 +30,8 @@ export const KID_IMAGES = [
   'house', 'cap', 'bus', 'door', 'jet', 'net', 'web', 'yoyo', 'sock', 'mug', 'pot', 'kite', 'tent',
   // 2-D shapes (K.G) — 'star' above doubles as a shape.
   'circle', 'square', 'triangle', 'rectangle', 'oval', 'diamond', 'hexagon', 'heart',
+  // Coins (2.MD money).
+  'penny', 'nickel', 'dime', 'quarter',
 ] as const
 export type KidImage = (typeof KID_IMAGES)[number]
 
@@ -673,6 +675,128 @@ const MAIN_IDEA_G1: PreReaderSkill = {
   ],
 }
 
+// ============================================================================
+// GRADE 2
+// ============================================================================
+
+// Addition within 100 (CCSS 2.NBT.B.5): two-digit audio arithmetic, tap the
+// number. `match` variant — distractors are plausible errors (a place slip of 10,
+// or a regrouping miss), so no off-by-one closeness rule.
+const ADDITION_WITHIN_100_G2: PreReaderSkill = {
+  slug: 'addition-within-100', name: 'Addition within 100', subject: 'math',
+  ccssGrade: '2', ccssGradeNum: 2, ccssCode: 'CCSS.MATH.CONTENT.2.NBT.B.5',
+  satAlignment: 'problem-solving-data-analysis', gradeBand: 'k-2',
+  domainKey: 'dom-math-nbt', domainName: 'Number & Operations in Base Ten', parentSubjectKey: 'subj-math',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', variant: 'match', stem: 'What is 24 plus 13? Tap the answer.', prompt: null, choices: [numChoice(37, true), numChoice(36), numChoice(47), numChoice(27)], solution: '24 plus 13 is 37! Nice adding!' },
+    { slot: 2, difficulty: 'easy', variant: 'match', stem: 'What is 31 plus 25? Tap the answer.', prompt: null, choices: [numChoice(56, true), numChoice(55), numChoice(66), numChoice(46)], solution: '31 plus 25 is 56! Great!' },
+    { slot: 3, difficulty: 'easy', variant: 'match', stem: 'What is 42 plus 16? Tap the answer.', prompt: null, choices: [numChoice(58, true), numChoice(57), numChoice(68), numChoice(48)], solution: '42 plus 16 is 58! Well done!' },
+    { slot: 4, difficulty: 'easy', variant: 'match', stem: 'What is 53 plus 24? Tap the answer.', prompt: null, choices: [numChoice(77, true), numChoice(76), numChoice(87), numChoice(67)], solution: '53 plus 24 is 77! Nice!' },
+    { slot: 5, difficulty: 'easy', variant: 'match', stem: 'What is 20 plus 30? Tap the answer.', prompt: null, choices: [numChoice(50, true), numChoice(40), numChoice(60), numChoice(51)], solution: '20 plus 30 is 50! Great!' },
+    { slot: 6, difficulty: 'easy', variant: 'match', stem: 'What is 45 plus 14? Tap the answer.', prompt: null, choices: [numChoice(59, true), numChoice(58), numChoice(69), numChoice(49)], solution: '45 plus 14 is 59! Well done!' },
+    { slot: 7, difficulty: 'medium', variant: 'match', stem: 'What is 27 plus 12? Tap the answer.', prompt: null, choices: [numChoice(39, true), numChoice(38), numChoice(49), numChoice(29)], solution: '27 plus 12 is 39! Nice!' },
+    { slot: 8, difficulty: 'medium', variant: 'match', stem: 'What is 34 plus 23? Tap the answer.', prompt: null, choices: [numChoice(57, true), numChoice(56), numChoice(67), numChoice(47)], solution: '34 plus 23 is 57! Great!' },
+    { slot: 9, difficulty: 'medium', variant: 'match', stem: 'What is 16 plus 22? Tap the answer.', prompt: null, choices: [numChoice(38, true), numChoice(37), numChoice(48), numChoice(28)], solution: '16 plus 22 is 38! Well done!' },
+    { slot: 10, difficulty: 'medium', variant: 'match', stem: 'What is 50 plus 25? Tap the answer.', prompt: null, choices: [numChoice(75, true), numChoice(74), numChoice(85), numChoice(65)], solution: '50 plus 25 is 75! Nice!' },
+    { slot: 11, difficulty: 'medium', variant: 'match', stem: 'What is 25 plus 25? Tap the answer.', prompt: null, choices: [numChoice(50, true), numChoice(49), numChoice(60), numChoice(40)], solution: '25 plus 25 is 50! Great!' },
+    { slot: 12, difficulty: 'medium', variant: 'match', stem: 'What is 33 plus 33? Tap the answer.', prompt: null, choices: [numChoice(66, true), numChoice(65), numChoice(76), numChoice(56)], solution: '33 plus 33 is 66! Well done!' },
+    { slot: 13, difficulty: 'medium', variant: 'match', stem: 'What is 40 plus 40? Tap the answer.', prompt: null, choices: [numChoice(80, true), numChoice(70), numChoice(90), numChoice(81)], solution: '40 plus 40 is 80! Nice!' },
+    { slot: 14, difficulty: 'hard', variant: 'match', stem: 'What is 28 plus 15? Tap the answer.', prompt: null, choices: [numChoice(43, true), numChoice(33), numChoice(42), numChoice(44)], solution: '28 plus 15 is 43! Great regrouping!' },
+    { slot: 15, difficulty: 'hard', variant: 'match', stem: 'What is 37 plus 18? Tap the answer.', prompt: null, choices: [numChoice(55, true), numChoice(45), numChoice(54), numChoice(56)], solution: '37 plus 18 is 55! Well done!' },
+    { slot: 16, difficulty: 'hard', variant: 'match', stem: 'What is 46 plus 27? Tap the answer.', prompt: null, choices: [numChoice(73, true), numChoice(63), numChoice(72), numChoice(74)], solution: '46 plus 27 is 73! Nice!' },
+    { slot: 17, difficulty: 'hard', variant: 'match', stem: 'What is 29 plus 26? Tap the answer.', prompt: null, choices: [numChoice(55, true), numChoice(45), numChoice(54), numChoice(56)], solution: '29 plus 26 is 55! Great!' },
+    { slot: 18, difficulty: 'hard', variant: 'match', stem: 'What is 58 plus 14? Tap the answer.', prompt: null, choices: [numChoice(72, true), numChoice(62), numChoice(71), numChoice(73)], solution: '58 plus 14 is 72! Well done!' },
+    { slot: 19, difficulty: 'hard', variant: 'match', stem: 'What is 35 plus 29? Tap the answer.', prompt: null, choices: [numChoice(64, true), numChoice(54), numChoice(63), numChoice(65)], solution: '35 plus 29 is 64! Nice!' },
+    { slot: 20, difficulty: 'hard', variant: 'match', stem: 'What is 47 plus 38? Tap the answer.', prompt: null, choices: [numChoice(85, true), numChoice(75), numChoice(84), numChoice(86)], solution: '47 plus 38 is 85! Great!' },
+    { slot: 21, difficulty: 'hard', variant: 'match', stem: 'What is 26 plus 49? Tap the answer.', prompt: null, choices: [numChoice(75, true), numChoice(65), numChoice(74), numChoice(76)], solution: '26 plus 49 is 75! Well done!' },
+    { slot: 22, difficulty: 'hard', variant: 'match', stem: 'What is 55 plus 27? Tap the answer.', prompt: null, choices: [numChoice(82, true), numChoice(72), numChoice(81), numChoice(83)], solution: '55 plus 27 is 82! Nice!' },
+    { slot: 23, difficulty: 'hard', variant: 'match', stem: 'What is 39 plus 43? Tap the answer.', prompt: null, choices: [numChoice(82, true), numChoice(72), numChoice(81), numChoice(83)], solution: '39 plus 43 is 82! Great!' },
+    { slot: 24, difficulty: 'hard', variant: 'match', stem: 'What is 64 plus 28? Tap the answer.', prompt: null, choices: [numChoice(92, true), numChoice(82), numChoice(91), numChoice(93)], solution: '64 plus 28 is 92! Well done!' },
+    { slot: 25, difficulty: 'medium', variant: 'match', stem: 'What is 18 plus 18? Tap the answer.', prompt: null, choices: [numChoice(36, true), numChoice(26), numChoice(35), numChoice(37)], solution: '18 plus 18 is 36! Nice!' },
+    { slot: 26, difficulty: 'medium', variant: 'match', stem: 'What is 60 plus 35? Tap the answer.', prompt: null, choices: [numChoice(95, true), numChoice(85), numChoice(94), numChoice(96)], solution: '60 plus 35 is 95! Great adding!' },
+  ],
+}
+
+// Money & place value (CCSS 2.MD.C.8 with 2.NBT.A.1): coin values, counting
+// coins, and building 3-digit numbers. Coin picture tiles + number tiles;
+// `match` variant. Coins are drawn with colour, size, and a value label.
+const MONEY_PLACE_VALUE_G2: PreReaderSkill = {
+  slug: 'money-place-value', name: 'Money & Place Value', subject: 'math',
+  ccssGrade: '2', ccssGradeNum: 2, ccssCode: 'CCSS.MATH.CONTENT.2.MD.C.8',
+  satAlignment: 'problem-solving-data-analysis', gradeBand: 'k-2',
+  domainKey: 'dom-math-md', domainName: 'Measurement & Data', parentSubjectKey: 'subj-math',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', variant: 'match', stem: 'How many cents is a penny worth? Tap the number.', prompt: null, choices: [numChoice(1, true), numChoice(5), numChoice(10), numChoice(25)], solution: 'A penny is 1 cent! Nice!' },
+    { slot: 2, difficulty: 'easy', variant: 'match', stem: 'How many cents is a nickel worth? Tap the number.', prompt: null, choices: [numChoice(5, true), numChoice(1), numChoice(10), numChoice(25)], solution: 'A nickel is 5 cents! Great!' },
+    { slot: 3, difficulty: 'easy', variant: 'match', stem: 'How many cents is a dime worth? Tap the number.', prompt: null, choices: [numChoice(10, true), numChoice(1), numChoice(5), numChoice(25)], solution: 'A dime is 10 cents! Well done!' },
+    { slot: 4, difficulty: 'easy', variant: 'match', stem: 'How many cents is a quarter worth? Tap the number.', prompt: null, choices: [numChoice(25, true), numChoice(1), numChoice(5), numChoice(10)], solution: 'A quarter is 25 cents! Nice!' },
+    { slot: 5, difficulty: 'easy', variant: 'match', stem: 'Which coin is worth 10 cents? Tap it.', prompt: null, choices: [picChoice('dime', true), picChoice('penny'), picChoice('nickel')], solution: 'The dime is worth 10 cents! Great!' },
+    { slot: 6, difficulty: 'easy', variant: 'match', stem: 'Which coin is worth 5 cents? Tap it.', prompt: null, choices: [picChoice('nickel', true), picChoice('penny'), picChoice('dime')], solution: 'The nickel is worth 5 cents! Well done!' },
+    { slot: 7, difficulty: 'medium', variant: 'match', stem: 'Which coin is worth 25 cents? Tap it.', prompt: null, choices: [picChoice('quarter', true), picChoice('dime'), picChoice('nickel')], solution: 'The quarter is worth 25 cents! Nice!' },
+    { slot: 8, difficulty: 'easy', variant: 'match', stem: 'Which coin is worth 1 cent? Tap it.', prompt: null, choices: [picChoice('penny', true), picChoice('nickel'), picChoice('dime')], solution: 'The penny is worth 1 cent! Great!' },
+    { slot: 9, difficulty: 'medium', variant: 'match', stem: 'Here are 2 dimes. How many cents in all? Tap the number.', prompt: { kind: 'object_group', image: 'dime', count: 2 }, choices: [numChoice(20, true), numChoice(10), numChoice(25), numChoice(2)], solution: '2 dimes is 20 cents! Well done!' },
+    { slot: 10, difficulty: 'medium', variant: 'match', stem: 'Here are 3 nickels. How many cents in all? Tap the number.', prompt: { kind: 'object_group', image: 'nickel', count: 3 }, choices: [numChoice(15, true), numChoice(10), numChoice(20), numChoice(3)], solution: '3 nickels is 15 cents! Nice!' },
+    { slot: 11, difficulty: 'medium', variant: 'match', stem: 'Here are 2 nickels. How many cents in all? Tap the number.', prompt: { kind: 'object_group', image: 'nickel', count: 2 }, choices: [numChoice(10, true), numChoice(5), numChoice(15), numChoice(2)], solution: '2 nickels is 10 cents! Great!' },
+    { slot: 12, difficulty: 'medium', variant: 'match', stem: 'Here are 4 pennies. How many cents in all? Tap the number.', prompt: { kind: 'object_group', image: 'penny', count: 4 }, choices: [numChoice(4, true), numChoice(3), numChoice(5), numChoice(40)], solution: '4 pennies is 4 cents! Well done!' },
+    { slot: 13, difficulty: 'hard', variant: 'match', stem: 'Here are 2 quarters. How many cents in all? Tap the number.', prompt: { kind: 'object_group', image: 'quarter', count: 2 }, choices: [numChoice(50, true), numChoice(25), numChoice(75), numChoice(20)], solution: '2 quarters is 50 cents! Nice!' },
+    { slot: 14, difficulty: 'hard', variant: 'match', stem: 'Here are 3 dimes. How many cents in all? Tap the number.', prompt: { kind: 'object_group', image: 'dime', count: 3 }, choices: [numChoice(30, true), numChoice(20), numChoice(40), numChoice(3)], solution: '3 dimes is 30 cents! Great counting!' },
+    { slot: 15, difficulty: 'easy', variant: 'match', stem: 'Which coin is worth the most? Tap it.', prompt: null, choices: [picChoice('quarter', true), picChoice('dime'), picChoice('penny')], solution: 'The quarter is worth the most! Well done!' },
+    { slot: 16, difficulty: 'easy', variant: 'match', stem: 'Which coin is worth the least? Tap it.', prompt: null, choices: [picChoice('penny', true), picChoice('quarter'), picChoice('dime')], solution: 'The penny is worth the least! Nice!' },
+    // Place value to 1000 (2.NBT.A.1) — building 3-digit numbers.
+    { slot: 17, difficulty: 'medium', variant: 'match', stem: 'What number is 1 hundred, 2 tens, and 3 ones? Tap it.', prompt: null, choices: [numChoice(123, true), numChoice(321), numChoice(132), numChoice(120)], solution: '1 hundred, 2 tens, 3 ones make 123! Great!' },
+    { slot: 18, difficulty: 'hard', variant: 'match', stem: 'What number is 2 hundreds, 0 tens, and 5 ones? Tap it.', prompt: null, choices: [numChoice(205, true), numChoice(250), numChoice(25), numChoice(502)], solution: '2 hundreds and 5 ones make 205! Well done!' },
+    { slot: 19, difficulty: 'hard', variant: 'match', stem: 'What number is 3 hundreds, 4 tens, and 0 ones? Tap it.', prompt: null, choices: [numChoice(340, true), numChoice(304), numChoice(34), numChoice(430)], solution: '3 hundreds and 4 tens make 340! Nice!' },
+    { slot: 20, difficulty: 'medium', variant: 'match', stem: 'How many hundreds are in 500? Tap the number.', prompt: null, choices: [numChoice(5, true), numChoice(4), numChoice(6), numChoice(500)], solution: 'There are 5 hundreds in 500! Great!' },
+    { slot: 21, difficulty: 'medium', variant: 'match', stem: 'What is 100 more than 300? Tap the number.', prompt: null, choices: [numChoice(400, true), numChoice(200), numChoice(301), numChoice(500)], solution: '100 more than 300 is 400! Well done!' },
+    { slot: 22, difficulty: 'medium', variant: 'match', stem: 'What is 10 more than 240? Tap the number.', prompt: null, choices: [numChoice(250, true), numChoice(230), numChoice(241), numChoice(340)], solution: '10 more than 240 is 250! Nice!' },
+    { slot: 23, difficulty: 'medium', variant: 'match', stem: 'Skip count by 5: 5, 10, 15, and then? Tap the next number.', prompt: null, choices: [numChoice(20, true), numChoice(16), numChoice(25), numChoice(30)], solution: 'After 15 comes 20! Great skip counting!' },
+    { slot: 24, difficulty: 'medium', variant: 'match', stem: 'Skip count by 10: 10, 20, 30, and then? Tap the next number.', prompt: null, choices: [numChoice(40, true), numChoice(31), numChoice(35), numChoice(50)], solution: 'After 30 comes 40! Well done!' },
+    { slot: 25, difficulty: 'easy', variant: 'match', stem: 'Skip count by 2: 2, 4, 6, and then? Tap the next number.', prompt: null, choices: [numChoice(8, true), numChoice(7), numChoice(10), numChoice(9)], solution: 'After 6 comes 8! Nice!' },
+    { slot: 26, difficulty: 'hard', variant: 'match', stem: 'What number is 4 hundreds, 5 tens, and 6 ones? Tap it.', prompt: null, choices: [numChoice(456, true), numChoice(654), numChoice(465), numChoice(450)], solution: '4 hundreds, 5 tens, 6 ones make 456! Great!' },
+  ],
+}
+
+// Reading Comprehension, Grade 2 (CCSS RI.2.1) — AUDIO-PASSAGE: Nikki reads a
+// short original story aloud, then a who/what/where question; the child taps the
+// picture. `match` variant (distractors are pictures NOT the answer).
+const READING_COMPREHENSION_G2: PreReaderSkill = {
+  slug: 'reading-comprehension-2', name: 'Reading Comprehension (Grade 2)', subject: 'reading',
+  ccssGrade: '2', ccssGradeNum: 2, ccssCode: 'CCSS.ELA-LITERACY.RI.2.1',
+  satAlignment: 'information-and-ideas', gradeBand: 'k-2',
+  domainKey: 'dom-reading-ri', domainName: 'Reading: Informational Text', parentSubjectKey: 'subj-reading',
+  renderMode: 'audio_picture',
+  items: [
+    { slot: 1, difficulty: 'easy', variant: 'match', stem: 'Listen. A cat and a duck went to the pond. The duck jumped in and swam. The cat sat by the water and watched. Who swam in the pond? Tap the picture.', prompt: null, choices: [picChoice('duck', true), picChoice('cat'), picChoice('pig')], solution: 'The duck swam in the pond! Great listening!' },
+    { slot: 2, difficulty: 'easy', variant: 'match', stem: 'Listen. Ben had an apple and a ball. He ate the apple for a snack. Then he played with the ball. What did Ben eat? Tap the picture.', prompt: null, choices: [picChoice('apple', true), picChoice('ball'), picChoice('fish')], solution: 'Ben ate the apple! Nice!' },
+    { slot: 3, difficulty: 'easy', variant: 'match', stem: 'Listen. The kids went to the park. They flew a kite up high. Then it rained, so they ran home. What did the kids fly? Tap the picture.', prompt: null, choices: [picChoice('kite', true), picChoice('ball'), picChoice('duck')], solution: 'The kids flew a kite! Well done!' },
+    { slot: 4, difficulty: 'easy', variant: 'match', stem: 'Listen. Mom drove the van to the store. She bought a big pot for soup. At home she made dinner. What did Mom buy? Tap the picture.', prompt: null, choices: [picChoice('pot', true), picChoice('van'), picChoice('hat')], solution: 'Mom bought a pot! Nice!' },
+    { slot: 5, difficulty: 'easy', variant: 'match', stem: 'Listen. A pig and a duck are friends. The pig likes the mud. The duck likes the water. Who likes the mud? Tap the picture.', prompt: null, choices: [picChoice('pig', true), picChoice('duck'), picChoice('cat')], solution: 'The pig likes the mud! Great!' },
+    { slot: 6, difficulty: 'medium', variant: 'match', stem: 'Listen. Lin got a gift in a box. Inside was a soft hat. She put it on her head. What was inside the gift box? Tap the picture.', prompt: null, choices: [picChoice('hat', true), picChoice('gift'), picChoice('ball')], solution: 'A hat was inside! Well done!' },
+    { slot: 7, difficulty: 'medium', variant: 'match', stem: 'Listen. The cat was cold. It found a warm house and went inside. It slept by the door. Where did the cat go? Tap the picture.', prompt: null, choices: [picChoice('house', true), picChoice('tree'), picChoice('bus')], solution: 'The cat went into the house! Nice!' },
+    { slot: 8, difficulty: 'medium', variant: 'match', stem: 'Listen. A duck made a nest under the tree. It kept its eggs warm there. Where did the duck make its nest? Tap the picture.', prompt: null, choices: [picChoice('tree', true), picChoice('house'), picChoice('tent')], solution: 'Under the tree! Great!' },
+    { slot: 9, difficulty: 'medium', variant: 'match', stem: 'Listen. The family went camping. They set up a tent in the woods. They slept inside it. Where did the family sleep? Tap the picture.', prompt: null, choices: [picChoice('tent', true), picChoice('house'), picChoice('van')], solution: 'They slept in the tent! Well done!' },
+    { slot: 10, difficulty: 'medium', variant: 'match', stem: 'Listen. Sam has a red ball and a blue kite. On windy days he flies the kite. On sunny days he kicks the ball. What does Sam fly on windy days? Tap the picture.', prompt: null, choices: [picChoice('kite', true), picChoice('ball'), picChoice('sun')], solution: 'Sam flies the kite on windy days! Nice!' },
+    { slot: 11, difficulty: 'medium', variant: 'match', stem: 'Listen. A cat chased a ball across the room. The ball rolled under the bed. What did the cat chase? Tap the picture.', prompt: null, choices: [picChoice('ball', true), picChoice('fish'), picChoice('duck')], solution: 'The cat chased the ball! Great!' },
+    { slot: 12, difficulty: 'medium', variant: 'match', stem: 'Listen. Ana picked a flower and a leaf in the garden. She gave the flower to her mom. What did Ana give to her mom? Tap the picture.', prompt: null, choices: [picChoice('flower', true), picChoice('leaf'), picChoice('apple')], solution: 'Ana gave the flower! Well done!' },
+    { slot: 13, difficulty: 'medium', variant: 'match', stem: 'Listen. It was dark out. Ravi looked up at the round, white moon in the sky. What did Ravi look at? Tap the picture.', prompt: null, choices: [picChoice('moon', true), picChoice('sun'), picChoice('ball')], solution: 'Ravi looked at the moon! Nice!' },
+    { slot: 14, difficulty: 'medium', variant: 'match', stem: 'Listen. The bus was full of kids. It stopped at the school. The kids got off and went inside. What was full of kids? Tap the picture.', prompt: null, choices: [picChoice('bus', true), picChoice('van'), picChoice('house')], solution: 'The bus was full of kids! Great!' },
+    { slot: 15, difficulty: 'hard', variant: 'match', stem: 'Listen. A pig sat in the sun. It got too hot, so it went to sit under a tree. Where did the pig go to cool off? Tap the picture.', prompt: null, choices: [picChoice('tree', true), picChoice('house'), picChoice('tent')], solution: 'The pig went under the tree! Well done!' },
+    { slot: 16, difficulty: 'hard', variant: 'match', stem: 'Listen. Nia lost her sock. She looked in the box and under the mug. She found it in her shoe. What did Nia lose? Tap the picture.', prompt: null, choices: [picChoice('sock', true), picChoice('mug'), picChoice('hat')], solution: 'Nia lost her sock! Nice!' },
+    { slot: 17, difficulty: 'hard', variant: 'match', stem: 'Listen. The key was tiny and gold. It opened the little door on the toy house. What did the key open? Tap the picture.', prompt: null, choices: [picChoice('door', true), picChoice('gift'), picChoice('tent')], solution: 'The key opened the door! Great!' },
+    { slot: 18, difficulty: 'hard', variant: 'match', stem: 'Listen. A jet flew over the house. It was loud and fast. The cat hid under the bed. What flew over the house? Tap the picture.', prompt: null, choices: [picChoice('jet', true), picChoice('bus'), picChoice('kite')], solution: 'A jet flew over! Well done!' },
+    { slot: 19, difficulty: 'medium', variant: 'match', stem: 'Listen. Meg made soup in a big pot. She added carrots and beans. It smelled great. What did Meg make the soup in? Tap the picture.', prompt: null, choices: [picChoice('pot', true), picChoice('mug'), picChoice('hat')], solution: 'Meg made soup in the pot! Nice!' },
+    { slot: 20, difficulty: 'medium', variant: 'match', stem: 'Listen. The duck and the fish live in the pond. The duck swims on top. The fish swims down deep. Who swims down deep? Tap the picture.', prompt: null, choices: [picChoice('fish', true), picChoice('duck'), picChoice('pig')], solution: 'The fish swims down deep! Great!' },
+    { slot: 21, difficulty: 'medium', variant: 'match', stem: 'Listen. Tom wore a warm cap and a scarf. The cap kept his ears warm. What kept Tom’s ears warm? Tap the picture.', prompt: null, choices: [picChoice('cap', true), picChoice('sock'), picChoice('mug')], solution: 'The cap kept his ears warm! Well done!' },
+    { slot: 22, difficulty: 'hard', variant: 'match', stem: 'Listen. A yo-yo spun down the string and back up again. The kids clapped. What spun down the string? Tap the picture.', prompt: null, choices: [picChoice('yoyo', true), picChoice('ball'), picChoice('ring')], solution: 'The yo-yo spun down the string! Nice!' },
+    { slot: 23, difficulty: 'medium', variant: 'match', stem: 'Listen. The tree had red apples. Ben climbed up and picked one. Then he took a big bite. What did Ben pick from the tree? Tap the picture.', prompt: null, choices: [picChoice('apple', true), picChoice('leaf'), picChoice('flower')], solution: 'Ben picked an apple! Great!' },
+    { slot: 24, difficulty: 'hard', variant: 'match', stem: 'Listen. A ring rolled off the table. It rolled under the door. Dad found it there. What rolled under the door? Tap the picture.', prompt: null, choices: [picChoice('ring', true), picChoice('ball'), picChoice('key')], solution: 'The ring rolled under the door! Well done!' },
+    { slot: 25, difficulty: 'hard', variant: 'match', stem: 'Listen. The kite got stuck in the tall tree. Dad reached up and got it down. Where did the kite get stuck? Tap the picture.', prompt: null, choices: [picChoice('tree', true), picChoice('house'), picChoice('tent')], solution: 'The kite got stuck in the tree! Nice!' },
+    { slot: 26, difficulty: 'easy', variant: 'match', stem: 'Listen. The sun came up in the morning. It was bright and warm. The flowers opened up. What came up in the morning? Tap the picture.', prompt: null, choices: [picChoice('sun', true), picChoice('moon'), picChoice('star')], solution: 'The sun came up! Great listening!' },
+  ],
+}
+
 export const PRE_READER_SKILLS: PreReaderSkill[] = [
   COUNTING_K,
   LETTER_SOUNDS_K,
@@ -683,6 +807,9 @@ export const PRE_READER_SKILLS: PreReaderSkill[] = [
   SUBTRACTION_WITHIN_20_G1,
   PLACE_VALUE_TO_100_G1,
   MAIN_IDEA_G1,
+  ADDITION_WITHIN_100_G2,
+  MONEY_PLACE_VALUE_G2,
+  READING_COMPREHENSION_G2,
 ]
 
 // --- Deterministic build of a served item (shuffle the tiles) ----------------

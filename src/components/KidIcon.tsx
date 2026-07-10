@@ -13,6 +13,8 @@ type IconName =
   | 'house' | 'cap' | 'bus' | 'door' | 'jet' | 'net' | 'web' | 'yoyo' | 'sock' | 'mug' | 'pot' | 'kite' | 'tent'
   // 2-D shapes (K.G) — 'star' above is reused as a shape.
   | 'circle' | 'square' | 'triangle' | 'rectangle' | 'oval' | 'diamond' | 'hexagon' | 'heart'
+  // Coins (2.MD money).
+  | 'penny' | 'nickel' | 'dime' | 'quarter'
 
 const PATHS: Record<IconName, { fill: string; svg: React.ReactNode }> = {
   apple: {
@@ -331,6 +333,43 @@ const PATHS: Record<IconName, { fill: string; svg: React.ReactNode }> = {
   heart: {
     fill: '#e0443b',
     svg: <path d="M32 54C12 40 8 26 18 20c6-3.5 12 0 14 4 2-4 8-7.5 14-4 10 6 6 20-14 30z" />,
+  },
+  // Coins (2.MD.C.8) — colour + size + value label distinguish them.
+  penny: {
+    fill: '#b87333',
+    svg: (
+      <>
+        <circle cx="32" cy="32" r="20" />
+        <text x="32" y="39" textAnchor="middle" fontSize="18" fontWeight="bold" fill="#4a2a12">1¢</text>
+      </>
+    ),
+  },
+  nickel: {
+    fill: '#a8a9ad',
+    svg: (
+      <>
+        <circle cx="32" cy="32" r="22" />
+        <text x="32" y="39" textAnchor="middle" fontSize="17" fontWeight="bold" fill="#33343a">5¢</text>
+      </>
+    ),
+  },
+  dime: {
+    fill: '#a8a9ad',
+    svg: (
+      <>
+        <circle cx="32" cy="32" r="16" />
+        <text x="32" y="37" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#33343a">10¢</text>
+      </>
+    ),
+  },
+  quarter: {
+    fill: '#a8a9ad',
+    svg: (
+      <>
+        <circle cx="32" cy="32" r="24" />
+        <text x="32" y="39" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#33343a">25¢</text>
+      </>
+    ),
   },
 }
 
