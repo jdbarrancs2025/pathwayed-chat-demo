@@ -28,6 +28,7 @@ import {
   clearDiagnosticProgress,
 } from '@/lib/diagnosticProgress'
 import { MathText } from '@/components/MathText'
+import { MathFigure } from '@/components/MathFigure'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
 import { QuestionAudio } from '@/components/QuestionAudio'
@@ -474,6 +475,7 @@ export function Diagnostic() {
               <div className="practice-stem">
                 <MathText content={current.stem} />
               </div>
+              <MathFigure stem={current.stem} />
               <div className="practice-choices">
                 {current.choices.map((c, i) => (
                   <button key={i} className="practice-choice" onClick={() => handlePick(i)}>

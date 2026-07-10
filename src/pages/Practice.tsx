@@ -11,6 +11,7 @@ import {
 import { recordPracticeResult } from '@/lib/skills'
 import { explainMisconception } from '@/lib/misconceptions'
 import { MathText } from '@/components/MathText'
+import { MathFigure } from '@/components/MathFigure'
 import { TopMenu } from '@/components/TopMenu'
 import { QuestionAudio } from '@/components/QuestionAudio'
 import { PictureQuestion } from '@/components/PictureQuestion'
@@ -225,6 +226,7 @@ export function Practice() {
               <div className="practice-stem">
                 <MathText content={current.stem} />
               </div>
+              <MathFigure stem={current.stem} />
               <div className="practice-choices">
                 {current.choices.map((c, i) => {
                   const state = !answered ? '' : c.is_correct ? 'correct' : i === selected ? 'chosen-wrong' : 'dim'
