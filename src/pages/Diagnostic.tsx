@@ -73,9 +73,16 @@ function resolveReturn(raw: string | null, studentId: string): string {
 
 /** Grades at/below this (K, 1, 2) get the short, playful audio-picture placement. */
 const EARLY_GRADE_MAX = 2
-/** K-2 placement budget — short and gentle (~a few per early skill; with counting
- *  + phonics this is 3 each = 6 questions), not a test. */
+/** K-2 placement budget — short and gentle (~a few per anchor skill; counting +
+ *  phonics = 3 each = 6 questions), not a test. */
 const EARLY_TARGET = 6
+/**
+ * The K-2 placement samples ONLY these two anchor skills — early math (counting)
+ * and early literacy (letter-sounds) — to keep it short for a 5-year-old. The
+ * other K skills (letter-naming, shapes, comparing-numbers) are taught in lessons,
+ * not the placement check.
+ */
+const EARLY_ANCHOR_SLUGS = ['counting', 'letter-sounds']
 
 export function Diagnostic() {
   const { id } = useParams<{ id: string }>()
@@ -150,10 +157,12 @@ export function Diagnostic() {
       const practiceable = await listPracticeableSkills()
       if (!active) return
 
-      // K-2 initial placement: a SHORT, gentle, audio-picture set drawn ONLY from
-      // K-2 skills (counting, phonics) — never higher-grade text, and no ladder.
+      // K-2 initial placement: a SHORT, gentle, audio-picture set from the two
+      // anchor skills (counting + phonics) only — never higher-grade text, and no
+      // ladder. The rest of the K skills are covered in lessons, not placement.
       if (studentGradeNum(s.grade) <= EARLY_GRADE_MAX) {
-        const k2Skills = practiceable.filter((sk) => (sk.ccss_grade_num ?? 99) <= EARLY_GRADE_MAX)
+        const anchors = practiceable.filter((sk) => EARLY_ANCHOR_SLUGS.includes(sk.slug))
+        const k2Skills = anchors.length ? anchors : practiceable.filter((sk) => (sk.ccss_grade_num ?? 99) <= EARLY_GRADE_MAX)
         const qs = await fetchEarlyGradeDiagnostic(k2Skills, EARLY_TARGET)
         if (!active) return
         setEarly(true)
