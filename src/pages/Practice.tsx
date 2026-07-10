@@ -19,10 +19,18 @@ import { useAutoRead } from '@/hooks/useAutoRead'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import '@/styles/app-screens.css'
 
-/** Assemble the read-aloud text for a served question: the passage (if any) then
- *  the stem. Choices are not read. */
-function readableText(q: { passage: string | null; stem: string } | undefined): string {
+/**
+ * Assemble the read-aloud text for a served question. For audio-picture (K-2)
+ * items, Nikki reads the spoken prompt AND names the answer tiles (a pre-reader
+ * can't read the numbers/letters/pictures they tap). For text items it stays
+ * passage+stem — choices are not read there (grades 3-12 unchanged).
+ */
+function readableText(q: PracticeQuestion | undefined): string {
   if (!q) return ''
+  if (q.render_mode === 'audio_picture') {
+    const labels = q.choices.map((c) => c.text).filter(Boolean)
+    return labels.length ? `${q.stem} Your choices are: ${labels.join(', ')}.` : q.stem
+  }
   return [q.passage, q.stem].filter(Boolean).join('\n\n')
 }
 

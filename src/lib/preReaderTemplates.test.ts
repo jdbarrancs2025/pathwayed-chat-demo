@@ -14,8 +14,8 @@ describe.each(PRE_READER_SKILLS.map((s) => [s.slug, s] as const))('%s — pre-re
     expect(skill.renderMode).toBe('audio_picture')
     expect(skill.ccssGrade).toBe('K')
     expect(skill.ccssGradeNum).toBe(0)
-    // Counting (K.CC / math) or letter sounds (RF.K / reading foundational).
-    expect(skill.ccssCode).toMatch(/^CCSS\.(MATH\.CONTENT\.K\.CC|ELA-LITERACY\.RF\.K)/)
+    // Kindergarten math (K.CC / K.G / …) or reading foundational (RF.K).
+    expect(skill.ccssCode).toMatch(/^CCSS\.(MATH\.CONTENT\.K|ELA-LITERACY\.RF\.K)/)
     expect(skill.gradeBand).toBe('k-2')
     expect(skill.items.length).toBeGreaterThanOrEqual(4)
   })
@@ -51,7 +51,14 @@ describe.each(PRE_READER_SKILLS.map((s) => [s.slug, s] as const))('%s — pre-re
 
       // KIND distractors, per tile kind:
       const correctTile = correct[0].tile
-      if (correctTile.kind === 'letter') {
+      if (item.variant === 'match') {
+        // Shapes / number comparisons: choices are distinct by IDENTITY (a shape
+        // image, or a clearly-different number/quantity) — no closeness rule.
+        const tileId = (t: { kind: string; value?: string; image?: string; count?: number }) =>
+          t.kind === 'object_group' ? `${t.image}:${t.count}` : String(t.value)
+        const ids = item.choices.map((c) => tileId(c.tile))
+        expect(new Set(ids).size).toBe(ids.length)
+      } else if (correctTile.kind === 'letter') {
         // Phonics: distinct single letters, none equal to the answer (clearly
         // different letters/sounds — the visible review checks phonetic kindness).
         const vals = item.choices.map((c) => (c.tile.kind === 'letter' ? c.tile.value : ''))

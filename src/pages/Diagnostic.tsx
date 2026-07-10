@@ -47,9 +47,7 @@ function readableText(q: PracticeQuestion | undefined): string {
   if (!q) return ''
   if (q.render_mode === 'audio_picture') {
     const labels = q.choices.map((c) => c.text).filter(Boolean)
-    const spoken =
-      labels.length > 1 ? `${labels.slice(0, -1).join(', ')}, or ${labels[labels.length - 1]}` : labels.join('')
-    return spoken ? `${q.stem} Is it ${spoken}?` : q.stem
+    return labels.length ? `${q.stem} Your choices are: ${labels.join(', ')}.` : q.stem
   }
   return [q.passage, q.stem].filter(Boolean).join('\n\n')
 }
