@@ -11,4 +11,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /** Typed Supabase browser client (anon key — safe for the client). */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    // Consume the session from the OAuth redirect URL on load (implicit flow
+    // returns the token in the `#access_token=…` fragment). Explicit here so the
+    // behavior can't be silently changed by a default. `AuthContext` adds a
+    // belt-and-suspenders capture in case a redirect races this parse.
+    detectSessionInUrl: true,
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+})

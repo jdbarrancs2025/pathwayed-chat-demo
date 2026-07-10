@@ -30,24 +30,76 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+/**
+ * Explicitly consume an OAuth session left in the URL fragment
+ * (`#access_token=…&refresh_token=…`) and clear it from the address bar.
+ *
+ * This backs up the client's own `detectSessionInUrl`: if a redirect races or
+ * the auto-parse fails, we still establish the session here. Both tokens are
+ * required by `setSession`; if the fragment is incomplete we skip (only the
+ * provider/config can fix a partial return) but still scrub the URL.
+ */
+async function captureSessionFromUrlHash(): Promise<void> {
+  if (typeof window === 'undefined') return
+  const hash = window.location.hash
+  if (!hash || !hash.includes('access_token')) return
+
+  const params = new URLSearchParams(hash.replace(/^#/, ''))
+  const accessToken = params.get('access_token')
+  const refreshToken = params.get('refresh_token')
+  const errorDescription = params.get('error_description')
+
+  if (errorDescription) {
+    console.error('[auth] OAuth returned an error in the URL', errorDescription)
+  } else if (accessToken && refreshToken) {
+    const { error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    })
+    if (error) console.error('[auth] setSession from URL fragment failed', error.message)
+  }
+
+  // Scrub the tokens/error from the URL without a navigation (keeps path intact).
+  const url = new URL(window.location.href)
+  url.hash = ''
+  window.history.replaceState(window.history.state, '', url.toString())
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Hydrate the current session, then keep it in sync with auth changes
-    // (including the redirect back from an OAuth provider).
-    supabase.auth.getSession().then(({ data }) => {
+    let active = true
+
+    async function bootstrap() {
+      // Belt-and-suspenders for the OAuth return: if tokens are still sitting in
+      // the URL hash (e.g. a redirect raced the client's auto-detection, or it
+      // failed to consume them), establish the session explicitly. On success
+      // the client clears the hash itself; we also scrub it here regardless so
+      // the tokens don't linger in the address bar / history.
+      await captureSessionFromUrlHash()
+
+      // Hydrate the current session (getSession() awaits the client's URL parse,
+      // so this reflects the session established above or by detectSessionInUrl).
+      const { data } = await supabase.auth.getSession()
+      if (!active) return
       setSession(data.session)
       setLoading(false)
-    })
+    }
 
+    void bootstrap()
+
+    // Keep in sync with auth changes (including the redirect back from OAuth).
     const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       setLoading(false)
     })
 
-    return () => sub.subscription.unsubscribe()
+    return () => {
+      active = false
+      sub.subscription.unsubscribe()
+    }
   }, [])
 
   // Passwords are handled entirely by Supabase Auth — we never collect or store them.
