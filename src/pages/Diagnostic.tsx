@@ -253,14 +253,19 @@ export function Diagnostic() {
 
   const finish = async (allResults: DiagnosticResult[], stu: Student) => {
     setBusy(true)
-    // The real placement is the seeded mastery (behind the scenes); the kid never
-    // sees a score or grade. The settled working grade is logged for observability;
-    // parent-facing summaries are derived separately from the stored attempts.
+    // The settled working grade is logged for observability; the kid never sees a
+    // score or grade. For grades 3-12 the placement is the seeded mastery (behind
+    // the scenes). K-2 does NOT seed: a couple of correct answers must not pre-mark
+    // counting/phonics "mastered" — placement is routing into Skills building, and
+    // the lessons should teach those skills fully from fresh. (Attempts are still
+    // recorded via recordQuestionAttempt for history either way.)
     console.info('[diagnostic] settled working grade', settledGrade(allResults, studentGradeNum(stu.grade)))
-    await seedDiagnosticMastery(
-      stu.id,
-      allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
-    )
+    if (!early) {
+      await seedDiagnosticMastery(
+        stu.id,
+        allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
+      )
+    }
     clearDiagnosticProgress(stu.id)
     setBusy(false)
     setDone(true)
