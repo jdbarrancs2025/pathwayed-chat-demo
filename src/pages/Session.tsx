@@ -108,6 +108,14 @@ export function Session() {
         navigate('/students', { replace: true })
         return
       }
+      // Invariant: K-2 skill lessons are audio-picture pre-reader content. The
+      // chat can't render picture questions, so a pre-reader must never land here
+      // as text — divert any k-2 skill lesson to the Practice audio-picture UI.
+      // (SkillsBuilding already routes there; this guards every other entry.)
+      if (focusSlug && !isHomework && scopeBandForGrade(s.grade) === 'k-2') {
+        navigate(`/students/${id}/practice/${encodeURIComponent(focusSlug)}`, { replace: true })
+        return
+      }
       // Skills-building launches carry ?skill=<slug>; name it so the lesson is
       // focused (the diagnose-first prompt then checks that skill before teaching).
       const band = scopeBandForGrade(s.grade)
