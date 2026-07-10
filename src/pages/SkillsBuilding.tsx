@@ -4,6 +4,7 @@ import { getStudent, avatarModeOf, type Student } from '@/lib/students'
 import { SUBJECTS, type SubjectDef } from '@/lib/subjects'
 import {
   scopeBandForGrade,
+  scopeSubjectsForBand,
   hasAnyMastery,
   nextLesson,
   SCOPE_SUBJECTS,
@@ -65,15 +66,20 @@ export function SkillsBuilding() {
         return
       }
       setStudent(s)
-      if (!scopeBandForGrade(s.grade)) {
+      const band = scopeBandForGrade(s.grade)
+      if (!band) {
         setPhase('coming-soon')
         return
       }
-      const assessed = await hasAnyMastery(s.id)
-      if (!active) return
-      if (!assessed) {
-        setPhase('need-check')
-        return
+      // K-2 pre-readers skip the placement check (it isn't built for them) and
+      // go straight to picking their counting / phonics lesson.
+      if (band !== 'k-2') {
+        const assessed = await hasAnyMastery(s.id)
+        if (!active) return
+        if (!assessed) {
+          setPhase('need-check')
+          return
+        }
       }
       setLastSubject(readLastSubject(s.id))
       setPhase('pick')
@@ -96,6 +102,12 @@ export function SkillsBuilding() {
 
   const startLesson = () => {
     if (!student || !lesson) return
+    // K-2 lessons are audio-picture; serve them in the Practice tap-UI (the chat
+    // Session doesn't render picture questions). Older grades go to the chat.
+    if (lesson.band === 'k-2') {
+      navigate(`/students/${student.id}/practice/${encodeURIComponent(lesson.slug)}`)
+      return
+    }
     // Carry the SAT-practice origin so Nikki names it in her greeting too.
     const from = lesson.fromFocus ? '&from=sat' : ''
     navigate(`/students/${student.id}/session/${lesson.subject}?skill=${encodeURIComponent(lesson.slug)}${from}`)
@@ -111,10 +123,14 @@ export function SkillsBuilding() {
     )
   }
 
-  // Subjects to offer, leading with the one the kid was last in.
-  const orderedSubjects: ScopeSubject[] = lastSubject
-    ? [lastSubject, ...SCOPE_SUBJECTS.filter((s) => s !== lastSubject)]
-    : SCOPE_SUBJECTS
+  // Subjects to offer (only those with a track for this band — K has math +
+  // reading, not writing), leading with the one the kid was last in.
+  const band = scopeBandForGrade(student.grade)
+  const available = band ? scopeSubjectsForBand(band) : SCOPE_SUBJECTS
+  const orderedSubjects: ScopeSubject[] =
+    lastSubject && available.includes(lastSubject)
+      ? [lastSubject, ...available.filter((s) => s !== lastSubject)]
+      : available
 
   return (
     <div className="kid-screen">

@@ -24,10 +24,23 @@ export function isScopeSubject(subject: string): subject is ScopeSubject {
   return subject === 'math' || subject === 'reading' || subject === 'writing'
 }
 
-/** Grade → the band that has a track, or null (k-2 has no track). */
+/** Grade → the band that has a track. Every band now has one (k-2 = counting +
+ *  phonics), so this is non-null in practice; the null guard is a safety net. */
 export function scopeBandForGrade(grade?: string): ScopeBand | null {
   const b = gradeBand(grade)
-  return b === '3-5' || b === '6-8' || b === '9-12' ? b : null
+  return b === 'k-2' || b === '3-5' || b === '6-8' || b === '9-12' ? b : null
+}
+
+/** Subjects that actually have a track for this band (non-empty sequence). K has
+ *  math (counting) + reading (letter-sounds) but no writing yet. */
+export function scopeSubjectsForBand(band: ScopeBand): ScopeSubject[] {
+  return SCOPE_SUBJECTS.filter((s) => scopeSequence[band][s].length > 0)
+}
+
+/** Display labels for the K-2 pre-reader skills (focusAreas.ts covers 3-12 only). */
+const K2_SKILL_LABELS: Record<string, string> = {
+  counting: 'Counting',
+  'letter-sounds': 'Letter Sounds',
 }
 
 export interface Lesson {
@@ -42,8 +55,10 @@ export interface Lesson {
   fromFocus: boolean
 }
 
-/** Display label for a slug, from focusAreas (the source of truth for names). */
+/** Display label for a slug, from focusAreas (the source of truth for names).
+ *  K-2 slugs aren't in focusAreas, so they use the K-2 label map. */
 export function skillLabel(band: ScopeBand, subject: ScopeSubject, slug: string): string {
+  if (band === 'k-2') return K2_SKILL_LABELS[slug] ?? slug
   return focusAreasByGrade[band][subject].find((f) => f.value === slug)?.label ?? slug
 }
 

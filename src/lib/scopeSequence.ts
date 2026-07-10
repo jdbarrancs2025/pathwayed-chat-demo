@@ -5,15 +5,24 @@
 // loops on the first unmastered one — mastery sets the pace, so a ready kid moves
 // ahead and is never held to grade pace.
 //
-// Tracks are per-subject and independent. Every slug is a real focus-area slug
-// from focusAreas.ts (verified against it before wiring). Scope is
-// math/reading/writing in bands 3-5, 6-8, 9-12 only; science and k-2 have no
-// track and fall back to the "skills building coming soon" → homework state.
+// Tracks are per-subject and independent. For bands 3-5/6-8/9-12 every slug is a
+// real focus-area slug from focusAreas.ts (verified against it before wiring).
+// The k-2 band uses the real published Kindergarten skill slugs from the DB
+// (audio-picture pre-reader lessons); there is no writing track at K yet.
+// Science has no track and falls back to the "skills building coming soon" →
+// homework state.
 
-export type ScopeBand = '3-5' | '6-8' | '9-12'
+export type ScopeBand = 'k-2' | '3-5' | '6-8' | '9-12'
 export type ScopeSubject = 'math' | 'reading' | 'writing'
 
 export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = {
+  'k-2': {
+    // Kindergarten pre-reader tracks. Exact published DB slugs: counting (K.CC)
+    // and letter-sounds (RF.K). Number sense before letter sounds.
+    math: ['counting'],
+    reading: ['letter-sounds'],
+    writing: [],
+  },
   '3-5': {
     math: ['multiplication', 'division', 'fractions', 'geometry'],
     reading: ['vocabulary', 'main-idea', 'reading-comprehension', 'story-elements'],
