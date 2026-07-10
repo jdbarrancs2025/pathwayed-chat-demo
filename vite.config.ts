@@ -11,7 +11,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // Dev only: the vercel.json SPA rewrite (/((?!api/).*) -> /index.html) breaks
+  // Dev only: the vercel.json SPA rewrite (/(.*) -> /index.html) breaks
   // Vite's in-memory module requests under `vercel dev`, so we run the frontend
   // on Vite (5173) and proxy /api to a separate `vercel dev` (3000) which serves
   // the serverless functions. Does not affect the production build.
