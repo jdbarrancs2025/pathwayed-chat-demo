@@ -10,11 +10,13 @@ import {
   getStudent,
   gradeLabel,
   listStudents,
+  setAboveGradeConsent,
   updateStudent,
   type AvatarMode,
   type StudentLevel,
 } from '@/lib/students'
 import { AvatarModePicker } from '@/components/AvatarModePicker'
+import { Switch } from '@/components/ui/switch'
 import { getSubscription, type Subscription } from '@/lib/profile'
 import {
   ADDON_PRICE,
@@ -68,6 +70,9 @@ export function AddChild() {
   const [confirmReassess, setConfirmReassess] = useState(false)
   const [level, setLevel] = useState<StudentLevel>('on')
   const [avatarMode, setAvatarMode] = useState<AvatarMode>('video')
+  // SAT / above-grade FRAMING consent (the students.above_grade_ok field the
+  // onboarding placement step writes). Framing/emphasis only — never access.
+  const [aboveGradeOk, setAboveGradeOk] = useState(false)
   const [nameError, setNameError] = useState(false)
   const [gradeError, setGradeError] = useState(false)
   const [errMsg, setErrMsg] = useState('')
@@ -93,6 +98,7 @@ export function AddChild() {
       setOriginalGrade(student.grade)
       setLevel((student.level as StudentLevel) ?? 'on')
       setAvatarMode(avatarModeOf(student))
+      setAboveGradeOk(!!student.above_grade_ok)
       setLoading(false)
     })
     return () => {
@@ -156,8 +162,13 @@ export function AddChild() {
     const input = { first_name: trimmed, grade, level, avatar_mode: avatarMode }
 
     if (editing && id) {
-      const { error } = await updateStudent(id, input)
-      if (error) {
+      // Save the details and the SAT/above-grade framing consent together, both
+      // through the existing student update path (consent = above_grade_ok).
+      const [{ error: updateError }, { error: consentError }] = await Promise.all([
+        updateStudent(id, input),
+        setAboveGradeConsent(id, aboveGradeOk),
+      ])
+      if (updateError || consentError) {
         setErrMsg('Sorry — something went wrong saving. Please try again.')
         setSaving(false)
         setConfirmReassess(false)
@@ -299,6 +310,47 @@ export function AddChild() {
             </div>
 
             <AvatarModePicker value={avatarMode} onChange={setAvatarMode} />
+
+            {/* SAT / above-grade FRAMING consent — editable post-onboarding. Wired
+                to the same students.above_grade_ok field the placement step writes.
+                Framing/emphasis only: it enables SAT-readiness framing + the SAT
+                Practice card, never access or advancement (mastery still governs). */}
+            {editing && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 14,
+                  border: aboveGradeOk ? '1.6px solid #CC543C' : '1.6px solid #ECE4D8',
+                  borderRadius: 14,
+                  padding: '14px 16px',
+                  margin: '16px 0',
+                  background: aboveGradeOk ? '#FBEEE9' : '#fff',
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <label
+                    htmlFor="above-grade-ok"
+                    style={{ display: 'block', fontWeight: 700, fontSize: 15, color: '#1C2230' }}
+                  >
+                    SAT &amp; above-grade framing
+                  </label>
+                  <p style={{ fontSize: 13, color: '#5A6172', margin: '4px 0 0' }}>
+                    When on, Nikki can show SAT-readiness framing and unlock SAT practice for this child. This changes
+                    how work is framed, not what your child is allowed to learn. They advance at their real mastery level
+                    either way.
+                  </p>
+                </div>
+                <Switch
+                  id="above-grade-ok"
+                  checked={aboveGradeOk}
+                  onCheckedChange={setAboveGradeOk}
+                  aria-label="SAT and above-grade framing"
+                  style={{ marginTop: 3 }}
+                />
+              </div>
+            )}
 
             {/* Heads-up when this child goes beyond the plan's included seats. */}
             {willBill && !confirmBilling && (
