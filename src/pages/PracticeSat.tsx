@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, type Student } from '@/lib/students'
 import { scoreChoice, summarizeAttempts, type PracticeQuestion } from '@/lib/questions'
-import { assembleMathSection, canTakePracticeSat, PRACTICE_SAT_MATH_LENGTH } from '@/lib/practiceSat'
+import {
+  assembleMathSection,
+  assembleReadingWritingSection,
+  canTakePracticeSat,
+  sectionOf,
+  PRACTICE_SAT_MATH_LENGTH,
+} from '@/lib/practiceSat'
 import { recordSatMisses } from '@/lib/focusSkills'
 import { explainMisconception } from '@/lib/misconceptions'
 import { MathText } from '@/components/MathText'
@@ -12,10 +18,12 @@ import '@/styles/app-screens.css'
 type Phase = 'loading' | 'intro' | 'test' | 'done'
 
 /**
- * Practice SAT — Phase 1 (HS-only, consent-gated, Math-only). Deferred scoring:
- * answer every item with no per-question feedback, then a raw score and a review
- * of missed items with the Stage-4 explanation + worked solution. Read-only —
- * no mastery or question_attempts writes. It's a practice section, not a full SAT.
+ * Practice SAT — Phase 3 (HS-only, consent-gated): a short Reading & Writing
+ * section then Math, SAT-shaped at small scale. Deferred scoring: answer every
+ * item with no per-question feedback, then a RAW score per section + overall
+ * (no scaled 400–1600) and a review of missed items with the Stage-4 explanation
+ * + worked solution. Read-only apart from writing missed skills to the focus
+ * mechanism. It's a practice test, not a full SAT.
  */
 export function PracticeSat() {
   const { id } = useParams<{ id: string }>()
@@ -44,10 +52,14 @@ export function PracticeSat() {
         navigate(`/students/${s.id}`, { replace: true })
         return
       }
-      const qs = await assembleMathSection(PRACTICE_SAT_MATH_LENGTH)
+      // Reading & Writing first, then Math — real-SAT order, at small scale.
+      const [rw, math] = await Promise.all([
+        assembleReadingWritingSection(),
+        assembleMathSection(PRACTICE_SAT_MATH_LENGTH),
+      ])
       if (!active) return
       setStudent(s)
-      setQuestions(qs)
+      setQuestions([...rw, ...math])
       setPhase('intro')
     })()
     return () => {
@@ -73,7 +85,7 @@ export function PracticeSat() {
       <div className="kid-screen">
         <div className="shell">
           <TopMenu />
-          <h1 className="greet">SAT Math Practice</h1>
+          <h1 className="greet">SAT Practice</h1>
           <p className="muted">No practice questions are ready yet — check back soon!</p>
           <button className="btn btn-navy" onClick={backToDashboard}>
             Back to my dashboard
@@ -88,15 +100,16 @@ export function PracticeSat() {
       <div className="kid-screen">
         <div className="shell">
           <TopMenu />
-          <h1 className="greet">SAT Math Practice</h1>
+          <h1 className="greet">SAT Practice</h1>
           <div className="panel">
             <p style={{ margin: 0 }}>
-              A short, SAT-style <strong>Math</strong> practice section — {questions.length} questions. Answer them all,
-              then I’ll show your score and walk through anything you missed.
+              A short, SAT-style practice test — {questions.length} questions across a{' '}
+              <strong>Reading &amp; Writing</strong> section and a <strong>Math</strong> section. Answer them all, then
+              I’ll show your score for each section and walk through anything you missed.
             </p>
             <p className="muted" style={{ margin: '12px 0 0', fontSize: 13.5 }}>
-              This is a practice Math section, not a full SAT yet — no reading or writing here, and it doesn’t affect
-              your progress. Take your time and give each one your best shot.
+              This is a shortened practice test, not a full SAT, and it doesn’t affect your progress. Take your time and
+              give each one your best shot.
             </p>
           </div>
           <button className="btn btn-navy" onClick={() => setPhase('test')}>
@@ -111,8 +124,10 @@ export function PracticeSat() {
   }
 
   if (phase === 'done') {
-    const scored = questions.map((q, i) => ({ q, chosen: answers[i], ...scoreChoice(q.choices, answers[i]) }))
+    const scored = questions.map((q, i) => ({ q, chosen: answers[i], section: sectionOf(q), ...scoreChoice(q.choices, answers[i]) }))
     const summary = summarizeAttempts(scored)
+    const rwSummary = summarizeAttempts(scored.filter((r) => r.section === 'rw'))
+    const mathSummary = summarizeAttempts(scored.filter((r) => r.section === 'math'))
     const missed = scored.filter((r) => !r.isCorrect)
 
     return (
@@ -124,9 +139,21 @@ export function PracticeSat() {
             <p className="practice-score">
               {summary.correct} <span className="muted">/ {summary.total}</span>
             </p>
+            <div className="sat-section-scores">
+              {rwSummary.total > 0 && (
+                <span>
+                  Reading &amp; Writing <strong>{rwSummary.correct}/{rwSummary.total}</strong>
+                </span>
+              )}
+              {mathSummary.total > 0 && (
+                <span>
+                  Math <strong>{mathSummary.correct}/{mathSummary.total}</strong>
+                </span>
+              )}
+            </div>
             <p className="practice-encourage">{encouragement(summary.accuracy)}</p>
             <p className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
-              Practice Math section — not a full SAT score.
+              Raw practice score per section — not a scaled SAT score.
             </p>
           </div>
 
@@ -138,6 +165,11 @@ export function PracticeSat() {
                 const hint = explainMisconception(chosenChoice?.misconception_token)
                 return (
                   <div key={q.id} className="sat-review-item">
+                    {q.passage && (
+                      <div className="practice-passage">
+                        <MathText content={q.passage} />
+                      </div>
+                    )}
                     <div className="sat-review-q">
                       <span className="sat-review-n">{k + 1}.</span>
                       <MathText content={q.stem} />
@@ -177,6 +209,7 @@ export function PracticeSat() {
   // phase === 'test' — one question at a time, no feedback until the end.
   const current = questions[index]
   const isLast = index + 1 >= questions.length
+  const sectionLabel = sectionOf(current) === 'rw' ? 'Reading & Writing' : 'Math'
 
   const handleNext = () => {
     if (selected === null) return
@@ -201,11 +234,16 @@ export function PracticeSat() {
     <div className="kid-screen">
       <div className="shell">
         <TopMenu />
-        <p className="practice-solo">SAT Math Practice — answer your best, review at the end.</p>
+        <p className="practice-solo">SAT Practice — answer your best, review at the end.</p>
         <div className="practice-progress muted">
-          Question {index + 1} of {questions.length}
+          <span className="sat-section-tag">{sectionLabel}</span> · Question {index + 1} of {questions.length}
         </div>
         <div className="panel practice-q">
+          {current.passage && (
+            <div className="practice-passage">
+              <MathText content={current.passage} />
+            </div>
+          )}
           <div className="practice-stem">
             <MathText content={current.stem} />
           </div>
@@ -231,7 +269,7 @@ export function PracticeSat() {
 
 // Always encouraging — a practice score is progress, never punishing.
 function encouragement(accuracy: number): string {
-  if (accuracy >= 80) return "Strong work — you're handling real SAT-style math well."
+  if (accuracy >= 80) return "Strong work — you're handling real SAT-style questions well."
   if (accuracy >= 50) return 'Solid effort! Reviewing the misses below is exactly how the score climbs.'
-  return 'Great job sticking with it — SAT math takes practice. Review below and try again soon.'
+  return 'Great job sticking with it — the SAT takes practice. Review below and try again soon.'
 }

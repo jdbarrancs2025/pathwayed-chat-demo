@@ -63,6 +63,15 @@ export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = 
       'literary-devices',
     ],
     writing: [
+      // Standard-English-Conventions skills lead the HS writing track: these are
+      // the only HS writing skills with a published question bank (20 each), so
+      // they're what actually gets served — and it lets Practice-SAT conventions
+      // misses surface here through the focus mechanism, mirroring how SAT math
+      // misses surface under math.
+      'advanced-punctuation',
+      'possessives-and-apostrophes',
+      'modifier-placement',
+      'sentence-boundaries',
       'writing-structure',
       'thesis-development',
       'argumentative-essays',

@@ -80,6 +80,11 @@ export const focusAreasByGrade: Record<GradeBand, {
       { value: 'thesis-development', label: 'Thesis Development' },
       // SAT 6-12 ladder (seed 0002)
       { value: 'writing-structure', label: 'Writing Structure' },
+      // Standard-English-Conventions (seed 0005/0007) — the served HS writing bank
+      { value: 'advanced-punctuation', label: 'Advanced Punctuation' },
+      { value: 'possessives-and-apostrophes', label: 'Possessives & Apostrophes' },
+      { value: 'modifier-placement', label: 'Modifier Placement' },
+      { value: 'sentence-boundaries', label: 'Sentence Boundaries' },
     ],
   },
 }

@@ -150,8 +150,8 @@ export function KidHome() {
                 ✓
               </div>
               <div>
-                <h3>SAT Math Practice</h3>
-                <p>A short, SAT-style Math practice section — see how you’d do.</p>
+                <h3>SAT Practice</h3>
+                <p>A short, SAT-style Reading &amp; Writing + Math practice — see how you’d do.</p>
               </div>
             </button>
           )}

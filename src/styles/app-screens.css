@@ -2019,6 +2019,24 @@
   font-size: 22px;
   font-weight: 600;
 }
+/* Per-section raw tallies under the overall practice-SAT score. */
+.sat-section-scores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin: 2px 0 4px;
+  font-size: 14px;
+  color: var(--muted, #64748b);
+}
+.sat-section-scores strong {
+  color: var(--navy);
+}
+/* Section pill on the in-test progress line (Reading & Writing vs Math). */
+.sat-section-tag {
+  font-weight: 700;
+  color: var(--navy);
+}
 /* Practice SAT end-of-test review of missed items. */
 .sat-review-item {
   padding: 14px 0;
