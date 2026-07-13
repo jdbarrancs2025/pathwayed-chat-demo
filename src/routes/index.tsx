@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router'
 import { SchoolLoginGate } from '@/components/SchoolLoginGate'
+import { SchoolStation } from '@/pages/SchoolStation'
 import { Welcome } from '@/pages/Welcome'
 import { ResetPassword } from '@/pages/ResetPassword'
 import { Consent } from '@/pages/Consent'
@@ -36,6 +37,8 @@ export function AppRoutes() {
       <Route path="/children" element={<YourChildren />} />
       <Route path="/children/new" element={<AddChild />} />
       <Route path="/children/:id/edit" element={<AddChild />} />
+      {/* K-8 staff-supervised station: staff SSO (Dean) then student PIN entry. */}
+      <Route path="/school" element={<SchoolStation />} />
       <Route path="/students" element={<StudentPicker />} />
       <Route path="/students/:id" element={<KidHome />} />
       {/* Arrival choices (Phase 1 stubs): skills building (Phase 2) + homework (Phase 3). */}

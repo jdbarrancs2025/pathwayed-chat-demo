@@ -66,6 +66,41 @@ export async function resolveStudentSSO(schoolId: string, email: string): Promis
   return (await res.json()) as ResolvedStudent
 }
 
+export interface PinLoginResult {
+  covered: boolean
+  student_id?: string // LOCAL students.id
+  first_name?: string
+  grade?: string
+  /** Short-lived minted session for the covered student to adopt (no refresh token). */
+  session?: { access_token: string; expires_at: number }
+  error?: string // e.g. "staff_session_required" | "staff_session_invalid" | "rate_limited"
+}
+
+/**
+ * K-8 staff-supervised PIN login. Runs inside an authenticated Dean staff session
+ * (staffSessionToken). On success the server mints/reuses the student's tutoring
+ * identity and returns a short-lived session to adopt. The `pin` is used only to
+ * build this request and is never stored or logged on the client.
+ */
+export async function schoolPinLogin(
+  schoolId: string,
+  pin: string,
+  staffSessionToken: string,
+): Promise<PinLoginResult> {
+  try {
+    const res = await fetch("/api/school-pin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ school_id: schoolId, pin, staff_session_token: staffSessionToken }),
+    })
+    const data = (await res.json().catch(() => ({}))) as PinLoginResult
+    if (!res.ok) return { covered: false, error: data.error ?? `error_${res.status}` }
+    return data
+  } catch {
+    return { covered: false, error: "network_error" }
+  }
+}
+
 /**
  * K-8 PIN: resolve a covered student, only ever inside an authenticated staff
  * session (staffSessionToken is a Dean-project access token). The `pin` argument
