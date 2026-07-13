@@ -40,6 +40,23 @@ export function SchoolStation() {
 
   const configured = useMemo(() => deanSupabase !== null, [])
 
+  // If an OAuth return lands on /school with an error (e.g. the Dean project's
+  // redirect allow-list is missing this exact URL, so Supabase bounced the return
+  // to its Site URL), show it instead of silently re-rendering the sign-in button,
+  // and strip the params so a refresh doesn't replay a stale/errored return. A
+  // successful return carries ?code= (not ?error=) and is left for the Dean client
+  // to exchange via detectSessionInUrl.
+  useEffect(() => {
+    const raw = window.location.search.slice(1) || window.location.hash.slice(1)
+    if (!raw) return
+    const params = new URLSearchParams(raw)
+    const err = params.get("error_description") ?? params.get("error")
+    if (err) {
+      setError(`Staff sign-in didn't complete: ${err}. Please try again.`)
+      window.history.replaceState({}, "", "/school")
+    }
+  }, [])
+
   // Track the Dean staff session (also completes the PKCE OAuth return on load).
   useEffect(() => {
     if (!deanSupabase) return
