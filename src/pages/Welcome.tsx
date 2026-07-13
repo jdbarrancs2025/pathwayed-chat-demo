@@ -371,6 +371,17 @@ export function Welcome() {
         <p style={{ color: '#5A6172', fontSize: 12, margin: '16px 0 0' }}>
           A parent or guardian signs in. You will add your children next.
         </p>
+
+        {/* Discoverable entry to the K-8 classroom station (staff signs in first,
+            then a student enters their PIN). 9-12 school SSO needs no separate
+            entry — those students use the sign-in buttons above and SchoolLoginGate
+            recognizes a covered school email automatically. */}
+        <p style={{ color: '#9aa1ad', fontSize: 12, margin: '18px 0 0' }}>
+          School staff?{' '}
+          <button type="button" onClick={() => navigate('/school')} style={linkButtonStyle}>
+            Open the classroom login
+          </button>
+        </p>
       </div>
     </div>
   )
