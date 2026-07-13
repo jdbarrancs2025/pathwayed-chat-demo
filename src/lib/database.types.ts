@@ -95,6 +95,11 @@ export interface Database {
           // Parent-chosen Nikki visual per child: 'video' | 'orb' | 'voice'
           // (default 'video'). Check-constrained in the DB.
           avatar_mode: string
+          // School-license bridge: stable Dean student id (null for B2C) and
+          // the covered marker. Set server-side after a Dean resolve; never
+          // client-set (it drives the Stripe bypass).
+          dean_student_id: string | null
+          school_covered: boolean
         }
         Insert: {
           id?: string
@@ -105,6 +110,8 @@ export interface Database {
           learning_preferences?: Json
           above_grade_ok?: boolean
           avatar_mode?: string
+          dean_student_id?: string | null
+          school_covered?: boolean
         }
         Update: {
           id?: string
@@ -115,6 +122,8 @@ export interface Database {
           learning_preferences?: Json
           above_grade_ok?: boolean
           avatar_mode?: string
+          dean_student_id?: string | null
+          school_covered?: boolean
         }
         Relationships: []
       }

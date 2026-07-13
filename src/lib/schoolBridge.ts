@@ -9,6 +9,34 @@ export interface Entitlement {
   seat_cap: number | null
 }
 
+export interface SchoolLoginResult {
+  covered: boolean
+  student_id?: string // LOCAL students.id for a covered student
+  first_name?: string
+  grade?: string
+  school_id?: string
+}
+
+/**
+ * Post-SSO school check. Sends only the caller's own Supabase access token; the
+ * server derives the verified email, maps the domain -> school_id, resolves via
+ * Dean, and lookup-or-creates the local students row. Returns covered:false for
+ * B2C / unknown-domain logins (the app then continues the normal consumer path).
+ */
+export async function schoolLogin(accessToken: string): Promise<SchoolLoginResult> {
+  try {
+    const res = await fetch("/api/school-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access_token: accessToken }),
+    })
+    if (!res.ok) return { covered: false }
+    return (await res.json()) as SchoolLoginResult
+  } catch {
+    return { covered: false } // never block login on the school check
+  }
+}
+
 export type ResolvedStudent =
   | { covered: true; student_id: string; first_name: string; grade: string }
   | { covered: false }

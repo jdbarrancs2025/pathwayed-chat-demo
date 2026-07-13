@@ -17,6 +17,7 @@ import {
 } from '@/lib/students'
 import { AvatarModePicker } from '@/components/AvatarModePicker'
 import { Switch } from '@/components/ui/switch'
+import { isSchoolCovered } from '@/lib/schoolSession'
 import { getSubscription, type Subscription } from '@/lib/profile'
 import {
   ADDON_PRICE,
@@ -125,7 +126,9 @@ export function AddChild() {
   const includedSeats = PLANS.find((p) => p.id === sub?.plan)?.included ?? 1
   const hasSubscription = sub?.status === 'active' || sub?.status === 'trialing'
   // This add is billable only with an active/trialing sub and a count over seats.
-  const willBill = !editing && hasSubscription && childCount + 1 > includedSeats
+  // A school-covered student is never billed (their school holds the license).
+  const willBill =
+    !editing && hasSubscription && childCount + 1 > includedSeats && !isSchoolCovered()
   const period: BillingPeriod = sub?.billingPeriod === 'annual' ? 'annual' : 'monthly'
   const addCost = `${formatMoney(ADDON_PRICE[period])}${intervalSuffix(period)}`
 

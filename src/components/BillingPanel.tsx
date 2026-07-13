@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { isSchoolCovered } from '@/lib/schoolSession'
 import type { Student } from '@/lib/students'
 import { getSubscription, type Subscription } from '@/lib/profile'
 import {
@@ -137,6 +138,19 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
       <div className="panel" style={{ padding: '16px 18px' }}>
         <h3 style={{ margin: 0 }}>Billing</h3>
         <p className="muted" style={{ fontSize: 13, margin: '8px 0 0' }}>Loading…</p>
+      </div>
+    )
+  }
+
+  // School-covered students never see billing — their school holds the license.
+  // This is the Stripe bypass: no picker, no checkout, no portal.
+  if (isSchoolCovered()) {
+    return (
+      <div className="panel" style={{ padding: '16px 18px' }}>
+        <h3 style={{ margin: 0 }}>Billing</h3>
+        <p className="muted" style={{ fontSize: 13, margin: '8px 0 0' }}>
+          Covered by your school — no personal subscription needed.
+        </p>
       </div>
     )
   }

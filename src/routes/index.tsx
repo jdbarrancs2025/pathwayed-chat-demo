@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router'
+import { SchoolLoginGate } from '@/components/SchoolLoginGate'
 import { Welcome } from '@/pages/Welcome'
 import { ResetPassword } from '@/pages/ResetPassword'
 import { Consent } from '@/pages/Consent'
@@ -23,6 +24,8 @@ import { StudentSubject } from '@/pages/StudentSubject'
 
 export function AppRoutes() {
   return (
+    <>
+    <SchoolLoginGate />
     <Routes>
       <Route path="/" element={<Welcome />} />
       <Route path="/reset-password" element={<ResetPassword />} />
@@ -61,5 +64,6 @@ export function AppRoutes() {
       <Route path="/parent-dashboard" element={<Navigate to="/parent" replace />} />
       <Route path="/parent-view" element={<Navigate to="/parent" replace />} />
     </Routes>
+    </>
   )
 }
