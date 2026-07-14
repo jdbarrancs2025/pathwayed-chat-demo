@@ -93,9 +93,16 @@ const AppleIcon: ReactElement = (
 )
 */
 
+// Microsoft SSO is hidden from the UI for now — the mechanics (the 'azure'
+// provider, signInWith, MicrosoftIcon, and the OAuth callback) stay intact.
+// Flip this ONE line to `true` to bring the "Continue with Microsoft" button back.
+const MICROSOFT_SSO_ENABLED = false
+
 const PROVIDERS: { id: OAuthProvider; label: string; icon: ReactElement }[] = [
   { id: 'google', label: 'Continue with Google', icon: GoogleIcon },
-  { id: 'azure', label: 'Continue with Microsoft', icon: MicrosoftIcon },
+  ...(MICROSOFT_SSO_ENABLED
+    ? [{ id: 'azure' as OAuthProvider, label: 'Continue with Microsoft', icon: MicrosoftIcon }]
+    : []),
   // { id: 'apple', label: 'Continue with Apple', icon: AppleIcon },
 ]
 
