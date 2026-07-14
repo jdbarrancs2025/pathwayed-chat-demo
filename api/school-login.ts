@@ -32,9 +32,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!supabaseUrl || !serviceKey) return res.status(500).json({ error: "not_configured" })
 
   try {
-    const { access_token } = (req.body ?? {}) as { access_token?: string }
-    if (!access_token || typeof access_token !== "string") {
-      return res.status(401).json({ error: "unauthorized" })
+    // The student's OWN access token may arrive in the JSON body (how the app
+    // sends it) OR as an Authorization: Bearer header (how a manual/other caller
+    // may send it). Accept either so a header-style caller isn't rejected before
+    // anything runs. Distinct error codes make the failure mode observable:
+    // missing_token = no token supplied; invalid_token = getUser rejected it.
+    const bodyToken = (req.body ?? {}) as { access_token?: unknown }
+    const authHeader = req.headers.authorization
+    const headerToken =
+      typeof authHeader === "string" && authHeader.toLowerCase().startsWith("bearer ")
+        ? authHeader.slice(7).trim()
+        : ""
+    const access_token =
+      (typeof bodyToken.access_token === "string" && bodyToken.access_token) || headerToken
+    if (!access_token) {
+      return res.status(401).json({ error: "missing_token" })
     }
 
     const svc = createClient(supabaseUrl, serviceKey)
@@ -43,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { data: userData, error: userErr } = await svc.auth.getUser(access_token)
     const email = userData?.user?.email?.trim().toLowerCase()
     const uid = userData?.user?.id
-    if (userErr || !email || !uid) return res.status(401).json({ error: "unauthorized" })
+    if (userErr || !email || !uid) return res.status(401).json({ error: "invalid_token" })
 
     const domain = email.split("@")[1] ?? ""
     const schoolId = schoolIdForDomain(domain)
