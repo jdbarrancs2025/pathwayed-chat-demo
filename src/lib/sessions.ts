@@ -42,12 +42,16 @@ export async function saveTranscript(
   messages: StoredMessage[],
 ): Promise<void> {
   const trimmed = messages.slice(-MAX_MESSAGES)
+  const nowIso = new Date().toISOString()
+  // ended_at tracks last activity; started_at is left to the DB default so the
+  // on-conflict upsert preserves the original first-touch time (migration 0011).
   await supabase.from('sessions').upsert(
     {
       student_id: studentId,
       subject,
       messages: trimmed as unknown as Json,
-      updated_at: new Date().toISOString(),
+      updated_at: nowIso,
+      ended_at: nowIso,
     },
     { onConflict: 'student_id,subject' },
   )

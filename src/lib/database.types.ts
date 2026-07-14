@@ -134,6 +134,9 @@ export interface Database {
           subject: string
           messages: Json
           updated_at: string
+          // Coarse session timing (migration 0011): first-touch / last-touch.
+          started_at: string
+          ended_at: string | null
           // Academic OS Phase 1 (migration 0001): skills touched this session
           // and the mastery deltas written, so a finished session self-describes.
           skills_practiced: Json
@@ -145,6 +148,8 @@ export interface Database {
           subject: string
           messages: Json
           updated_at?: string
+          started_at?: string
+          ended_at?: string | null
           skills_practiced?: Json
           mastery_updates?: Json
         }
@@ -154,6 +159,8 @@ export interface Database {
           subject?: string
           messages?: Json
           updated_at?: string
+          started_at?: string
+          ended_at?: string | null
           skills_practiced?: Json
           mastery_updates?: Json
         }

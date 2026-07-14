@@ -3,6 +3,7 @@ import '@/styles/app-screens.css'
 import { useNavigate } from 'react-router'
 import { useAuth, type OAuthProvider } from '@/context/AuthContext'
 import { getConsentStatus } from '@/lib/consent'
+import { ensureSchoolCheck } from '@/lib/schoolCheck'
 import logoImg from '@/assets/logo.png'
 
 const iconStyle = { width: 20, height: 20, flexShrink: 0 } as const
@@ -99,7 +100,7 @@ const PROVIDERS: { id: OAuthProvider; label: string; icon: ReactElement }[] = [
 ]
 
 export function Welcome() {
-  const { user, loading, signInWith, signInWithPassword, signUpWithEmail, resetPasswordForEmail } = useAuth()
+  const { user, session, loading, signInWith, signInWithPassword, signUpWithEmail, resetPasswordForEmail } = useAuth()
   const navigate = useNavigate()
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
@@ -162,19 +163,25 @@ export function Welcome() {
     }
   }
 
-  // Once signed in (incl. returning from the OAuth redirect), send the parent
-  // to consent if it's not on record yet, otherwise to the student picker.
+  // Once signed in (incl. returning from the OAuth redirect), route the user.
+  // A covered 9-12 SSO student must NOT be sent to the parent consent flow, so we
+  // first resolve the shared school check (memoized with SchoolLoginGate): if
+  // covered, the gate routes them to tutoring and we do nothing; otherwise this is
+  // a normal consumer login → consent if not on record, else the student picker.
   useEffect(() => {
     if (loading || !user) return
+    const token = session?.access_token
     let active = true
-    getConsentStatus(user.id).then((hasConsent) => {
-      if (!active) return
-      navigate(hasConsent ? '/students' : '/consent', { replace: true })
+    ensureSchoolCheck(user.id, token ?? '').then((r) => {
+      if (!active || r.covered) return
+      getConsentStatus(user.id).then((hasConsent) => {
+        if (active) navigate(hasConsent ? '/students' : '/consent', { replace: true })
+      })
     })
     return () => {
       active = false
     }
-  }, [user, loading, navigate])
+  }, [user, session, loading, navigate])
 
   if (loading || user) {
     return (
