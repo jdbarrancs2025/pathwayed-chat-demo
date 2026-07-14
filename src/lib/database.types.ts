@@ -255,6 +255,17 @@ export interface Database {
           last_practiced: string | null
           created_at: string
           updated_at: string
+          // Evidence-driven mastery (migration 0010), computed from graded
+          // question_attempts by recompute_skill_mastery(). These are the
+          // authoritative, parent/school-facing signals; mastery_percentage/
+          // accuracy/attempts above are the legacy self-rated values, kept.
+          status: 'not_started' | 'practicing' | 'advanced' | 'mastered'
+          evidence_accuracy: number | null
+          attempts_counted: number
+          first_bar_met_at: string | null
+          recheck_passed_at: string | null
+          computed_at: string | null
+          legacy_self_rating_mastery: number | null
         }
         Insert: {
           id?: string
@@ -266,6 +277,13 @@ export interface Database {
           last_practiced?: string | null
           created_at?: string
           updated_at?: string
+          status?: 'not_started' | 'practicing' | 'advanced' | 'mastered'
+          evidence_accuracy?: number | null
+          attempts_counted?: number
+          first_bar_met_at?: string | null
+          recheck_passed_at?: string | null
+          computed_at?: string | null
+          legacy_self_rating_mastery?: number | null
         }
         Update: {
           id?: string
@@ -277,6 +295,13 @@ export interface Database {
           last_practiced?: string | null
           created_at?: string
           updated_at?: string
+          status?: 'not_started' | 'practicing' | 'advanced' | 'mastered'
+          evidence_accuracy?: number | null
+          attempts_counted?: number
+          first_bar_met_at?: string | null
+          recheck_passed_at?: string | null
+          computed_at?: string | null
+          legacy_self_rating_mastery?: number | null
         }
         Relationships: []
       }

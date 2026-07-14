@@ -4,6 +4,7 @@ import { getActiveFocusSkillIds } from '@/lib/focusSkills'
 import { gradeBand } from '@/lib/gradeBand'
 import { focusAreasByGrade } from '@/lib/focusAreas'
 import { scopeSequence, type ScopeBand, type ScopeSubject } from '@/lib/scopeSequence'
+import { isRecheckDue } from '@/lib/mastery'
 
 /**
  * Learning path — picks the day's lesson by walking the approved per-subject
@@ -53,6 +54,9 @@ export interface Lesson {
   /** True when this lesson was surfaced from the student's focus list (a skill
    *  missed on the practice SAT), ahead of the normal sequence walk. */
   fromFocus: boolean
+  /** True when surfaced as a spaced re-check: the mastered accuracy/count bar was
+   *  met and the ≥3-day re-check is now due, so the durable claim can be confirmed. */
+  fromRecheck?: boolean
 }
 
 /** Display label for a slug, from focusAreas (the source of truth for names).
@@ -84,10 +88,25 @@ export async function nextLesson(
   const seq = scopeSequence[band][subject]
   if (!seq.length) return null
 
-  const [idBySlug, focusIds] = await Promise.all([
+  const [idBySlug, focusIds, masteryRes] = await Promise.all([
     resolveSkillIdsBySlug(seq),
     getActiveFocusSkillIds(studentId),
+    supabase
+      .from('student_skill_mastery')
+      .select('skill_id, mastery_percentage, status, first_bar_met_at, recheck_passed_at')
+      .eq('student_id', studentId),
   ])
+  if (masteryRes.error) console.error('nextLesson: mastery read failed', masteryRes.error)
+
+  // Evidence-driven mastery (migration 0010) alongside the legacy/placement seed.
+  const masteryPctById = new Map<string, number>()
+  const statusById = new Map<string, string>()
+  const recheckDueIds = new Set<string>()
+  for (const m of masteryRes.data ?? []) {
+    masteryPctById.set(m.skill_id, Number(m.mastery_percentage))
+    statusById.set(m.skill_id, (m.status as string) ?? 'not_started')
+    if (isRecheckDue(m)) recheckDueIds.add(m.skill_id)
+  }
 
   // Focus skills ahead of the walk, in scope-sequence order. A focus skill only
   // surfaces here for the subject it belongs to (SAT misses are math skills, so
@@ -109,23 +128,38 @@ export async function nextLesson(
     }
   }
 
-  const ids = seq.map((s) => idBySlug.get(s)).filter((x): x is string => !!x)
-  const masteryById = new Map<string, number>()
-  if (ids.length) {
-    const { data, error } = await supabase
-      .from('student_skill_mastery')
-      .select('skill_id, mastery_percentage')
-      .eq('student_id', studentId)
-      .in('skill_id', ids)
-    if (error) console.error('nextLesson: mastery read failed', error)
-    for (const m of data ?? []) masteryById.set(m.skill_id, Number(m.mastery_percentage))
-  }
-  const mastered = (slug: string): boolean => {
-    const id = idBySlug.get(slug)
-    return id ? (masteryById.get(id) ?? 0) >= MASTERY_THRESHOLD : false
+  // Spaced re-checks next: a skill whose mastered accuracy/count bar was met but
+  // whose ≥3-day re-check is now due is served ahead of the normal walk, so the
+  // durable claim can be confirmed. Additive — only fires when a re-check is due.
+  const recheckSlug = seq.find((s) => {
+    const id = idBySlug.get(s)
+    return id ? recheckDueIds.has(id) : false
+  })
+  if (recheckSlug) {
+    return {
+      slug: recheckSlug,
+      label: skillLabel(band, subject, recheckSlug),
+      subject,
+      band,
+      trackComplete: false,
+      fromFocus: false,
+      fromRecheck: true,
+    }
   }
 
-  const nextSlug = seq.find((s) => !mastered(s))
+  // Normal walk. Skip a skill the student has ADVANCED past on evidence (>=70%
+  // over >=5 graded attempts → status advanced/mastered) OR that the placement/
+  // legacy seed put at/above the threshold. Additive over the old seed, so an
+  // evidence-ready kid moves on and a placed-out kid is never re-trapped.
+  const known = (slug: string): boolean => {
+    const id = idBySlug.get(slug)
+    if (!id) return false
+    const st = statusById.get(id)
+    if (st === 'advanced' || st === 'mastered') return true
+    return (masteryPctById.get(id) ?? 0) >= MASTERY_THRESHOLD
+  }
+
+  const nextSlug = seq.find((s) => !known(s))
   if (nextSlug) {
     return { slug: nextSlug, label: skillLabel(band, subject, nextSlug), subject, band, trackComplete: false, fromFocus: false }
   }
