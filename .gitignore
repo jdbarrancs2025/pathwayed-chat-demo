@@ -28,3 +28,6 @@ bun.lockb
 
 # Eval harness run artifacts
 eval/report.json
+
+# Supabase CLI scratch
+supabase/.temp/
