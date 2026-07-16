@@ -2,7 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- favicon keeps the mark's transparency: browsers composite it onto tab
+         chrome that follows the OS theme, which is what alpha is for.
+         apple-touch-icon must NOT be transparent — iOS composites home-screen
+         icons onto black and applies its own rounding, so a transparent navy
+         mark would disappear. It is flattened onto white deliberately. -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>PathwayEd</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
