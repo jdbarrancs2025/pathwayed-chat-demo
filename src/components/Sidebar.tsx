@@ -1,5 +1,5 @@
 import { MessageSquarePlus, Volume2, BookOpen, PenTool, GraduationCap, Heart } from "lucide-react"
-import logo from "@/assets/logo.png"
+import logo from "@/assets/pathwayed-logo-horizontal.png"
 
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support"
 
@@ -27,13 +27,19 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-[#2a4a7f] to-[#1a2f52] text-white p-4 rounded-3xl">
-      {/* Logo in white card */}
+      {/* Logo in white card. The card is load-bearing, not decoration: the
+          mark is transparent navy and this sidebar is a navy gradient, so
+          without a light panel behind it the logo would sit at ~1.5:1 against
+          its own background and disappear.
+
+          Sized by WIDTH, not height. The lockup is ~5:1, so the old
+          `h-20 w-auto` would render it 410px wide inside a 288px sidebar. */}
       <div className="flex justify-center pt-4 pb-6">
         <div className="bg-white rounded-2xl p-3 shadow-lg shadow-black/20">
           <img
             src={logo}
             alt="PathwayEd"
-            className="h-20 w-auto"
+            className="h-auto w-48"
           />
         </div>
       </div>

@@ -32,7 +32,7 @@ export function StudentPicker() {
     <div className="kid-screen">
       <div className="shell">
         {/* 3x the default 52px mark — this /students header only. */}
-        <TopMenu logoHeight={156} />
+        <TopMenu logoHeight={156} mark="badge" />
         <h1 className="greet">Who's learning today?</h1>
         <p className="muted">Tap your name to begin.</p>
 

@@ -63,7 +63,7 @@ export function KidHome() {
       <div className="shell">
         {/* Welcome header sized up (this screen only): logo ~4x the 52px mark and a
             larger hamburger to stay balanced with the logo and Nikki. */}
-        <TopMenu logoHeight={208} menuSize={72} />
+        <TopMenu logoHeight={208} menuSize={72} mark="badge" />
 
         <div
           style={{
