@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import { useAppContext } from '@/context/AppContext'
 import type { GradeBand } from '@/lib/types'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/pathwayed-badge-notagline.png'
 
 const gradeBands: { value: GradeBand; label: string; sublabel: string; emoji: string }[] = [
   { value: '3-5', label: 'Grades 3\u20135', sublabel: 'Elementary', emoji: '\u270F\uFE0F' },
@@ -29,16 +29,15 @@ export function GradeSelect() {
       />
 
       <div className="relative w-full max-w-md text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {/* Logo */}
+        {/* Logo. The badge carries the wordmark itself, so the "PathwayEd"
+            heading that used to sit under it is gone — it would print the name
+            twice. */}
         <div className="mb-8">
           <img
             src={logoImg}
             alt="PathwayEd"
             className="mx-auto h-32 w-32 sm:h-36 sm:w-36 object-contain drop-shadow-md animate-in zoom-in duration-300"
           />
-          <h2 className="mt-3 text-xl sm:text-2xl font-bold text-primary tracking-tight">
-            PathwayEd
-          </h2>
         </div>
 
         {/* Heading */}

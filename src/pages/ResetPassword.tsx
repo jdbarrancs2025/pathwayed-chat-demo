@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { getConsentStatus } from '@/lib/consent'
 import '@/styles/app-screens.css'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/pathwayed-badge-notagline.png'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
