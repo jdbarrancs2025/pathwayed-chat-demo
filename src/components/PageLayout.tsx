@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { HeaderMenu } from '@/components/HeaderMenu'
 import { cn } from '@/lib/utils'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/pathwayed-logo.png'
 
 interface PageLayoutProps {
   children: ReactNode
@@ -82,11 +82,23 @@ export function PageLayout({
               onClick={() => navigate('/')}
               className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/10 shadow-lg shadow-black/5 cursor-pointer transition-all duration-200 hover:bg-white/15 active:bg-white/20 active:scale-[0.98] hover:scale-[1.02]"
             >
-              <img
-                src={logoImg}
-                alt="PathwayEd"
-                className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-md"
-              />
+              {/* White card around the MARK ONLY — the Sidebar's solution.
+                  The pill itself stays bg-white/10 because it also holds the
+                  white wordmark beside this; making the whole pill white would
+                  paint that text white-on-white.
+
+                  The card is required, not cosmetic. Measured on this header:
+                  the pill resolves to ~#354e7d, and the mark's navy sits at
+                  1.48:1 against it — invisible. The old logo only read here
+                  because it carried a baked #f6f6f6 panel (7.66:1); the card
+                  reproduces that deliberately instead of by accident. */}
+              <span className="bg-white rounded-xl p-1.5 shadow-sm shadow-black/10">
+                <img
+                  src={logoImg}
+                  alt=""
+                  className="block h-14 w-14 sm:h-16 sm:w-16 object-contain"
+                />
+              </span>
               <span className="text-white font-bold text-xl sm:text-2xl tracking-tight drop-shadow-sm">
                 PathwayEd
               </span>

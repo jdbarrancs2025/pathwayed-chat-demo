@@ -7,7 +7,7 @@ import { NikkiChat, QuestionProgress, SessionComplete } from '@/components/stude
 import { useNikkiChat } from '@/hooks/useNikkiChat'
 import { focusAreaLabels } from '@/lib/practiceQuestions'
 import { cn } from '@/lib/utils'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/pathwayed-logo.png'
 import type { Subject } from '@/lib/types'
 
 const validSubjects: Subject[] = ['math', 'reading', 'writing']
@@ -162,11 +162,18 @@ export function StudentSubject() {
           {/* Logo and subject info */}
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/10 shadow-lg shadow-black/5">
-              <img
-                src={logoImg}
-                alt="PathwayEd"
-                className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-md"
-              />
+              {/* White card around the mark — see PageLayout. The mark is
+                  transparent navy and this header is a navy gradient; without
+                  the card it sits at ~1.5:1 and disappears. alt is kept here,
+                  unlike PageLayout: the text beside this one is the subject,
+                  not the brand, so nothing else names it. */}
+              <span className="bg-white rounded-xl p-1.5 shadow-sm shadow-black/10">
+                <img
+                  src={logoImg}
+                  alt="PathwayEd"
+                  className="block h-14 w-14 sm:h-16 sm:w-16 object-contain"
+                />
+              </span>
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white drop-shadow-sm" />
                 <span className="text-white font-bold text-xl sm:text-2xl tracking-tight drop-shadow-sm">
