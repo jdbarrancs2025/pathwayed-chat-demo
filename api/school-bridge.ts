@@ -69,7 +69,10 @@ export async function deanPost<T>(
  */
 export class TtlCache<V> {
   private store = new Map<string, { value: V; storedAt: number }>()
-  constructor(private ttlMs: number) {}
+  private ttlMs: number
+  constructor(ttlMs: number) {
+    this.ttlMs = ttlMs
+  }
 
   set(key: string, value: V): void {
     this.store.set(key, { value, storedAt: Date.now() })

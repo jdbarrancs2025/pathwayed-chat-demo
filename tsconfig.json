@@ -5,6 +5,11 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    // Vercel's Node builder type-checks api/*.ts against whichever tsconfig it
+    // resolves. Without strict, boolean-discriminant narrowing (DeanResult) fails
+    // and reports correct code as broken. api/tsconfig.json is the real config;
+    // this mirrors strict in case the builder resolves to the root instead.
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
