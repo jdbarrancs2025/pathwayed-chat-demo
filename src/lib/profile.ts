@@ -25,12 +25,16 @@ export interface Subscription {
   extraKids: number
   trialEnd: string | null
   currentPeriodEnd: string | null
+  hasTrialed: boolean
+  paidSeats: number | null
 }
 
 export async function getSubscription(parentId: string): Promise<Subscription> {
   const { data } = await supabase
     .from('profiles')
-    .select('subscription_status, plan, billing_period, extra_kids, trial_end, current_period_end')
+    .select(
+      'subscription_status, plan, billing_period, extra_kids, trial_end, current_period_end, has_trialed, paid_seats',
+    )
     .eq('id', parentId)
     .maybeSingle()
   return {
@@ -40,5 +44,7 @@ export async function getSubscription(parentId: string): Promise<Subscription> {
     extraKids: data?.extra_kids ?? 0,
     trialEnd: data?.trial_end ?? null,
     currentPeriodEnd: data?.current_period_end ?? null,
+    hasTrialed: data?.has_trialed ?? false,
+    paidSeats: data?.paid_seats ?? null,
   }
 }

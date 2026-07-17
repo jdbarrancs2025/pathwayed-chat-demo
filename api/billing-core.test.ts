@@ -7,6 +7,7 @@ import {
   isAddonPriceId,
   isBillingPeriod,
   isPlanId,
+  paidSeats,
   planForPriceId,
   planPriceEnv,
   type BillingPeriod,
@@ -65,6 +66,33 @@ describe("extraKids = max(0, totalKids - includedSeats)", () => {
   it("coerces a non-numeric totalKids to zero extras", () => {
     expect(extraKids("elementary", Number.NaN)).toBe(0)
     expect(extraKids("middle", undefined as unknown as number)).toBe(0)
+  })
+})
+
+describe("paidSeats = includedSeats(plan) + max(0, extraKids)", () => {
+  it("is the included count when there are no extra kids", () => {
+    expect(paidSeats("elementary", 0)).toBe(1)
+    expect(paidSeats("middle", 0)).toBe(2)
+    expect(paidSeats("high", 0)).toBe(2)
+  })
+
+  it("adds each extra kid on top of the included seats", () => {
+    expect(paidSeats("elementary", 2)).toBe(3)
+    expect(paidSeats("middle", 1)).toBe(3)
+    expect(paidSeats("high", 3)).toBe(5)
+  })
+
+  it("never subtracts for negative/NaN extra kids", () => {
+    expect(paidSeats("middle", -4)).toBe(2)
+    expect(paidSeats("high", Number.NaN)).toBe(2)
+  })
+
+  it("round-trips with extraKids for a total child count", () => {
+    for (const plan of PLANS) {
+      for (const total of [1, 2, 3, 5]) {
+        expect(paidSeats(plan, extraKids(plan, total))).toBe(Math.max(INCLUDED_SEATS[plan], total))
+      }
+    }
   })
 })
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import {
+  activeStudents,
   avColor,
   deleteStudent,
   gradeLabel,
@@ -10,8 +11,10 @@ import {
   listStudents,
   type Student,
 } from '@/lib/students'
-import { getDisplayName, updateDisplayName } from '@/lib/profile'
+import { getDisplayName, getSubscription, updateDisplayName, type Subscription } from '@/lib/profile'
+import { seatCap } from '@/lib/accessGate'
 import { BillingPanel } from '@/components/BillingPanel'
+import { SeatPicker } from '@/components/SeatPicker'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
 
@@ -21,6 +24,7 @@ export function Settings() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const [children, setChildren] = useState<Student[]>([])
+  const [sub, setSub] = useState<Subscription | null>(null)
   const [name, setName] = useState('')
   const [renaming, setRenaming] = useState(false)
   const [renameValue, setRenameValue] = useState('')
@@ -30,9 +34,14 @@ export function Settings() {
     if (!user) return
     let active = true
     void (async () => {
-      const [kids, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
+      const [kids, displayName, subscription] = await Promise.all([
+        listStudents(user.id),
+        getDisplayName(user.id),
+        getSubscription(user.id),
+      ])
       if (!active) return
       setChildren(kids)
+      setSub(subscription)
       setName(displayName)
       setRenameValue(displayName)
       setLoading(false)
@@ -150,6 +159,19 @@ export function Settings() {
             + Add a child
           </button>
         </div>
+
+        {/* Active-profile seat picker — shown when the account has more active
+            children than its seat cap, or has any paused child to reactivate.
+            Lets the parent choose which children stay active (never deletes). */}
+        {!loading &&
+          sub &&
+          (() => {
+            const cap = seatCap(sub)
+            const show = children.some((c) => !c.active) || activeStudents(children).length > cap
+            return show ? (
+              <SeatPicker students={children} cap={cap} onChange={setChildren} />
+            ) : null
+          })()}
 
         {/* Billing */}
         {user && <BillingPanel students={children} userId={user.id} email={user.email ?? ''} />}

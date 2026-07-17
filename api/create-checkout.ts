@@ -59,12 +59,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       extra_kids: String(extraKids),
     }
 
+    // Pay-now checkout: no trial_period_days. The 7-day trial is app-managed
+    // (profiles.subscription_status = 'free_trial'); subscribing here charges
+    // immediately and the webhook flips the account to 'active'.
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: lineItems,
       customer_email: email,
       subscription_data: {
-        trial_period_days: 7,
         metadata,
       },
       metadata,

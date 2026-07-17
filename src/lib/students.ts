@@ -105,3 +105,17 @@ export async function updateAvatarMode(studentId: string, mode: AvatarMode) {
 export async function deleteStudent(id: string) {
   return supabase.from('students').delete().eq('id', id)
 }
+
+/** Children that count against the plan's seat cap (active only). */
+export function activeStudents(students: Student[]): Student[] {
+  return students.filter((s) => s.active)
+}
+
+/**
+ * Pause or resume a child profile for seat enforcement. Inactive children are
+ * never deleted — their data is kept; they just don't count against the cap and
+ * can't run learning sessions until reactivated. Used by the over-cap seat picker.
+ */
+export async function setStudentActive(id: string, active: boolean) {
+  return supabase.from('students').update({ active }).eq('id', id)
+}

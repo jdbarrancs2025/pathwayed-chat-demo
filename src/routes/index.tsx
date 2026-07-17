@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router'
 import { SchoolLoginGate } from '@/components/SchoolLoginGate'
+import { SubscriptionGate } from '@/components/SubscriptionGate'
 import { SchoolStation } from '@/pages/SchoolStation'
 import { Welcome } from '@/pages/Welcome'
 import { ResetPassword } from '@/pages/ResetPassword'
@@ -40,15 +41,19 @@ export function AppRoutes() {
       {/* K-8 staff-supervised station: staff SSO (Dean) then student PIN entry. */}
       <Route path="/school" element={<SchoolStation />} />
       <Route path="/students" element={<StudentPicker />} />
-      <Route path="/students/:id" element={<KidHome />} />
+      {/* Learning surface — gated by the app-managed trial. Once the trial ends
+          with no active subscription, SubscriptionGate blocks entry (for all
+          children on the account) and shows a parent-facing subscribe prompt.
+          School-covered students bypass it entirely (checked first). */}
+      <Route path="/students/:id" element={<SubscriptionGate><KidHome /></SubscriptionGate>} />
       {/* Arrival choices (Phase 1 stubs): skills building (Phase 2) + homework (Phase 3). */}
-      <Route path="/students/:id/learn" element={<SkillsBuilding />} />
-      <Route path="/students/:id/homework" element={<HomeworkStart />} />
-      <Route path="/students/:id/session/:subject" element={<Session />} />
-      <Route path="/students/:id/practice/:skill" element={<Practice />} />
+      <Route path="/students/:id/learn" element={<SubscriptionGate><SkillsBuilding /></SubscriptionGate>} />
+      <Route path="/students/:id/homework" element={<SubscriptionGate><HomeworkStart /></SubscriptionGate>} />
+      <Route path="/students/:id/session/:subject" element={<SubscriptionGate><Session /></SubscriptionGate>} />
+      <Route path="/students/:id/practice/:skill" element={<SubscriptionGate><Practice /></SubscriptionGate>} />
       {/* Practice SAT — Phase 1: HS-only, consent-gated, Math-only. The page
           re-checks the gate and redirects anyone who fails it. */}
-      <Route path="/students/:id/practice-sat" element={<PracticeSat />} />
+      <Route path="/students/:id/practice-sat" element={<SubscriptionGate><PracticeSat /></SubscriptionGate>} />
       {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
           verification route; not yet wired into onboarding. */}
       <Route path="/students/:id/diagnostic" element={<Diagnostic />} />

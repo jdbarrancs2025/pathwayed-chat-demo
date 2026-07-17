@@ -28,6 +28,15 @@ export interface Database {
           billing_period: string | null
           stripe_customer_id: string | null
           extra_kids: number | null
+          // App-managed trial (migration 0012): trial window + one-trial-per-account
+          // marker, and the seat cap once subscribed (included plan seats + the
+          // Additional Child add-on quantity, written by the Stripe webhook).
+          trial_end: string | null
+          current_period_end: string | null
+          has_trialed: boolean
+          paid_seats: number | null
+          trial_reminder_sent_at: string | null
+          trial_ended_email_sent_at: string | null
         }
         Insert: {
           id: string
@@ -38,6 +47,12 @@ export interface Database {
           billing_period?: string | null
           stripe_customer_id?: string | null
           extra_kids?: number | null
+          trial_end?: string | null
+          current_period_end?: string | null
+          has_trialed?: boolean
+          paid_seats?: number | null
+          trial_reminder_sent_at?: string | null
+          trial_ended_email_sent_at?: string | null
         }
         Update: {
           id?: string
@@ -48,6 +63,12 @@ export interface Database {
           billing_period?: string | null
           stripe_customer_id?: string | null
           extra_kids?: number | null
+          trial_end?: string | null
+          current_period_end?: string | null
+          has_trialed?: boolean
+          paid_seats?: number | null
+          trial_reminder_sent_at?: string | null
+          trial_ended_email_sent_at?: string | null
         }
         Relationships: []
       }
@@ -100,6 +121,10 @@ export interface Database {
           // client-set (it drives the Stripe bypass).
           dean_student_id: string | null
           school_covered: boolean
+          // Seat enforcement (migration 0012): a child counts against the plan's
+          // seat cap only while active. Over-cap children are marked inactive by
+          // the parent's seat picker (never deleted).
+          active: boolean
         }
         Insert: {
           id?: string
@@ -112,6 +137,7 @@ export interface Database {
           avatar_mode?: string
           dean_student_id?: string | null
           school_covered?: boolean
+          active?: boolean
         }
         Update: {
           id?: string
@@ -124,6 +150,7 @@ export interface Database {
           avatar_mode?: string
           dean_student_id?: string | null
           school_covered?: boolean
+          active?: boolean
         }
         Relationships: []
       }

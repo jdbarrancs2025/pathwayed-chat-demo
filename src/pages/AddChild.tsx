@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import {
   GRADES,
   LEVELS,
+  activeStudents,
   avatarModeOf,
   createStudent,
   getStudent,
@@ -19,9 +20,9 @@ import { AvatarModePicker } from '@/components/AvatarModePicker'
 import { Switch } from '@/components/ui/switch'
 import { isSchoolCovered } from '@/lib/schoolSession'
 import { getSubscription, type Subscription } from '@/lib/profile'
+import { TRIAL_SEAT_CAP, billingPhase, seatCap } from '@/lib/accessGate'
 import {
   ADDON_PRICE,
-  PLANS,
   formatMoney,
   intervalSuffix,
   updateSeats,
@@ -84,6 +85,8 @@ export function AddChild() {
   const [childCount, setChildCount] = useState(0)
   const [billingLoaded, setBillingLoaded] = useState(editing)
   const [confirmBilling, setConfirmBilling] = useState(false)
+  // Snapshot the clock once at mount — a stable render-time value for the phase.
+  const [now] = useState(() => Date.now())
 
   useEffect(() => {
     if (!editing || !id) return
@@ -115,7 +118,8 @@ export function AddChild() {
     Promise.all([getSubscription(user.id), listStudents(user.id)]).then(([s, kids]) => {
       if (!active) return
       setSub(s)
-      setChildCount(kids.length)
+      // Only ACTIVE children count against the seat cap.
+      setChildCount(activeStudents(kids).length)
       setBillingLoaded(true)
     })
     return () => {
@@ -123,12 +127,16 @@ export function AddChild() {
     }
   }, [editing, user])
 
-  const includedSeats = PLANS.find((p) => p.id === sub?.plan)?.included ?? 1
-  const hasSubscription = sub?.status === 'active' || sub?.status === 'trialing'
-  // This add is billable only with an active/trialing sub and a count over seats.
-  // A school-covered student is never billed (their school holds the license).
-  const willBill =
-    !editing && hasSubscription && childCount + 1 > includedSeats && !isSchoolCovered()
+  // Seat cap for this account: paid_seats when subscribed, else the trial cap (2).
+  // A school-covered student is never billed or capped (their school holds the license).
+  const covered = isSchoolCovered()
+  const phase = sub ? billingPhase(sub, now) : 'expired'
+  const cap = sub ? seatCap(sub) : TRIAL_SEAT_CAP
+  const wouldExceedCap = !editing && !covered && childCount + 1 > cap
+  // Subscribed: another child beyond the paid seats buys a seat (bill + proration).
+  const willBill = wouldExceedCap && phase === 'active'
+  // Free trial / expired: the 2-child cap requires subscribing before adding more.
+  const needsSubscribe = wouldExceedCap && phase !== 'active'
   const period: BillingPeriod = sub?.billingPeriod === 'annual' ? 'annual' : 'monthly'
   const addCost = `${formatMoney(ADDON_PRICE[period])}${intervalSuffix(period)}`
 
@@ -144,6 +152,13 @@ export function AddChild() {
       return
     }
     setErrMsg('')
+
+    // Free trial (or expired) at the 2-child cap: can't add for free — send the
+    // parent to Billing to subscribe. We never create the child here.
+    if (needsSubscribe) {
+      navigate('/settings')
+      return
+    }
 
     // If this child is billable, require an explicit confirmation of the cost
     // first — never charge silently.
@@ -355,6 +370,28 @@ export function AddChild() {
               </div>
             )}
 
+            {/* Free-trial seat limit reached — subscribing is required to add more. */}
+            {needsSubscribe && (
+              <div
+                style={{
+                  border: '1.6px solid #003078',
+                  background: '#EAF1FB',
+                  borderRadius: 14,
+                  padding: '13px 15px',
+                  margin: '12px 0 0',
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>
+                  Subscribe to add more children
+                </div>
+                <p style={{ fontSize: 13.5, color: '#5A6172', margin: '4px 0 0' }}>
+                  Your free trial covers up to {TRIAL_SEAT_CAP} children. Subscribe to add{' '}
+                  {name.trim() || 'this child'} and keep everyone learning.
+                </p>
+              </div>
+            )}
+
             {/* Heads-up when this child goes beyond the plan's included seats. */}
             {willBill && !confirmBilling && (
               <p style={{ color: '#5A6172', fontSize: 13.5, margin: '4px 2px 0' }}>
@@ -440,9 +477,11 @@ export function AddChild() {
                   ? confirmReassess
                     ? 'Save & start assessment'
                     : 'Save changes'
-                  : confirmBilling
-                    ? `Confirm & add child (${addCost})`
-                    : 'Save child'}
+                  : needsSubscribe
+                    ? 'Subscribe to add a child'
+                    : confirmBilling
+                      ? `Confirm & add child (${addCost})`
+                      : 'Save child'}
             </button>
             <button
               type="button"

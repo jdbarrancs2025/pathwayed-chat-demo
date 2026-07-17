@@ -44,6 +44,15 @@ export function extraKids(plan: PlanId, totalKids: number): number {
   return Math.max(0, (Number(totalKids) || 0) - INCLUDED_SEATS[plan])
 }
 
+/**
+ * Paid seat cap for a subscribed account = the plan's included seats plus the
+ * Additional Child add-on quantity. This is what the webhook stores in
+ * profiles.paid_seats so the app can cap active children without re-reading Stripe.
+ */
+export function paidSeats(plan: PlanId, extraKidCount: number): number {
+  return INCLUDED_SEATS[plan] + Math.max(0, Number(extraKidCount) || 0)
+}
+
 /** Env var name holding the base price id for this plan + interval. */
 export function planPriceEnv(plan: PlanId, period: BillingPeriod): string {
   return PLAN_PRICE_ENV[plan][period]

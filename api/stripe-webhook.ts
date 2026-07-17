@@ -3,6 +3,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import {
   isAddonPriceId,
+  isPlanId,
+  paidSeats as computePaidSeats,
   planForPriceId,
   type BillingPeriod,
   type PlanId,
@@ -28,6 +30,7 @@ interface ProfileFields {
   billing_period?: string
   stripe_customer_id?: string
   extra_kids?: number
+  paid_seats?: number
   trial_end?: string
   current_period_end?: string
 }
@@ -120,10 +123,19 @@ async function handleCheckoutCompleted(
   let periodEnd: string | undefined
   if (typeof session.subscription === "string") {
     const sub = await stripe.subscriptions.retrieve(session.subscription)
+    // Pay-now checkout means Stripe returns 'active' here. We keep reading the
+    // real status (and trial_end) so the one pre-existing 'trialing' live
+    // subscription is still handled correctly if it ever re-fires.
     status = sub.status
     trialEnd = unixToIso(readTrialEnd(sub))
     periodEnd = unixToIso(readCurrentPeriodEnd(sub))
   }
+
+  // Seat cap once paid = included plan seats + the Additional Child quantity we
+  // put in checkout metadata. Only trustworthy when the plan is one we recognize.
+  const extraKids = md.extra_kids !== undefined ? Number(md.extra_kids) : undefined
+  const paidSeats =
+    isPlanId(md.plan) && extraKids !== undefined ? computePaidSeats(md.plan, extraKids) : undefined
 
   console.log("[stripe-webhook] checkout.session.completed", {
     user_id: md.user_id,
@@ -131,6 +143,7 @@ async function handleCheckoutCompleted(
     plan: md.plan,
     billing_period: md.billing_period,
     status: status ?? "active",
+    paid_seats: paidSeats,
   })
 
   await updateProfile(
@@ -141,7 +154,8 @@ async function handleCheckoutCompleted(
       plan: md.plan,
       billing_period: md.billing_period,
       stripe_customer_id: customerId,
-      extra_kids: md.extra_kids !== undefined ? Number(md.extra_kids) : undefined,
+      extra_kids: extraKids,
+      paid_seats: paidSeats,
       trial_end: trialEnd,
       current_period_end: periodEnd,
     },
@@ -222,12 +236,21 @@ async function handleSubscriptionEvent(
   // can't be derived it stays undefined and updateProfile leaves it as-is.
   const derived = derivePlanFromLineItems(sub, env)
 
+  // Seat cap = included plan seats + the add-on quantity, but only once we've
+  // positively identified the base plan (extraKids is undefined on a failed match,
+  // so paid_seats is left untouched rather than written as a bare included count).
+  const paidSeats =
+    derived.plan && derived.extraKids !== undefined
+      ? computePaidSeats(derived.plan, derived.extraKids)
+      : undefined
+
   console.log(`[stripe-webhook] ${eventType}`, {
     user_id: md.user_id,
     customerId,
     plan: derived.plan,
     billing_period: derived.billingPeriod,
     extra_kids: derived.extraKids,
+    paid_seats: paidSeats,
     status,
   })
 
@@ -240,6 +263,7 @@ async function handleSubscriptionEvent(
       billing_period: derived.billingPeriod,
       stripe_customer_id: customerId,
       extra_kids: derived.extraKids,
+      paid_seats: paidSeats,
       trial_end: unixToIso(readTrialEnd(sub)),
       current_period_end: unixToIso(readCurrentPeriodEnd(sub)),
     },

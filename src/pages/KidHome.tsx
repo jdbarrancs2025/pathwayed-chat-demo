@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, gradeLabel, levelLabel, avatarModeOf, updateAvatarMode, type AvatarMode, type Student } from '@/lib/students'
 import { canTakePracticeSat } from '@/lib/practiceSat'
+import { isSchoolCovered } from '@/lib/schoolSession'
 import { HOMEWORK } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
@@ -53,6 +54,30 @@ export function KidHome() {
       <div className="kid-screen">
         <div className="shell">
           <p className="muted">Loading…</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Seat enforcement: a paused (inactive) child profile can't run sessions until
+  // the parent reactivates it in Settings. School-covered students are never
+  // paused (their school holds the license), so this never blocks them.
+  if (!student.active && !isSchoolCovered()) {
+    return (
+      <div className="kid-screen">
+        <div className="shell">
+          <TopMenu />
+          <div style={{ textAlign: 'center', maxWidth: 420, margin: '40px auto 0' }}>
+            <NikkiFace mode={avatarModeOf(student)} size={140} />
+            <h1 className="greet" style={{ marginTop: 8 }}>Hi, {student.first_name}!</h1>
+            <p className="muted">
+              This profile is paused right now. A parent can turn it back on in Settings once there’s room on
+              the plan — nothing has been lost.
+            </p>
+            <button className="btn btn-soft" style={{ marginTop: 16 }} onClick={() => navigate('/settings')}>
+              Go to Settings
+            </button>
+          </div>
         </div>
       </div>
     )
