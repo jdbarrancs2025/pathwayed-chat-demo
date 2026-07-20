@@ -5,6 +5,16 @@ import { isCompositionSkill, getWritingCompositionModule } from "./writing-compo
 
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support" | "kid-tutor"
 
+/**
+ * Session response language — single source of truth.
+ *
+ * `name` pins the model's reply language in the system prompt; `whisper` is the
+ * matching ISO code the transcription endpoint locks Whisper to. Kept as one
+ * constant so a future move to multilingual is a config change (or a per-session
+ * field threaded through StudentContext), not a prompt/endpoint rewrite.
+ */
+export const SESSION_LANGUAGE = { name: "English", whisper: "en" } as const
+
 export interface StudentContext {
   subject: string
   focusAreas: string[]
@@ -28,6 +38,10 @@ export interface StudentContext {
 const MASTER_PROMPT = `You are N.I.K.K.I., PathwayEd's AI learning assistant for K–12 schools, supporting students, teachers, and families through tutoring, intervention, and enrichment programs.
 
 Your personality is calm, intelligent, and confident—like a knowledgeable academic advisor who genuinely wants to help. You're supportive without being overly casual, and you speak with quiet competence rather than excessive enthusiasm.
+
+LANGUAGE:
+- ALWAYS respond in ${SESSION_LANGUAGE.name}.
+- Reply in ${SESSION_LANGUAGE.name} even when a message looks like another language, or is short, unclear, or garbled (for example a misheard voice input or a "say that again" / "repeat that" request). Do not switch languages on your own.
 
 CORE PRINCIPLES:
 - Adjust explanations to match the student's grade level when known

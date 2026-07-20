@@ -1,5 +1,6 @@
 import OpenAI, { toFile } from "openai"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { SESSION_LANGUAGE } from "./prompts.js"
 
 interface TranscribeRequest {
   audio: string // base64-encoded audio
@@ -47,7 +48,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const transcription = await openai.audio.transcriptions.create({
       file,
       model: "whisper-1",
-      language: "en",
+      // Locked to the session language (see SESSION_LANGUAGE) — auto-detect on
+      // short kid utterances is a known source of wrong-language transcripts.
+      language: SESSION_LANGUAGE.whisper,
     })
 
     return res.status(200).json({ text: transcription.text })
