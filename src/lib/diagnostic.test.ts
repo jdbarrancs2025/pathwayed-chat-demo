@@ -6,6 +6,8 @@ import {
   rungAccuracy,
   nextRung,
   settledGrade,
+  placementSeeds,
+  PLACEMENT_MIN_QUESTIONS,
   type DiagnosticResult,
 } from './diagnostic'
 
@@ -52,6 +54,18 @@ describe('rungAccuracy', () => {
     expect(rungAccuracy(res, 3)).toBeCloseTo(2 / 3)
     expect(rungAccuracy(res, 4)).toBe(0)
     expect(rungAccuracy(res, 9)).toBeNull()
+  })
+})
+
+describe('placementSeeds — minimum question floor', () => {
+  it('rejects a run below the floor (the thin-bank 2-question junk case)', () => {
+    expect(placementSeeds(0)).toBe(false)
+    expect(placementSeeds(2)).toBe(false)
+    expect(placementSeeds(PLACEMENT_MIN_QUESTIONS - 1)).toBe(false)
+  })
+  it('accepts a run at or above the floor', () => {
+    expect(placementSeeds(PLACEMENT_MIN_QUESTIONS)).toBe(true)
+    expect(placementSeeds(PLACEMENT_MIN_QUESTIONS + 3)).toBe(true)
   })
 })
 

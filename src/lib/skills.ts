@@ -382,6 +382,25 @@ export async function seedDiagnosticMastery(
   return rows.length
 }
 
+/**
+ * Whether a child has any mastery yet — i.e. has been placed by a completed
+ * diagnostic (grades 3-12 seed mastery) or has practiced. Used to decide whether
+ * to OFFER placement at the child's home. A brand-new, unplaced child has none.
+ * (K-2 placement intentionally doesn't seed, so the offer is gated to 3-12 by the
+ * caller.) Fails safe to `true` on error so we never nag a child on a read glitch.
+ */
+export async function hasAnyMastery(studentId: string): Promise<boolean> {
+  const { count, error } = await supabase
+    .from('student_skill_mastery')
+    .select('id', { count: 'exact', head: true })
+    .eq('student_id', studentId)
+  if (error) {
+    console.error('hasAnyMastery read failed', error)
+    return true
+  }
+  return (count ?? 0) > 0
+}
+
 // ---------------------------------------------------------------------------
 // Dashboard reads (read-only; Step 4). No writes here.
 // ---------------------------------------------------------------------------

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, gradeLabel, levelLabel, avatarModeOf, updateAvatarMode, type AvatarMode, type Student } from '@/lib/students'
 import { canTakePracticeSat } from '@/lib/practiceSat'
+import { hasAnyMastery } from '@/lib/skills'
+import { studentGradeNum } from '@/lib/diagnostic'
 import { isSchoolCovered } from '@/lib/schoolSession'
 import { HOMEWORK } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
@@ -22,11 +24,14 @@ export function KidHome() {
   const [student, setStudent] = useState<Student | null>(null)
   const [loading, setLoading] = useState(true)
   const [pickingAvatar, setPickingAvatar] = useState(false)
+  // Offer (never force) placement when a grades-3-12 child hasn't been placed yet
+  // — no seeded mastery. K-2 placement doesn't seed, so the offer is 3-12 only.
+  const [offerPlacement, setOfferPlacement] = useState(false)
 
   useEffect(() => {
     if (!id) return
     let active = true
-    getStudent(id).then((s) => {
+    getStudent(id).then(async (s) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
@@ -34,6 +39,10 @@ export function KidHome() {
       }
       setStudent(s)
       setLoading(false)
+      if (studentGradeNum(s.grade) >= 3) {
+        const placed = await hasAnyMastery(s.id)
+        if (active) setOfferPlacement(!placed)
+      }
     })
     return () => {
       active = false
@@ -129,6 +138,41 @@ export function KidHome() {
               onChange={(m) => void chooseAvatar(m)}
               label="Tap how you'd like me to appear:"
             />
+          </div>
+        )}
+
+        {/* Optional placement offer — shown once for an unplaced grades-3-12 child,
+            never forced. Taking it seeds their level; skipping just starts a lesson
+            and the offer returns next visit until they're placed. */}
+        {offerPlacement && (
+          <div
+            className="panel"
+            style={{ marginBottom: 16, background: '#FBEEE9', borderColor: '#E8C9BE', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}
+          >
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <h3 style={{ marginBottom: 4 }}>Find your level first?</h3>
+              <p className="muted" style={{ margin: 0, fontSize: 13.5 }}>
+                A few quick questions help Nikki start you at just the right spot. Totally optional — you can jump
+                straight into a lesson instead.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                className="btn btn-navy"
+                style={{ width: 'auto' }}
+                onClick={() => navigate(`/students/${student.id}/diagnostic`)}
+              >
+                Let’s find it →
+              </button>
+              <button
+                type="button"
+                className="link"
+                onClick={() => setOfferPlacement(false)}
+              >
+                Not now
+              </button>
+            </div>
           </div>
         )}
 

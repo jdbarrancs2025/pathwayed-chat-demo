@@ -230,10 +230,11 @@ export function AddChild() {
     if (pinDraft.length === 4) {
       await setStudentPin(newId, pinDraft)
     }
-    // New child → run the one-time placement diagnostic (consent + adaptive
-    // questions + seeding), which lands on the child's dashboard when finished.
-    // Existing children are never re-created, so they're never force-placed.
-    navigate(`/students/${newId}/diagnostic`, { replace: true })
+    // Return to where the parent came from (onboarding "add another / continue"
+    // or Settings) — NEVER force the diagnostic here, so a parent adding several
+    // children isn't trapped in each child's placement. Placement is offered, not
+    // forced: the child is offered it at their first session (see KidHome).
+    navigate(returnTo, { replace: true })
   }
 
   return (

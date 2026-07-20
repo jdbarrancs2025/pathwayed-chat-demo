@@ -19,6 +19,7 @@ import {
   rungAccuracy,
   nextRung,
   settledGrade,
+  placementSeeds,
   type DiagnosticResult,
   type LadderDirection,
 } from '@/lib/diagnostic'
@@ -268,11 +269,19 @@ export function Diagnostic() {
     // the lessons should teach those skills fully from fresh. (Attempts are still
     // recorded via recordQuestionAttempt for history either way.)
     console.info('[diagnostic] settled working grade', settledGrade(allResults, studentGradeNum(stu.grade)))
-    if (!early) {
+    // Only seed a real placement when a grades-3-12 run cleared the minimum
+    // question floor. A too-short run (a thin grade that settled the ladder after
+    // a couple of answers) is DISCARDED — seeding from it would pin the child with
+    // junk mastery. K-2 never seeds by design (see note above). Either way the
+    // child still lands on the positive done screen and can start learning; an
+    // unseeded child is simply offered placement again at their next visit.
+    if (!early && placementSeeds(allResults.length)) {
       await seedDiagnosticMastery(
         stu.id,
         allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
       )
+    } else if (!early) {
+      console.info('[diagnostic] run below placement floor — discarded, not seeded', allResults.length)
     }
     clearDiagnosticProgress(stu.id)
     setBusy(false)

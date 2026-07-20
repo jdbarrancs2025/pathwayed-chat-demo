@@ -23,6 +23,21 @@ export const MAX_STEPS = 3
 
 export type LadderDirection = 'none' | 'up' | 'down'
 
+/**
+ * Minimum questions a grades-3-12 run must answer before it counts as a real
+ * placement and is allowed to seed mastery. A grade rung serves one question per
+ * published skill, so a thin grade (e.g. only two skills published) can settle
+ * the ladder after just two answers — far too few to place from. Below this
+ * floor the run is discarded (no seeding), never marked complete; the child is
+ * offered placement again rather than being pinned by junk mastery.
+ */
+export const PLACEMENT_MIN_QUESTIONS = 4
+
+/** Whether a finished grades-3-12 run answered enough to seed a real placement. */
+export function placementSeeds(resultCount: number): boolean {
+  return resultCount >= PLACEMENT_MIN_QUESTIONS
+}
+
 /** Student grade string ('K','1'..'12') → numeric CCSS grade (K=0). Unknown → 0. */
 export function studentGradeNum(grade: string): number {
   if (grade === 'K') return 0
