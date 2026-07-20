@@ -29,15 +29,21 @@ export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = 
     writing: ['sentence-writing', 'short-response', 'paragraph-writing', 'creative-writing'],
   },
   '6-8': {
+    // Grade-7 skills (rational-number-operations … probability-models) added with
+    // a real 20-question bank (seed 0011) so placement AND this walk share one set.
+    // Removed empty placeholders 'statistics', 'geometry', 'pre-algebra' (no question
+    // bank; logged for the Phase-2 grade-6/8 build).
     math: [
       'ratios',
       'percentages',
-      'proportional-reasoning',
-      'data-analysis',
-      'statistics',
-      'geometry',
-      'pre-algebra',
       'expressions',
+      'data-analysis',
+      'proportional-reasoning',
+      'rational-number-operations',
+      'percent-applications',
+      'two-step-equations',
+      'angles-area-volume',
+      'probability-models',
       'linear-thinking',
       'algebra-1-concepts',
       'functions',

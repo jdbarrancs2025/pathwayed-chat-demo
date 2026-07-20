@@ -27,18 +27,21 @@ export const focusAreasByGrade: Record<GradeBand, {
   },
   '6-8': {
     math: [
+      // Grade-7 skills (seed 0011) — real 20-question banks; placement + lesson
+      // path share one set. Removed empty 'pre-algebra','geometry','statistics'.
       { value: 'ratios', label: 'Ratios & Proportions' },
-      { value: 'pre-algebra', label: 'Pre-Algebra' },
-      { value: 'geometry', label: 'Geometry' },
-      { value: 'statistics', label: 'Statistics' },
-      // SAT 6-12 ladder (seed 0002)
       { value: 'percentages', label: 'Percentages' },
       { value: 'expressions', label: 'Expressions' },
+      { value: 'data-analysis', label: 'Data Analysis' },
       { value: 'proportional-reasoning', label: 'Proportional Reasoning' },
+      { value: 'rational-number-operations', label: 'Operations with Rational Numbers' },
+      { value: 'percent-applications', label: 'Percent Applications' },
+      { value: 'two-step-equations', label: 'Two-Step Equations & Inequalities' },
+      { value: 'angles-area-volume', label: 'Angles, Area & Volume' },
+      { value: 'probability-models', label: 'Probability' },
       { value: 'linear-thinking', label: 'Linear Thinking' },
       { value: 'algebra-1-concepts', label: 'Algebra 1 Concepts' },
       { value: 'functions', label: 'Functions' },
-      { value: 'data-analysis', label: 'Data Analysis' },
     ],
     reading: [
       { value: 'inference', label: 'Inference' },
