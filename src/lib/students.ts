@@ -106,6 +106,40 @@ export async function deleteStudent(id: string) {
   return supabase.from('students').delete().eq('id', id)
 }
 
+// ---------------------------------------------------------------------------
+// Optional per-child sign-in PIN (migration 0013).
+//
+// Children never get an auth account — this is light, shared-device gating so a
+// child can open their own space (and not wander into a sibling's or the parent
+// area) on a device the parent is already signed into. The raw PIN is hashed in
+// the database by the set_student_pin RPC; the client only ever learns whether a
+// PIN exists (pin_hash is non-null) and asks the DB to verify an attempt.
+// ---------------------------------------------------------------------------
+
+/** Whether this child has a sign-in PIN set (so the picker prompts before entry). */
+export function hasPin(student: Pick<Student, 'pin_hash'>): boolean {
+  return !!student.pin_hash
+}
+
+/** Set/replace a child's 4-digit PIN (hashed server-side). Owner-checked in the RPC. */
+export async function setStudentPin(studentId: string, pin: string) {
+  return supabase.rpc('set_student_pin', { p_student_id: studentId, p_pin: pin })
+}
+
+/** Remove a child's PIN (returns them to direct entry). Owner-checked in the RPC. */
+export async function clearStudentPin(studentId: string) {
+  return supabase.rpc('clear_student_pin', { p_student_id: studentId })
+}
+
+/** Verify a child's PIN attempt. Returns false on any error or mismatch. */
+export async function verifyStudentPin(studentId: string, pin: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('verify_student_pin', {
+    p_student_id: studentId,
+    p_pin: pin,
+  })
+  return !error && data === true
+}
+
 /** Children that count against the plan's seat cap (active only). */
 export function activeStudents(students: Student[]): Student[] {
   return students.filter((s) => s.active)

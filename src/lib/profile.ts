@@ -29,6 +29,40 @@ export interface Subscription {
   paidSeats: number | null
 }
 
+// ---------------------------------------------------------------------------
+// Optional account "parent PIN" (migration 0013). Gates the Parent dashboard /
+// Settings / Sign out when a child is signed in on a shared device. Null hash =
+// no PIN = open access (the requested fallback). The raw PIN is hashed by the
+// set_parent_pin RPC; the client only reads whether one exists and asks the DB
+// to verify an attempt (verify_parent_pin keys on the caller's own auth.uid()).
+// ---------------------------------------------------------------------------
+
+/** Whether this account has a parent PIN set (so kid-session exits are gated). */
+export async function hasParentPin(parentId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('parent_pin_hash')
+    .eq('id', parentId)
+    .maybeSingle()
+  return !!data?.parent_pin_hash
+}
+
+/** Set/replace the account's 4-digit parent PIN (hashed server-side). */
+export async function setParentPin(pin: string) {
+  return supabase.rpc('set_parent_pin', { p_pin: pin })
+}
+
+/** Remove the account's parent PIN (returns the parent area to open access). */
+export async function clearParentPin() {
+  return supabase.rpc('clear_parent_pin')
+}
+
+/** Verify a parent PIN attempt. Returns false on any error or mismatch. */
+export async function verifyParentPin(pin: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('verify_parent_pin', { p_pin: pin })
+  return !error && data === true
+}
+
 export async function getSubscription(parentId: string): Promise<Subscription> {
   const { data } = await supabase
     .from('profiles')

@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
-import { avColor, gradeLabel, initials, listStudents, type Student } from '@/lib/students'
+import { avColor, gradeLabel, hasPin, initials, listStudents, verifyStudentPin, type Student } from '@/lib/students'
 import { TopMenu } from '@/components/TopMenu'
+import { PinPrompt } from '@/components/pin/PinPrompt'
+import { enterKidSession } from '@/lib/kidSession'
 
 /**
  * "Who's learning today?" picker. Lists the parent's children; tapping one
- * starts their learning session. The full per-child session wiring is a later
- * step, so a tap currently routes to the existing student home.
+ * enters that child's home. A child with a sign-in PIN set is prompted for it
+ * first (kid sign-in on a shared device); a child without one enters directly.
  */
 export function StudentPicker() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
+  // The child whose PIN we're prompting for (null = no prompt open).
+  const [pinFor, setPinFor] = useState<Student | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -27,6 +31,18 @@ export function StudentPicker() {
       active = false
     }
   }, [user])
+
+  // Enter a child's space: begin the kid session, then route to their home.
+  const enterChild = (studentId: string) => {
+    enterKidSession()
+    navigate(`/students/${studentId}`)
+  }
+
+  // Tapping a child: prompt for their PIN if one is set, otherwise enter directly.
+  const pickChild = (student: Student) => {
+    if (hasPin(student)) setPinFor(student)
+    else enterChild(student.id)
+  }
 
   return (
     <div className="kid-screen">
@@ -46,15 +62,20 @@ export function StudentPicker() {
                   key={student.id}
                   type="button"
                   className="pickcard"
-                  onClick={() => navigate(`/students/${student.id}`)}
+                  onClick={() => pickChild(student)}
                 >
                   <div className="av" style={{ background: avColor(i) }}>
                     {initials(student.first_name)}
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div className="nm">{student.first_name}</div>
                     <div className="gr">{gradeLabel(student.grade)}</div>
                   </div>
+                  {hasPin(student) && (
+                    <span aria-label="PIN protected" title="PIN protected" style={{ fontSize: 18, opacity: 0.55 }}>
+                      🔒
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -75,6 +96,20 @@ export function StudentPicker() {
           </>
         )}
       </div>
+
+      {pinFor && (
+        <PinPrompt
+          title={`Enter ${pinFor.first_name}'s PIN`}
+          subtitle="Type your 4-digit PIN to start learning."
+          submitLabel="Start learning"
+          onCancel={() => setPinFor(null)}
+          onSubmit={async (pin) => {
+            const ok = await verifyStudentPin(pinFor.id, pin)
+            if (ok) enterChild(pinFor.id)
+            return ok
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -37,6 +37,11 @@ export interface Database {
           paid_seats: number | null
           trial_reminder_sent_at: string | null
           trial_ended_email_sent_at: string | null
+          // Optional account "parent PIN" (migration 0013): bcrypt hash gating the
+          // Parent dashboard / Settings / Sign out when a child is signed in on a
+          // shared device. Null = no PIN (open access). Written only via the
+          // set_parent_pin / clear_parent_pin RPCs; the client only reads null-ness.
+          parent_pin_hash: string | null
         }
         Insert: {
           id: string
@@ -53,6 +58,7 @@ export interface Database {
           paid_seats?: number | null
           trial_reminder_sent_at?: string | null
           trial_ended_email_sent_at?: string | null
+          parent_pin_hash?: string | null
         }
         Update: {
           id?: string
@@ -69,6 +75,7 @@ export interface Database {
           paid_seats?: number | null
           trial_reminder_sent_at?: string | null
           trial_ended_email_sent_at?: string | null
+          parent_pin_hash?: string | null
         }
         Relationships: []
       }
@@ -125,6 +132,11 @@ export interface Database {
           // seat cap only while active. Over-cap children are marked inactive by
           // the parent's seat picker (never deleted).
           active: boolean
+          // Optional per-child sign-in PIN (migration 0013): bcrypt hash of a
+          // 4-digit PIN, or null when the child has none (direct entry). Written
+          // only via the set_student_pin / clear_student_pin RPCs; the client
+          // reads null-ness to decide whether to prompt at the "Who's learning" picker.
+          pin_hash: string | null
         }
         Insert: {
           id?: string
@@ -138,6 +150,7 @@ export interface Database {
           dean_student_id?: string | null
           school_covered?: boolean
           active?: boolean
+          pin_hash?: string | null
         }
         Update: {
           id?: string
@@ -151,6 +164,7 @@ export interface Database {
           dean_student_id?: string | null
           school_covered?: boolean
           active?: boolean
+          pin_hash?: string | null
         }
         Relationships: []
       }
@@ -613,7 +627,34 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      // Optional PIN management (migration 0013). set/clear return void; verify
+      // returns whether the supplied 4-digit PIN matches the stored bcrypt hash.
+      set_student_pin: {
+        Args: { p_student_id: string; p_pin: string }
+        Returns: undefined
+      }
+      clear_student_pin: {
+        Args: { p_student_id: string }
+        Returns: undefined
+      }
+      verify_student_pin: {
+        Args: { p_student_id: string; p_pin: string }
+        Returns: boolean
+      }
+      set_parent_pin: {
+        Args: { p_pin: string }
+        Returns: undefined
+      }
+      clear_parent_pin: {
+        Args: Record<string, never>
+        Returns: undefined
+      }
+      verify_parent_pin: {
+        Args: { p_pin: string }
+        Returns: boolean
+      }
+    }
     Enums: {
       // Must match the canonical resolver gradeBand() in src/lib/gradeBand.ts.
       grade_band: 'k-2' | '3-5' | '6-8' | '9-12'

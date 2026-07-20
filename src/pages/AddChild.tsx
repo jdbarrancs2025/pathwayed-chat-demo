@@ -10,13 +10,16 @@ import {
   createStudent,
   getStudent,
   gradeLabel,
+  hasPin,
   listStudents,
   setAboveGradeConsent,
+  setStudentPin,
   updateStudent,
   type AvatarMode,
   type StudentLevel,
 } from '@/lib/students'
 import { AvatarModePicker } from '@/components/AvatarModePicker'
+import { ChildPinControl } from '@/components/pin/ChildPinControl'
 import { Switch } from '@/components/ui/switch'
 import { isSchoolCovered } from '@/lib/schoolSession'
 import { getSubscription, type Subscription } from '@/lib/profile'
@@ -75,6 +78,11 @@ export function AddChild() {
   // SAT / above-grade FRAMING consent (the students.above_grade_ok field the
   // onboarding placement step writes). Framing/emphasis only — never access.
   const [aboveGradeOk, setAboveGradeOk] = useState(false)
+  // Optional sign-in PIN. When editing, ChildPinControl writes immediately and
+  // pinSet tracks the loaded child's state. When adding, the child has no id yet,
+  // so we hold the 4 digits as a draft and apply them right after creation.
+  const [pinSet, setPinSet] = useState(false)
+  const [pinDraft, setPinDraft] = useState('')
   const [nameError, setNameError] = useState(false)
   const [gradeError, setGradeError] = useState(false)
   const [errMsg, setErrMsg] = useState('')
@@ -103,6 +111,7 @@ export function AddChild() {
       setLevel((student.level as StudentLevel) ?? 'on')
       setAvatarMode(avatarModeOf(student))
       setAboveGradeOk(!!student.above_grade_ok)
+      setPinSet(hasPin(student))
       setLoading(false)
     })
     return () => {
@@ -216,6 +225,11 @@ export function AddChild() {
       setConfirmBilling(false)
       return
     }
+    // Apply an optional sign-in PIN chosen during add (best-effort; a failure here
+    // shouldn't block the child being created — the parent can set it later).
+    if (pinDraft.length === 4) {
+      await setStudentPin(newId, pinDraft)
+    }
     // New child → run the one-time placement diagnostic (consent + adaptive
     // questions + seeding), which lands on the child's dashboard when finished.
     // Existing children are never re-created, so they're never force-placed.
@@ -328,6 +342,53 @@ export function AddChild() {
             </div>
 
             <AvatarModePicker value={avatarMode} onChange={setAvatarMode} />
+
+            {/* Optional sign-in PIN. Lets this child open their own space on a
+                shared device; a child with no PIN just taps in as before. When
+                editing, changes save immediately; when adding, the PIN is applied
+                right after the child is created. */}
+            <div
+              style={{
+                border: '1.6px solid #ECE4D8',
+                borderRadius: 14,
+                padding: '14px 16px',
+                margin: '16px 0',
+                background: '#fff',
+                textAlign: 'left',
+              }}
+            >
+              <label style={{ display: 'block', fontWeight: 700, fontSize: 15, color: '#1C2230' }}>
+                Sign-in PIN <span style={{ fontWeight: 500, color: '#5A6172' }}>(optional)</span>
+              </label>
+              <p style={{ fontSize: 13, color: '#5A6172', margin: '4px 0 12px' }}>
+                A 4-digit PIN lets {name.trim() || 'your child'} enter their own space on a shared device. Leave it
+                blank for direct entry.
+              </p>
+              {editing && id ? (
+                <ChildPinControl studentId={id} hasPin={pinSet} onChanged={setPinSet} />
+              ) : (
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={pinDraft}
+                  onChange={(e) => setPinDraft(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  placeholder="0000"
+                  aria-label="4-digit sign-in PIN"
+                  style={{
+                    width: 120,
+                    padding: '12px 14px',
+                    border: '1.6px solid #ECE4D8',
+                    borderRadius: 12,
+                    background: '#fff',
+                    fontSize: 20,
+                    letterSpacing: '0.3em',
+                    textAlign: 'center',
+                    color: '#1C2230',
+                  }}
+                />
+              )}
+            </div>
 
             {/* SAT / above-grade FRAMING consent — editable post-onboarding. Wired
                 to the same students.above_grade_ok field the placement step writes.
