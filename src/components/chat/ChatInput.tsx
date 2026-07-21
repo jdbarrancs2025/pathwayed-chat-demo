@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { Send, Mic, Square, Loader2, Calculator } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
+import { transcribeAudio } from "@/lib/transcribe"
+import { buildTranscriptionPrompt } from "@/lib/transcriptionPrompt"
 import { WaveformVisualizer } from "./WaveformVisualizer"
 import { MathKeyboard } from "./MathKeyboard"
 import type { Subject } from "@/lib/types"
@@ -63,37 +65,23 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
     }
   }, [isRecording, startRecording, stopRecording])
 
-  // Transcribe audio when blob is available
+  // Transcribe audio when blob is available. Uses the shared transcribeAudio
+  // helper so this input inherits the upgraded model and the context-biasing
+  // prompt, built here from its own subject. The transcript lands in the textarea
+  // for the user to edit before sending (behavior unchanged).
   useEffect(() => {
     if (!audioBlob || !mimeType) return
 
+    const blob = audioBlob
+    const mime = mimeType
     let cancelled = false
 
     async function transcribe() {
       setIsTranscribing(true)
       try {
-        // Convert blob to base64
-        const arrayBuffer = await audioBlob!.arrayBuffer()
-        const bytes = new Uint8Array(arrayBuffer)
-        let binary = ""
-        for (let i = 0; i < bytes.length; i++) {
-          binary += String.fromCharCode(bytes[i])
-        }
-        const base64 = btoa(binary)
-
-        const res = await fetch("/api/transcribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ audio: base64, mimeType }),
-        })
-
-        if (!res.ok) {
-          throw new Error("Transcription failed")
-        }
-
-        const data = await res.json()
-        if (!cancelled && data.text) {
-          setMessage(data.text)
+        const text = await transcribeAudio(blob, mime, buildTranscriptionPrompt({ subject }))
+        if (!cancelled && text) {
+          setMessage(text)
           // Focus textarea so user can edit before sending
           setTimeout(() => textareaRef.current?.focus(), 50)
         }
@@ -101,15 +89,15 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
         // Silently fail — user can still type manually
         console.error("Transcription error")
       } finally {
-        if (!cancelled) {
-          setIsTranscribing(false)
-        }
+        if (!cancelled) setIsTranscribing(false)
       }
     }
 
     transcribe()
-    return () => { cancelled = true }
-  }, [audioBlob, mimeType])
+    return () => {
+      cancelled = true
+    }
+  }, [audioBlob, mimeType, subject])
 
   // Auto-resize textarea
   useEffect(() => {

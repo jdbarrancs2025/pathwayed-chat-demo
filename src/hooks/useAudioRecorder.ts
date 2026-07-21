@@ -29,6 +29,14 @@ function detectMimeType(): string {
 
 const supportedMimeType = typeof window !== "undefined" ? detectMimeType() : ""
 
+// Guards against sub-second clips, which are the ones the transcription model
+// hallucinates on (a spoken "277" coming back as "New York City 7"). This is a
+// tap-to-toggle recorder, so an accidental double-tap or a too-quick answer can
+// otherwise ship a near-empty blob straight to the API.
+const MIN_RECORDING_MS = 400 // discard a recording shorter than this
+const MIN_BLOB_BYTES = 2000 // secondary guard; bitrate varies, so duration leads
+const MAX_RECORDING_MS = 30000 // safety cap: auto-stop a recording left running
+
 export function useAudioRecorder(): UseAudioRecorderReturn {
   const [state, setState] = useState<RecorderState>("idle")
   const [error, setError] = useState<string | null>(null)
@@ -40,8 +48,14 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
   const streamRef = useRef<MediaStream | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const analyserRef = useRef<AnalyserNode | null>(null)
+  const startTimeRef = useRef(0)
+  const maxTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const cleanup = useCallback(() => {
+    if (maxTimerRef.current != null) {
+      clearTimeout(maxTimerRef.current)
+      maxTimerRef.current = null
+    }
     // Stop all tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop())
@@ -105,7 +119,18 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       }
 
       recorder.onstop = () => {
+        const durationMs = performance.now() - startTimeRef.current
         const blob = new Blob(chunksRef.current, { type: supportedMimeType })
+        // Too short to be a real spoken answer (a blip or accidental double-tap).
+        // Discard without transcribing and surface a retry through the error flag,
+        // which Session's micError UI shows — sub-second clips are the main source
+        // of transcription hallucinations.
+        if (durationMs < MIN_RECORDING_MS || blob.size < MIN_BLOB_BYTES) {
+          setError("I didn't catch that. Tap the mic and say your answer.")
+          setState("error")
+          cleanup()
+          return
+        }
         setAudioBlob(blob)
         setState("stopped")
         cleanup()
@@ -118,6 +143,14 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       }
 
       recorder.start()
+      startTimeRef.current = performance.now()
+      // Safety cap: if a recording is somehow left running, auto-stop it so it
+      // always flushes rather than growing unbounded.
+      maxTimerRef.current = setTimeout(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+          mediaRecorderRef.current.stop()
+        }
+      }, MAX_RECORDING_MS)
       setState("recording")
     } catch (err) {
       const message = mapError(err)
