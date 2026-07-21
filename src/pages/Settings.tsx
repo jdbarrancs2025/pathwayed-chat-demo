@@ -15,6 +15,7 @@ import {
 import { getDisplayName, getSubscription, updateDisplayName, type Subscription } from '@/lib/profile'
 import { seatCap } from '@/lib/accessGate'
 import { BillingPanel } from '@/components/BillingPanel'
+import { AdmissionsPrepPanel } from '@/components/AdmissionsPrepPanel'
 import { SeatPicker } from '@/components/SeatPicker'
 import { TopMenu } from '@/components/TopMenu'
 import { ChildPinControl } from '@/components/pin/ChildPinControl'
@@ -194,6 +195,7 @@ export function Settings() {
 
         {/* Billing */}
         {user && <BillingPanel students={children} userId={user.id} email={user.email ?? ''} />}
+        {user && <AdmissionsPrepPanel students={children} userId={user.id} email={user.email ?? ''} />}
 
         {/* Account */}
         <div className="panel">

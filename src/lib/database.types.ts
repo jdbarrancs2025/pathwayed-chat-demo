@@ -625,6 +625,139 @@ export interface Database {
         }
         Relationships: []
       }
+      // Test-prep modules (migration 0015). Per-child, keyed on student_id ->
+      // public.students(id). prep_entitlements is written only by the Stripe
+      // webhook (service role) and is read-only to the client; the other three
+      // are client read/write under owns_student RLS.
+      prep_entitlements: {
+        Row: {
+          id: string
+          student_id: string
+          module_id: string
+          status: string
+          stripe_subscription_item_id: string | null
+          created_at: string
+          ends_at: string | null
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          module_id: string
+          status: string
+          stripe_subscription_item_id?: string | null
+          created_at?: string
+          ends_at?: string | null
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          module_id?: string
+          status?: string
+          stripe_subscription_item_id?: string | null
+          created_at?: string
+          ends_at?: string | null
+        }
+        Relationships: []
+      }
+      prep_settings: {
+        Row: {
+          student_id: string
+          module_id: string
+          test_date: string | null
+        }
+        Insert: {
+          student_id: string
+          module_id: string
+          test_date?: string | null
+        }
+        Update: {
+          student_id?: string
+          module_id?: string
+          test_date?: string | null
+        }
+        Relationships: []
+      }
+      prep_attempts: {
+        Row: {
+          id: string
+          student_id: string
+          module_id: string
+          section_id: string
+          mode: string
+          status: string
+          started_at: string | null
+          submitted_at: string | null
+          time_limit_sec: number | null
+          question_ids: Json | null
+          answers: Json | null
+          score: number | null
+          full_test_group_id: string | null
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          module_id: string
+          section_id: string
+          mode: string
+          status: string
+          started_at?: string | null
+          submitted_at?: string | null
+          time_limit_sec?: number | null
+          question_ids?: Json | null
+          answers?: Json | null
+          score?: number | null
+          full_test_group_id?: string | null
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          module_id?: string
+          section_id?: string
+          mode?: string
+          status?: string
+          started_at?: string | null
+          submitted_at?: string | null
+          time_limit_sec?: number | null
+          question_ids?: Json | null
+          answers?: Json | null
+          score?: number | null
+          full_test_group_id?: string | null
+        }
+        Relationships: []
+      }
+      prep_essay_attempts: {
+        Row: {
+          id: string
+          student_id: string
+          prompt_id: string
+          essay_text: string | null
+          nikki_feedback: string | null
+          started_at: string | null
+          submitted_at: string | null
+          time_limit_sec: number | null
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          prompt_id: string
+          essay_text?: string | null
+          nikki_feedback?: string | null
+          started_at?: string | null
+          submitted_at?: string | null
+          time_limit_sec?: number | null
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          prompt_id?: string
+          essay_text?: string | null
+          nikki_feedback?: string | null
+          started_at?: string | null
+          submitted_at?: string | null
+          time_limit_sec?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {

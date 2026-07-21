@@ -9,6 +9,12 @@ import {
   type BillingPeriod,
   type PlanId,
 } from "./billing-core.js"
+import {
+  isPrepPriceId,
+  moduleForPrepPriceId,
+  parsePrepStudentIds,
+  prepStudentsMetaKey,
+} from "./prep-core.js"
 
 // Stripe needs the raw, unparsed request body to verify the signature.
 export const config = { api: { bodyParser: false } }
@@ -118,6 +124,18 @@ async function handleCheckoutCompleted(
   const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id
   const md = session.metadata ?? {}
 
+  // A prep-only checkout carries no learning plan (md.plan is absent). Do not let
+  // it flip the account's learning subscription_status/plan — the
+  // customer.subscription.created event stores the customer id and reconciles the
+  // prep entitlements. Persist the customer id here too so the portal keeps
+  // working even if that event is delayed or reordered.
+  if (!isPlanId(md.plan)) {
+    if (customerId) {
+      await updateProfile(supabase, { userId: md.user_id, customerId }, { stripe_customer_id: customerId })
+    }
+    return
+  }
+
   let status: string | undefined
   let trialEnd: string | undefined
   let periodEnd: string | undefined
@@ -196,6 +214,9 @@ function derivePlanFromLineItems(sub: Stripe.Subscription, env: NodeJS.ProcessEn
       billingPeriod = match.period
     } else if (isAddonPriceId(priceId, env)) {
       addonQuantity = item.quantity ?? 0
+    } else if (isPrepPriceId(priceId, env)) {
+      // A configured prep add-on price — handled by reconcilePrepEntitlements, not
+      // a base plan or seat line, so it is neither a match nor "unmatched garbage".
     } else {
       unmatched.push(priceId)
     }
@@ -236,6 +257,24 @@ async function handleSubscriptionEvent(
   // can't be derived it stays undefined and updateProfile leaves it as-is.
   const derived = derivePlanFromLineItems(sub, env)
 
+  const hasPrep = (sub.items?.data ?? []).some((it) => isPrepPriceId(it.price?.id ?? null, env))
+  const prepOnly = derived.plan === undefined && hasPrep
+
+  if (prepOnly) {
+    // A prep-only subscription (a family bought a prep module without a learning
+    // plan). Its status is NOT the learning subscription_status, so leave
+    // subscription_status/plan/paid_seats alone and only persist the customer id
+    // (so the portal + future prep purchases can find it). Entitlements below.
+    console.log(`[stripe-webhook] ${eventType} (prep-only subscription)`, {
+      user_id: md.user_id,
+      customerId,
+      status,
+    })
+    await updateProfile(supabase, { userId: md.user_id, customerId }, { stripe_customer_id: customerId })
+    await reconcilePrepEntitlements(supabase, sub, eventType, env)
+    return
+  }
+
   // Seat cap = included plan seats + the add-on quantity, but only once we've
   // positively identified the base plan (extraKids is undefined on a failed match,
   // so paid_seats is left untouched rather than written as a bare included count).
@@ -268,6 +307,78 @@ async function handleSubscriptionEvent(
       current_period_end: unixToIso(readCurrentPeriodEnd(sub)),
     },
   )
+
+  // A learning subscription can also carry prep items (a family added prep to
+  // their existing plan). Reconcile those too.
+  await reconcilePrepEntitlements(supabase, sub, eventType, env)
+}
+
+/**
+ * Upsert prep_entitlements from a subscription's line items. For each prep price
+ * item, the covered children come from the subscription metadata
+ * (prep_<module>_students), and one entitlement row is upserted per child with:
+ *   - status 'active' while the subscription is active/trialing,
+ *   - 'past_due' when the subscription is past_due,
+ *   - 'canceled' (with ends_at set to the period end) on delete/cancel/expiry.
+ *
+ * The subscription item quantity should equal the number of student ids; a
+ * mismatch is logged but the metadata list wins, since it names the exact
+ * children. Writes run as the service role (this webhook), which bypasses RLS.
+ */
+async function reconcilePrepEntitlements(
+  supabase: SupabaseClient,
+  sub: Stripe.Subscription,
+  eventType: string,
+  env: NodeJS.ProcessEnv,
+): Promise<void> {
+  const md = sub.metadata ?? {}
+  const canceledEvent = eventType === "customer.subscription.deleted"
+  const periodEndIso = unixToIso(readCurrentPeriodEnd(sub))
+
+  for (const item of sub.items?.data ?? []) {
+    const moduleId = moduleForPrepPriceId(item.price?.id ?? null, env)
+    if (!moduleId) continue
+
+    const studentIds = parsePrepStudentIds(md[prepStudentsMetaKey(moduleId)])
+    if (studentIds.length === 0) {
+      console.warn(
+        `[stripe-webhook] subscription ${sub.id}: prep item for '${moduleId}' has no ` +
+          `student ids in metadata (${prepStudentsMetaKey(moduleId)}); skipping entitlement upsert`,
+      )
+      continue
+    }
+    if (typeof item.quantity === "number" && item.quantity !== studentIds.length) {
+      console.warn(
+        `[stripe-webhook] subscription ${sub.id}: prep '${moduleId}' quantity ${item.quantity} ` +
+          `!= ${studentIds.length} student ids in metadata`,
+      )
+    }
+
+    let status: "active" | "past_due" | "canceled"
+    if (canceledEvent || ["canceled", "unpaid", "incomplete_expired"].includes(sub.status)) {
+      status = "canceled"
+    } else if (sub.status === "past_due") {
+      status = "past_due"
+    } else {
+      status = "active"
+    }
+    const endsAt = status === "canceled" ? periodEndIso ?? new Date().toISOString() : null
+
+    const rows = studentIds.map((studentId) => ({
+      student_id: studentId,
+      module_id: moduleId,
+      status,
+      stripe_subscription_item_id: item.id,
+      ends_at: endsAt,
+    }))
+
+    const { error } = await supabase
+      .from("prep_entitlements")
+      .upsert(rows, { onConflict: "student_id,module_id" })
+    if (error) {
+      throw new Error(`prep_entitlements upsert failed for '${moduleId}': ${error.message}`)
+    }
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
