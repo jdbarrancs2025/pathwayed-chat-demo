@@ -80,6 +80,18 @@ export async function createStudent(
     .insert({ parent_id: parentId, ...input })
     .select('id')
     .single()
+  // A blocked or no-op insert must never fail silently in production: surface the
+  // real cause (Postgres error code + message) so a seat-cap trigger, an RLS
+  // with-check failure, or a policy issue is visible in the console, not swallowed.
+  if (error || !data?.id) {
+    const e = (error ?? {}) as { code?: string; message?: string; details?: string }
+    console.error('[createStudent] insert did not return a row', {
+      code: e.code,
+      message: e.message,
+      details: e.details,
+      hadRow: !!data?.id,
+    })
+  }
   return { id: data?.id ?? null, error }
 }
 

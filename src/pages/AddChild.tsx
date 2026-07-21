@@ -86,6 +86,9 @@ export function AddChild() {
   const [nameError, setNameError] = useState(false)
   const [gradeError, setGradeError] = useState(false)
   const [errMsg, setErrMsg] = useState('')
+  // A save that was rejected at the DB (most often a plan/seat-cap block the client
+  // did not catch) — surfaces a clear message + an upgrade path instead of a silent no-op.
+  const [capBlocked, setCapBlocked] = useState(false)
   const [loading, setLoading] = useState(editing)
   const [saving, setSaving] = useState(false)
   // Billing state (only relevant when adding, not editing).
@@ -161,6 +164,7 @@ export function AddChild() {
       return
     }
     setErrMsg('')
+    setCapBlocked(false)
 
     // Free trial (or expired) at the 2-child cap: can't add for free — send the
     // parent to Billing to subscribe. We never create the child here.
@@ -220,7 +224,16 @@ export function AddChild() {
 
     const { id: newId, error } = await createStudent(user.id, input)
     if (error || !newId) {
-      setErrMsg('Sorry — something went wrong saving. Please try again.')
+      // The insert was rejected or returned no row. The client's own seat check
+      // didn't stop us here, so the most likely cause is a plan/child-limit block
+      // the client couldn't see (or a transient error). Never fail silently: show a
+      // clear message with an upgrade path (capBlocked renders the Settings CTA).
+      console.error('[add-child] createStudent failed', { error, newId })
+      setErrMsg(
+        `We couldn't add ${trimmed}. If you've reached your plan's child limit, add a seat or ` +
+          `change your plan in Settings, then try again.`,
+      )
+      setCapBlocked(true)
       setSaving(false)
       setConfirmBilling(false)
       return
@@ -513,6 +526,29 @@ export function AddChild() {
             >
               {errMsg}
             </div>
+
+            {/* Upgrade path shown when a save was rejected (most often a seat/plan
+                limit): a clear, explicit route to Settings rather than a dead end. */}
+            {capBlocked && (
+              <button
+                type="button"
+                onClick={() => navigate('/settings', { state: { returnTo: '/children/new' } })}
+                style={{
+                  display: 'block',
+                  margin: '0 0 4px',
+                  background: 'none',
+                  border: 'none',
+                  color: '#003078',
+                  fontWeight: 700,
+                  fontSize: 14.5,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: 3,
+                  cursor: 'pointer',
+                }}
+              >
+                Manage your plan in Settings →
+              </button>
+            )}
 
             <button
               type="button"
