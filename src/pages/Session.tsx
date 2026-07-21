@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { getStudent, avatarModeOf, type Student } from '@/lib/students'
 import { loadTranscript } from '@/lib/sessions'
@@ -19,6 +19,7 @@ import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { getVoiceMuted, setVoiceMuted } from '@/lib/voicePrefs'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
 import { transcribeAudio } from '@/lib/transcribe'
+import { buildTranscriptionPrompt } from '@/lib/transcriptionPrompt'
 import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
@@ -240,10 +241,17 @@ function SessionView({
   const [transcribing, setTranscribing] = useState(false)
   const [micError, setMicError] = useState('')
 
+  // Context-biasing hint for transcription: the child's name plus this lesson's
+  // vocabulary, so short/soft utterances resolve toward the words we expect here.
+  const transcriptionPrompt = useMemo(
+    () => buildTranscriptionPrompt({ childName: student.first_name, subject, focusLabel }),
+    [student.first_name, subject, focusLabel],
+  )
+
   const handleUtterance = (blob: Blob, mime: string) => {
     setTranscribing(true)
     setMicError('')
-    transcribeAudio(blob, mime)
+    transcribeAudio(blob, mime, transcriptionPrompt)
       .then((text) => {
         if (text) void sendMessage(text)
       })
@@ -283,7 +291,7 @@ function SessionView({
     let cancelled = false
     setTranscribing(true)
     setMicError('')
-    transcribeAudio(recorder.audioBlob, recorder.mimeType)
+    transcribeAudio(recorder.audioBlob, recorder.mimeType, transcriptionPrompt)
       .then((text) => {
         if (cancelled) return
         if (text) void sendMessage(text)

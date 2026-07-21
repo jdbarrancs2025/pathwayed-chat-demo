@@ -5,6 +5,10 @@ import { SESSION_LANGUAGE } from "./prompts.js"
 interface TranscribeRequest {
   audio: string // base64-encoded audio
   mimeType: string
+  /** Optional context-biasing prompt (child's name + subject vocabulary) to
+   *  improve accuracy on short, soft kid utterances. Whisper-family models use
+   *  roughly the last 224 tokens, so callers keep this short. */
+  prompt?: string
 }
 
 /** Map MIME types to file extensions for the OpenAI API */
@@ -29,11 +33,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const openai = new OpenAI({ apiKey })
 
   try {
-    const { audio, mimeType } = req.body as TranscribeRequest
+    const { audio, mimeType, prompt } = req.body as TranscribeRequest
 
     if (!audio || !mimeType) {
       return res.status(400).json({ error: "audio (base64) and mimeType are required" })
     }
+
+    // Defensive cap: the model only reads ~224 tokens of prompt; a client
+    // sending more would just be truncated by the API, but trim it anyway.
+    const biasPrompt = typeof prompt === "string" ? prompt.trim().slice(0, 900) : ""
 
     const buffer = Buffer.from(audio, "base64")
 
@@ -47,10 +55,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const transcription = await openai.audio.transcriptions.create({
       file,
-      model: "whisper-1",
+      // gpt-4o-mini-transcribe is markedly more accurate than whisper-1 on the
+      // short, soft, disfluent speech young kids produce. Same request shape:
+      // it accepts file + language + prompt and returns { text } by default.
+      model: "gpt-4o-mini-transcribe",
       // Locked to the session language (see SESSION_LANGUAGE) — auto-detect on
       // short kid utterances is a known source of wrong-language transcripts.
       language: SESSION_LANGUAGE.whisper,
+      // Context biasing: the child's name and the active lesson's vocabulary,
+      // so homophones and proper nouns resolve toward this lesson's words.
+      ...(biasPrompt ? { prompt: biasPrompt } : {}),
     })
 
     return res.status(200).json({ text: transcription.text })
