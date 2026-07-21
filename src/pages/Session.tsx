@@ -241,11 +241,20 @@ function SessionView({
   const [transcribing, setTranscribing] = useState(false)
   const [micError, setMicError] = useState('')
 
-  // Context-biasing hint for transcription: the child's name plus this lesson's
-  // vocabulary, so short/soft utterances resolve toward the words we expect here.
+  // The most recent Nikki turn is the question the child is now answering; its
+  // text lets the biasing prompt detect a numeric question and expect digits.
+  const lastNikkiText = useMemo(
+    () => [...messages].reverse().find((m) => m.role === 'assistant')?.content ?? '',
+    [messages],
+  )
+
+  // Context-biasing hint for transcription: math framing, the child's name, this
+  // lesson's vocabulary, and an explicit "expect a number" when the last question
+  // was numeric, so short/soft utterances resolve to digits instead of a
+  // hallucinated phrase ("277" heard as "New York City 7").
   const transcriptionPrompt = useMemo(
-    () => buildTranscriptionPrompt({ childName: student.first_name, subject, focusLabel }),
-    [student.first_name, subject, focusLabel],
+    () => buildTranscriptionPrompt({ childName: student.first_name, subject, focusLabel, lastNikkiText }),
+    [student.first_name, subject, focusLabel, lastNikkiText],
   )
 
   const handleUtterance = (blob: Blob, mime: string) => {

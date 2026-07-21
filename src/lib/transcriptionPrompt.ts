@@ -1,9 +1,12 @@
 /**
  * Build a short context-biasing prompt for the transcription endpoint. Passed as
- * the model's `prompt`, it nudges recognition toward this lesson's vocabulary and
- * spells the child's name right, which matters most for the short, soft, disfluent
- * speech young kids produce. Kept to a few sentences: the model only reads roughly
- * the last 224 tokens, and a long prompt crowds out the actual audio context.
+ * the model's `prompt`, it nudges recognition toward this lesson's vocabulary,
+ * spells the child's name right, and (for math) tells the model to expect a
+ * number, which is the single biggest defense against the classic short-numeric
+ * hallucination (a child saying "277" coming back as "New York City 7").
+ *
+ * Kept to a few sentences, well under ~200 tokens: the model only reads roughly
+ * the last 224 tokens, and a long prompt crowds out the actual audio.
  */
 
 /** A compact word list per subject. Plain, high-frequency lesson terms, not an
@@ -16,21 +19,65 @@ const SUBJECT_VOCAB: Record<string, string> = {
   sat: 'equation, expression, variable, function, evidence, passage, inference, main idea, context, estimate',
 }
 
+/** Subjects whose answers are usually a number or a short math phrase. */
+const MATH_SUBJECTS = new Set(['math', 'sat'])
+
+/** Heuristic: did the last Nikki turn ask for a numeric answer? Looks for inline
+ *  math, digits, or arithmetic phrasing. Cheap and forgiving on purpose. */
+function looksNumericQuestion(text: string): boolean {
+  if (/\$[^$]+\$/.test(text)) return true // inline LaTeX math
+  if (/\d/.test(text)) return true
+  return /\b(how many|how much|what is|solve|sum|difference|product|add|subtract|multiply|divide|equals?|total|equal to|round|estimate)\b/i.test(
+    text,
+  )
+}
+
+/** Pull up to two distinct integers from the question to seed digit output, so the
+ *  model's example numbers come from this very problem. Falls back to generic
+ *  small numbers when the question has none. */
+function exampleNumbers(text: string): string[] {
+  const found = [...new Set(text.match(/\d[\d,]*/g) ?? [])].slice(0, 2)
+  return found.length ? found : ['12', '250']
+}
+
 export function buildTranscriptionPrompt(opts: {
   childName?: string | null
   subject?: string | null
   focusLabel?: string | null
+  lastNikkiText?: string | null
 }): string {
   const parts: string[] = []
+  const subject = opts.subject ?? ''
+  const isMath = MATH_SUBJECTS.has(subject)
 
+  // (a) Framing: who is speaking and what an answer tends to look like.
+  if (isMath) {
+    parts.push(
+      'A young student is answering a math tutoring question out loud. Answers are often numbers or short math phrases.',
+    )
+  } else if (subject) {
+    parts.push(`A young student is answering a ${subject} tutoring question out loud.`)
+  } else {
+    parts.push('A young student is answering a tutoring question out loud.')
+  }
+
+  // (b) The child's name and this lesson's words.
   const name = opts.childName?.trim()
   if (name) parts.push(`The speaker is a child named ${name}.`)
-
   const topic = opts.focusLabel?.trim()
   if (topic) parts.push(`Today's lesson is ${topic}.`)
-
-  const vocab = opts.subject ? SUBJECT_VOCAB[opts.subject] : undefined
+  const vocab = SUBJECT_VOCAB[subject]
   if (vocab) parts.push(`Common words: ${vocab}.`)
+
+  // (c) When the last question asked for a number, say so explicitly and give
+  //     digit examples drawn from the problem, so a short numeric utterance is
+  //     transcribed as digits rather than hallucinated into words.
+  const lastNikki = opts.lastNikkiText?.trim()
+  if (isMath && lastNikki && looksNumericQuestion(lastNikki)) {
+    parts.push(
+      `The answer is most likely a number written as digits, such as ${exampleNumbers(lastNikki).join(' or ')}.`,
+    )
+  }
 
   return parts.join(' ')
 }

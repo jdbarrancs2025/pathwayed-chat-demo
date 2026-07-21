@@ -39,9 +39,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "audio (base64) and mimeType are required" })
     }
 
-    // Defensive cap: the model only reads ~224 tokens of prompt; a client
-    // sending more would just be truncated by the API, but trim it anyway.
-    const biasPrompt = typeof prompt === "string" ? prompt.trim().slice(0, 900) : ""
+    // Defensive cap: the model only reads ~224 tokens of prompt, and callers aim
+    // for under ~200. A client sending more would just be truncated by the API,
+    // but trim it anyway (~800 chars is comfortably under the token ceiling).
+    const biasPrompt = typeof prompt === "string" ? prompt.trim().slice(0, 800) : ""
 
     const buffer = Buffer.from(audio, "base64")
 
