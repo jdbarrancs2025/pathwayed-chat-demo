@@ -30,6 +30,12 @@ export interface StudentContext {
   /** For a writing-composition lesson: the exact prompt the student is writing
    *  to, so Nikki coaches against the same prompt shown in the writing space. */
   writingPrompt?: string
+  /** Kid-tutor only. A pre-resolved, kid-appropriate nudge for the specific
+   *  misconception behind the distractor the student just chose on a graded bank
+   *  question (resolved client-side via explainMisconception). When present it is
+   *  appended to the turn so the tutor works THIS mistake with the MISCONCEPTIONS
+   *  approach, rather than the general per-band library alone. */
+  lastMisconceptionNudge?: string
 }
 
 /**
@@ -407,6 +413,12 @@ export function getCombinedSystemPrompt(mode: Mode, context?: StudentContext): s
     const misconceptions = getMisconceptionGuidance(context.subject, band)
     if (misconceptions) {
       prompt += `\n\n---\n\n${misconceptions}`
+    }
+    // Layer 2: the specific mistake the student just made on the previous graded
+    // question, resolved client-side to a nudge and threaded in. Points the tutor
+    // at THIS misconception with the test/name/contrast approach defined above.
+    if (context.lastMisconceptionNudge) {
+      prompt += `\n\n---\n\nTHE STUDENT JUST MISSED A QUESTION THIS WAY: ${context.lastMisconceptionNudge}\nWork this specific mistake using the MISCONCEPTIONS approach: test the wrong answer concretely, name and validate the rule they used, contrast it with the rule the problem needs, then re-ask. Do not just repeat the correct procedure.`
     }
     prompt += `\n\n---\n${buildKidContextBlock(context)}`
   }

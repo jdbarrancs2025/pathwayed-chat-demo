@@ -19,6 +19,11 @@ interface UseSessionChatOptions {
   /** For a writing-composition lesson: the exact prompt the student writes to, so
    *  Nikki coaches against the same prompt shown in the writing space. */
   writingPrompt?: string | null
+  /** Pre-resolved misconception nudge for the distractor the student just chose on
+   *  a graded bank question, produced client-side via explainMisconception(token).
+   *  Threaded into the next turn's context so the tutor targets that specific
+   *  mistake. Omitted when the last turn was not a graded miss. */
+  lastMisconceptionNudge?: string | null
   /** Storage key for the transcript. Defaults to `subject`; skills-building
    *  lessons pass `subject:skill` so each skill has its own fresh transcript. */
   transcriptKey?: string
@@ -130,6 +135,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
               level: o.level,
               focusSkill: o.focusSkill ?? undefined,
               writingPrompt: o.writingPrompt ?? undefined,
+              lastMisconceptionNudge: o.lastMisconceptionNudge ?? undefined,
             },
           }),
         })
@@ -202,6 +208,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
               level: o.level,
               focusSkill: o.focusSkill ?? undefined,
               writingPrompt: o.writingPrompt ?? undefined,
+              lastMisconceptionNudge: o.lastMisconceptionNudge ?? undefined,
             },
             image: { data: imageB64, mediaType },
           }),
