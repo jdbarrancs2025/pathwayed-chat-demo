@@ -13,7 +13,8 @@ import type { PrepModule } from './types'
 export const ISEE: PrepModule = {
   id: 'isee',
   name: 'ISEE',
-  gradeBand: [5, 12],
+  // Purchase eligibility gate (which grades may buy this module), not exam demographics.
+  gradeBand: [6, 8],
   sections: [
     {
       id: 'verbal-reasoning',

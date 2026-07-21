@@ -11,7 +11,8 @@ import type { PrepModule } from './types'
 export const HSPT: PrepModule = {
   id: 'hspt',
   name: 'HSPT',
-  gradeBand: [8, 8],
+  // Purchase eligibility gate (which grades may buy this module), not exam demographics.
+  gradeBand: [6, 8],
   sections: [
     {
       id: 'verbal-skills',
