@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import { useAuth, type OAuthProvider } from '@/context/AuthContext'
 import { getConsentStatus } from '@/lib/consent'
 import { ensureSchoolCheck } from '@/lib/schoolCheck'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-horizontal.png'
 
 const iconStyle = { width: 20, height: 20, flexShrink: 0 } as const
 
@@ -226,7 +226,7 @@ export function Welcome() {
         <img
           src={logoImg}
           alt="PathwayEd"
-          style={{ width: 'min(420px,86%)', height: 'auto', display: 'block', margin: '2px auto 0' }}
+          style={{ width: 'min(340px,80%)', height: 'auto', display: 'block', margin: '2px auto 4px' }}
         />
 
         <p

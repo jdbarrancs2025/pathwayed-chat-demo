@@ -86,7 +86,7 @@ export function ParentArea() {
   return (
     <div className="kid-screen">
       <div className="shell">
-        <TopMenu />
+        <TopMenu mark="horizontal" />
         <h1 className="greet" style={{ marginTop: 18 }}>
           Parent dashboard
         </h1>

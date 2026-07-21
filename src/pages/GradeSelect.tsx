@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import { useAppContext } from '@/context/AppContext'
 import type { GradeBand } from '@/lib/types'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-horizontal.png'
 
 const gradeBands: { value: GradeBand; label: string; sublabel: string; emoji: string }[] = [
   { value: '3-5', label: 'Grades 3\u20135', sublabel: 'Elementary', emoji: '\u270F\uFE0F' },
@@ -34,11 +34,8 @@ export function GradeSelect() {
           <img
             src={logoImg}
             alt="PathwayEd"
-            className="mx-auto h-32 w-32 sm:h-36 sm:w-36 object-contain drop-shadow-md animate-in zoom-in duration-300"
+            className="mx-auto h-12 sm:h-14 w-auto object-contain drop-shadow-md animate-in zoom-in duration-300"
           />
-          <h2 className="mt-3 text-xl sm:text-2xl font-bold text-primary tracking-tight">
-            PathwayEd
-          </h2>
         </div>
 
         {/* Heading */}

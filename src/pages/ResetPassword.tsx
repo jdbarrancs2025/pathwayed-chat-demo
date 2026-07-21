@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { getConsentStatus } from '@/lib/consent'
 import '@/styles/app-screens.css'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-horizontal.png'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -76,7 +76,7 @@ export function ResetPassword() {
         <img
           src={logoImg}
           alt="PathwayEd"
-          style={{ width: 'min(420px,86%)', height: 'auto', display: 'block', margin: '2px auto 0' }}
+          style={{ width: 'min(340px,80%)', height: 'auto', display: 'block', margin: '2px auto 4px' }}
         />
         <p
           style={{
