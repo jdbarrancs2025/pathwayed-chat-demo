@@ -316,10 +316,17 @@ async function handleSubscriptionEvent(
 /**
  * Upsert prep_entitlements from a subscription's line items. For each prep price
  * item, the covered children come from the subscription metadata
- * (prep_<module>_students), and one entitlement row is upserted per child with:
- *   - status 'active' while the subscription is active/trialing,
- *   - 'past_due' when the subscription is past_due,
- *   - 'canceled' (with ends_at set to the period end) on delete/cancel/expiry.
+ * (prep_<module>_students), and one entitlement row is upserted per child.
+ *
+ * Status + ends_at semantics (access checks MUST key on status; see the note in
+ * src/lib/prep/entitlements.ts):
+ *   - 'active' while the subscription is active/trialing. ends_at is null when it
+ *     renews, or the period end when the subscription is set to cancel at period
+ *     end (a SCHEDULED end — still entitled, the card shows "ends [date]").
+ *   - 'past_due' when the subscription is past_due.
+ *   - 'canceled' on delete/cancel/expiry. ends_at records WHEN access ended,
+ *     preferring ended_at/canceled_at (an immediate cancel ends now) over the
+ *     period end. Access is gone regardless of that date.
  *
  * The subscription item quantity should equal the number of student ids; a
  * mismatch is logged but the metadata list wins, since it names the exact
@@ -362,7 +369,21 @@ async function reconcilePrepEntitlements(
     } else {
       status = "active"
     }
-    const endsAt = status === "canceled" ? periodEndIso ?? new Date().toISOString() : null
+
+    let endsAt: string | null
+    if (status === "canceled") {
+      // When access actually ended: an immediate cancel carries ended_at /
+      // canceled_at; only fall back to the period end when neither is set.
+      endsAt =
+        unixToIso(sub.ended_at ?? sub.canceled_at ?? readCurrentPeriodEnd(sub)) ??
+        new Date().toISOString()
+    } else if (status === "active" && sub.cancel_at_period_end === true) {
+      // Scheduled to end: keep access, record the end so the card shows "ends …".
+      endsAt = periodEndIso ?? null
+    } else {
+      // Active and renewing — clear any previously scheduled end.
+      endsAt = null
+    }
 
     const rows = studentIds.map((studentId) => ({
       student_id: studentId,

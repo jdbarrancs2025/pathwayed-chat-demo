@@ -9,7 +9,16 @@ export interface PrepEntitlement {
   endsAt: string | null
 }
 
-/** Statuses that currently grant access (mirrors the billing PAID_STATUSES idea). */
+/**
+ * Access checks MUST key on `status`, never on "canceled but still before
+ * ends_at". The ends_at column is a record/scheduling hint, not an access gate:
+ *   - status 'active' (with or without ends_at) = entitled. A set ends_at means a
+ *     SCHEDULED end (cancel at period end) — still entitled until the webhook flips
+ *     it to canceled — and the UI shows "ends [date]".
+ *   - status 'canceled' = NOT entitled, regardless of ends_at (an immediate cancel
+ *     writes ends_at = when it ended, which may be in the past or future).
+ * These statuses are the entitled set; treat everything else as no access.
+ */
 export const ACTIVE_PREP_STATUSES = new Set(['active', 'past_due'])
 
 /** Numeric grade for eligibility math: 'K' -> 0, else the parsed int (else -1). */
@@ -75,4 +84,22 @@ export async function purchasePrep(input: PurchasePrepInput): Promise<{ added: b
     return { added: false }
   }
   return { added: !!data.added }
+}
+
+/**
+ * Cancel a prep module for the given children (or all of them for the module when
+ * studentIds is empty). Removed children are reduced/removed from the subscription
+ * and their entitlements go canceled; the caller should refresh entitlements after.
+ */
+export async function cancelPrep(input: {
+  userId: string
+  moduleId: string
+  studentIds: string[]
+}): Promise<void> {
+  const res = await fetch('/api/cancel-prep', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) throw new Error('Could not cancel the prep module')
 }

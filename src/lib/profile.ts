@@ -27,6 +27,10 @@ export interface Subscription {
   currentPeriodEnd: string | null
   hasTrialed: boolean
   paidSeats: number | null
+  // Present once the family has any Stripe subscription (plan OR prep-only), so
+  // the billing UI can offer the portal even when the learning status is not
+  // active (e.g. a prep-only account whose trial has ended).
+  stripeCustomerId: string | null
 }
 
 // ---------------------------------------------------------------------------
@@ -67,7 +71,7 @@ export async function getSubscription(parentId: string): Promise<Subscription> {
   const { data } = await supabase
     .from('profiles')
     .select(
-      'subscription_status, plan, billing_period, extra_kids, trial_end, current_period_end, has_trialed, paid_seats',
+      'subscription_status, plan, billing_period, extra_kids, trial_end, current_period_end, has_trialed, paid_seats, stripe_customer_id',
     )
     .eq('id', parentId)
     .maybeSingle()
@@ -80,5 +84,6 @@ export async function getSubscription(parentId: string): Promise<Subscription> {
     currentPeriodEnd: data?.current_period_end ?? null,
     hasTrialed: data?.has_trialed ?? false,
     paidSeats: data?.paid_seats ?? null,
+    stripeCustomerId: data?.stripe_customer_id ?? null,
   }
 }

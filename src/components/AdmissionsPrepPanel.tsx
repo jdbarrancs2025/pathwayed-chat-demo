@@ -4,6 +4,7 @@ import { PREP_MODULES } from '@/lib/prep/registry'
 import { PREP_PRICE_MONTHLY } from '@/lib/prep/pricing'
 import {
   ACTIVE_PREP_STATUSES,
+  cancelPrep,
   eligibilityReason,
   getPrepEntitlements,
   isGradeEligible,
@@ -14,13 +15,20 @@ import { formatMoney, intervalSuffix } from '@/lib/billing'
 
 const priceLabel = `${formatMoney(PREP_PRICE_MONTHLY)}${intervalSuffix('monthly')}`
 
+/** Friendly date like "January 3, 2026", or '' if the ISO string is missing/invalid. */
+function formatDate(iso: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
 /**
  * Admissions Prep card on the billing surface. Lists the child's current prep
  * entitlements as per-child line items, and lets a parent buy a module for one or
  * more eligible children. Purchase adds the prep price to the family's existing
  * subscription when there is one (proration, no redirect), or opens Stripe
- * Checkout when there is not. Cancellation runs through the same Stripe billing
- * portal as the main plan (see BillingPanel "Manage billing").
+ * Checkout when there is not. Each active line item can be canceled per child
+ * (api/cancel-prep) without touching the plan.
  *
  * Billing + entitlements only: nothing here appears in the kid experience.
  */
@@ -39,6 +47,8 @@ export function AdmissionsPrepPanel({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [cancelBusy, setCancelBusy] = useState(false)
 
   const studentIds = useMemo(() => students.map((s) => s.id), [students])
 
@@ -82,6 +92,24 @@ export function AdmissionsPrepPanel({
     setNotice('')
   }
 
+  const cancel = async (mId: string, sId: string) => {
+    if (cancelBusy) return
+    setCancelBusy(true)
+    setError('')
+    setNotice('')
+    try {
+      await cancelPrep({ userId, moduleId: mId, studentIds: [sId] })
+      const refreshed = await getPrepEntitlements(studentIds)
+      setEntitlements(refreshed)
+      setConfirming(null)
+      setNotice('Canceled.')
+    } catch {
+      setError('Could not cancel. Please try again.')
+    } finally {
+      setCancelBusy(false)
+    }
+  }
+
   const buy = async () => {
     if (busy || !module || selected.size === 0) return
     setBusy(true)
@@ -116,27 +144,68 @@ export function AdmissionsPrepPanel({
         Add a test-prep module for a child. {priceLabel} per student.
       </p>
 
-      {/* Current entitlements as per-child line items. */}
+      {/* Current entitlements as per-child line items, each cancelable. */}
       {activeItems.length > 0 && (
-        <div style={{ marginTop: 12, display: 'grid', gap: 6 }}>
-          {activeItems.map((e) => (
-            <div
-              key={`${e.studentId}-${e.moduleId}`}
-              style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 13.5 }}
-            >
-              <span style={{ color: '#1C2230' }}>
-                {moduleName(e.moduleId)} Prep — {nameOf(e.studentId)}
-                {e.status === 'past_due' && (
-                  <span style={{ color: '#B0432E', fontWeight: 600 }}> (payment past due)</span>
+        <div style={{ marginTop: 12, display: 'grid', gap: 10 }}>
+          {activeItems.map((e) => {
+            const key = `${e.studentId}-${e.moduleId}`
+            // status active + ends_at = scheduled to end (does not renew).
+            const scheduledEnd = e.status === 'active' && e.endsAt ? formatDate(e.endsAt) : ''
+            return (
+              <div key={key} style={{ display: 'grid', gap: 5 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 13.5 }}>
+                  <span style={{ color: '#1C2230' }}>
+                    {moduleName(e.moduleId)} Prep — {nameOf(e.studentId)}
+                    {e.status === 'past_due' && (
+                      <span style={{ color: '#B0432E', fontWeight: 600 }}> (payment past due)</span>
+                    )}
+                  </span>
+                  {scheduledEnd ? (
+                    <span className="muted" style={{ fontSize: 12.5, flexShrink: 0 }}>ends {scheduledEnd}</span>
+                  ) : (
+                    <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabel}</b>
+                  )}
+                </div>
+
+                {scheduledEnd ? null : confirming === key ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span className="muted" style={{ fontSize: 12.5 }}>
+                      Cancel {moduleName(e.moduleId)} Prep for {nameOf(e.studentId)}? Access ends now, and
+                      you’ll be credited for the unused part of this billing period.
+                    </span>
+                    <button
+                      className="btn btn-soft"
+                      style={{ fontSize: 12, padding: '4px 10px' }}
+                      disabled={cancelBusy}
+                      onClick={() => cancel(e.moduleId, e.studentId)}
+                    >
+                      {cancelBusy ? 'Canceling…' : 'Confirm cancel'}
+                    </button>
+                    <button
+                      className="btn btn-soft"
+                      style={{ fontSize: 12, padding: '4px 10px' }}
+                      disabled={cancelBusy}
+                      onClick={() => setConfirming(null)}
+                    >
+                      Keep
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="btn btn-soft"
+                    style={{ alignSelf: 'start', fontSize: 12, padding: '3px 9px' }}
+                    onClick={() => {
+                      setConfirming(key)
+                      setError('')
+                      setNotice('')
+                    }}
+                  >
+                    Cancel
+                  </button>
                 )}
-              </span>
-              <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabel}</b>
-            </div>
-          ))}
-          <p className="muted" style={{ fontSize: 12, margin: '2px 0 0' }}>
-            Manage or cancel these in “Manage billing” above. The billing portal manages the whole
-            subscription, so canceling there cancels the plan and every prep module together.
-          </p>
+              </div>
+            )
+          })}
         </div>
       )}
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { isSchoolCovered } from '@/lib/schoolSession'
 import { activeStudents, type Student } from '@/lib/students'
+import { ACTIVE_PREP_STATUSES, getPrepEntitlements } from '@/lib/prep/entitlements'
 import { getSubscription, type Subscription } from '@/lib/profile'
 import { billingPhase, seatCap } from '@/lib/accessGate'
 import { PlanPicker } from '@/components/PlanPicker'
@@ -42,6 +43,10 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
   const inFlight = useRef(false)
   // Snapshot the clock once at mount — a stable render-time value for the phase.
   const [now] = useState(() => Date.now())
+  // Whether any child has a live prep entitlement. A prep-only family can have one
+  // of these while their learning status is trial/expired, and still needs the
+  // portal — see the trial/expired branches below.
+  const [hasActivePrep, setHasActivePrep] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -54,6 +59,16 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
       active = false
     }
   }, [userId])
+
+  useEffect(() => {
+    let active = true
+    getPrepEntitlements(students.map((s) => s.id)).then((es) => {
+      if (active) setHasActivePrep(es.some((e) => ACTIVE_PREP_STATUSES.has(e.status)))
+    })
+    return () => {
+      active = false
+    }
+  }, [students])
 
   // When the user navigates to Stripe and then hits BACK, the page is restored
   // from the browser's bfcache with the component still mounted — so the portal
@@ -166,6 +181,12 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
           Subscribe any time to keep learning without interruption.
         </p>
         <PlanPicker students={students} userId={userId} email={email} ctaLabel="Subscribe now" />
+        {sub.stripeCustomerId && hasActivePrep && (
+          <button className="btn btn-soft" style={{ marginTop: 12 }} disabled={busy} onClick={portal}>
+            Manage billing
+          </button>
+        )}
+        {error && <p style={{ color: '#C0492F', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{error}</p>}
       </div>
     )
   }
@@ -185,6 +206,12 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
         Subscribe to unlock learning sessions and homework help again. Your children’s progress is saved.
       </p>
       <PlanPicker students={students} userId={userId} email={email} ctaLabel="Subscribe now" />
+      {sub?.stripeCustomerId && hasActivePrep && (
+        <button className="btn btn-soft" style={{ marginTop: 12 }} disabled={busy} onClick={portal}>
+          Manage billing
+        </button>
+      )}
+      {error && <p style={{ color: '#C0492F', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{error}</p>}
     </div>
   )
 }
