@@ -52,20 +52,37 @@ export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = 
     writing: ['essay-writing', 'research-skills', 'persuasive-writing', 'narrative-writing'],
   },
   '9-12': {
-    // Grade-11 skills (polynomial-operations … systems-of-equations) added with a
-    // real 20-question bank (seed 0011) so placement AND this walk share one set.
-    // Removed empty placeholders 'algebra','statistics-probability','geometry-proofs'
-    // (no question bank; logged for the Phase-2 grade-9/10/12 build).
+    // Full HS band, grade-ordered, every slug question-backed (seeds 0011 + 0012):
+    // grade 9 Algebra 1, grade 10 Geometry, grade 11 Algebra 2, grade 12 Precalc.
+    // The backlogged placeholders are now real skills (algebra → the Algebra 1 set;
+    // statistics-probability → data-statistics/combinatorics-probability;
+    // geometry-proofs authored). Placement (grade-anchored) and this walk share one set.
     math: [
+      'functions',
+      'linear-equations',
+      'linear-inequalities',
+      'graphing-linear-functions',
+      'systems-linear',
+      'exponent-rules',
+      'data-statistics',
       'hs-geometry',
+      'geometry-proofs',
+      'triangle-congruence',
+      'similarity-right-triangles',
+      'circle-geometry',
+      'coordinate-geometry',
       'algebra-2',
       'polynomial-operations',
       'rational-radical-expressions',
       'quadratic-functions',
       'systems-of-equations',
       'exponential-logarithmic',
-      'functions',
       'advanced-functions',
+      'trigonometric-functions',
+      'sequences-series',
+      'rational-functions',
+      'conic-sections',
+      'combinatorics-probability',
     ],
     reading: [
       'evidence-based-reading',

@@ -58,19 +58,33 @@ export const focusAreasByGrade: Record<GradeBand, {
   },
   '9-12': {
     math: [
-      // Grade-11 skills (seed 0011) — real 20-question banks; placement + lesson
-      // path share one set. Removed empty 'algebra','geometry-proofs',
-      // 'statistics-probability'. hs-geometry is distinct from the seeded 3-5
-      // 'geometry' skill (which keeps its own slug).
+      // Full HS band (seeds 0011 + 0012), grade-ordered; every slug question-backed.
+      // In lockstep with scopeSequence['9-12'].math — placement + lesson path, one set.
+      { value: 'functions', label: 'Functions' },
+      { value: 'linear-equations', label: 'Linear Equations' },
+      { value: 'linear-inequalities', label: 'Linear Inequalities' },
+      { value: 'graphing-linear-functions', label: 'Graphing Linear Functions' },
+      { value: 'systems-linear', label: 'Systems of Linear Equations' },
+      { value: 'exponent-rules', label: 'Exponent Rules' },
+      { value: 'data-statistics', label: 'Data & Statistics' },
       { value: 'hs-geometry', label: 'Geometry (HS)' },
+      { value: 'geometry-proofs', label: 'Geometry Proofs' },
+      { value: 'triangle-congruence', label: 'Triangle Congruence' },
+      { value: 'similarity-right-triangles', label: 'Similarity & Right Triangles' },
+      { value: 'circle-geometry', label: 'Circle Geometry' },
+      { value: 'coordinate-geometry', label: 'Coordinate Geometry' },
       { value: 'algebra-2', label: 'Algebra 2' },
       { value: 'polynomial-operations', label: 'Polynomial Operations' },
       { value: 'rational-radical-expressions', label: 'Rational & Radical Expressions' },
       { value: 'quadratic-functions', label: 'Quadratic Functions' },
       { value: 'systems-of-equations', label: 'Systems of Equations' },
       { value: 'exponential-logarithmic', label: 'Exponential & Logarithmic' },
-      { value: 'functions', label: 'Functions' },
       { value: 'advanced-functions', label: 'Advanced Functions' },
+      { value: 'trigonometric-functions', label: 'Trigonometric Functions' },
+      { value: 'sequences-series', label: 'Sequences & Series' },
+      { value: 'rational-functions', label: 'Rational Functions' },
+      { value: 'conic-sections', label: 'Conic Sections' },
+      { value: 'combinatorics-probability', label: 'Combinatorics & Probability' },
     ],
     reading: [
       { value: 'critical-analysis', label: 'Critical Analysis' },
