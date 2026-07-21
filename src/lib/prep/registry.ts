@@ -1,0 +1,15 @@
+import type { PrepModule } from './types'
+import { HSPT } from './hspt'
+import { ISEE } from './isee'
+
+/**
+ * All configured test-prep modules. SAT is intentionally not included yet, even
+ * though the PrepModule id type allows it. Follows the array-const + find-helper
+ * shape used by the other config registries (see subjects.ts, billing.ts).
+ */
+export const PREP_MODULES: PrepModule[] = [HSPT, ISEE]
+
+/** Look up a prep module by id, or undefined if it is not configured. */
+export function getPrepModule(id: PrepModule['id']): PrepModule | undefined {
+  return PREP_MODULES.find((m) => m.id === id)
+}
