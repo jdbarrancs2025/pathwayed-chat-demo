@@ -1,6 +1,6 @@
-import type { PrepModule } from './types'
-import { HSPT } from './hspt'
-import { ISEE } from './isee'
+import type { PrepModule } from './types.js'
+import { HSPT } from './hspt.js'
+import { ISEE } from './isee.js'
 
 /**
  * All configured test-prep modules. SAT is intentionally not included yet, even

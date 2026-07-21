@@ -1,4 +1,4 @@
-import type { PrepModule } from './types'
+import type { PrepModule } from './types.js'
 
 /**
  * HSPT (High School Placement Test) structure.

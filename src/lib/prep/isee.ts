@@ -1,4 +1,4 @@
-import type { PrepModule } from './types'
+import type { PrepModule } from './types.js'
 
 /**
  * ISEE (Independent School Entrance Exam) structure.
