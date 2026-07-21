@@ -7,9 +7,11 @@ import {
   cancelPrep,
   eligibilityReason,
   getPrepEntitlements,
+  getPrepSettings,
   isGradeEligible,
   previewCancelPrep,
   purchasePrep,
+  setPrepTestDate,
   type CancelPrepPreview,
   type PrepEntitlement,
 } from '@/lib/prep/entitlements'
@@ -53,6 +55,8 @@ export function AdmissionsPrepPanel({
   const [preview, setPreview] = useState<CancelPrepPreview | null>(null)
   const [cancelBusy, setCancelBusy] = useState(false)
 
+  const [settings, setSettings] = useState<Map<string, string | null>>(new Map())
+
   const studentIds = useMemo(() => students.map((s) => s.id), [students])
 
   useEffect(() => {
@@ -60,10 +64,29 @@ export function AdmissionsPrepPanel({
     getPrepEntitlements(studentIds).then((e) => {
       if (active) setEntitlements(e)
     })
+    getPrepSettings(studentIds).then((m) => {
+      if (active) setSettings(m)
+    })
     return () => {
       active = false
     }
   }, [studentIds])
+
+  // Parent sets a child's test date per module; it drives the kid tile + module
+  // header countdown. Optimistic, then a direct client write (owns_student grant).
+  const saveTestDate = async (studentId: string, mId: string, value: string) => {
+    const date = value || null
+    setSettings((prev) => {
+      const next = new Map(prev)
+      next.set(`${studentId}:${mId}`, date)
+      return next
+    })
+    try {
+      await setPrepTestDate(studentId, mId, date)
+    } catch {
+      setError('Could not save the test date.')
+    }
+  }
 
   const module = PREP_MODULES.find((m) => m.id === moduleId) ?? PREP_MODULES[0]
 
@@ -189,6 +212,17 @@ export function AdmissionsPrepPanel({
                     <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabel}</b>
                   )}
                 </div>
+
+                {/* Test date drives the child's home tile + module countdown. */}
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5, color: '#5A6172' }}>
+                  Test date
+                  <input
+                    type="date"
+                    value={settings.get(`${e.studentId}:${e.moduleId}`) ?? ''}
+                    onChange={(ev) => void saveTestDate(e.studentId, e.moduleId, ev.target.value)}
+                    style={{ padding: '5px 8px', border: '1.4px solid #ECE4D8', borderRadius: 8, fontSize: 13 }}
+                  />
+                </label>
 
                 {scheduledEnd ? null : confirming === key ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>

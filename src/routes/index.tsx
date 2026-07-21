@@ -23,6 +23,7 @@ import { TeacherSetup } from '@/pages/TeacherSetup'
 import { ParentSetup } from '@/pages/ParentSetup'
 import { StudentHome } from '@/pages/StudentHome'
 import { StudentSubject } from '@/pages/StudentSubject'
+import { PrepModuleHome } from '@/pages/prep/PrepModuleHome'
 
 export function AppRoutes() {
   return (
@@ -54,6 +55,12 @@ export function AppRoutes() {
       {/* Practice SAT — Phase 1: HS-only, consent-gated, Math-only. The page
           re-checks the gate and redirects anyone who fails it. */}
       <Route path="/students/:id/practice-sat" element={<SubscriptionGate><PracticeSat /></SubscriptionGate>} />
+      {/* Test-prep module shell (kid-facing). NOT behind SubscriptionGate: prep is
+          separately paid, so a prep-only family (expired/no learning plan but an
+          active prep entitlement) must still reach it. The page's own entitlement
+          check (active/past_due for this module) is the gate — it redirects home
+          otherwise. Child identity comes from getStudent(id) under RLS. */}
+      <Route path="/students/:id/prep/:moduleId" element={<PrepModuleHome />} />
       {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
           verification route; not yet wired into onboarding. */}
       <Route path="/students/:id/diagnostic" element={<Diagnostic />} />

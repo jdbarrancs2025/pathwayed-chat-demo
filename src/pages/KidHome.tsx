@@ -9,6 +9,7 @@ import { HOMEWORK } from '@/lib/subjects'
 import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
 import { AvatarModePicker } from '@/components/AvatarModePicker'
+import { PrepModuleTiles } from '@/components/prep/PrepModuleTiles'
 import '@/styles/app-screens.css'
 
 /**
@@ -224,6 +225,10 @@ export function KidHome() {
               </div>
             </button>
           )}
+
+          {/* Test-prep module tiles — one per module the child is entitled to
+              (status 'active' only). Renders nothing when there are none. */}
+          <PrepModuleTiles studentId={student.id} />
         </section>
 
         <div className="foot">
