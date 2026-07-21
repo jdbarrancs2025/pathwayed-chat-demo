@@ -58,14 +58,18 @@ export const focusAreasByGrade: Record<GradeBand, {
   },
   '9-12': {
     math: [
-      { value: 'algebra', label: 'Algebra' },
-      { value: 'geometry-proofs', label: 'Geometry Proofs' },
-      { value: 'functions', label: 'Functions' },
-      { value: 'statistics-probability', label: 'Statistics & Probability' },
-      // SAT 6-12 ladder (seed 0002) — hs-geometry is distinct from the seeded
-      // 3-5 'geometry' skill (which keeps its own slug).
+      // Grade-11 skills (seed 0011) — real 20-question banks; placement + lesson
+      // path share one set. Removed empty 'algebra','geometry-proofs',
+      // 'statistics-probability'. hs-geometry is distinct from the seeded 3-5
+      // 'geometry' skill (which keeps its own slug).
       { value: 'hs-geometry', label: 'Geometry (HS)' },
       { value: 'algebra-2', label: 'Algebra 2' },
+      { value: 'polynomial-operations', label: 'Polynomial Operations' },
+      { value: 'rational-radical-expressions', label: 'Rational & Radical Expressions' },
+      { value: 'quadratic-functions', label: 'Quadratic Functions' },
+      { value: 'systems-of-equations', label: 'Systems of Equations' },
+      { value: 'exponential-logarithmic', label: 'Exponential & Logarithmic' },
+      { value: 'functions', label: 'Functions' },
       { value: 'advanced-functions', label: 'Advanced Functions' },
     ],
     reading: [

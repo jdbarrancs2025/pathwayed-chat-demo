@@ -52,14 +52,20 @@ export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = 
     writing: ['essay-writing', 'research-skills', 'persuasive-writing', 'narrative-writing'],
   },
   '9-12': {
+    // Grade-11 skills (polynomial-operations … systems-of-equations) added with a
+    // real 20-question bank (seed 0011) so placement AND this walk share one set.
+    // Removed empty placeholders 'algebra','statistics-probability','geometry-proofs'
+    // (no question bank; logged for the Phase-2 grade-9/10/12 build).
     math: [
-      'algebra',
+      'hs-geometry',
       'algebra-2',
+      'polynomial-operations',
+      'rational-radical-expressions',
+      'quadratic-functions',
+      'systems-of-equations',
+      'exponential-logarithmic',
       'functions',
       'advanced-functions',
-      'statistics-probability',
-      'hs-geometry',
-      'geometry-proofs',
     ],
     reading: [
       'evidence-based-reading',

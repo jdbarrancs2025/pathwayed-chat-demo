@@ -49,6 +49,33 @@ insert into public.skills (id, level, parent_id, subject, name, slug, grade_band
 values (md5('pe-aos:skill-probability-models')::uuid, 'skill', md5('pe-aos:dom-math-sp7')::uuid, 'math', 'Probability', 'probability-models', '6-8', 'problem-solving-data-analysis', '7', 7, 'CCSS.MATH.CONTENT.7.SP.C', '{}')
 on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
 
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, prerequisite_skills)
+values (md5('pe-aos:dom-math-apr11')::uuid, 'domain', md5('pe-aos:subj-math')::uuid, 'math', 'Polynomials & Rational Expressions', null, '9-12', null, '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, grade_band=excluded.grade_band;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-polynomial-operations')::uuid, 'skill', md5('pe-aos:dom-math-apr11')::uuid, 'math', 'Polynomial Operations', 'polynomial-operations', '9-12', 'advanced-math', '11', 11, 'CCSS.MATH.CONTENT.HSA.APR.A.1', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-rational-radical-expressions')::uuid, 'skill', md5('pe-aos:dom-math-apr11')::uuid, 'math', 'Rational & Radical Expressions', 'rational-radical-expressions', '9-12', 'advanced-math', '11', 11, 'CCSS.MATH.CONTENT.HSA.APR.D.6', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, prerequisite_skills)
+values (md5('pe-aos:dom-math-fn11')::uuid, 'domain', md5('pe-aos:subj-math')::uuid, 'math', 'Functions', null, '9-12', null, '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, grade_band=excluded.grade_band;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-quadratic-functions')::uuid, 'skill', md5('pe-aos:dom-math-fn11')::uuid, 'math', 'Quadratic Functions', 'quadratic-functions', '9-12', 'advanced-math', '11', 11, 'CCSS.MATH.CONTENT.HSF.IF.C.7', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-exponential-logarithmic')::uuid, 'skill', md5('pe-aos:dom-math-fn11')::uuid, 'math', 'Exponential & Logarithmic', 'exponential-logarithmic', '9-12', 'advanced-math', '11', 11, 'CCSS.MATH.CONTENT.HSF.LE.A.4', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, prerequisite_skills)
+values (md5('pe-aos:dom-math-eq11')::uuid, 'domain', md5('pe-aos:subj-math')::uuid, 'math', 'Reasoning with Equations & Inequalities', null, '9-12', null, '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, grade_band=excluded.grade_band;
+insert into public.skills (id, level, parent_id, subject, name, slug, grade_band, sat_alignment, ccss_grade, ccss_grade_num, ccss_code, prerequisite_skills)
+values (md5('pe-aos:skill-systems-of-equations')::uuid, 'skill', md5('pe-aos:dom-math-eq11')::uuid, 'math', 'Systems of Equations', 'systems-of-equations', '9-12', 'algebra', '11', 11, 'CCSS.MATH.CONTENT.HSA.REI.C.7', '{}')
+on conflict (id) do update set level=excluded.level, parent_id=excluded.parent_id, subject=excluded.subject, name=excluded.name, slug=excluded.slug, grade_band=excluded.grade_band, sat_alignment=excluded.sat_alignment, ccss_grade=excluded.ccss_grade, ccss_grade_num=excluded.ccss_grade_num, ccss_code=excluded.ccss_code;
+
 -- rational-number-operations (Operations with Rational Numbers, grade 7, CCSS.MATH.CONTENT.7.NS.A) — 20 items
 insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
@@ -599,7 +626,7 @@ values
    null,
    (select id from public.skills where slug = 'percent-applications'),
    'problem-solving-data-analysis', 'medium',
-   $q$A price rises from $40 to $50. What is the percent increase?$q$, $q$[{"text":"10%","is_correct":false,"misconception_token":"used-difference-as-percent"},{"text":"20%","is_correct":false,"misconception_token":"divided-by-new-not-original"},{"text":"25%","is_correct":true},{"text":"125%","is_correct":false,"misconception_token":"used-ratio-of-prices"}]$q$::jsonb, $q$25%$q$, $q$Increase = 10; percent = 10 ÷ 40 (the original) = 0.25 = 25%.$q$, 'published')
+   $q$A price rises from 40 dollars to 50 dollars. What is the percent increase?$q$, $q$[{"text":"10%","is_correct":false,"misconception_token":"used-difference-as-percent"},{"text":"20%","is_correct":false,"misconception_token":"divided-by-new-not-original"},{"text":"25%","is_correct":true},{"text":"125%","is_correct":false,"misconception_token":"used-ratio-of-prices"}]$q$::jsonb, $q$25%$q$, $q$Increase = 10; percent = 10 ÷ 40 (the original) = 0.25 = 25%.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1848,6 +1875,1816 @@ values
    (select id from public.skills where slug = 'probability-models'),
    'problem-solving-data-analysis', 'hard',
    $q$A bag has 3 red and 2 blue marbles. Two are drawn WITHOUT replacement. What is the probability both are red?$q$, $q$[{"text":"$\\frac{3}{10}$","is_correct":true},{"text":"$\\frac{3}{5}$","is_correct":false,"misconception_token":"used-one-draw"},{"text":"$\\frac{1}{2}$","is_correct":false,"misconception_token":"guessed"},{"text":"$\\frac{9}{25}$","is_correct":false,"misconception_token":"used-with-replacement"}]$q$::jsonb, $q$$\frac{3}{10}$$q$, $q$First red 3/5, then 2 red of 4 left: 3/5 × 2/4 = 6/20 = 3/10.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- polynomial-operations (Polynomial Operations, grade 11, CCSS.MATH.CONTENT.HSA.APR.A.1) — 20 items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fdf2f0bc-b651-53c9-a1af-057a09a8f220',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Add: $(3x^2 + 2x) + (x^2 + 5x)$.$q$, $q$[{"text":"$3x^2 + 7x$","is_correct":false,"misconception_token":"dropped-a-term"},{"text":"$4x^2 + 7x$","is_correct":true},{"text":"$4x^2 + 10x$","is_correct":false,"misconception_token":"added-unlike-terms"},{"text":"$4x^4 + 7x^2$","is_correct":false,"misconception_token":"added-exponents"}]$q$::jsonb, $q$$4x^2 + 7x$$q$, $q$Combine like terms: 3x² + x² = 4x²; 2x + 5x = 7x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9dd6d073-d50b-5cdd-b215-7bbad881f8fd',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Subtract: $(5x^2 - 3x) - (2x^2 + x)$.$q$, $q$[{"text":"$3x^2 - 4x$","is_correct":true},{"text":"$7x^2 - 4x$","is_correct":false,"misconception_token":"added-first-terms"},{"text":"$3x^2 - 2x$","is_correct":false,"misconception_token":"did-not-distribute-minus"},{"text":"$3x^2 + 4x$","is_correct":false,"misconception_token":"sign-error"}]$q$::jsonb, $q$$3x^2 - 4x$$q$, $q$Distribute the minus: 5x² - 3x - 2x² - x = 3x² - 4x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9dec1dd9-041b-5e71-bb26-6f236259d7e8',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Multiply: $2x(3x + 4)$.$q$, $q$[{"text":"$6x + 8$","is_correct":false,"misconception_token":"dropped-a-variable"},{"text":"$6x^2 + 8x$","is_correct":true},{"text":"$8x^2$","is_correct":false,"misconception_token":"combined-unlike-terms"},{"text":"$6x^2 + 4x$","is_correct":false,"misconception_token":"partial-distribution"}]$q$::jsonb, $q$$6x^2 + 8x$$q$, $q$Distribute: 2x·3x = 6x²; 2x·4 = 8x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('48f5f77b-4304-5612-ae77-f152f44b91b1',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Multiply: $(x + 3)(x + 2)$.$q$, $q$[{"text":"$x^2 + 5x + 6$","is_correct":true},{"text":"$x^2 + 6$","is_correct":false,"misconception_token":"only-first-and-last"},{"text":"$x^2 + 5x + 5$","is_correct":false,"misconception_token":"added-instead-of-multiplying-constants"},{"text":"$x^2 + 6x + 6$","is_correct":false,"misconception_token":"added-inner-outer-wrong"}]$q$::jsonb, $q$$x^2 + 5x + 6$$q$, $q$FOIL: x² + 2x + 3x + 6 = x² + 5x + 6.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c1ccf25c-26b3-5a4d-b327-1027355ed408',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$What is the degree of $4x^3 + 2x^2 - 7$?$q$, $q$[{"text":"4","is_correct":false,"misconception_token":"used-leading-coefficient"},{"text":"9","is_correct":false,"misconception_token":"summed-exponents"},{"text":"2","is_correct":false,"misconception_token":"used-second-term"},{"text":"3","is_correct":true}]$q$::jsonb, $q$3$q$, $q$The degree is the highest exponent, which is 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0e70934a-12ec-5111-be4a-f6264a095153',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Simplify: $(x^2)(x^3)$.$q$, $q$[{"text":"$x^{-1}$","is_correct":false,"misconception_token":"subtracted-exponents"},{"text":"$2x^5$","is_correct":false,"misconception_token":"added-a-coefficient"},{"text":"$x^6$","is_correct":false,"misconception_token":"multiplied-exponents"},{"text":"$x^5$","is_correct":true}]$q$::jsonb, $q$$x^5$$q$, $q$Multiplying powers adds exponents: x^(2+3) = x⁵.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0df817b4-c07b-5ea3-b3c7-b883583f6c9a',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Factor: $x^2 + 5x$.$q$, $q$[{"text":"$x(x - 5)$","is_correct":false,"misconception_token":"sign-error"},{"text":"$(x + 5)$","is_correct":false,"misconception_token":"dropped-the-factor"},{"text":"$x(x + 5)$","is_correct":true},{"text":"$x^2 + 5$","is_correct":false,"misconception_token":"did-not-factor"}]$q$::jsonb, $q$$x(x + 5)$$q$, $q$Factor out the common x: x(x + 5).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('9d5cc8a9-2a94-5bbb-9899-7a50d22bd82c',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'easy',
+   $q$Simplify: $-(2x - 3)$.$q$, $q$[{"text":"$2x + 3$","is_correct":false,"misconception_token":"flipped-only-second"},{"text":"$-2x - 3$","is_correct":false,"misconception_token":"did-not-distribute-to-second"},{"text":"$-2x + 3$","is_correct":true},{"text":"$2x - 3$","is_correct":false,"misconception_token":"ignored-negative"}]$q$::jsonb, $q$$-2x + 3$$q$, $q$Distribute the negative to both terms: -2x + 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('93be1b90-6262-5b2b-a23f-94512a201d3b',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Add: $(2x^2 + 3x - 1) + (x^2 - 4x + 5)$.$q$, $q$[{"text":"$3x^2 - x + 4$","is_correct":true},{"text":"$3x^2 + 7x + 4$","is_correct":false,"misconception_token":"added-middle-signs-wrong"},{"text":"$3x^4 - x + 4$","is_correct":false,"misconception_token":"added-exponents"},{"text":"$3x^2 - x - 4$","is_correct":false,"misconception_token":"constant-sign-error"}]$q$::jsonb, $q$$3x^2 - x + 4$$q$, $q$3x²; 3x - 4x = -x; -1 + 5 = 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0728b57e-1688-56d7-b8f3-c6f141437a5c',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Multiply: $(3x - 2)(x + 4)$.$q$, $q$[{"text":"$3x^2 + 10x + 8$","is_correct":false,"misconception_token":"last-term-sign-error"},{"text":"$3x^2 + 14x - 8$","is_correct":false,"misconception_token":"added-inner-outer-wrong"},{"text":"$3x^2 + 10x - 8$","is_correct":true},{"text":"$3x^2 - 8$","is_correct":false,"misconception_token":"only-first-and-last"}]$q$::jsonb, $q$$3x^2 + 10x - 8$$q$, $q$FOIL: 3x² + 12x - 2x - 8 = 3x² + 10x - 8.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f1a1bbd6-fc02-5358-ac9c-d1cf73f31451',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Multiply: $(x - 5)(x + 5)$.$q$, $q$[{"text":"$x^2 - 10x + 25$","is_correct":false,"misconception_token":"treated-as-square"},{"text":"$x^2 + 25$","is_correct":false,"misconception_token":"sign-error"},{"text":"$x^2 - 25$","is_correct":true},{"text":"$x^2 - 10$","is_correct":false,"misconception_token":"added-instead-of-multiplying"}]$q$::jsonb, $q$$x^2 - 25$$q$, $q$Difference of squares: x² - 25.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a81d992c-d1a4-5938-a49f-86b2447fadc6',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Expand: $(x + 4)^2$.$q$, $q$[{"text":"$x^2 + 8x + 8$","is_correct":false,"misconception_token":"wrong-constant"},{"text":"$x^2 + 16$","is_correct":false,"misconception_token":"forgot-middle-term"},{"text":"$x^2 + 16x + 16$","is_correct":false,"misconception_token":"doubled-wrong-term"},{"text":"$x^2 + 8x + 16$","is_correct":true}]$q$::jsonb, $q$$x^2 + 8x + 16$$q$, $q$(x+4)² = x² + 2·4·x + 16 = x² + 8x + 16.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('55ffce9f-ac40-51fc-8d20-57d8f65ab4bf',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Factor: $x^2 - 9$.$q$, $q$[{"text":"$(x - 3)^2$","is_correct":false,"misconception_token":"treated-as-perfect-square"},{"text":"$(x - 3)(x + 3)$","is_correct":true},{"text":"$(x - 9)(x + 1)$","is_correct":false,"misconception_token":"wrong-factor-pair"},{"text":"$(x + 3)^2$","is_correct":false,"misconception_token":"sign-error"}]$q$::jsonb, $q$$(x - 3)(x + 3)$$q$, $q$Difference of squares: x² - 9 = (x - 3)(x + 3).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('59248457-b059-5221-a8a1-4b56da09a405',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Factor: $x^2 + 7x + 12$.$q$, $q$[{"text":"$(x - 3)(x - 4)$","is_correct":false,"misconception_token":"sign-error"},{"text":"$(x + 2)(x + 6)$","is_correct":false,"misconception_token":"wrong-factor-pair-right-product"},{"text":"$(x + 3)(x + 4)$","is_correct":true},{"text":"$(x + 1)(x + 12)$","is_correct":false,"misconception_token":"used-product-not-sum"}]$q$::jsonb, $q$$(x + 3)(x + 4)$$q$, $q$Two numbers multiply to 12 and add to 7: 3 and 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3fd9ebc0-021d-58d1-9dba-fe6e067409a0',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Factor: $x^2 - 5x + 6$.$q$, $q$[{"text":"$(x - 2)(x + 3)$","is_correct":false,"misconception_token":"mixed-signs"},{"text":"$(x + 2)(x + 3)$","is_correct":false,"misconception_token":"sign-error"},{"text":"$(x - 1)(x - 6)$","is_correct":false,"misconception_token":"used-product-not-sum"},{"text":"$(x - 2)(x - 3)$","is_correct":true}]$q$::jsonb, $q$$(x - 2)(x - 3)$$q$, $q$Two numbers multiply to 6 and add to -5: -2 and -3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('7ba4b0d8-3ef3-5f68-a713-de18d2ae8107',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$Divide: $\dfrac{6x^3 + 4x^2}{2x}$.$q$, $q$[{"text":"$3x^2 + 2x$","is_correct":true},{"text":"$3x + 2$","is_correct":false,"misconception_token":"over-reduced-exponents"},{"text":"$3x^2 + 2$","is_correct":false,"misconception_token":"dropped-a-variable"},{"text":"$3x^3 + 2x^2$","is_correct":false,"misconception_token":"did-not-reduce-exponents"}]$q$::jsonb, $q$$3x^2 + 2x$$q$, $q$Divide each term by 2x: 6x³/2x = 3x²; 4x²/2x = 2x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b3b4db7d-4c10-5f74-8fcd-7849245853c3',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$What are the zeros of $(x - 2)(x + 5)$?$q$, $q$[{"text":"$x = 2,\\ x = 5$","is_correct":false,"misconception_token":"ignored-negative"},{"text":"$x = -2,\\ x = -5$","is_correct":false,"misconception_token":"both-signs-wrong"},{"text":"$x = -2,\\ x = 5$","is_correct":false,"misconception_token":"sign-flip"},{"text":"$x = 2,\\ x = -5$","is_correct":true}]$q$::jsonb, $q$$x = 2,\ x = -5$$q$, $q$Set each factor to 0: x - 2 = 0 → x = 2; x + 5 = 0 → x = -5.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b701ce1f-f9ee-58a8-a3d3-8db8bb59d26a',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'medium',
+   $q$By the Remainder Theorem, what is the remainder when $P(x) = x^2 - 4$ is divided by $(x - 3)$?$q$, $q$[{"text":"5","is_correct":true},{"text":"13","is_correct":false,"misconception_token":"added-instead-of-subtracting"},{"text":"1","is_correct":false,"misconception_token":"arithmetic-slip"},{"text":"6","is_correct":false,"misconception_token":"used-3x-not-x-squared"}]$q$::jsonb, $q$5$q$, $q$Remainder = P(3) = 3² - 4 = 9 - 4 = 5.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2ccb1e6a-87a7-55fe-a3a7-7c66a40dfe88',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'hard',
+   $q$Multiply: $(x + 2)(x^2 - 3x + 1)$.$q$, $q$[{"text":"$x^3 - 5x^2 - 5x + 2$","is_correct":false,"misconception_token":"combined-x2-terms-wrong"},{"text":"$x^3 - x^2 + 5x + 2$","is_correct":false,"misconception_token":"x-term-sign-error"},{"text":"$x^3 - x^2 - 5x + 2$","is_correct":true},{"text":"$x^3 - x^2 - 5x - 2$","is_correct":false,"misconception_token":"constant-sign-error"}]$q$::jsonb, $q$$x^3 - x^2 - 5x + 2$$q$, $q$x³ - 3x² + x + 2x² - 6x + 2 = x³ - x² - 5x + 2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ddf0a2ed-5806-5130-b16c-3dca0872b70d',
+   null,
+   (select id from public.skills where slug = 'polynomial-operations'),
+   'advanced-math', 'hard',
+   $q$Factor completely: $2x^2 + 10x + 12$.$q$, $q$[{"text":"$2(x + 2)(x + 3)$","is_correct":true},{"text":"$2(x + 1)(x + 6)$","is_correct":false,"misconception_token":"wrong-factor-pair"},{"text":"$(x + 2)(x + 3)$","is_correct":false,"misconception_token":"dropped-the-gcf"},{"text":"$(2x + 4)(x + 3)$","is_correct":false,"misconception_token":"not-fully-factored"}]$q$::jsonb, $q$$2(x + 2)(x + 3)$$q$, $q$GCF 2: 2(x² + 5x + 6) = 2(x + 2)(x + 3).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- rational-radical-expressions (Rational & Radical Expressions, grade 11, CCSS.MATH.CONTENT.HSA.APR.D.6) — 20 items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e9448431-cee3-5dae-8aed-614fef7646c9',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Simplify: $\sqrt{36}$.$q$, $q$[{"text":"1296","is_correct":false,"misconception_token":"squared-instead"},{"text":"6","is_correct":true},{"text":"18","is_correct":false,"misconception_token":"halved-instead-of-rooting"},{"text":"72","is_correct":false,"misconception_token":"doubled"}]$q$::jsonb, $q$6$q$, $q$6 × 6 = 36, so √36 = 6.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('032473c1-cefe-5b09-b352-8c47e8a73dad',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Simplify: $\sqrt{50}$.$q$, $q$[{"text":"$5\\sqrt{2}$","is_correct":true},{"text":"$2\\sqrt{5}$","is_correct":false,"misconception_token":"swapped-factors"},{"text":"$25\\sqrt{2}$","is_correct":false,"misconception_token":"did-not-root-the-square"},{"text":"$5\\sqrt{10}$","is_correct":false,"misconception_token":"wrong-factor-pair"}]$q$::jsonb, $q$$5\sqrt{2}$$q$, $q$√50 = √(25·2) = 5√2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0c6999ff-b2f0-57df-ac98-a1ca052a845d',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $8^{1/3}$.$q$, $q$[{"text":"24","is_correct":false,"misconception_token":"multiplied-by-power"},{"text":"2","is_correct":true},{"text":"512","is_correct":false,"misconception_token":"cubed-instead"},{"text":"4","is_correct":false,"misconception_token":"divided-by-power"}]$q$::jsonb, $q$2$q$, $q$8^(1/3) is the cube root of 8, which is 2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ab104601-8608-56bd-beb0-f3eadf33ea2d',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Simplify (for $x \neq 0$): $\dfrac{x^2}{x}$.$q$, $q$[{"text":"$x$","is_correct":true},{"text":"$x^2$","is_correct":false,"misconception_token":"did-not-reduce"},{"text":"$x^3$","is_correct":false,"misconception_token":"added-exponents"},{"text":"$1$","is_correct":false,"misconception_token":"cancelled-everything"}]$q$::jsonb, $q$$x$$q$, $q$x²/x = x^(2-1) = x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('535ac190-e569-520d-9597-f926fec5f802',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Simplify (for $x \neq 0$): $\dfrac{xy}{x}$.$q$, $q$[{"text":"$xy$","is_correct":false,"misconception_token":"did-not-cancel"},{"text":"$1$","is_correct":false,"misconception_token":"cancelled-everything"},{"text":"$x$","is_correct":false,"misconception_token":"cancelled-wrong-variable"},{"text":"$y$","is_correct":true}]$q$::jsonb, $q$$y$$q$, $q$The x cancels, leaving y.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('7fe4deb7-6a87-5a6f-9179-8075aa0a8cea',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $16^{1/2}$.$q$, $q$[{"text":"256","is_correct":false,"misconception_token":"squared-instead"},{"text":"32","is_correct":false,"misconception_token":"multiplied"},{"text":"8","is_correct":false,"misconception_token":"halved-instead-of-rooting"},{"text":"4","is_correct":true}]$q$::jsonb, $q$4$q$, $q$16^(1/2) = √16 = 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('85d9ed5f-c4a5-5829-b744-d6fdf6afe13e',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $\sqrt{9} + \sqrt{16}$.$q$, $q$[{"text":"25","is_correct":false,"misconception_token":"added-under-root-no-root"},{"text":"5","is_correct":false,"misconception_token":"rooted-the-sum"},{"text":"7","is_correct":true},{"text":"12","is_correct":false,"misconception_token":"arithmetic-slip"}]$q$::jsonb, $q$7$q$, $q$√9 = 3 and √16 = 4, so 3 + 4 = 7.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('993da206-1d32-5919-95a6-4ef997c6fbef',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'easy',
+   $q$Simplify (for $x \neq 0$): $\dfrac{6x^2}{2x}$.$q$, $q$[{"text":"$4x$","is_correct":false,"misconception_token":"subtracted-coefficients"},{"text":"$3x^2$","is_correct":false,"misconception_token":"did-not-reduce-exponent"},{"text":"$3x$","is_correct":true},{"text":"$3$","is_correct":false,"misconception_token":"cancelled-all-x"}]$q$::jsonb, $q$$3x$$q$, $q$6/2 = 3 and x²/x = x, so 3x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0722da24-2953-5e4e-9cc7-32bb9b34f577',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Simplify (for $x \neq 3$): $\dfrac{x^2 - 9}{x - 3}$.$q$, $q$[{"text":"$x + 3$","is_correct":true},{"text":"$x - 3$","is_correct":false,"misconception_token":"sign-error"},{"text":"$3$","is_correct":false,"misconception_token":"cancelled-terms-not-factors"},{"text":"$x + 9$","is_correct":false,"misconception_token":"kept-constant"}]$q$::jsonb, $q$$x + 3$$q$, $q$x² - 9 = (x - 3)(x + 3); cancel (x - 3) to get x + 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e5bec39f-643a-5f37-9376-2223fa0260b8',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Simplify (for $x \neq -2$): $\dfrac{x^2 + 5x + 6}{x + 2}$.$q$, $q$[{"text":"$x + 2$","is_correct":false,"misconception_token":"cancelled-wrong-factor"},{"text":"$x + 6$","is_correct":false,"misconception_token":"kept-constant"},{"text":"$x + 3$","is_correct":true},{"text":"$x - 3$","is_correct":false,"misconception_token":"sign-error"}]$q$::jsonb, $q$$x + 3$$q$, $q$Factor: (x + 2)(x + 3)/(x + 2) = x + 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('cfb494da-e5ad-50ed-85d6-e723287a2574',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Multiply: $\dfrac{2}{x} \cdot \dfrac{3}{x^2}$.$q$, $q$[{"text":"$\\dfrac{5}{x^3}$","is_correct":false,"misconception_token":"added-numerators"},{"text":"$\\dfrac{6}{x^2}$","is_correct":false,"misconception_token":"did-not-add-exponents"},{"text":"$\\dfrac{6}{x^3}$","is_correct":true},{"text":"$\\dfrac{6}{x}$","is_correct":false,"misconception_token":"subtracted-exponents"}]$q$::jsonb, $q$$\dfrac{6}{x^3}$$q$, $q$Multiply across: (2·3)/(x·x²) = 6/x³.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('54986753-6ad4-53f5-bf3b-17514e293f3a',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Add (for $x \neq 0$): $\dfrac{1}{x} + \dfrac{2}{x}$.$q$, $q$[{"text":"$\\dfrac{3}{x^2}$","is_correct":false,"misconception_token":"multiplied-denominators"},{"text":"$\\dfrac{3}{2x}$","is_correct":false,"misconception_token":"added-denominators"},{"text":"$\\dfrac{2}{x^2}$","is_correct":false,"misconception_token":"multiplied-instead-of-adding"},{"text":"$\\dfrac{3}{x}$","is_correct":true}]$q$::jsonb, $q$$\dfrac{3}{x}$$q$, $q$Same denominator: (1 + 2)/x = 3/x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('afb576b9-ced4-50f2-9b82-e36596bc091f',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Simplify (for $x \geq 0$): $\sqrt{x^2}$.$q$, $q$[{"text":"$x^2$","is_correct":false,"misconception_token":"did-not-root"},{"text":"$x$","is_correct":true},{"text":"$\\sqrt{x}$","is_correct":false,"misconception_token":"half-rooted"},{"text":"$2x$","is_correct":false,"misconception_token":"multiplied-by-index"}]$q$::jsonb, $q$$x$$q$, $q$For x ≥ 0, √(x²) = x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('f0dc2b69-1f3a-54e6-b59b-fc3ad926d29d',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Simplify: $\sqrt{8} \cdot \sqrt{2}$.$q$, $q$[{"text":"$2\\sqrt{2}$","is_correct":false,"misconception_token":"stopped-early"},{"text":"$\\sqrt{10}$","is_correct":false,"misconception_token":"added-under-root"},{"text":"4","is_correct":true},{"text":"16","is_correct":false,"misconception_token":"did-not-take-root"}]$q$::jsonb, $q$4$q$, $q$√8·√2 = √16 = 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('61252fd7-5802-58fd-a225-8aa4ac282611',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Simplify (for $x, y \neq 0$): $\dfrac{x^3 y^2}{xy}$.$q$, $q$[{"text":"$x^3 y$","is_correct":false,"misconception_token":"did-not-reduce-x"},{"text":"$x^2 y^2$","is_correct":false,"misconception_token":"did-not-reduce-y"},{"text":"$x^4 y^3$","is_correct":false,"misconception_token":"added-exponents"},{"text":"$x^2 y$","is_correct":true}]$q$::jsonb, $q$$x^2 y$$q$, $q$x³/x = x²; y²/y = y, so x²y.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ead00e6c-7c6d-532c-98c4-84cfe008b096',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Evaluate: $27^{2/3}$.$q$, $q$[{"text":"9","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"ignored-the-power-2"},{"text":"729","is_correct":false,"misconception_token":"used-exponent-2-3"},{"text":"18","is_correct":false,"misconception_token":"multiplied-by-fraction"}]$q$::jsonb, $q$9$q$, $q$27^(2/3) = (27^(1/3))² = 3² = 9.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('bf0e574f-074e-598f-8a76-a6e4378f2b89',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Divide: $\dfrac{x/3}{2/x}$ (for $x \neq 0$).$q$, $q$[{"text":"$\\dfrac{6}{x^2}$","is_correct":false,"misconception_token":"did-not-flip"},{"text":"$\\dfrac{x}{6}$","is_correct":false,"misconception_token":"dropped-a-variable"},{"text":"$\\dfrac{2}{3}$","is_correct":false,"misconception_token":"cancelled-x-wrong"},{"text":"$\\dfrac{x^2}{6}$","is_correct":true}]$q$::jsonb, $q$$\dfrac{x^2}{6}$$q$, $q$Multiply by the reciprocal: (x/3)·(x/2) = x²/6.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c6cfe185-e89d-53a6-896e-933056e4b42d',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'medium',
+   $q$Simplify (for $x \geq 0$): $\sqrt{4x^2}$.$q$, $q$[{"text":"$2x$","is_correct":true},{"text":"$4x$","is_correct":false,"misconception_token":"did-not-root-the-4"},{"text":"$\\sqrt{2}x$","is_correct":false,"misconception_token":"wrong-root-of-4"},{"text":"$2x^2$","is_correct":false,"misconception_token":"did-not-root-the-x"}]$q$::jsonb, $q$$2x$$q$, $q$√4 = 2 and √(x²) = x, so 2x.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('692ef035-0a57-5bf9-bb2c-da295d3345c2',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'hard',
+   $q$Simplify (for $x \neq -2$): $\dfrac{x^2 - 4}{x^2 + 4x + 4}$.$q$, $q$[{"text":"$\\dfrac{x + 2}{x - 2}$","is_correct":false,"misconception_token":"inverted-result"},{"text":"$1$","is_correct":false,"misconception_token":"cancelled-everything"},{"text":"$\\dfrac{x - 2}{x + 2}$","is_correct":true},{"text":"$\\dfrac{1}{x + 2}$","is_correct":false,"misconception_token":"dropped-a-factor"}]$q$::jsonb, $q$$\dfrac{x - 2}{x + 2}$$q$, $q$(x-2)(x+2) / (x+2)² = (x - 2)/(x + 2).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a06d40aa-63e4-55ef-b318-6d89bfee89b9',
+   null,
+   (select id from public.skills where slug = 'rational-radical-expressions'),
+   'advanced-math', 'hard',
+   $q$Simplify: $\sqrt{18} + \sqrt{8}$.$q$, $q$[{"text":"$5\\sqrt{2}$","is_correct":true},{"text":"$6\\sqrt{2}$","is_correct":false,"misconception_token":"arithmetic-slip"},{"text":"$5\\sqrt{10}$","is_correct":false,"misconception_token":"wrong-radicand"},{"text":"$\\sqrt{26}$","is_correct":false,"misconception_token":"added-under-root"}]$q$::jsonb, $q$$5\sqrt{2}$$q$, $q$√18 = 3√2, √8 = 2√2; 3√2 + 2√2 = 5√2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- quadratic-functions (Quadratic Functions, grade 11, CCSS.MATH.CONTENT.HSF.IF.C.7) — 20 items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c5986ec4-7d39-5875-a90b-ee66231d7757',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$What is the vertex of $y = x^2 + 3$?$q$, $q$[{"text":"$(-3, 0)$","is_correct":false,"misconception_token":"swapped-and-sign"},{"text":"$(0, 3)$","is_correct":true},{"text":"$(3, 0)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(0, -3)$","is_correct":false,"misconception_token":"sign-error"}]$q$::jsonb, $q$$(0, 3)$$q$, $q$y = x² + 3 has vertex at (0, 3) — shifted up 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('02fae45f-b731-543a-b889-2ce5313ce47e',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$The parabola $y = -2x^2$ opens:$q$, $q$[{"text":"downward","is_correct":true},{"text":"sideways","is_correct":false,"misconception_token":"confused-with-x-equals"},{"text":"upward","is_correct":false,"misconception_token":"ignored-negative-leading"},{"text":"it is a straight line","is_correct":false,"misconception_token":"not-recognized-as-quadratic"}]$q$::jsonb, $q$downward$q$, $q$A negative leading coefficient opens the parabola downward.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2aa39117-2fb0-553d-96b5-062330b16dcf',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$What is the axis of symmetry of $y = x^2$?$q$, $q$[{"text":"$x = 1$","is_correct":false,"misconception_token":"guessed-nonzero"},{"text":"$x = 0$","is_correct":true},{"text":"$x = 2$","is_correct":false,"misconception_token":"guessed-value"},{"text":"$y = 0$","is_correct":false,"misconception_token":"used-wrong-variable"}]$q$::jsonb, $q$$x = 0$$q$, $q$The axis of symmetry passes through the vertex (0,0): x = 0.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('edd98cc3-2e47-5dc0-8f33-f4a8438a6ad2',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$What are the x-intercepts of $y = (x - 4)(x + 2)$?$q$, $q$[{"text":"$x = 4,\\ x = -2$","is_correct":true},{"text":"$x = -4,\\ x = 2$","is_correct":false,"misconception_token":"sign-flip"},{"text":"$x = 4,\\ x = 2$","is_correct":false,"misconception_token":"ignored-negative"},{"text":"$x = -4,\\ x = -2$","is_correct":false,"misconception_token":"both-signs-wrong"}]$q$::jsonb, $q$$x = 4,\ x = -2$$q$, $q$Set each factor to 0: x = 4 and x = -2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3a6fc85a-6b2d-5c7f-836b-e84d12e11563',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$What are the x-intercepts of $y = x^2 - 9$?$q$, $q$[{"text":"$x = 9,\\ x = -9$","is_correct":false,"misconception_token":"did-not-take-root"},{"text":"$x = 81$","is_correct":false,"misconception_token":"squared-instead"},{"text":"$x = 3$ only","is_correct":false,"misconception_token":"missed-negative-root"},{"text":"$x = 3,\\ x = -3$","is_correct":true}]$q$::jsonb, $q$$x = 3,\ x = -3$$q$, $q$x² = 9, so x = ±3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e0e2280f-ecfc-5be3-b4b1-be0584e6991a',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$What is the vertex of $y = (x - 2)^2 + 5$?$q$, $q$[{"text":"$(5, 2)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(2, -5)$","is_correct":false,"misconception_token":"sign-of-k-error"},{"text":"$(-2, 5)$","is_correct":false,"misconception_token":"sign-of-h-error"},{"text":"$(2, 5)$","is_correct":true}]$q$::jsonb, $q$$(2, 5)$$q$, $q$Vertex form y = (x - h)² + k gives vertex (2, 5).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c11c2dd3-aa57-5303-9bdd-cfbc3bd06916',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$What is the vertex of $y = (x + 3)^2 - 1$?$q$, $q$[{"text":"$(-3, 1)$","is_correct":false,"misconception_token":"sign-of-k-error"},{"text":"$(3, -1)$","is_correct":false,"misconception_token":"sign-of-h-error"},{"text":"$(-3, -1)$","is_correct":true},{"text":"$(3, 1)$","is_correct":false,"misconception_token":"both-signs-wrong"}]$q$::jsonb, $q$$(-3, -1)$$q$, $q$(x + 3)² = (x - (-3))², so h = -3, k = -1: vertex (-3, -1).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5f192ed8-ef09-58ba-b479-a05c7fe8d1aa',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'easy',
+   $q$The graph of $y = x^2$ is called a:$q$, $q$[{"text":"V-shape","is_correct":false,"misconception_token":"confused-with-absolute-value"},{"text":"line","is_correct":false,"misconception_token":"confused-with-linear"},{"text":"parabola","is_correct":true},{"text":"circle","is_correct":false,"misconception_token":"confused-with-conic"}]$q$::jsonb, $q$parabola$q$, $q$A quadratic graphs as a parabola.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('768d7f7d-a708-5c7f-b04c-a47e14911bc1',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$What is the axis of symmetry of $y = x^2 - 6x + 5$?$q$, $q$[{"text":"$x = 3$","is_correct":true},{"text":"$x = -3$","is_correct":false,"misconception_token":"forgot-negative-in-formula"},{"text":"$x = 5$","is_correct":false,"misconception_token":"used-constant"},{"text":"$x = 6$","is_correct":false,"misconception_token":"used-b-not-b-over-2a"}]$q$::jsonb, $q$$x = 3$$q$, $q$x = -b/(2a) = -(-6)/2 = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4be45d38-1d60-5319-9155-0db68ef15008',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$What is the vertex of $y = x^2 - 6x + 5$?$q$, $q$[{"text":"$(3, 4)$","is_correct":false,"misconception_token":"y-sign-error"},{"text":"$(-3, -4)$","is_correct":false,"misconception_token":"x-sign-error"},{"text":"$(3, -4)$","is_correct":true},{"text":"$(3, 5)$","is_correct":false,"misconception_token":"used-constant-as-y"}]$q$::jsonb, $q$$(3, -4)$$q$, $q$x = 3; y = 3² - 6·3 + 5 = 9 - 18 + 5 = -4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('54865efb-9e3d-58eb-8c51-b41b939d7e3d',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$What are the x-intercepts of $y = x^2 - 4x + 3$?$q$, $q$[{"text":"$x = 1,\\ x = -3$","is_correct":false,"misconception_token":"mixed-signs"},{"text":"$x = -1,\\ x = -3$","is_correct":false,"misconception_token":"sign-error"},{"text":"$x = 1,\\ x = 3$","is_correct":true},{"text":"$x = 4,\\ x = 3$","is_correct":false,"misconception_token":"used-coefficients"}]$q$::jsonb, $q$$x = 1,\ x = 3$$q$, $q$Factor: (x - 1)(x - 3) = 0, so x = 1 and x = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ce4ee580-0909-5112-94d3-89013b468455',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$How many real x-intercepts does $y = x^2 + 1$ have?$q$, $q$[{"text":"2","is_correct":false,"misconception_token":"assumed-two-roots"},{"text":"1","is_correct":false,"misconception_token":"assumed-vertex-touches"},{"text":"infinitely many","is_correct":false,"misconception_token":"misunderstood-graph"},{"text":"0","is_correct":true}]$q$::jsonb, $q$0$q$, $q$x² + 1 = 0 has no real solution (x² = -1), so 0 x-intercepts.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('ce0fae8c-6ae6-549c-8fe6-5c5635a52e7c',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$Compared with $y = x^2$, the graph of $y = 2x^2$ is:$q$, $q$[{"text":"wider","is_correct":false,"misconception_token":"reversed-effect"},{"text":"narrower","is_correct":true},{"text":"opens downward","is_correct":false,"misconception_token":"confused-sign-with-size"},{"text":"the same width","is_correct":false,"misconception_token":"ignored-coefficient"}]$q$::jsonb, $q$narrower$q$, $q$A larger leading coefficient makes the parabola narrower (steeper).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('779bbfb9-04d4-5bb2-b66e-f86ebbc08d36',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$What is the minimum value of $y = x^2 - 4$?$q$, $q$[{"text":"-2","is_correct":false,"misconception_token":"guessed"},{"text":"0","is_correct":false,"misconception_token":"used-vertex-x"},{"text":"-4","is_correct":true},{"text":"4","is_correct":false,"misconception_token":"sign-error"}]$q$::jsonb, $q$-4$q$, $q$The vertex is (0, -4), so the minimum y-value is -4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a4caf11f-0299-54a8-95dd-b12ab5301546',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$The function $y = -(x - 1)^2 + 4$ has a:$q$, $q$[{"text":"minimum of -4","is_correct":false,"misconception_token":"sign-and-type-error"},{"text":"minimum of 4","is_correct":false,"misconception_token":"ignored-negative-leading"},{"text":"maximum of 1","is_correct":false,"misconception_token":"used-h-not-k"},{"text":"maximum of 4","is_correct":true}]$q$::jsonb, $q$maximum of 4$q$, $q$Negative leading coefficient opens down, so vertex k = 4 is a maximum.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b68ab298-ded7-5163-9c2f-1db6337cddf3',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$Write $y = (x - 3)^2$ in standard form.$q$, $q$[{"text":"$y = x^2 - 6x + 9$","is_correct":true},{"text":"$y = x^2 - 9$","is_correct":false,"misconception_token":"sign-and-middle-error"},{"text":"$y = x^2 - 6x - 9$","is_correct":false,"misconception_token":"constant-sign-error"},{"text":"$y = x^2 + 9$","is_correct":false,"misconception_token":"forgot-middle-term"}]$q$::jsonb, $q$$y = x^2 - 6x + 9$$q$, $q$(x - 3)² = x² - 6x + 9.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('aad9ddd4-cd10-552d-a5e0-e62d11217b90',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$Factor $y = x^2 + 2x + 1$ into a perfect square.$q$, $q$[{"text":"$y = (x + 1)(x - 1)$","is_correct":false,"misconception_token":"difference-of-squares-confusion"},{"text":"$y = (x + 2)(x + 1)$","is_correct":false,"misconception_token":"wrong-factor-pair"},{"text":"$y = (x - 1)^2$","is_correct":false,"misconception_token":"sign-error"},{"text":"$y = (x + 1)^2$","is_correct":true}]$q$::jsonb, $q$$y = (x + 1)^2$$q$, $q$x² + 2x + 1 = (x + 1)².$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d847a2bc-2479-5863-a203-88bc9a52e3d3',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'medium',
+   $q$What is the y-intercept of $y = x^2 - 5x + 6$?$q$, $q$[{"text":"$(0, 6)$","is_correct":true},{"text":"$(6, 0)$","is_correct":false,"misconception_token":"swapped-with-x-intercept"},{"text":"$(0, 5)$","is_correct":false,"misconception_token":"used-b-not-c"},{"text":"$(0, -6)$","is_correct":false,"misconception_token":"sign-error"}]$q$::jsonb, $q$$(0, 6)$$q$, $q$Set x = 0: y = 6, so the y-intercept is (0, 6).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('21e9739d-7879-5fb3-85bc-2e359199c660',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'hard',
+   $q$Find the vertex of $y = x^2 + 4x + 1$ by completing the square.$q$, $q$[{"text":"$(2, -3)$","is_correct":false,"misconception_token":"x-sign-error"},{"text":"$(-2, 3)$","is_correct":false,"misconception_token":"y-sign-error"},{"text":"$(-2, -3)$","is_correct":true},{"text":"$(-4, 1)$","is_correct":false,"misconception_token":"used-b-and-c"}]$q$::jsonb, $q$$(-2, -3)$$q$, $q$x² + 4x + 1 = (x + 2)² - 3, so the vertex is (-2, -3).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d3686ac9-6316-5747-b437-0838e874240d',
+   null,
+   (select id from public.skills where slug = 'quadratic-functions'),
+   'advanced-math', 'hard',
+   $q$Write $y = x^2 - 2x - 8$ in factored form.$q$, $q$[{"text":"$y = (x - 4)(x + 2)$","is_correct":true},{"text":"$y = (x - 4)(x - 2)$","is_correct":false,"misconception_token":"both-negative"},{"text":"$y = (x - 8)(x + 1)$","is_correct":false,"misconception_token":"used-product-not-sum"},{"text":"$y = (x + 4)(x - 2)$","is_correct":false,"misconception_token":"sign-flip"}]$q$::jsonb, $q$$y = (x - 4)(x + 2)$$q$, $q$Two numbers multiply to -8 and add to -2: -4 and 2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- exponential-logarithmic (Exponential & Logarithmic, grade 11, CCSS.MATH.CONTENT.HSF.LE.A.4) — 20 items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3fe0923f-790e-5de1-9a12-db2b6d4e58e6',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $2^3$.$q$, $q$[{"text":"5","is_correct":false,"misconception_token":"added-base-and-exponent"},{"text":"8","is_correct":true},{"text":"6","is_correct":false,"misconception_token":"multiplied-base-times-exponent"},{"text":"9","is_correct":false,"misconception_token":"wrong-power"}]$q$::jsonb, $q$8$q$, $q$2³ = 2·2·2 = 8.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6871bdcd-4ebc-5ac4-84a7-c2288fdbc69d',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $5^0$.$q$, $q$[{"text":"1","is_correct":true},{"text":"5","is_correct":false,"misconception_token":"ignored-exponent"},{"text":"0","is_correct":false,"misconception_token":"zero-exponent-equals-zero"},{"text":"undefined","is_correct":false,"misconception_token":"confused-with-zero-base"}]$q$::jsonb, $q$1$q$, $q$Any nonzero number to the 0 power is 1.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('c36e5c37-eba3-54a4-88cd-5be14d89a06b',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $\log_2(8)$.$q$, $q$[{"text":"16","is_correct":false,"misconception_token":"multiplied-base-and-argument"},{"text":"3","is_correct":true},{"text":"2","is_correct":false,"misconception_token":"used-base-as-answer"},{"text":"4","is_correct":false,"misconception_token":"off-by-one"}]$q$::jsonb, $q$3$q$, $q$log₂(8) asks 2 to what power is 8? 2³ = 8, so 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4d22438e-84c5-55c4-99a0-a166a2f47516',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $10^2$.$q$, $q$[{"text":"100","is_correct":true},{"text":"20","is_correct":false,"misconception_token":"multiplied-base-times-exponent"},{"text":"1000","is_correct":false,"misconception_token":"wrong-power"},{"text":"12","is_correct":false,"misconception_token":"added"}]$q$::jsonb, $q$100$q$, $q$10² = 100.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('91affa36-9a89-5347-9607-7c065f7a4172',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $\log_{10}(100)$.$q$, $q$[{"text":"10","is_correct":false,"misconception_token":"used-base"},{"text":"1","is_correct":false,"misconception_token":"off-by-one"},{"text":"100","is_correct":false,"misconception_token":"used-argument"},{"text":"2","is_correct":true}]$q$::jsonb, $q$2$q$, $q$10² = 100, so log₁₀(100) = 2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('4044c2f3-ae0f-5dd3-a5ac-804d6cd26b4a',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $3^{-1}$.$q$, $q$[{"text":"$-\\dfrac{1}{3}$","is_correct":false,"misconception_token":"kept-negative-sign"},{"text":"$3$","is_correct":false,"misconception_token":"ignored-negative-exponent"},{"text":"$-3$","is_correct":false,"misconception_token":"made-base-negative"},{"text":"$\\dfrac{1}{3}$","is_correct":true}]$q$::jsonb, $q$$\dfrac{1}{3}$$q$, $q$A negative exponent takes the reciprocal: 3⁻¹ = 1/3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a902216d-1148-5a3e-b7d0-0e1d035640fe',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$If $y = 2^x$, what is $y$ when $x = 4$?$q$, $q$[{"text":"6","is_correct":false,"misconception_token":"multiplied-base-times-exponent"},{"text":"8","is_correct":false,"misconception_token":"off-by-one-power"},{"text":"16","is_correct":true},{"text":"32","is_correct":false,"misconception_token":"used-wrong-power"}]$q$::jsonb, $q$16$q$, $q$2⁴ = 16.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('38f2f446-7d69-5ead-a362-7bb1c2e916cd',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'easy',
+   $q$Evaluate: $\log_3(1)$.$q$, $q$[{"text":"undefined","is_correct":false,"misconception_token":"thought-undefined"},{"text":"1","is_correct":false,"misconception_token":"confused-log-of-one"},{"text":"0","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"used-base"}]$q$::jsonb, $q$0$q$, $q$3⁰ = 1, so log₃(1) = 0.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('d275b158-57c9-53bc-b77b-49c42d50baf7',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Solve for $x$: $2^x = 16$.$q$, $q$[{"text":"$x = 4$","is_correct":true},{"text":"$x = 8$","is_correct":false,"misconception_token":"divided-by-base"},{"text":"$x = 32$","is_correct":false,"misconception_token":"multiplied"},{"text":"$x = 2$","is_correct":false,"misconception_token":"off-by-power"}]$q$::jsonb, $q$$x = 4$$q$, $q$2⁴ = 16, so x = 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3595b615-ae9c-548e-87db-baa50cdcb5c1',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Solve for $x$: $3^x = 27$.$q$, $q$[{"text":"$x = 9$","is_correct":false,"misconception_token":"divided-by-base"},{"text":"$x = 24$","is_correct":false,"misconception_token":"subtracted"},{"text":"$x = 3$","is_correct":true},{"text":"$x = 2$","is_correct":false,"misconception_token":"off-by-power"}]$q$::jsonb, $q$$x = 3$$q$, $q$3³ = 27, so x = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5beb0276-e505-538d-9aa0-1b0f3eb3525a',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Evaluate: $\log_5(25)$.$q$, $q$[{"text":"20","is_correct":false,"misconception_token":"subtracted"},{"text":"5","is_correct":false,"misconception_token":"used-base"},{"text":"2","is_correct":true},{"text":"3","is_correct":false,"misconception_token":"off-by-one"}]$q$::jsonb, $q$2$q$, $q$5² = 25, so log₅(25) = 2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('a08d1f2e-514f-50dd-9d74-f33a466fca86',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Evaluate: $4^{3/2}$.$q$, $q$[{"text":"64","is_correct":false,"misconception_token":"used-exponent-3"},{"text":"6","is_correct":false,"misconception_token":"multiplied-base-by-fraction"},{"text":"16","is_correct":false,"misconception_token":"squared-only"},{"text":"8","is_correct":true}]$q$::jsonb, $q$8$q$, $q$4^(3/2) = (√4)³ = 2³ = 8.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('b74f2662-08b7-51da-b8c1-f6d7494e077e',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$A colony of 100 bacteria doubles every hour. How many are there after 3 hours?$q$, $q$[{"text":"600","is_correct":false,"misconception_token":"multiplied-by-6"},{"text":"800","is_correct":true},{"text":"1600","is_correct":false,"misconception_token":"doubled-too-many-times"},{"text":"300","is_correct":false,"misconception_token":"multiplied-by-3"}]$q$::jsonb, $q$800$q$, $q$100 × 2³ = 100 × 8 = 800.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0c228211-65c4-599e-88a7-d32b4bd475fc',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Rewrite $\log_2(8) = 3$ in exponential form.$q$, $q$[{"text":"$2^8 = 256$","is_correct":false,"misconception_token":"swapped-exponent-and-argument"},{"text":"$3^2 = 9$","is_correct":false,"misconception_token":"swapped-base-and-exponent"},{"text":"$2^3 = 8$","is_correct":true},{"text":"$8^3 = 512$","is_correct":false,"misconception_token":"used-argument-as-base"}]$q$::jsonb, $q$$2^3 = 8$$q$, $q$log_b(y) = x means bˣ = y, so 2³ = 8.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('0e3efd05-6b32-50a1-ae60-2452ac804ee8',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Solve for $x$: $10^x = 1000$.$q$, $q$[{"text":"$x = 30$","is_correct":false,"misconception_token":"multiplied"},{"text":"$x = 100$","is_correct":false,"misconception_token":"divided-by-ten"},{"text":"$x = 2$","is_correct":false,"misconception_token":"off-by-power"},{"text":"$x = 3$","is_correct":true}]$q$::jsonb, $q$$x = 3$$q$, $q$10³ = 1000, so x = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fcc21cf2-dc9c-5530-95ad-4fa5c0fb61ab',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$$500 is invested and doubles each year. What is its value after 2 years?$q$, $q$[{"text":"$2000","is_correct":true},{"text":"$1500","is_correct":false,"misconception_token":"added-linearly"},{"text":"$4000","is_correct":false,"misconception_token":"doubled-too-many-times"},{"text":"$1000","is_correct":false,"misconception_token":"doubled-once"}]$q$::jsonb, $q$$2000$q$, $q$500 × 2² = 500 × 4 = $2000.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('48ef5579-c23c-59ef-8967-737162a27aab',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Simplify: $2^x \cdot 2^3$.$q$, $q$[{"text":"$4^{x+3}$","is_correct":false,"misconception_token":"added-bases"},{"text":"$2^{x \\cdot 3}$","is_correct":false,"misconception_token":"multiplied-exponents-form"},{"text":"$2^{3x}$","is_correct":false,"misconception_token":"multiplied-exponents"},{"text":"$2^{x+3}$","is_correct":true}]$q$::jsonb, $q$$2^{x+3}$$q$, $q$Same base multiplies by adding exponents: 2^(x+3).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('938c1a5d-0b51-5741-ae6a-78e7adfb7bcc',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'medium',
+   $q$Evaluate $\log(1000)$ (base 10).$q$, $q$[{"text":"3","is_correct":true},{"text":"100","is_correct":false,"misconception_token":"used-argument"},{"text":"30","is_correct":false,"misconception_token":"multiplied"},{"text":"10","is_correct":false,"misconception_token":"used-base"}]$q$::jsonb, $q$3$q$, $q$10³ = 1000, so log(1000) = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('bc7cd7ec-1ca8-5a2d-b0b8-58bd81c89489',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'hard',
+   $q$Solve for $x$: $2^{x+1} = 32$.$q$, $q$[{"text":"$x = 5$","is_correct":false,"misconception_token":"forgot-to-subtract-one"},{"text":"$x = 15$","is_correct":false,"misconception_token":"divided-by-base"},{"text":"$x = 4$","is_correct":true},{"text":"$x = 3$","is_correct":false,"misconception_token":"off-by-one"}]$q$::jsonb, $q$$x = 4$$q$, $q$32 = 2⁵, so x + 1 = 5, giving x = 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('30a85412-c0a5-5f90-a98b-d0f0d5b53781',
+   null,
+   (select id from public.skills where slug = 'exponential-logarithmic'),
+   'advanced-math', 'hard',
+   $q$A $20,000 car loses 10% of its value each year. What is it worth after 2 years?$q$, $q$[{"text":"$16,200","is_correct":true},{"text":"$18,000","is_correct":false,"misconception_token":"depreciated-once"},{"text":"$12,000","is_correct":false,"misconception_token":"subtracted-40-percent"},{"text":"$16,000","is_correct":false,"misconception_token":"subtracted-linearly"}]$q$::jsonb, $q$$16,200$q$, $q$20000 × 0.9² = 20000 × 0.81 = $16,200.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+
+-- systems-of-equations (Systems of Equations, grade 11, CCSS.MATH.CONTENT.HSA.REI.C.7) — 20 items
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('5ed2dbd7-570a-5529-8ef0-5b799a852fd6',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$Solve the system: $y = x$ and $y = 4$.$q$, $q$[{"text":"$(2, 2)$","is_correct":false,"misconception_token":"guessed"},{"text":"$(4, 4)$","is_correct":true},{"text":"$(0, 4)$","is_correct":false,"misconception_token":"used-wrong-x"},{"text":"$(4, 0)$","is_correct":false,"misconception_token":"swapped-coordinates"}]$q$::jsonb, $q$$(4, 4)$$q$, $q$Since y = 4 and y = x, x = 4: (4, 4).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8326840a-be6b-5306-a487-cd9eca63e693',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$Solve: $x + y = 10$ and $x - y = 2$.$q$, $q$[{"text":"$(6, 4)$","is_correct":true},{"text":"$(8, 2)$","is_correct":false,"misconception_token":"used-difference-as-y"},{"text":"$(4, 6)$","is_correct":false,"misconception_token":"swapped-values"},{"text":"$(5, 5)$","is_correct":false,"misconception_token":"split-evenly"}]$q$::jsonb, $q$$(6, 4)$$q$, $q$Add the equations: 2x = 12 → x = 6; then y = 4.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('85b5a6e6-5676-577c-863a-c88f7e74ff74',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$Solve: $y = 2x$ and $y = x + 3$.$q$, $q$[{"text":"$(1, 2)$","is_correct":false,"misconception_token":"guessed"},{"text":"$(3, 6)$","is_correct":true},{"text":"$(3, 3)$","is_correct":false,"misconception_token":"used-wrong-y"},{"text":"$(6, 3)$","is_correct":false,"misconception_token":"swapped-coordinates"}]$q$::jsonb, $q$$(3, 6)$$q$, $q$2x = x + 3 → x = 3; y = 2·3 = 6.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('1015d3ed-55bf-5694-923a-3ed59193e1d2',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$Solve: $x = 5$ and $x + y = 8$.$q$, $q$[{"text":"$(5, 3)$","is_correct":true},{"text":"$(5, 8)$","is_correct":false,"misconception_token":"forgot-to-subtract"},{"text":"$(3, 5)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(5, 13)$","is_correct":false,"misconception_token":"added-instead"}]$q$::jsonb, $q$$(5, 3)$$q$, $q$Substitute x = 5: 5 + y = 8 → y = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('dd6ced55-65ee-5351-9ade-e1062a7ea97f',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$Solve: $y = 3x$ and $y = 12$.$q$, $q$[{"text":"$(12, 4)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(36, 12)$","is_correct":false,"misconception_token":"multiplied-instead-of-dividing"},{"text":"$(4, 4)$","is_correct":false,"misconception_token":"used-wrong-y"},{"text":"$(4, 12)$","is_correct":true}]$q$::jsonb, $q$$(4, 12)$$q$, $q$12 = 3x → x = 4: (4, 12).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('8b66d3de-7bca-5b19-bd06-b843cf5b7d8d',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$On a graph, the solution to a system of two equations is where the graphs:$q$, $q$[{"text":"have the same slope","is_correct":false,"misconception_token":"confused-slope-with-solution"},{"text":"cross the y-axis","is_correct":false,"misconception_token":"confused-with-intercept"},{"text":"are parallel","is_correct":false,"misconception_token":"parallel-means-solution"},{"text":"intersect","is_correct":true}]$q$::jsonb, $q$intersect$q$, $q$The solution is the point(s) where the graphs intersect.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('2d829734-9ec1-52b5-9757-94e32fdd3bfa',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$Solve: $y = x + 1$ and $y = -x + 5$.$q$, $q$[{"text":"$(2, 5)$","is_correct":false,"misconception_token":"used-wrong-equation-for-y"},{"text":"$(3, 2)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(2, 3)$","is_correct":true},{"text":"$(4, 3)$","is_correct":false,"misconception_token":"arithmetic-slip"}]$q$::jsonb, $q$$(2, 3)$$q$, $q$x + 1 = -x + 5 → 2x = 4 → x = 2; y = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('690a5314-4600-543d-8b32-6949d106b646',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'easy',
+   $q$How many solutions do two parallel lines have?$q$, $q$[{"text":"infinitely many","is_correct":false,"misconception_token":"confused-with-same-line"},{"text":"1","is_correct":false,"misconception_token":"assumed-they-cross"},{"text":"0","is_correct":true},{"text":"2","is_correct":false,"misconception_token":"guessed"}]$q$::jsonb, $q$0$q$, $q$Parallel lines never intersect, so there is no solution.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('41ee9b44-3695-5fc3-9bfd-30c7d0a6b690',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve by substitution: $y = 2x + 1$ and $3x + y = 11$.$q$, $q$[{"text":"$(2, 5)$","is_correct":true},{"text":"$(5, 2)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(1, 3)$","is_correct":false,"misconception_token":"arithmetic-slip"},{"text":"$(2, 11)$","is_correct":false,"misconception_token":"used-wrong-y"}]$q$::jsonb, $q$$(2, 5)$$q$, $q$3x + (2x + 1) = 11 → 5x = 10 → x = 2; y = 5.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('be410980-6721-57b6-ba50-00a4193ad02d',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve by elimination: $2x + y = 7$ and $x - y = 2$.$q$, $q$[{"text":"$(1, 3)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(3, 7)$","is_correct":false,"misconception_token":"used-wrong-y"},{"text":"$(3, 1)$","is_correct":true},{"text":"$(5, 2)$","is_correct":false,"misconception_token":"arithmetic-slip"}]$q$::jsonb, $q$$(3, 1)$$q$, $q$Add: 3x = 9 → x = 3; then 3 - y = 2 → y = 1.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('28de89e3-0de4-5e5d-aa7f-506ee1b3ea3a',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $3x + 2y = 12$ and $x = 2$.$q$, $q$[{"text":"$(3, 2)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(2, 6)$","is_correct":false,"misconception_token":"forgot-coefficient"},{"text":"$(2, 3)$","is_correct":true},{"text":"$(2, 0)$","is_correct":false,"misconception_token":"arithmetic-slip"}]$q$::jsonb, $q$$(2, 3)$$q$, $q$3·2 + 2y = 12 → 2y = 6 → y = 3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('6cb9d9ea-c8c1-5911-b2d5-b7392e20d6e1',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $y = x^2$ and $y = 9$.$q$, $q$[{"text":"$x = 81$","is_correct":false,"misconception_token":"squared-instead"},{"text":"$x = 3$ only","is_correct":false,"misconception_token":"missed-negative-root"},{"text":"$x = \\pm 9$","is_correct":false,"misconception_token":"did-not-take-root"},{"text":"$x = 3$ and $x = -3$","is_correct":true}]$q$::jsonb, $q$$x = 3$ and $x = -3$$q$, $q$x² = 9 → x = ±3.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('fcd95ee3-9b9a-53ea-bbc8-157fdea88e52',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $y = x^2$ and $y = x$.$q$, $q$[{"text":"$x = 1$ only","is_correct":false,"misconception_token":"divided-out-x"},{"text":"$x = 0$ and $x = 1$","is_correct":true},{"text":"$x = -1$ and $x = 1$","is_correct":false,"misconception_token":"sign-error"},{"text":"$x = 0$ only","is_correct":false,"misconception_token":"missed-second-root"}]$q$::jsonb, $q$$x = 0$ and $x = 1$$q$, $q$x² = x → x² - x = 0 → x(x - 1) = 0 → x = 0 or x = 1.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('10916b89-69e5-55cd-9465-0a96b1467dbe',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Two lines have the same slope but different y-intercepts. How many solutions?$q$, $q$[{"text":"exactly two","is_correct":false,"misconception_token":"guessed"},{"text":"one solution","is_correct":false,"misconception_token":"assumed-they-cross"},{"text":"no solution","is_correct":true},{"text":"infinitely many","is_correct":false,"misconception_token":"confused-with-same-line"}]$q$::jsonb, $q$no solution$q$, $q$Same slope, different intercepts → parallel → no solution.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('cac0f9ce-c54e-5ebf-bb7e-b93c22f13aa5',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $x + y = 5$ and $2x + 2y = 10$.$q$, $q$[{"text":"$(5, 0)$","is_correct":false,"misconception_token":"picked-one-point"},{"text":"no solution","is_correct":false,"misconception_token":"assumed-parallel"},{"text":"one solution","is_correct":false,"misconception_token":"assumed-single-point"},{"text":"infinitely many solutions","is_correct":true}]$q$::jsonb, $q$infinitely many solutions$q$, $q$The second equation is twice the first — the same line — so infinitely many solutions.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('3f8cdabe-00a4-5b87-8b1c-2ec650f0d88c',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $y = -x + 4$ and $y = x - 2$.$q$, $q$[{"text":"$(3, 1)$","is_correct":true},{"text":"$(3, 4)$","is_correct":false,"misconception_token":"used-wrong-equation-for-y"},{"text":"$(0, 4)$","is_correct":false,"misconception_token":"used-intercept"},{"text":"$(1, 3)$","is_correct":false,"misconception_token":"swapped-coordinates"}]$q$::jsonb, $q$$(3, 1)$$q$, $q$-x + 4 = x - 2 → 6 = 2x → x = 3; y = 1.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('117c6fb7-f4b8-57d1-af8d-92b3a0f46b9e',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $y = x^2 - 1$ and $y = 3$.$q$, $q$[{"text":"$x = \\pm 4$","is_correct":false,"misconception_token":"did-not-take-root"},{"text":"$x = \\pm \\sqrt{3}$","is_correct":false,"misconception_token":"forgot-the-minus-one"},{"text":"$x = 2$ only","is_correct":false,"misconception_token":"missed-negative-root"},{"text":"$x = 2$ and $x = -2$","is_correct":true}]$q$::jsonb, $q$$x = 2$ and $x = -2$$q$, $q$x² - 1 = 3 → x² = 4 → x = ±2.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e073da0f-76ef-538d-8da6-d396197036ba',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'medium',
+   $q$Solve: $4x - y = 5$ and $y = 3$.$q$, $q$[{"text":"$(2, 3)$","is_correct":true},{"text":"$(3, 2)$","is_correct":false,"misconception_token":"swapped-coordinates"},{"text":"$(2, 0)$","is_correct":false,"misconception_token":"arithmetic-slip"},{"text":"$(2, 5)$","is_correct":false,"misconception_token":"used-wrong-y"}]$q$::jsonb, $q$$(2, 3)$$q$, $q$4x - 3 = 5 → 4x = 8 → x = 2: (2, 3).$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('da9576bf-e050-52c4-aadb-82a3849c1dc9',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'hard',
+   $q$Solve the linear-quadratic system: $y = x^2$ and $y = 2x + 3$.$q$, $q$[{"text":"$x = 3$ only","is_correct":false,"misconception_token":"missed-a-root"},{"text":"$x = 1$ and $x = -3$","is_correct":false,"misconception_token":"sign-error-in-factoring"},{"text":"$x = 3$ and $x = -1$","is_correct":true},{"text":"$x = \\pm 3$","is_correct":false,"misconception_token":"ignored-linear-term"}]$q$::jsonb, $q$$x = 3$ and $x = -1$$q$, $q$x² = 2x + 3 → x² - 2x - 3 = 0 → (x - 3)(x + 1) = 0 → x = 3 or x = -1.$q$, 'published')
+on conflict (id) do update set
+  template_id    = excluded.template_id,
+  skill_id       = excluded.skill_id,
+  sat_alignment  = excluded.sat_alignment,
+  difficulty     = excluded.difficulty,
+  stem           = excluded.stem,
+  choices        = excluded.choices,
+  correct_answer = excluded.correct_answer,
+  solution       = excluded.solution,
+  status         = excluded.status;
+insert into public.generated_questions
+  (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
+values
+  ('e7d88333-e9c6-5977-9a75-d9ea54bdcea5',
+   null,
+   (select id from public.skills where slug = 'systems-of-equations'),
+   'algebra', 'hard',
+   $q$Solve the linear-quadratic system: $y = x^2 - 2x$ and $y = x$.$q$, $q$[{"text":"$x = 0$ and $x = 3$","is_correct":true},{"text":"$x = 0$ and $x = -3$","is_correct":false,"misconception_token":"sign-error"},{"text":"$x = \\pm 3$","is_correct":false,"misconception_token":"ignored-a-root"},{"text":"$x = 3$ only","is_correct":false,"misconception_token":"divided-out-x"}]$q$::jsonb, $q$$x = 0$ and $x = 3$$q$, $q$x² - 2x = x → x² - 3x = 0 → x(x - 3) = 0 → x = 0 or x = 3.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
