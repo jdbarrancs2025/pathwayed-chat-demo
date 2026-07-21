@@ -7,10 +7,17 @@ export const focusAreasByGrade: Record<GradeBand, {
 }> = {
   '3-5': {
     math: [
+      // Grade-3 (seed 0004) + grade-4 (seed 0013); lockstep with scopeSequence['3-5'].
       { value: 'multiplication', label: 'Multiplication' },
       { value: 'division', label: 'Division' },
       { value: 'fractions', label: 'Fractions' },
       { value: 'geometry', label: 'Geometry' },
+      { value: 'multi-digit-multiplication', label: 'Multi-Digit Multiplication' },
+      { value: 'multi-digit-division', label: 'Multi-Digit Division' },
+      { value: 'factors-multiples', label: 'Factors & Multiples' },
+      { value: 'fraction-equivalence', label: 'Fraction Equivalence & Comparison' },
+      { value: 'fraction-operations-4', label: 'Fraction Operations' },
+      { value: 'area-perimeter', label: 'Area & Perimeter' },
     ],
     reading: [
       { value: 'main-idea', label: 'Main Idea' },
@@ -42,6 +49,9 @@ export const focusAreasByGrade: Record<GradeBand, {
       { value: 'linear-thinking', label: 'Linear Thinking' },
       { value: 'algebra-1-concepts', label: 'Algebra 1 Concepts' },
       { value: 'functions', label: 'Functions' },
+      { value: 'exponents-scientific-notation', label: 'Exponents & Scientific Notation' },
+      { value: 'pythagorean-theorem', label: 'Pythagorean Theorem' },
+      { value: 'transformations-8', label: 'Transformations' },
     ],
     reading: [
       { value: 'inference', label: 'Inference' },

@@ -24,7 +24,22 @@ export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = 
     writing: [],
   },
   '3-5': {
-    math: ['multiplication', 'division', 'fractions', 'geometry'],
+    // Grade-3 (seed 0004) then grade-4 (seed 0013) skills — every slug here is
+    // question-backed by a seed in this repo, so the walk carries no cross-seed
+    // dependency. (The gap-math grade-3/5 skills in seed 0009 stay placement-only
+    // for now; wire them in once 0009 is confirmed applied — see OVERNIGHT-NOTES.)
+    math: [
+      'multiplication',
+      'division',
+      'fractions',
+      'geometry',
+      'multi-digit-multiplication',
+      'multi-digit-division',
+      'factors-multiples',
+      'fraction-equivalence',
+      'fraction-operations-4',
+      'area-perimeter',
+    ],
     reading: ['vocabulary', 'main-idea', 'reading-comprehension', 'story-elements'],
     writing: ['sentence-writing', 'short-response', 'paragraph-writing', 'creative-writing'],
   },
@@ -47,6 +62,9 @@ export const scopeSequence: Record<ScopeBand, Record<ScopeSubject, string[]>> = 
       'linear-thinking',
       'algebra-1-concepts',
       'functions',
+      'exponents-scientific-notation',
+      'pythagorean-theorem',
+      'transformations-8',
     ],
     reading: ['vocabulary-in-context', 'inference', 'text-analysis', 'author-purpose'],
     writing: ['essay-writing', 'research-skills', 'persuasive-writing', 'narrative-writing'],
