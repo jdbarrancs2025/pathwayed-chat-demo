@@ -8,7 +8,9 @@ import {
   eligibilityReason,
   getPrepEntitlements,
   isGradeEligible,
+  previewCancelPrep,
   purchasePrep,
+  type CancelPrepPreview,
   type PrepEntitlement,
 } from '@/lib/prep/entitlements'
 import { formatMoney, intervalSuffix } from '@/lib/billing'
@@ -48,6 +50,7 @@ export function AdmissionsPrepPanel({
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [confirming, setConfirming] = useState<string | null>(null)
+  const [preview, setPreview] = useState<CancelPrepPreview | null>(null)
   const [cancelBusy, setCancelBusy] = useState(false)
 
   const studentIds = useMemo(() => students.map((s) => s.id), [students])
@@ -92,17 +95,37 @@ export function AdmissionsPrepPanel({
     setNotice('')
   }
 
+  // Clicking Cancel first asks the server which path applies (preview), so the
+  // confirm copy is accurate before anything is mutated.
+  const startCancel = async (mId: string, sId: string, key: string) => {
+    setConfirming(key)
+    setPreview(null)
+    setError('')
+    setNotice('')
+    try {
+      setPreview(await previewCancelPrep({ userId, moduleId: mId, studentIds: [sId] }))
+    } catch {
+      setError('Could not load cancel details. Please try again.')
+      setConfirming(null)
+    }
+  }
+
   const cancel = async (mId: string, sId: string) => {
     if (cancelBusy) return
     setCancelBusy(true)
     setError('')
     setNotice('')
     try {
-      await cancelPrep({ userId, moduleId: mId, studentIds: [sId] })
+      const path = await cancelPrep({ userId, moduleId: mId, studentIds: [sId] })
       const refreshed = await getPrepEntitlements(studentIds)
       setEntitlements(refreshed)
       setConfirming(null)
-      setNotice('Canceled.')
+      setPreview(null)
+      setNotice(
+        path === 'schedule' && preview?.periodEnd
+          ? `Set to end ${formatDate(preview.periodEnd)}.`
+          : 'Canceled.',
+      )
     } catch {
       setError('Could not cancel. Please try again.')
     } finally {
@@ -170,13 +193,16 @@ export function AdmissionsPrepPanel({
                 {scheduledEnd ? null : confirming === key ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <span className="muted" style={{ fontSize: 12.5 }}>
-                      Cancel {moduleName(e.moduleId)} Prep for {nameOf(e.studentId)}? Access ends now, and
-                      you’ll be credited for the unused part of this billing period.
+                      {!preview
+                        ? 'Loading…'
+                        : preview.path === 'schedule'
+                          ? `Cancel ${moduleName(e.moduleId)} Prep for ${nameOf(e.studentId)}? Access continues until ${formatDate(preview.periodEnd)}, then it won’t renew.`
+                          : `Cancel ${moduleName(e.moduleId)} Prep for ${nameOf(e.studentId)}? Access ends now, and you’ll be credited for the unused part of this billing period.`}
                     </span>
                     <button
                       className="btn btn-soft"
                       style={{ fontSize: 12, padding: '4px 10px' }}
-                      disabled={cancelBusy}
+                      disabled={cancelBusy || !preview}
                       onClick={() => cancel(e.moduleId, e.studentId)}
                     >
                       {cancelBusy ? 'Canceling…' : 'Confirm cancel'}
@@ -185,7 +211,10 @@ export function AdmissionsPrepPanel({
                       className="btn btn-soft"
                       style={{ fontSize: 12, padding: '4px 10px' }}
                       disabled={cancelBusy}
-                      onClick={() => setConfirming(null)}
+                      onClick={() => {
+                        setConfirming(null)
+                        setPreview(null)
+                      }}
                     >
                       Keep
                     </button>
@@ -194,11 +223,7 @@ export function AdmissionsPrepPanel({
                   <button
                     className="btn btn-soft"
                     style={{ alignSelf: 'start', fontSize: 12, padding: '3px 9px' }}
-                    onClick={() => {
-                      setConfirming(key)
-                      setError('')
-                      setNotice('')
-                    }}
+                    onClick={() => void startCancel(e.moduleId, e.studentId, key)}
                   >
                     Cancel
                   </button>

@@ -86,20 +86,49 @@ export async function purchasePrep(input: PurchasePrepInput): Promise<{ added: b
   return { added: !!data.added }
 }
 
-/**
- * Cancel a prep module for the given children (or all of them for the module when
- * studentIds is empty). Removed children are reduced/removed from the subscription
- * and their entitlements go canceled; the caller should refresh entitlements after.
- */
-export async function cancelPrep(input: {
+/** Which cancellation path the endpoint would run for a given request. */
+export type CancelPrepPath = 'reduce' | 'delete' | 'schedule' | 'none'
+
+export interface CancelPrepPreview {
+  /** 'schedule' = access continues until periodEnd; 'reduce'/'delete' = ends now. */
+  path: CancelPrepPath
+  periodEnd: string | null
+}
+
+interface CancelPrepInput {
   userId: string
   moduleId: string
   studentIds: string[]
-}): Promise<void> {
+}
+
+/**
+ * Ask which path a cancel would take (and the period end) WITHOUT changing
+ * anything, so the UI can show the right confirm copy: an immediate credit vs.
+ * access continuing until the period end.
+ */
+export async function previewCancelPrep(input: CancelPrepInput): Promise<CancelPrepPreview> {
+  const res = await fetch('/api/cancel-prep', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...input, preview: true }),
+  })
+  if (!res.ok) throw new Error('Could not load cancel details')
+  const data = (await res.json()) as Partial<CancelPrepPreview>
+  return { path: data.path ?? 'none', periodEnd: data.periodEnd ?? null }
+}
+
+/**
+ * Cancel a prep module for the given children (or all of them for the module when
+ * studentIds is empty). Stripe is mutated first; the caller should refresh
+ * entitlements after. Returns the path the server actually ran.
+ */
+export async function cancelPrep(input: CancelPrepInput): Promise<CancelPrepPath> {
   const res = await fetch('/api/cancel-prep', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
   if (!res.ok) throw new Error('Could not cancel the prep module')
+  const data = (await res.json()) as { path?: CancelPrepPath }
+  return data.path ?? 'none'
 }

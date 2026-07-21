@@ -8,10 +8,17 @@ interface CancelPrepRequest {
   moduleId?: string
   /** Children to remove. Omit or pass every current id to cancel the whole module. */
   studentIds?: string[]
+  /** When true, report which path would run + the period end WITHOUT mutating anything. */
+  preview?: boolean
 }
 
-// Subscriptions we can mutate — the same set update-seats and purchase-prep use.
+// Subscription statuses we can still mutate. This gates the SUBSCRIPTION's own
+// status, NOT profiles.subscription_status — a prep-only account's learning status
+// is trial/expired even though its prep subscription is live, so we find the
+// subscription by the prep ITEM (see below) and never read subscription_status.
 const BILLABLE_STATUSES = new Set(["active", "trialing", "past_due"])
+
+type CancelPath = "reduce" | "delete" | "schedule" | "none"
 
 /** Read the current period end (subscription- or item-level; see the webhook). */
 function readCurrentPeriodEnd(sub: Stripe.Subscription): number | null {
@@ -43,14 +50,23 @@ async function markCanceled(
 /**
  * Cancel a test-prep module for some or all of the children it covers.
  *
- * Removing SOME children: reduce the prep item quantity to the remaining count
- * (prorated, like update-seats) and rewrite prep_<module>_students to the
- * remaining ids; the removed children's entitlements go canceled.
+ * Ordering invariant: Stripe is the source of truth and is mutated FIRST; the DB
+ * is written only after the Stripe call succeeds. If Stripe throws, the catch
+ * returns an error and nothing is written — so we can never land the catastrophic
+ * "entitlement canceled but subscription still billing" divergence again.
  *
- * Removing ALL children: delete the prep item entirely ({ id, deleted: true }),
- * unless it is the only item on a prep-only subscription — Stripe rejects deleting
- * the last item, so we cancel the whole subscription at period end instead (the
- * webhook then keeps access until that date and cancels on the deleted event).
+ * Paths:
+ *   reduce   — some children remain: lower the item quantity to the survivors,
+ *              rewrite prep_<module>_students; the removed children go canceled.
+ *   delete   — all children removed and other items remain: drop just this item;
+ *              the removed children go canceled.
+ *   schedule — all children removed and this is the only item (prep-only account):
+ *              cancel the whole subscription at period end. The WEBHOOK is the sole
+ *              writer here (cancel_at_period_end keeps the entitlement active with
+ *              ends_at set, and subscription.deleted cancels it at the boundary).
+ *
+ * `preview: true` returns the path + period end without mutating, so the client can
+ * show accurate confirm copy (immediate credit vs. access-until-period-end).
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
@@ -65,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { userId, moduleId, studentIds } = req.body as CancelPrepRequest
+    const { userId, moduleId, studentIds, preview } = req.body as CancelPrepRequest
     if (!userId) {
       return res.status(400).json({ error: "userId is required" })
     }
@@ -85,72 +101,75 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const supabase = createClient(supabaseUrl, serviceKey)
     const { data: profile } = await supabase
       .from("profiles")
-      .select("stripe_customer_id, subscription_status")
+      .select("stripe_customer_id")
       .eq("id", userId)
       .maybeSingle()
-
     const customerId = profile?.stripe_customer_id as string | null | undefined
-    const status = profile?.subscription_status as string | null | undefined
 
     const stripe = new Stripe(secretKey)
     const metaKey = prepStudentsMetaKey(moduleId)
 
-    // No billable subscription to change. If entitlement rows somehow linger,
-    // cancel the requested ones so the UI reflects reality, then report done.
-    if (!customerId || !status || !BILLABLE_STATUSES.has(status)) {
-      if (requested) await markCanceled(supabase, requested, moduleId, new Date().toISOString())
-      return res.status(200).json({ canceled: true, note: "no active subscription" })
+    // Find the subscription that actually CONTAINS this module's prep item, among
+    // the customer's live subscriptions. We do NOT gate on profiles
+    // .subscription_status — that broke prep-only accounts, whose learning status
+    // is trial/expired while their prep subscription is active.
+    let sub: Stripe.Subscription | undefined
+    if (customerId) {
+      const subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 20 })
+      sub = subs.data.find(
+        (s) => BILLABLE_STATUSES.has(s.status) && s.items.data.some((it) => it.price?.id === priceId),
+      )
     }
+    const item = sub?.items.data.find((it) => it.price?.id === priceId)
 
-    const subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 20 })
-    const sub = subs.data.find((s) => BILLABLE_STATUSES.has(s.status))
-    if (!sub) {
-      if (requested) await markCanceled(supabase, requested, moduleId, new Date().toISOString())
-      return res.status(200).json({ canceled: true, note: "no active subscription found" })
-    }
-
-    const item = sub.items.data.find((it) => it.price?.id === priceId)
-    if (!item) {
-      // Module not on the subscription — just reconcile the DB.
-      if (requested) await markCanceled(supabase, requested, moduleId, new Date().toISOString())
-      return res.status(200).json({ canceled: true, note: "module not on subscription" })
+    if (!sub || !item) {
+      // Nothing live to cancel on Stripe. Do NOT write the DB — writing canceled
+      // here with no Stripe change is exactly the divergence being fixed.
+      if (preview) return res.status(200).json({ path: "none" as CancelPath, periodEnd: null })
+      return res.status(409).json({ error: "No active prep subscription for this module" })
     }
 
     const currentIds = parsePrepStudentIds(sub.metadata?.[metaKey])
     const toRemove = requested ? requested.filter((id) => currentIds.includes(id)) : currentIds
     const remaining = currentIds.filter((id) => !toRemove.includes(id))
-    const periodEndIso = readCurrentPeriodEnd(sub) ? new Date(readCurrentPeriodEnd(sub)! * 1000).toISOString() : null
+    const periodEndSecs = readCurrentPeriodEnd(sub)
+    const periodEndIso = periodEndSecs ? new Date(periodEndSecs * 1000).toISOString() : null
+    const otherItems = sub.items.data.filter((it) => it.id !== item.id)
 
-    // Some children remain → reduce quantity + rewrite metadata to the survivors.
-    if (remaining.length > 0) {
+    const path: CancelPath =
+      remaining.length > 0 ? "reduce" : otherItems.length > 0 ? "delete" : "schedule"
+
+    if (preview) {
+      return res.status(200).json({ path, periodEnd: periodEndIso })
+    }
+
+    // --- Execute. Stripe FIRST; DB only after Stripe succeeds. ---
+    if (path === "reduce") {
       await stripe.subscriptions.update(sub.id, {
         items: [{ id: item.id, quantity: remaining.length }],
         proration_behavior: "create_prorations",
         metadata: { [metaKey]: remaining.join(",") },
       })
-      await markCanceled(supabase, toRemove, moduleId, periodEndIso)
-      return res.status(200).json({ removed: toRemove.length, remaining: remaining.length })
+      // Immediate removal (prorated credit) — access ends now.
+      await markCanceled(supabase, toRemove, moduleId, new Date().toISOString())
+      return res.status(200).json({ path, removed: toRemove.length, remaining: remaining.length })
     }
 
-    // Removing every child for this module. If other items remain on the
-    // subscription (a plan, or another prep module), drop just this item.
-    const otherItems = sub.items.data.filter((it) => it.id !== item.id)
-    if (otherItems.length > 0) {
+    if (path === "delete") {
       await stripe.subscriptions.update(sub.id, {
         items: [{ id: item.id, deleted: true }],
         proration_behavior: "create_prorations",
         metadata: { [metaKey]: "" },
       })
-      await markCanceled(supabase, toRemove, moduleId, periodEndIso)
-      return res.status(200).json({ removed: toRemove.length, itemDeleted: true })
+      await markCanceled(supabase, toRemove, moduleId, new Date().toISOString())
+      return res.status(200).json({ path, removed: toRemove.length, itemDeleted: true })
     }
 
-    // This prep item is the subscription's only item (prep-only account). Stripe
-    // rejects deleting the last item, so cancel the whole subscription at period
-    // end. The webhook (cancel_at_period_end) keeps access until then and marks
-    // the entitlements canceled on the subscription.deleted event.
+    // schedule: prep-only, this is the only item. Stripe rejects deleting the last
+    // item, so cancel the whole subscription at period end. No DB write here — the
+    // webhook keeps access until the boundary and cancels on subscription.deleted.
     await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true })
-    return res.status(200).json({ removed: toRemove.length, scheduledCancelAt: periodEndIso })
+    return res.status(200).json({ path, scheduledCancelAt: periodEndIso })
   } catch (error) {
     console.error("cancel-prep error:", error)
     return res.status(500).json({ error: "Could not cancel the prep module" })
