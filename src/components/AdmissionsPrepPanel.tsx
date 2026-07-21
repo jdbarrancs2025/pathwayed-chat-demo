@@ -15,7 +15,8 @@ import {
   type CancelPrepPreview,
   type PrepEntitlement,
 } from '@/lib/prep/entitlements'
-import { formatMoney, intervalSuffix } from '@/lib/billing'
+import { formatMoney, intervalSuffix, planQualifiesForBand } from '@/lib/billing'
+import { getSubscription, type Subscription } from '@/lib/profile'
 
 const priceLabel = `${formatMoney(PREP_PRICE_MONTHLY)}${intervalSuffix('monthly')}`
 
@@ -56,6 +57,7 @@ export function AdmissionsPrepPanel({
   const [cancelBusy, setCancelBusy] = useState(false)
 
   const [settings, setSettings] = useState<Map<string, string | null>>(new Map())
+  const [sub, setSub] = useState<Subscription | null>(null)
 
   const studentIds = useMemo(() => students.map((s) => s.id), [students])
 
@@ -71,6 +73,16 @@ export function AdmissionsPrepPanel({
       active = false
     }
   }, [studentIds])
+
+  useEffect(() => {
+    let active = true
+    getSubscription(userId).then((s) => {
+      if (active) setSub(s)
+    })
+    return () => {
+      active = false
+    }
+  }, [userId])
 
   // Parent sets a child's test date per module; it drives the kid tile + module
   // header countdown. Optimistic, then a direct client write (owns_student grant).
@@ -89,6 +101,11 @@ export function AdmissionsPrepPanel({
   }
 
   const module = PREP_MODULES.find((m) => m.id === moduleId) ?? PREP_MODULES[0]
+
+  // Purchase requires an active/trialing learning plan whose grade coverage
+  // reaches this module's band (Middle or High for a 6-8 module). This mirrors the
+  // server enforcement in api/purchase-prep — the client gate is convenience only.
+  const accountEligible = !!module && planQualifiesForBand(sub?.status ?? null, sub?.plan ?? null, module.gradeBand)
 
   const nameOf = (studentId: string) => students.find((s) => s.id === studentId)?.first_name ?? 'Child'
   const moduleName = (id: string) => PREP_MODULES.find((m) => m.id === id)?.name ?? id
@@ -300,8 +317,15 @@ export function AdmissionsPrepPanel({
         })}
       </div>
 
-      {/* Child selection for the chosen module. */}
-      {module && (
+      {/* No qualifying plan: show the modules but no purchase action. */}
+      {module && !accountEligible && (
+        <p className="muted" style={{ fontSize: 13, margin: '12px 0 0' }}>
+          Available with a Middle or High School plan.
+        </p>
+      )}
+
+      {/* Child selection — only when the account holds a qualifying plan. */}
+      {module && accountEligible && (
         <div style={{ marginTop: 12 }}>
           <p style={{ fontWeight: 600, fontSize: 13.5, margin: '0 0 6px' }}>Which children?</p>
           {students.length === 0 && (

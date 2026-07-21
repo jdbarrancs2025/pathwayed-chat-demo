@@ -46,6 +46,31 @@ export function suggestPlan(grades: string[]): PlanId {
   return 'elementary'
 }
 
+/** Grade coverage per plan tier (Elementary K-5, Middle 6-8, High 9-12). The
+ *  single source for which plans qualify for a prep module's grade band. */
+export const PLAN_GRADES: Record<PlanId, [number, number]> = {
+  elementary: [0, 5],
+  middle: [6, 8],
+  high: [9, 12],
+}
+
+/**
+ * Whether the account may PURCHASE a prep module for the given grade band: the
+ * subscription must be active or trialing, and the plan's coverage must reach the
+ * band (its top grade >= the band's first grade). So Elementary is excluded for a
+ * 6-8 module while Middle and High qualify. Coverage comes from PLAN_GRADES, not a
+ * hardcoded grade list.
+ */
+export function planQualifiesForBand(
+  status: string | null,
+  plan: string | null,
+  band: [number, number],
+): boolean {
+  if (status !== 'active' && status !== 'trialing') return false
+  const range = PLAN_GRADES[plan as PlanId] as [number, number] | undefined
+  return range != null && range[1] >= band[0]
+}
+
 interface CheckoutInput {
   plan: PlanId
   billingPeriod: BillingPeriod

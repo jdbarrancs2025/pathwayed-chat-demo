@@ -39,6 +39,30 @@ export function includedSeats(plan: PlanId): number {
   return INCLUDED_SEATS[plan]
 }
 
+/** Grade coverage per plan tier (Elementary K-5, Middle 6-8, High 9-12). The
+ *  single source for which plans qualify for a prep module's grade band. */
+export const PLAN_GRADES: Record<PlanId, [number, number]> = {
+  elementary: [0, 5],
+  middle: [6, 8],
+  high: [9, 12],
+}
+
+/**
+ * Whether the account may purchase a prep module for the given grade band: the
+ * subscription must be active or trialing, and the plan's coverage must reach the
+ * band (its top grade >= the band's first grade). Elementary is excluded for a 6-8
+ * module; Middle and High qualify. Coverage is derived from PLAN_GRADES.
+ */
+export function planQualifiesForBand(
+  status: string | null | undefined,
+  plan: string | null | undefined,
+  band: [number, number],
+): boolean {
+  if (status !== "active" && status !== "trialing") return false
+  if (!isPlanId(plan)) return false
+  return PLAN_GRADES[plan][1] >= band[0]
+}
+
 /** Billable extra children = max(0, totalKids - included seats for the plan). */
 export function extraKids(plan: PlanId, totalKids: number): number {
   return Math.max(0, (Number(totalKids) || 0) - INCLUDED_SEATS[plan])

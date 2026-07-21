@@ -2,6 +2,8 @@ import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { isPrepModuleId, prepPriceEnv, prepStudentsMetaKey } from "./prep-core.js"
+import { planQualifiesForBand } from "./billing-core.js"
+import { getPrepModule } from "../src/lib/prep/registry.js"
 
 interface PurchasePrepRequest {
   userId?: string
@@ -63,12 +65,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const supabase = createClient(supabaseUrl, serviceKey)
     const { data: profile } = await supabase
       .from("profiles")
-      .select("stripe_customer_id, subscription_status")
+      .select("stripe_customer_id, subscription_status, plan")
       .eq("id", userId)
       .maybeSingle()
 
     const customerId = profile?.stripe_customer_id as string | null | undefined
     const status = profile?.subscription_status as string | null | undefined
+    const plan = profile?.plan as string | null | undefined
+
+    // Eligibility (enforced here, not just in the UI): the account needs an active
+    // or trialing learning plan whose grade coverage reaches the module's band —
+    // Elementary is excluded for a 6-8 module; Middle and High qualify.
+    const mod = getPrepModule(moduleId)
+    if (!mod || !planQualifiesForBand(status, plan, mod.gradeBand)) {
+      return res
+        .status(403)
+        .json({ error: "Admissions Prep requires an active Middle or High School plan." })
+    }
 
     const stripe = new Stripe(secretKey)
     const metaKey = prepStudentsMetaKey(moduleId)

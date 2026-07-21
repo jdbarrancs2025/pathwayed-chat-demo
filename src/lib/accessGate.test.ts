@@ -25,6 +25,7 @@ function sub(overrides: Partial<Subscription> = {}): Subscription {
     currentPeriodEnd: null,
     hasTrialed: false,
     paidSeats: null,
+    stripeCustomerId: null,
     ...overrides,
   }
 }
