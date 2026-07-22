@@ -246,20 +246,35 @@ export function AdmissionsPrepPanel({
             const key = `${e.studentId}-${e.moduleId}`
             // status active + ends_at = scheduled to end (does not renew).
             const scheduledEnd = e.status === 'active' && e.endsAt ? formatDate(e.endsAt) : ''
+            // Single status indicator (the badge). "Ending [date]" folds in what the
+            // right-side "ends [date]" used to say, so it isn't shown twice.
+            const badge =
+              e.status === 'past_due'
+                ? { label: 'Payment issue', color: '#B0432E', bg: '#FBE3DE' }
+                : scheduledEnd
+                  ? { label: `Ending ${scheduledEnd}`, color: '#8A6D3B', bg: '#FBF1DA' }
+                  : { label: 'Current', color: '#1F9E6F', bg: '#E7F5EF' }
             return (
               <div key={key} style={{ display: 'grid', gap: 5 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, fontSize: 13.5 }}>
-                  <span style={{ color: '#1C2230' }}>
-                    {moduleName(e.moduleId)} Prep — {nameOf(e.studentId)}
-                    {e.status === 'past_due' && (
-                      <span style={{ color: '#B0432E', fontWeight: 600 }}> (payment past due)</span>
-                    )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, fontSize: 13.5 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', color: '#1C2230' }}>
+                    <span>{moduleName(e.moduleId)} Prep — {nameOf(e.studentId)}</span>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 999,
+                        color: badge.color,
+                        background: badge.bg,
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {badge.label}
+                    </span>
                   </span>
-                  {scheduledEnd ? (
-                    <span className="muted" style={{ fontSize: 12.5, flexShrink: 0 }}>ends {scheduledEnd}</span>
-                  ) : (
-                    <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabel}</b>
-                  )}
+                  {scheduledEnd ? null : <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabel}</b>}
                 </div>
 
                 {/* Test date drives the child's home tile + module countdown. */}
