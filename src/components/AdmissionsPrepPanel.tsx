@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Student } from '@/lib/students'
-import { PREP_MODULES } from '@/lib/prep/registry'
+import { PREP_MODULES, getPrepModule } from '@/lib/prep/registry'
+import type { PrepModule } from '@/lib/prep/types'
+import { loadPrepProgress } from '@/lib/prep/prepProgressLoad'
+import type { PrepProgress } from '@/lib/prep/prepProgress'
 import { PREP_PRICE_MONTHLY } from '@/lib/prep/pricing'
 import {
   ACTIVE_PREP_STATUSES,
@@ -241,6 +244,10 @@ export function AdmissionsPrepPanel({
                   />
                 </label>
 
+                {/* Readiness + progress for this child's module (client-computed
+                    from prep_attempts + mastery the parent already reads under RLS). */}
+                <PrepChildProgress studentId={e.studentId} moduleId={e.moduleId} moduleName={moduleName(e.moduleId)} />
+
                 {scheduledEnd ? null : confirming === key ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <span className="muted" style={{ fontSize: 12.5 }}>
@@ -387,6 +394,124 @@ export function AdmissionsPrepPanel({
 
       {notice && <p style={{ color: '#1F9E6F', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{notice}</p>}
       {error && <p style={{ color: '#C0492F', fontSize: 14, fontWeight: 500, margin: '10px 0 0' }}>{error}</p>}
+    </div>
+  )
+}
+
+/** Readiness band color for the parent headline number. */
+function readinessColor(score: number): string {
+  if (score >= 75) return '#1F9E6F'
+  if (score >= 50) return '#003078'
+  if (score >= 25) return '#B87A2E'
+  return '#8A7F6D'
+}
+
+const TREND: Record<'up' | 'down' | 'flat', { s: string; c: string }> = {
+  up: { s: '▲', c: '#1F9E6F' },
+  flat: { s: '▬', c: '#8A7F6D' },
+  down: { s: '▼', c: '#B0432E' },
+}
+
+/**
+ * Parent-facing readiness + progress for one child's prep module. Entirely
+ * client-computed (loadPrepProgress) from prep_attempts and mastery the parent can
+ * already read under RLS — no new tables, no server work. Shows:
+ *   - a 0-100 readiness headline (blend of per-type mastery + recent section scores),
+ *   - latest timed section scores with a trend arrow vs the prior attempt,
+ *   - the weakest areas in plain parent language.
+ * Readiness is a coaching signal, stated as such — never a predicted test score.
+ */
+function PrepChildProgress({
+  studentId,
+  moduleId,
+  moduleName,
+}: {
+  studentId: string
+  moduleId: string
+  moduleName: string
+}) {
+  const module: PrepModule | undefined = useMemo(() => getPrepModule(moduleId as PrepModule['id']), [moduleId])
+  const [progress, setProgress] = useState<PrepProgress | null>(null)
+  const [loading, setLoading] = useState(!!module)
+
+  useEffect(() => {
+    if (!module) return
+    let active = true
+    loadPrepProgress(studentId, module)
+      .then((p) => active && setProgress(p))
+      .catch(() => active && setProgress(null))
+      .finally(() => active && setLoading(false))
+    return () => {
+      active = false
+    }
+  }, [studentId, module])
+
+  if (!module) return null
+  if (loading) {
+    return <p className="muted" style={{ fontSize: 12.5, margin: 0 }}>Loading progress…</p>
+  }
+  if (!progress) return null
+
+  const hasReadiness = progress.readiness != null
+  const wrap: React.CSSProperties = {
+    marginTop: 2,
+    padding: '10px 12px',
+    background: '#FBF8F3',
+    border: '1px solid #ECE4D8',
+    borderRadius: 10,
+    display: 'grid',
+    gap: 8,
+  }
+
+  return (
+    <div style={wrap}>
+      {/* Readiness headline. */}
+      {hasReadiness ? (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 7 }}>
+            <span style={{ fontSize: 24, fontWeight: 800, color: readinessColor(progress.readiness as number), lineHeight: 1 }}>
+              {progress.readiness}
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#5A6172' }}>/ 100 · {moduleName} readiness</span>
+          </div>
+          <p className="muted" style={{ fontSize: 12, margin: '4px 0 0' }}>
+            A blend of practice mastery and recent timed-section scores — a coaching signal to guide practice, not a predicted test score.
+          </p>
+        </div>
+      ) : (
+        <p className="muted" style={{ fontSize: 12.5, margin: 0 }}>
+          {moduleName} readiness will appear once {`there's`} a little timed practice to measure.
+        </p>
+      )}
+
+      {/* Latest section scores + trend vs prior attempt. */}
+      {progress.sections.length > 0 && (
+        <div style={{ display: 'grid', gap: 4 }}>
+          {progress.sections.map((s) => {
+            const arrow = s.trend ? TREND[s.trend] : null
+            return (
+              <div key={s.sectionId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 12.5 }}>
+                <span style={{ color: '#1C2230' }}>{s.name}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {arrow && (
+                    <span style={{ color: arrow.c, fontSize: 11, fontWeight: 800 }} title={s.priorScore != null ? `was ${s.priorScore}%` : undefined}>
+                      {arrow.s}
+                    </span>
+                  )}
+                  <b style={{ color: '#003078' }}>{s.latestScore}%</b>
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Weakest areas in parent language. */}
+      {progress.weakestTypes.length > 0 && (
+        <p className="muted" style={{ fontSize: 12, margin: 0 }}>
+          <b style={{ color: '#5A6172' }}>Focus areas:</b> {progress.weakestTypes.map((t) => t.label).join(', ')}
+        </p>
+      )}
     </div>
   )
 }

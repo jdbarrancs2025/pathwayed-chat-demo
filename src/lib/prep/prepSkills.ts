@@ -60,8 +60,11 @@ export const PREP_SKILLS: Record<string, PrepSkillRef> = {
   number_manipulation: { slug: 'decimal-operations', sessionSubject: 'math' },
   geometric_comparison: { slug: 'geometry', sessionSubject: 'math' },
 
-  // ---- INTERIM (essay engine ships later — step 11) ----
-  essay_prompt: { slug: 'data-analysis', sessionSubject: 'writing' }, // INTERIM
+  // ---- Essay: handled by the dedicated server-timed essay flow (PrepEssay), NOT
+  //      this MCQ map. Essay sections are filtered out of Train/Practice and the
+  //      timed MCQ engine, so prepSkillFor('essay_prompt') is never used to render;
+  //      the mapping stays only so the type resolves to a harmless real slug. ----
+  essay_prompt: { slug: 'data-analysis', sessionSubject: 'writing' },
 }
 
 /** Resolve a prep question type to its skill ref, or null if unmapped. */

@@ -26,6 +26,7 @@ import { StudentSubject } from '@/pages/StudentSubject'
 import { PrepModuleHome } from '@/pages/prep/PrepModuleHome'
 import { PrepTimedSection } from '@/pages/prep/PrepTimedSection'
 import { PrepReview } from '@/pages/prep/PrepReview'
+import { PrepEssay } from '@/pages/prep/PrepEssay'
 
 export function AppRoutes() {
   return (
@@ -67,6 +68,11 @@ export function AppRoutes() {
           checks the module entitlement itself. The timed screen has no Nikki. */}
       <Route path="/students/:id/prep/:moduleId/section/:sectionId" element={<PrepTimedSection />} />
       <Route path="/students/:id/prep/:moduleId/review/:attemptId" element={<PrepReview />} />
+      {/* ISEE practice essay (server-timed) + review of a past essay. Same
+          entitlement self-check; the writing screen has no Nikki (she returns only
+          on the feedback/review screen). */}
+      <Route path="/students/:id/prep/:moduleId/essay" element={<PrepEssay />} />
+      <Route path="/students/:id/prep/:moduleId/essay/review/:attemptId" element={<PrepEssay />} />
       {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
           verification route; not yet wired into onboarding. */}
       <Route path="/students/:id/diagnostic" element={<Diagnostic />} />

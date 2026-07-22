@@ -11,6 +11,9 @@ import {
 } from '@/lib/prep/entitlements'
 import { prepSkillFor, questionTypeLabel } from '@/lib/prep/prepSkills'
 import { listAttempts, type PrepAttempt } from '@/lib/prep/timedSection'
+import { listEssayAttempts, type EssayAttempt } from '@/lib/prep/prepEssay'
+import { computePrepProgress, type PrepProgress } from '@/lib/prep/prepProgress'
+import { daysUntilDate } from '@/lib/prep/entitlements'
 import { getSkillMastery } from '@/lib/mastery'
 import { resolveSkillIdsBySlug } from '@/lib/skills'
 import { TopMenu } from '@/components/TopMenu'
@@ -154,7 +157,9 @@ export function PrepModuleHome() {
           ? 'Pick a topic and we’ll work through it together.'
           : 'Pick a topic for a short set of practice questions.'}
       </p>
-      {module.sections.map((sec: PrepSection) => (
+      {/* Essay sections are excluded here — the essay is written through its own
+          server-timed flow (Test tab -> Practice essay), never the MCQ Train/Practice. */}
+      {module.sections.filter((sec) => !sec.essay).map((sec: PrepSection) => (
         <div key={sec.id} className="panel" style={{ padding: '14px 16px' }}>
           <h3 style={{ margin: '0 0 8px' }}>{sec.name}</h3>
           <div style={{ display: 'grid', gap: 6 }}>
@@ -217,7 +222,15 @@ export function PrepModuleHome() {
 
         {(tab === 'train' || tab === 'practice') && renderSections()}
         {tab === 'test' && <PrepTestTab studentId={student.id} module={module} />}
-        {tab === 'progress' && <PrepProgressTab />}
+        {tab === 'progress' && (
+          <PrepProgressTab
+            studentId={student.id}
+            module={module}
+            slugAccuracy={slugAccuracy}
+            testDate={testDate}
+            onGoToTest={() => setTab('test')}
+          />
+        )}
       </div>
     </div>
   )
@@ -245,18 +258,26 @@ function shortDate(iso: string | null): string {
 function PrepTestTab({ studentId, module }: { studentId: string; module: PrepModule }) {
   const navigate = useNavigate()
   const [attempts, setAttempts] = useState<PrepAttempt[]>([])
+  const [essays, setEssays] = useState<EssayAttempt[]>([])
+  const hasEssay = module.sections.some((s) => s.essay)
 
   useEffect(() => {
     let active = true
     listAttempts(studentId, module.id).then((a) => {
       if (active) setAttempts(a.filter((x) => x.status === 'submitted' || x.status === 'expired'))
     })
+    if (hasEssay) {
+      listEssayAttempts(studentId).then((e) => {
+        if (active) setEssays(e.filter((x) => !!x.submittedAt))
+      })
+    }
     return () => {
       active = false
     }
-  }, [studentId, module.id])
+  }, [studentId, module.id, hasEssay])
 
   const timedSections = module.sections.filter((s) => !s.essay)
+  const essaySection = module.sections.find((s) => s.essay)
   const sectionName = (sid: string) => module.sections.find((s) => s.id === sid)?.name ?? sid
 
   return (
@@ -284,8 +305,28 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
           </button>
         ))}
 
+        {/* ISEE practice essay — its own server-timed writing flow (essay:true
+            section). Only shown for a module that has an essay section. */}
+        {essaySection && (
+          <button
+            type="button"
+            className="bigcard"
+            style={{ padding: '12px 14px' }}
+            onClick={() => navigate(`/students/${studentId}/prep/${module.id}/essay`)}
+          >
+            <div style={{ flex: 1, textAlign: 'left' }}>
+              <h3 style={{ fontSize: 15, margin: 0 }}>Practice essay</h3>
+              <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#5A6172' }}>
+                {minutesLabel(essaySection.timeLimitSec)} · Nikki gives feedback
+              </p>
+            </div>
+            <span style={{ fontSize: 20 }}>✍️</span>
+          </button>
+        )}
+
         {/* Full test — data model supports it (full_test_group_id) but the UI ships
-            after single sections prove out. */}
+            after single sections prove out. Composition includes short breaks after
+            Quantitative Reasoning and Mathematics Achievement (see isee.ts). */}
         <div
           className="bigcard"
           aria-disabled="true"
@@ -293,7 +334,7 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
         >
           <div style={{ flex: 1, textAlign: 'left' }}>
             <h3 style={{ fontSize: 15, margin: 0 }}>Full test</h3>
-            <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#5A6172' }}>Coming soon</p>
+            <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#5A6172' }}>Coming soon · with real breaks between sections</p>
           </div>
         </div>
       </div>
@@ -310,11 +351,45 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
                 style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, cursor: 'pointer', border: '1.4px solid #ECE4D8' }}
                 onClick={() => navigate(`/students/${studentId}/prep/${module.id}/review/${a.id}`)}
               >
-                <span style={{ fontSize: 13.5, color: '#1C2230' }}>
+                <span style={{ fontSize: 13.5, color: '#1C2230', display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
                   {sectionName(a.sectionId)}
-                  <span className="muted" style={{ fontSize: 12 }}> · {shortDate(a.startedAt)}{a.status === 'expired' ? ' · timed out' : ''}</span>
+                  <span className="muted" style={{ fontSize: 12 }}>· {shortDate(a.startedAt)}</span>
+                  {a.status === 'expired' ? (
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#8A6D3B', background: '#FBF1DA', padding: '2px 8px', borderRadius: 999 }}>
+                      ran out of time
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#1F9E6F', background: '#E7F5EF', padding: '2px 8px', borderRadius: 999 }}>
+                      finished
+                    </span>
+                  )}
                 </span>
-                <b style={{ fontSize: 14, color: '#003078' }}>{a.score != null ? `${Math.round(a.score * 100)}%` : '—'}</b>
+                <b style={{ fontSize: 14, color: '#003078', flexShrink: 0 }}>{a.score != null ? `${Math.round(a.score * 100)}%` : '—'}</b>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {essays.length > 0 && (
+        <div>
+          <h3 style={{ fontSize: 14, margin: '4px 0 8px' }}>Past essays</h3>
+          <div style={{ display: 'grid', gap: 6 }}>
+            {essays.map((e) => (
+              <button
+                key={e.id}
+                type="button"
+                className="panel"
+                style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, cursor: 'pointer', border: '1.4px solid #ECE4D8' }}
+                onClick={() => navigate(`/students/${studentId}/prep/${module.id}/essay/review/${e.id}`)}
+              >
+                <span style={{ fontSize: 13.5, color: '#1C2230' }}>
+                  Practice essay
+                  <span className="muted" style={{ fontSize: 12 }}> · {shortDate(e.submittedAt)}</span>
+                </span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: e.nikkiFeedback ? '#1F9E6F' : '#8A7F6D' }}>
+                  {e.nikkiFeedback ? 'Feedback ready' : 'View'}
+                </span>
               </button>
             ))}
           </div>
@@ -324,15 +399,157 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
   )
 }
 
-/** Progress tab. Placeholder until the progress view is built. */
-function PrepProgressTab() {
+/** Kid-friendly pacing line tied to how close test day is. Encouraging, never
+ *  pressuring. Null when there is no upcoming test date. */
+function pacingLine(testDate: string | null): string | null {
+  const d = daysUntilDate(testDate)
+  if (d == null || d < 0) return null
+  if (d === 0) return 'It’s test day — you’ve got this. Trust your practice.'
+  if (d <= 3) return 'Almost there! Keep practice light and steady, and get a good night’s sleep.'
+  if (d <= 14) return 'You’ve got time — a little practice each day adds up fast.'
+  return 'Plenty of time. Steady practice now makes test day feel easy.'
+}
+
+/** A tiny score bar (0..100). Kid-facing, purely visual. */
+function ScoreBar({ value }: { value: number }) {
   return (
-    <div className="panel" style={{ padding: '22px 18px', textAlign: 'center' }}>
-      <div style={{ fontSize: 34, marginBottom: 6 }}>📈</div>
-      <h3 style={{ margin: '0 0 6px' }}>Your progress is coming soon</h3>
-      <p className="muted" style={{ margin: '0 auto', maxWidth: 340, fontSize: 13.5 }}>
-        You’ll see how each section is shaping up here. Keep practicing and this will fill in.
-      </p>
+    <div style={{ height: 8, borderRadius: 999, background: '#EFE7DA', overflow: 'hidden' }}>
+      <div style={{ width: `${Math.max(4, Math.min(100, value))}%`, height: '100%', background: '#003078', borderRadius: 999 }} />
+    </div>
+  )
+}
+
+const TREND_ARROW: Record<'up' | 'down' | 'flat', { s: string; c: string }> = {
+  up: { s: '▲', c: '#1F9E6F' },
+  flat: { s: '▬', c: '#8A7F6D' },
+  down: { s: '▼', c: '#B0432E' },
+}
+
+/**
+ * Progress tab (kid-facing). Shows per-section timed scores with a "personal best"
+ * cheer, the friendliest framing of what to work on next, and the test-day
+ * countdown with pacing encouragement. NO readiness number anywhere — scores and
+ * encouragement only (that number lives on the PARENT surface).
+ */
+function PrepProgressTab({
+  studentId,
+  module,
+  slugAccuracy,
+  testDate,
+  onGoToTest,
+}: {
+  studentId: string
+  module: PrepModule
+  slugAccuracy: Map<string, number | null>
+  testDate: string | null
+  onGoToTest: () => void
+}) {
+  const navigate = useNavigate()
+  const [progress, setProgress] = useState<PrepProgress | null>(null)
+
+  useEffect(() => {
+    let active = true
+    listAttempts(studentId, module.id).then((attempts) => {
+      if (!active) return
+      const lite = attempts
+        .filter((a) => a.status === 'submitted' || a.status === 'expired')
+        .map((a) => ({ sectionId: a.sectionId, status: a.status as 'submitted' | 'expired', score: a.score, startedAt: a.startedAt }))
+      setProgress(computePrepProgress(module, lite, slugAccuracy))
+    })
+    return () => {
+      active = false
+    }
+  }, [studentId, module, slugAccuracy])
+
+  const pacing = pacingLine(testDate)
+  const countdown = testDayCountdown(testDate)
+
+  if (!progress) {
+    return <p className="muted">Loading…</p>
+  }
+
+  // Empty state — friendly, and points at the Test tab.
+  if (!progress.hasAttempts) {
+    return (
+      <div className="panel" style={{ padding: '22px 18px', textAlign: 'center' }}>
+        <div style={{ fontSize: 34, marginBottom: 6 }}>📈</div>
+        <h3 style={{ margin: '0 0 6px' }}>Your progress starts here</h3>
+        <p className="muted" style={{ margin: '0 auto 14px', maxWidth: 340, fontSize: 13.5 }}>
+          Take your first timed section and you’ll see your scores climb right here. Every try makes you stronger.
+        </p>
+        <button className="btn btn-primary" style={{ width: 'auto' }} onClick={onGoToTest}>
+          Go to the Test tab
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 14 }}>
+      {(countdown || pacing) && (
+        <div className="panel" style={{ padding: '13px 15px', background: '#EAF0FB', border: '1.4px solid #D3E0F5' }}>
+          {countdown && <p style={{ margin: 0, fontWeight: 700, fontSize: 14.5, color: '#003078' }}>{countdown}</p>}
+          {pacing && <p style={{ margin: countdown ? '3px 0 0' : 0, fontSize: 13, color: '#3A4A66' }}>{pacing}</p>}
+        </div>
+      )}
+
+      {/* Per-section scores. */}
+      <div>
+        <h3 style={{ fontSize: 14, margin: '2px 0 8px' }}>Your section scores</h3>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {progress.sections.map((s) => {
+            const arrow = s.trend ? TREND_ARROW[s.trend] : null
+            return (
+              <div key={s.sectionId} className="panel" style={{ padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 8 }}>
+                  <span style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>{s.name}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {arrow && <span style={{ color: arrow.c, fontSize: 12, fontWeight: 800 }}>{arrow.s}</span>}
+                    <b style={{ fontSize: 15, color: '#003078' }}>{s.latestScore}%</b>
+                  </span>
+                </div>
+                <ScoreBar value={s.latestScore} />
+                <p className="muted" style={{ margin: '7px 0 0', fontSize: 12.5 }}>
+                  {s.isBest ? (
+                    <span style={{ color: '#1F9E6F', fontWeight: 700 }}>Your best {s.name} yet! 🎉</span>
+                  ) : s.attempts >= 2 ? (
+                    <>Best so far: {s.bestScore}% · {s.attempts} attempts</>
+                  ) : (
+                    <>Your first {s.name} — great start!</>
+                  )}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* What to work on next — never framed as failure. */}
+      {progress.weakestTypes.length > 0 && (
+        <div>
+          <h3 style={{ fontSize: 14, margin: '2px 0 4px' }}>What to work on next</h3>
+          <p className="muted" style={{ fontSize: 12.5, margin: '0 0 8px' }}>
+            A little practice here will level you up the fastest.
+          </p>
+          <div style={{ display: 'grid', gap: 6 }}>
+            {progress.weakestTypes.map((t) => (
+              <button
+                key={t.slug}
+                type="button"
+                className="bigcard"
+                style={{ padding: '10px 12px' }}
+                onClick={() => navigate(`/students/${studentId}/practice/${encodeURIComponent(t.slug)}`)}
+              >
+                <div style={{ flex: 1, textAlign: 'left' }}>
+                  <h3 style={{ fontSize: 14.5, margin: 0 }}>{t.label}</h3>
+                  <p className="muted" style={{ margin: '2px 0 0', fontSize: 12 }}>Tap to practice</p>
+                </div>
+                <span style={{ fontSize: 18 }}>✏️</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

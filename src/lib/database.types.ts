@@ -809,6 +809,23 @@ export interface Database {
         Args: { p_attempt_id: string; p_client_expired?: boolean }
         Returns: Json
       }
+      // Prep essay engine (migration 0018). start/resume stamps started_at with
+      // now(); remaining_seconds is server-computed; finalize stamps submitted_at.
+      // Each returns the essay as jsonb (Json) incl. remaining_seconds.
+      // (prep_essay_save_feedback is service-role only — not listed here, as the
+      // browser client never calls it.)
+      prep_essay_start: {
+        Args: { p_student_id: string; p_prompt_id: string; p_time_limit_sec: number }
+        Returns: Json
+      }
+      prep_essay_remaining_seconds: {
+        Args: { p_attempt_id: string }
+        Returns: number | null
+      }
+      prep_essay_finalize: {
+        Args: { p_attempt_id: string; p_essay_text?: string | null; p_client_expired?: boolean }
+        Returns: Json
+      }
     }
     Enums: {
       // Must match the canonical resolver gradeBand() in src/lib/gradeBand.ts.
