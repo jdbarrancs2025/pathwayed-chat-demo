@@ -7,7 +7,7 @@ import { NikkiChat, QuestionProgress, SessionComplete } from '@/components/stude
 import { useNikkiChat } from '@/hooks/useNikkiChat'
 import { focusAreaLabels } from '@/lib/practiceQuestions'
 import { cn } from '@/lib/utils'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-horizontal.png'
 import type { Subject } from '@/lib/types'
 
 const validSubjects: Subject[] = ['math', 'reading', 'writing']
@@ -165,7 +165,7 @@ export function StudentSubject() {
               <img
                 src={logoImg}
                 alt="PathwayEd"
-                className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-md"
+                className="h-8 sm:h-10 w-auto object-contain drop-shadow-md"
               />
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white drop-shadow-sm" />

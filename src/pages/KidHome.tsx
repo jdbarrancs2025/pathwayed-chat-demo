@@ -96,9 +96,11 @@ export function KidHome() {
   return (
     <div className="kid-screen">
       <div className="shell">
-        {/* Welcome header sized up (this screen only): logo ~4x the 52px mark and a
-            larger hamburger to stay balanced with the logo and Nikki. */}
-        <TopMenu logoHeight={208} menuSize={72} />
+        {/* Welcome header sized up (this screen only): the lockup roughly
+            double the 34px default (the old 208 was sized for the square
+            crest; the wide PathwayEd lockup at that height would overflow)
+            and a larger hamburger to stay balanced with the logo and Nikki. */}
+        <TopMenu logoHeight={64} menuSize={72} />
 
         <div
           style={{

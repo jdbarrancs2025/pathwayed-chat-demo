@@ -1057,6 +1057,16 @@
 .session .mq:hover {
   background: #f7f2ea;
 }
+/* The Math keyboard button: filled navy so it reads as THE way in, not one
+   more insert chip beside Fraction/Power/Root. */
+.session .mq-kb {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.session .mq-kb:hover {
+  background: #2a4a7f;
+}
 .session .mq-ico {
   font-size: 17px;
   font-weight: 800;

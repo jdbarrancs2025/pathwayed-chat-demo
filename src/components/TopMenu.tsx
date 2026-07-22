@@ -1,30 +1,26 @@
-import logoCrest from '@/assets/logo.png'
-import logoHorizontal from '@/assets/logo-horizontal.png'
+import logoImg from '@/assets/logo-horizontal.png'
 import { HeaderMenu } from '@/components/HeaderMenu'
 
-/** Top bar with the PathwayEd mark on the left and the app menu on the right.
- *  `logoHeight` overrides the default 52px mark and `menuSize` the default 44px
- *  hamburger for a specific screen (e.g. the larger welcome / /students header);
- *  both omitted everywhere else, so other screens are unaffected.
+/** Top bar with the PathwayEd lockup on the left and the app menu on the right.
+ *  `logoHeight` overrides the default 34px lockup and `menuSize` the default
+ *  44px hamburger for a specific screen (e.g. the larger welcome / /students
+ *  header); both omitted everywhere else, so other screens are unaffected.
  *
- *  `mark` selects the artwork: the default square crest (the kid heroes on
- *  /students and KidHome rely on it) or the horizontal PathwayEd lockup used on
- *  parent-facing screens. The horizontal mark is wide, so it defaults to a
- *  shorter 34px height rather than the crest's 52px. */
+ *  One artwork only, on purpose: the horizontal PathwayEd lockup. This
+ *  component used to default to the square "Pathway Education" crest, but that
+ *  is the LEGAL wordmark, reserved for footer/legal use; the product mark is
+ *  PathwayEd everywhere a user sees the app. The old `mark` prop is gone with
+ *  it, so a crest cannot quietly come back through a call site. */
 export function TopMenu(
-  { logoHeight, menuSize, mark = 'crest' }:
-    { logoHeight?: number; menuSize?: number; mark?: 'crest' | 'horizontal' } = {},
+  { logoHeight, menuSize }: { logoHeight?: number; menuSize?: number } = {},
 ) {
-  const isHorizontal = mark === 'horizontal'
-  const src = isHorizontal ? logoHorizontal : logoCrest
-  const height = logoHeight ?? (isHorizontal ? 34 : undefined)
   return (
     <div className="topbar">
       <img
         className="markimg"
-        src={src}
+        src={logoImg}
         alt="PathwayEd"
-        style={height ? { height } : undefined}
+        style={{ height: logoHeight ?? 34 }}
       />
       <HeaderMenu size={menuSize} />
     </div>

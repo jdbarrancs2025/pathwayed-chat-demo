@@ -87,7 +87,7 @@ export function Settings() {
   return (
     <div className="kid-screen">
       <div className="shell">
-        <TopMenu mark="horizontal" />
+        <TopMenu />
         <h1 className="greet" style={{ marginTop: 18 }}>
           Settings
         </h1>

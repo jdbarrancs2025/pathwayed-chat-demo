@@ -1,5 +1,5 @@
 import { MessageSquarePlus, Volume2, BookOpen, PenTool, GraduationCap, Heart } from "lucide-react"
-import logo from "@/assets/logo.png"
+import logo from "@/assets/logo-horizontal.png"
 
 export type Mode = "student-support" | "writing-coach" | "teacher-support" | "parent-support"
 
@@ -33,7 +33,7 @@ export function Sidebar({
           <img
             src={logo}
             alt="PathwayEd"
-            className="h-20 w-auto"
+            className="h-10 w-auto max-w-full"
           />
         </div>
       </div>

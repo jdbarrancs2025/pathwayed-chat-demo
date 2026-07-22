@@ -8,6 +8,11 @@ export interface MathFieldHandle {
   clear: () => void
   /** Insert a LaTeX snippet at the cursor (supports #@ selection / #? placeholder). */
   insert: (latex: string) => void
+  /** Focus the field and show MathLive's virtual keyboard. Backs the visible
+   *  "Math keyboard" button in the Notepad: focus alone shows the keyboard
+   *  under the onfocus policy, and the explicit show() covers the case where
+   *  the field is already focused but the student dismissed the keyboard. */
+  openKeyboard: () => void
 }
 
 interface MathFieldProps {
@@ -50,6 +55,13 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
       insert: (latex: string) => {
         fieldRef.current?.insert(latex, { focus: true })
       },
+      openKeyboard: () => {
+        fieldRef.current?.focus()
+        // Typed loosely because mathlive is dynamic-imported; its window
+        // augmentation isn't guaranteed to be in scope here.
+        const w = window as unknown as { mathVirtualKeyboard?: { show?: () => void } }
+        w.mathVirtualKeyboard?.show?.()
+      },
     }),
     [],
   )
@@ -69,8 +81,10 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
       // works regardless of the virtual keyboard.
       mf.mathVirtualKeyboardPolicy = 'onfocus'
       mf.className = 'mathfield'
-      mf.setAttribute('aria-label', 'Math expression')
-      mf.setAttribute('placeholder', 'Type your problem')
+      // Answer framing, not problem framing: the student is here to work the
+      // problem Nikki gave them, then "Ask Nikki to check it".
+      mf.setAttribute('aria-label', 'Your answer')
+      mf.setAttribute('placeholder', 'Type your answer here')
       // Restore any preserved expression (e.g. after switching to Write by hand
       // and back).
       if (initialValueRef.current) mf.value = initialValueRef.current

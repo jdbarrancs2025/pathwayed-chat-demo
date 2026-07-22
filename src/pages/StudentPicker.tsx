@@ -47,8 +47,10 @@ export function StudentPicker() {
   return (
     <div className="kid-screen">
       <div className="shell">
-        {/* 3x the default 52px mark — this /students header only. */}
-        <TopMenu logoHeight={156} />
+        {/* Sized up for this /students header only: ~1.5x the 34px default
+            (the old 156 was sized for the square crest; the wide PathwayEd
+            lockup at that height would overflow). */}
+        <TopMenu logoHeight={52} />
         <h1 className="greet">Who's learning today?</h1>
         <p className="muted">Tap your name to begin.</p>
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Keyboard } from 'lucide-react'
 import { MathField, type MathFieldHandle } from '@/components/workspace/MathField'
 import { fileToDataURL, splitDataUrl, type ImageTurn } from '@/lib/image'
 
@@ -268,7 +269,7 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
 
   const hint =
     mode === 'editor'
-      ? 'Build your math with the editor — tap the keyboard for fractions, powers, and roots. Then tap Ask Nikki to check it.'
+      ? 'Type your answer in the box. Tap Math keyboard for the full keypad, or use the Fraction, Power, and Root buttons. Then tap Ask Nikki to check it.'
       : mode === 'draw'
         ? mathy
           ? 'Write your math by hand on the grid, or upload a photo. Then tap Ask Nikki to check it.'
@@ -303,6 +304,18 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
       {mode === 'editor' ? (
         <>
           <div className="mathquick">
+            {/* The unmissable route to MathLive's virtual keyboard. It also
+                opens on tapping the field itself (onfocus policy), but the
+                only affordance for that was a small icon inside the field
+                that kids kept missing. */}
+            <button
+              type="button"
+              className="mq mq-kb"
+              onClick={() => mathRef.current?.openKeyboard()}
+            >
+              <Keyboard size={18} aria-hidden="true" />
+              Math keyboard
+            </button>
             <button
               type="button"
               className="mq"

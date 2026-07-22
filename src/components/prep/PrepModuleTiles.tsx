@@ -17,9 +17,11 @@ interface ActiveModule {
 
 /**
  * Kid-home tiles for the child's prep modules. Renders one .bigcard per module the
- * child is entitled to with status 'active' (kid access is 'active' ONLY — never a
- * billing state). No entitlement means no tile and nothing about prep is shown.
- * Deliberately free of any billing / money / subscription language.
+ * child is entitled to via isKidEntitled: status 'active' or 'past_due' (the grace
+ * state while a failing card retries). 'canceled' fails the filter, so when a
+ * scheduled cancel flips an entitlement to canceled the tile drops off on its own.
+ * No entitlement means no tile and nothing about prep is shown. Deliberately free
+ * of any billing / money / subscription language.
  */
 export function PrepModuleTiles({ studentId }: { studentId: string }) {
   const navigate = useNavigate()

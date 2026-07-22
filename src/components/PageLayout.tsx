@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { HeaderMenu } from '@/components/HeaderMenu'
 import { cn } from '@/lib/utils'
-import logoImg from '@/assets/logo.png'
+import logoImg from '@/assets/logo-horizontal.png'
 
 interface PageLayoutProps {
   children: ReactNode
@@ -82,14 +82,14 @@ export function PageLayout({
               onClick={() => navigate('/')}
               className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/10 shadow-lg shadow-black/5 cursor-pointer transition-all duration-200 hover:bg-white/15 active:bg-white/20 active:scale-[0.98] hover:scale-[1.02]"
             >
+              {/* The lockup already carries the PathwayEd wordmark, so the
+                  separate text span the square crest needed is gone (it would
+                  read "PathwayEd PathwayEd"). */}
               <img
                 src={logoImg}
                 alt="PathwayEd"
-                className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-md"
+                className="h-9 sm:h-11 w-auto object-contain drop-shadow-md"
               />
-              <span className="text-white font-bold text-xl sm:text-2xl tracking-tight drop-shadow-sm">
-                PathwayEd
-              </span>
             </button>
             {title && (
               <span className="text-white/95 text-xs sm:text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
