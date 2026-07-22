@@ -24,6 +24,8 @@ import { ParentSetup } from '@/pages/ParentSetup'
 import { StudentHome } from '@/pages/StudentHome'
 import { StudentSubject } from '@/pages/StudentSubject'
 import { PrepModuleHome } from '@/pages/prep/PrepModuleHome'
+import { PrepTimedSection } from '@/pages/prep/PrepTimedSection'
+import { PrepReview } from '@/pages/prep/PrepReview'
 
 export function AppRoutes() {
   return (
@@ -61,6 +63,10 @@ export function AppRoutes() {
           check (active/past_due for this module) is the gate — it redirects home
           otherwise. Child identity comes from getStudent(id) under RLS. */}
       <Route path="/students/:id/prep/:moduleId" element={<PrepModuleHome />} />
+      {/* Timed section engine + review. Ungated like the module home; each page
+          checks the module entitlement itself. The timed screen has no Nikki. */}
+      <Route path="/students/:id/prep/:moduleId/section/:sectionId" element={<PrepTimedSection />} />
+      <Route path="/students/:id/prep/:moduleId/review/:attemptId" element={<PrepReview />} />
       {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
           verification route; not yet wired into onboarding. */}
       <Route path="/students/:id/diagnostic" element={<Diagnostic />} />

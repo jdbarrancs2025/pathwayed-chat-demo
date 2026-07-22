@@ -21,8 +21,8 @@ export const ISEE: PrepModule = {
       name: 'Verbal Reasoning',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official ISEE specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 40,
+      timeLimitSec: 1200,
       questionTypes: ['synonyms', 'sentence_completion'],
     },
     {
@@ -30,8 +30,8 @@ export const ISEE: PrepModule = {
       name: 'Quantitative Reasoning',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official ISEE specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 37,
+      timeLimitSec: 2100,
       questionTypes: ['word_problems', 'quantitative_comparison'],
     },
     {
@@ -39,8 +39,8 @@ export const ISEE: PrepModule = {
       name: 'Reading Comprehension',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official ISEE specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 36,
+      timeLimitSec: 2100,
       questionTypes: ['main_idea', 'supporting_details', 'inference', 'vocabulary_in_context'],
     },
     {
@@ -48,8 +48,8 @@ export const ISEE: PrepModule = {
       name: 'Mathematics Achievement',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official ISEE specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 47,
+      timeLimitSec: 2400,
       questionTypes: ['arithmetic', 'algebra', 'geometry', 'data_analysis', 'problem_solving'],
     },
     {
@@ -58,8 +58,8 @@ export const ISEE: PrepModule = {
       essay: true,
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official ISEE specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 1,
+      timeLimitSec: 1800,
       questionTypes: ['essay_prompt'],
     },
   ],

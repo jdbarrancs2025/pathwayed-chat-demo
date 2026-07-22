@@ -10,6 +10,7 @@ import {
   testDayCountdown,
 } from '@/lib/prep/entitlements'
 import { STANDIN_SUBJECT, questionTypeLabel, standinSkillFor } from '@/lib/prep/standinSkills'
+import { listAttempts, type PrepAttempt } from '@/lib/prep/timedSection'
 import { getSkillMastery } from '@/lib/mastery'
 import { resolveSkillIdsBySlug } from '@/lib/skills'
 import { TopMenu } from '@/components/TopMenu'
@@ -215,27 +216,110 @@ export function PrepModuleHome() {
         </div>
 
         {(tab === 'train' || tab === 'practice') && renderSections()}
-        {tab === 'test' && <PrepTestTab />}
+        {tab === 'test' && <PrepTestTab studentId={student.id} module={module} />}
         {tab === 'progress' && <PrepProgressTab />}
       </div>
     </div>
   )
 }
 
+/** Minutes label for a section time limit, e.g. 960 -> "16 min". */
+function minutesLabel(sec: number): string {
+  return `${Math.round(sec / 60)} min`
+}
+
+/** Friendly date for a past attempt, e.g. "Jul 21". */
+function shortDate(iso: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
 /**
- * Test tab. Placeholder for the timed engine. Intentionally self-contained with NO
- * Nikki / lesson imports — the timed test experience never involves Nikki, so this
- * component is where the timed engine drops in later without touching anything else.
+ * Test tab. Lists the module's timed sections (from config, essay excluded — the
+ * MCQ engine doesn't grade essays), a disabled "Full test" that ships after single
+ * sections prove out, and the child's past attempts. Launching a section navigates
+ * to the dedicated timed route, which has NO Nikki — this component and the timed
+ * engine stay Nikki-free; explanations return only on the review screen.
  */
-function PrepTestTab() {
+function PrepTestTab({ studentId, module }: { studentId: string; module: PrepModule }) {
+  const navigate = useNavigate()
+  const [attempts, setAttempts] = useState<PrepAttempt[]>([])
+
+  useEffect(() => {
+    let active = true
+    listAttempts(studentId, module.id).then((a) => {
+      if (active) setAttempts(a.filter((x) => x.status === 'submitted' || x.status === 'expired'))
+    })
+    return () => {
+      active = false
+    }
+  }, [studentId, module.id])
+
+  const timedSections = module.sections.filter((s) => !s.essay)
+  const sectionName = (sid: string) => module.sections.find((s) => s.id === sid)?.name ?? sid
+
   return (
-    <div className="panel" style={{ padding: '22px 18px', textAlign: 'center' }}>
-      <div style={{ fontSize: 34, marginBottom: 6 }}>⏱️</div>
-      <h3 style={{ margin: '0 0 6px' }}>Timed practice is coming soon</h3>
-      <p className="muted" style={{ margin: '0 auto', maxWidth: 340, fontSize: 13.5 }}>
-        Full timed sections and practice tests, just like the real thing, are on the way. For now,
-        head to Train and Practice to build up each skill.
+    <div style={{ display: 'grid', gap: 14 }}>
+      <p className="muted" style={{ fontSize: 13.5, margin: 0 }}>
+        Take a timed section, just like the real test.
       </p>
+
+      <div style={{ display: 'grid', gap: 8 }}>
+        {timedSections.map((sec) => (
+          <button
+            key={sec.id}
+            type="button"
+            className="bigcard"
+            style={{ padding: '12px 14px' }}
+            onClick={() => navigate(`/students/${studentId}/prep/${module.id}/section/${sec.id}`)}
+          >
+            <div style={{ flex: 1, textAlign: 'left' }}>
+              <h3 style={{ fontSize: 15, margin: 0 }}>{sec.name}</h3>
+              <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#5A6172' }}>
+                {sec.questionCount} questions · {minutesLabel(sec.timeLimitSec)}
+              </p>
+            </div>
+            <span style={{ fontSize: 20 }}>⏱️</span>
+          </button>
+        ))}
+
+        {/* Full test — data model supports it (full_test_group_id) but the UI ships
+            after single sections prove out. */}
+        <div
+          className="bigcard"
+          aria-disabled="true"
+          style={{ padding: '12px 14px', opacity: 0.6, cursor: 'default' }}
+        >
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <h3 style={{ fontSize: 15, margin: 0 }}>Full test</h3>
+            <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#5A6172' }}>Coming soon</p>
+          </div>
+        </div>
+      </div>
+
+      {attempts.length > 0 && (
+        <div>
+          <h3 style={{ fontSize: 14, margin: '4px 0 8px' }}>Past attempts</h3>
+          <div style={{ display: 'grid', gap: 6 }}>
+            {attempts.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                className="panel"
+                style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, cursor: 'pointer', border: '1.4px solid #ECE4D8' }}
+                onClick={() => navigate(`/students/${studentId}/prep/${module.id}/review/${a.id}`)}
+              >
+                <span style={{ fontSize: 13.5, color: '#1C2230' }}>
+                  {sectionName(a.sectionId)}
+                  <span className="muted" style={{ fontSize: 12 }}> · {shortDate(a.startedAt)}{a.status === 'expired' ? ' · timed out' : ''}</span>
+                </span>
+                <b style={{ fontSize: 14, color: '#003078' }}>{a.score != null ? `${Math.round(a.score * 100)}%` : '—'}</b>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

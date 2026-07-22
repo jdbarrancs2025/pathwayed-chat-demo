@@ -787,6 +787,28 @@ export interface Database {
         Args: { p_pin: string }
         Returns: boolean
       }
+      // Prep timed-section engine (migration 0016). All server-authoritative:
+      // start/resume stamps started_at with now(); finalize decides submitted vs
+      // expired from the server clock and scores the stored answers. Each returns
+      // the attempt as jsonb (Json) including a server-computed remaining_seconds.
+      prep_start_section: {
+        Args: {
+          p_student_id: string
+          p_module_id: string
+          p_section_id: string
+          p_time_limit_sec: number
+          p_question_ids: Json
+        }
+        Returns: Json
+      }
+      prep_remaining_seconds: {
+        Args: { p_attempt_id: string }
+        Returns: number | null
+      }
+      prep_finalize_attempt: {
+        Args: { p_attempt_id: string; p_client_expired?: boolean }
+        Returns: Json
+      }
     }
     Enums: {
       // Must match the canonical resolver gradeBand() in src/lib/gradeBand.ts.

@@ -19,8 +19,8 @@ export const HSPT: PrepModule = {
       name: 'Verbal Skills',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official HSPT specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 60,
+      timeLimitSec: 960,
       questionTypes: ['synonyms', 'antonyms', 'analogies', 'logic', 'verbal_classification'],
     },
     {
@@ -28,8 +28,8 @@ export const HSPT: PrepModule = {
       name: 'Quantitative Skills',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official HSPT specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 52,
+      timeLimitSec: 1800,
       questionTypes: ['number_series', 'quantitative_comparison', 'number_manipulation', 'geometric_comparison'],
     },
     {
@@ -37,8 +37,8 @@ export const HSPT: PrepModule = {
       name: 'Reading',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official HSPT specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 62,
+      timeLimitSec: 1500,
       questionTypes: ['reading_comprehension', 'main_idea', 'vocabulary_in_context'],
     },
     {
@@ -46,8 +46,8 @@ export const HSPT: PrepModule = {
       name: 'Mathematics',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official HSPT specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 64,
+      timeLimitSec: 2700,
       questionTypes: ['math_concepts', 'problem_solving', 'arithmetic', 'algebra', 'geometry'],
     },
     {
@@ -55,8 +55,8 @@ export const HSPT: PrepModule = {
       name: 'Language',
       // TODO: placeholder values — verify questionCount, timeLimitSec, and
       //   questionTypes against current official HSPT specs before launch.
-      questionCount: 0,
-      timeLimitSec: 0,
+      questionCount: 60,
+      timeLimitSec: 1500,
       questionTypes: ['grammar_usage', 'punctuation', 'capitalization', 'spelling', 'composition'],
     },
   ],

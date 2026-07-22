@@ -180,6 +180,57 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
   return shuffle(parsed).slice(0, limit)
 }
 
+/**
+ * Fetch specific PUBLISHED questions by id, returned in the order of `ids`. Used to
+ * load the frozen question set of a timed attempt so resume shows the same
+ * questions in the same order. Returns [] on read failure; skips malformed rows.
+ */
+export async function fetchQuestionsByIds(ids: string[]): Promise<PracticeQuestion[]> {
+  if (ids.length === 0) return []
+  const { data, error } = await supabase
+    .from('generated_questions')
+    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id, render_mode, prompt')
+    .in('id', ids)
+    .eq('status', 'published')
+  if (error) {
+    console.error('fetchQuestionsByIds failed', error)
+    return []
+  }
+  const rows = data ?? []
+
+  const passageIds = [...new Set(rows.map((r) => r.passage_id).filter((v): v is string => !!v))]
+  const passageById = new Map<string, string>()
+  if (passageIds.length) {
+    const { data: pRows, error: pError } = await supabase
+      .from('passages')
+      .select('id, body')
+      .in('id', passageIds)
+      .eq('status', 'published')
+    if (pError) console.error('fetchQuestionsByIds: passages read failed', pError)
+    for (const p of pRows ?? []) passageById.set(p.id, p.body)
+  }
+
+  const byId = new Map<string, PracticeQuestion>()
+  for (const row of rows) {
+    const choices = parseChoices(row.choices)
+    if (choices.length < 2) continue
+    byId.set(row.id, {
+      id: row.id,
+      skill_id: row.skill_id,
+      sat_alignment: row.sat_alignment,
+      stem: row.stem,
+      passage: row.passage_id ? passageById.get(row.passage_id) ?? null : null,
+      choices,
+      correct_answer: row.correct_answer,
+      solution: row.solution,
+      render_mode: typeof row.render_mode === 'string' ? row.render_mode : 'text',
+      prompt: parsePrompt(row.prompt),
+    })
+  }
+  // Preserve the requested order (the frozen attempt order).
+  return ids.map((id) => byId.get(id)).filter((q): q is PracticeQuestion => !!q)
+}
+
 // --- Read path: which skills are practiceable (have published questions) -----
 
 export interface PracticeableSkill {
