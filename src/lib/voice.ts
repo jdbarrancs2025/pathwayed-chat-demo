@@ -10,6 +10,12 @@ export interface SpeakOptions {
   onStart?: () => void
   /** Fires when audio finishes, errors, or is stopped — reset the animation here. */
   onEnd?: () => void
+  /** Fires when NOTHING audible could start because the browser blocked
+   *  playback without a user gesture (ElevenLabs play() rejected AND the
+   *  speechSynthesis fallback was refused with 'not-allowed'). Callers use it
+   *  to show a tap-to-hear cue instead of staying silent. Without it, blocked
+   *  playback ends via onEnd as before. */
+  onBlocked?: () => void
 }
 
 // cacheKey -> object URL of the fetched audio, for the session.
@@ -72,7 +78,8 @@ async function fetchAudioUrl(text: string, voiceId?: string): Promise<string> {
 
 function fallbackSpeak(text: string, opts: SpeakOptions): void {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-    opts.onEnd?.()
+    if (opts.onBlocked) opts.onBlocked()
+    else opts.onEnd?.()
     return
   }
   window.speechSynthesis.cancel()
@@ -81,6 +88,14 @@ function fallbackSpeak(text: string, opts: SpeakOptions): void {
   u.pitch = 1.05
   u.onstart = () => opts.onStart?.()
   u.onend = () => opts.onEnd?.()
+  u.onerror = (e) => {
+    // 'not-allowed' means the browser refused to speak without a user gesture —
+    // the one case the caller may want to surface as a tap-to-hear cue. Other
+    // errors (including 'interrupted'/'canceled' from stopNikkiSpeech) are a
+    // normal end.
+    if (e.error === "not-allowed" && opts.onBlocked) opts.onBlocked()
+    else opts.onEnd?.()
+  }
   window.speechSynthesis.speak(u)
 }
 

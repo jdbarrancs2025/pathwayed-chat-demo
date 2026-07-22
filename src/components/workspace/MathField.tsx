@@ -20,7 +20,22 @@ interface MathFieldProps {
   initialValue?: string
   /** Fired on the field's native `input` event with the current LaTeX. */
   onInput?: (latex: string) => void
+  /** Fired when MathLive's virtual keyboard shows or hides, so the caller can
+   *  reflect the open state (the Notepad's Math keyboard button fills while
+   *  open). Also fired with false on unmount, since unmounting hides it. */
+  onKeyboardToggle?: (visible: boolean) => void
 }
+
+/** Loose view of MathLive's window.mathVirtualKeyboard global: mathlive is
+ *  dynamic-imported, so its window augmentation isn't guaranteed in scope. */
+type LooseVirtualKeyboard = {
+  visible?: boolean
+  show?: () => void
+  addEventListener?: (type: string, listener: () => void) => void
+  removeEventListener?: (type: string, listener: () => void) => void
+}
+const virtualKeyboard = (): LooseVirtualKeyboard | undefined =>
+  (window as unknown as { mathVirtualKeyboard?: LooseVirtualKeyboard }).mathVirtualKeyboard
 
 /**
  * MODE A — a structured math input field backed by MathLive's <math-field> web
@@ -33,15 +48,17 @@ interface MathFieldProps {
  * of the main bundle and only loads when a student opens the math editor.
  */
 export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function MathField(
-  { initialValue = '', onInput },
+  { initialValue = '', onInput, onKeyboardToggle },
   ref,
 ) {
   const hostRef = useRef<HTMLDivElement>(null)
   const fieldRef = useRef<MathfieldElement | null>(null)
-  // Keep the latest onInput without re-running the mount effect (which would
+  // Keep the latest callbacks without re-running the mount effect (which would
   // tear down and recreate the field).
   const onInputRef = useRef(onInput)
   onInputRef.current = onInput
+  const onKeyboardToggleRef = useRef(onKeyboardToggle)
+  onKeyboardToggleRef.current = onKeyboardToggle
   // Captured once so the mount effect can restore it without depending on the prop.
   const initialValueRef = useRef(initialValue)
 
@@ -57,10 +74,7 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
       },
       openKeyboard: () => {
         fieldRef.current?.focus()
-        // Typed loosely because mathlive is dynamic-imported; its window
-        // augmentation isn't guaranteed to be in scope here.
-        const w = window as unknown as { mathVirtualKeyboard?: { show?: () => void } }
-        w.mathVirtualKeyboard?.show?.()
+        virtualKeyboard()?.show?.()
       },
     }),
     [],
@@ -68,6 +82,10 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
 
   useEffect(() => {
     let disposed = false
+    // Mirror the virtual keyboard's show/hide out to the caller. Registered
+    // after the mathlive import resolves (the global exists from then on).
+    let kb: LooseVirtualKeyboard | undefined
+    const onKbToggle = () => onKeyboardToggleRef.current?.(!!kb?.visible)
     void import('mathlive').then(({ MathfieldElement }) => {
       if (disposed || !hostRef.current) return
       // Serve MathLive's fonts from the CDN and disable sounds so nothing 404s
@@ -92,6 +110,8 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
       mf.addEventListener('input', () => onInputRef.current?.(mf.value))
       hostRef.current.appendChild(mf)
       fieldRef.current = mf
+      kb = virtualKeyboard()
+      kb?.addEventListener?.('virtual-keyboard-toggle', onKbToggle)
       // Do NOT auto-focus on mount: focusing arms MathLive's virtual keyboard,
       // which installs a global capture-phase window keydown listener that
       // swallows the spacebar across the whole page (including the chat box).
@@ -100,6 +120,9 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
     })
     return () => {
       disposed = true
+      kb?.removeEventListener?.('virtual-keyboard-toggle', onKbToggle)
+      // Unmounting hides the keyboard; make sure the caller's state agrees.
+      onKeyboardToggleRef.current?.(false)
       fieldRef.current?.remove()
       fieldRef.current = null
     }

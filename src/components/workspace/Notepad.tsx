@@ -49,6 +49,9 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
   // Math-editor LaTeX lifted here so it survives switching to Write by hand and
   // back (the MathField unmounts on switch; this state does not).
   const [mathLatex, setMathLatex] = useState('')
+  // Whether MathLive's virtual keyboard is showing — drives the Math keyboard
+  // button's filled "on" style. Reported by MathField's toggle listener.
+  const [mathKbOpen, setMathKbOpen] = useState(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -307,10 +310,13 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
             {/* The unmissable route to MathLive's virtual keyboard. It also
                 opens on tapping the field itself (onfocus policy), but the
                 only affordance for that was a small icon inside the field
-                that kids kept missing. */}
+                that kids kept missing. Outlined like its neighbors while the
+                keypad is closed (it is an action, not a state); filled only
+                while the keypad is open. */}
             <button
               type="button"
-              className="mq mq-kb"
+              className={`mq mq-kb ${mathKbOpen ? 'on' : ''}`}
+              aria-pressed={mathKbOpen}
               onClick={() => mathRef.current?.openKeyboard()}
             >
               <Keyboard size={18} aria-hidden="true" />
@@ -355,7 +361,12 @@ export function Notepad({ subject, paneActive, onSendText, onSendImage }: Notepa
               on desktop, where chat + workspace show side-by-side). initialValue
               restores preserved input; onInput mirrors changes back out. */}
           {paneActive && (
-            <MathField ref={mathRef} initialValue={mathLatex} onInput={setMathLatex} />
+            <MathField
+              ref={mathRef}
+              initialValue={mathLatex}
+              onInput={setMathLatex}
+              onKeyboardToggle={setMathKbOpen}
+            />
           )}
         </>
       ) : mode === 'type' ? (

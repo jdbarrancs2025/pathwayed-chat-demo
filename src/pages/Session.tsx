@@ -31,10 +31,14 @@ const NEUTRAL_COMPLETION_RATING = 'ok'
 
 // Speak in Nikki's ElevenLabs voice (falls back to the browser voice on
 // failure). setSpeaking drives the avatar's speaking ring while audio plays.
-function speak(text: string, setSpeaking: (v: boolean) => void) {
+// onBlocked (optional) fires when the browser refused all playback for lack of
+// a user gesture — passed only for the entry greeting, where no gesture may
+// exist yet (e.g. a hard reload straight into the session URL).
+function speak(text: string, setSpeaking: (v: boolean) => void, onBlocked?: () => void) {
   void speakWithNikki(text, {
     onStart: () => setSpeaking(true),
     onEnd: () => setSpeaking(false),
+    onBlocked,
   })
 }
 
@@ -228,6 +232,11 @@ function SessionView({
   // off" choice carries between the lesson, the diagnostic, and practice.
   const [muted, setMuted] = useState(getVoiceMuted)
   const [speaking, setSpeaking] = useState(false)
+  // True when the entry greeting could not autoplay (no user gesture yet, e.g.
+  // a hard reload straight into this URL) — shows the tap-to-hear cue instead
+  // of staying silent. In the normal tapped-through flow autoplay is allowed
+  // and this never turns on.
+  const [greetingBlocked, setGreetingBlocked] = useState(false)
   const [draft, setDraft] = useState('')
   const [showLeaveWarning, setShowLeaveWarning] = useState(false)
   const [niceWork, setNiceWork] = useState(false)
@@ -296,9 +305,26 @@ function SessionView({
     if (last && last.role === 'assistant' && last.content && spokenRef.current !== last.id) {
       spokenRef.current = last.id
       const spoken = stripMarkdownForTTS(last.content)
-      if (spoken) speak(spoken, setSpeaking)
+      // Only the entry greeting gets the blocked-playback cue: every later
+      // message follows a user interaction, so autoplay is allowed by then.
+      if (spoken) {
+        speak(
+          spoken,
+          setSpeaking,
+          last.id === 'greeting' ? () => setGreetingBlocked(true) : undefined,
+        )
+      }
     }
   }, [muted, isLoading, messages])
+
+  // Tap-to-hear rescue for the blocked entry greeting. The tap itself is the
+  // user gesture that unblocks audio, so this replay is allowed to play.
+  const hearGreeting = () => {
+    setGreetingBlocked(false)
+    const greeting = messages.find((m) => m.id === 'greeting')
+    const spoken = greeting ? stripMarkdownForTTS(greeting.content) : ''
+    if (spoken) speak(spoken, setSpeaking)
+  }
 
   useEffect(() => () => stopSpeak(setSpeaking), [])
 
@@ -490,6 +516,17 @@ function SessionView({
       <div className="work" data-pane={pane}>
         <div className="chatpane">
           <CallStage state={callState} mode={avatarMode} />
+          {/* Shown only when the entry greeting could not autoplay: hidden
+              while muted (respect the mute switch) and once the conversation
+              has moved on (messages beyond the greeting follow a gesture, so
+              they autoplay fine). */}
+          {greetingBlocked && !muted && messages.length === 1 && (
+            <div style={{ textAlign: 'center' }}>
+              <button type="button" className="hearcue" onClick={hearGreeting}>
+                🔊 Tap to hear Nikki
+              </button>
+            </div>
+          )}
           <div className="feed" ref={feedRef}>
             {visibleMessages.map((m) => (
               <div key={m.id} className={`msg ${m.role === 'assistant' ? 'nikki' : 'me'}`}>

@@ -1057,14 +1057,15 @@
 .session .mq:hover {
   background: #f7f2ea;
 }
-/* The Math keyboard button: filled navy so it reads as THE way in, not one
-   more insert chip beside Fraction/Power/Root. */
-.session .mq-kb {
+/* The Math keyboard button: outlined like Fraction/Power/Root when the keypad
+   is closed (it is an action, not a state), and filled navy only while the
+   keypad is actually open, so the fill reads as "on". */
+.session .mq-kb.on {
   background: var(--navy);
   border-color: var(--navy);
   color: #fff;
 }
-.session .mq-kb:hover {
+.session .mq-kb.on:hover {
   background: #2a4a7f;
 }
 .session .mq-ico {
@@ -1088,6 +1089,26 @@
 }
 .session .mathfield-host {
   margin: 2px 0 4px;
+}
+/* Friendly tap-to-hear cue, shown only when the entry greeting's autoplay was
+   blocked by the browser (no user gesture yet). */
+.session .hearcue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px auto 2px;
+  padding: 10px 18px;
+  border: 1.6px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.session .hearcue:hover {
+  background: #f7f2ea;
 }
 .session math-field {
   display: block;
