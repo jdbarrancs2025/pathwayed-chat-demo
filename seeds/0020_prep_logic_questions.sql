@@ -626,7 +626,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('a4401210-820d-5b6b-9a1d-dba5c7f3580e', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'easy',
-   $q$Which word does NOT belong with the others: apple, banana, carrot, grape?$q$, $q$[{"text":"apple","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"carrot","is_correct":true},{"text":"grape","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"banana","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$carrot$q$, $q$Apple, banana, and grape are all FRUITS, but a carrot is a vegetable, so the carrot does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: apple, banana, carrot, grape?$q$, $q$[{"text":"apple","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"carrot","is_correct":true},{"text":"grape","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"banana","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$carrot$q$, $q$Apple, banana, and grape are all FRUITS, but a carrot is a vegetable, so the carrot does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -635,7 +635,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('02c1f120-4130-5956-8205-baed01fbdcae', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'easy',
-   $q$Which word does NOT belong with the others: car, truck, bus, boat?$q$, $q$[{"text":"car","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"bus","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"boat","is_correct":true},{"text":"truck","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$boat$q$, $q$Car, truck, and bus all travel on ROADS, but a boat travels on water, so the boat does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: car, truck, bus, boat?$q$, $q$[{"text":"car","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"bus","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"boat","is_correct":true},{"text":"truck","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$boat$q$, $q$Car, truck, and bus all travel on ROADS, but a boat travels on water, so the boat does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -644,7 +644,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('3b27d8b9-e42f-5c4f-8aa2-d1cb1fec069f', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'easy',
-   $q$Which word does NOT belong with the others: red, green, blue, tall?$q$, $q$[{"text":"red","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"blue","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"green","is_correct":false,"misconception_token":"class-too-broad-category"},{"text":"tall","is_correct":true}]$q$::jsonb, $q$tall$q$, $q$Red, green, and blue are all COLORS, but "tall" describes size, so "tall" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: red, green, blue, tall?$q$, $q$[{"text":"red","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"blue","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"green","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"tall","is_correct":true}]$q$::jsonb, $q$tall$q$, $q$Red, green, and blue are all COLORS, but "tall" describes size, so "tall" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -653,7 +653,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('7f1e2c3e-7b8f-5ee2-ad5d-4af83de5976f', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'easy',
-   $q$Which word does NOT belong with the others: dog, cat, rabbit, oak?$q$, $q$[{"text":"oak","is_correct":true},{"text":"dog","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"rabbit","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"cat","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$oak$q$, $q$Dog, cat, and rabbit are all ANIMALS, but an oak is a tree, so "oak" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: dog, cat, rabbit, oak?$q$, $q$[{"text":"oak","is_correct":true},{"text":"dog","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"rabbit","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"cat","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$oak$q$, $q$Dog, cat, and rabbit are all ANIMALS, but an oak is a tree, so "oak" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -662,7 +662,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('5e559988-8d82-5c2a-a07a-1f4c8c3cd9a8', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'easy',
-   $q$Which word does NOT belong with the others: circle, square, triangle, red?$q$, $q$[{"text":"circle","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"red","is_correct":true},{"text":"triangle","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"square","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$red$q$, $q$Circle, square, and triangle are all SHAPES, but "red" is a color, so "red" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: circle, square, triangle, red?$q$, $q$[{"text":"circle","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"red","is_correct":true},{"text":"triangle","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"square","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$red$q$, $q$Circle, square, and triangle are all SHAPES, but "red" is a color, so "red" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -671,7 +671,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('efd45072-4c26-5784-adf4-b99250ef66be', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'easy',
-   $q$Which word does NOT belong with the others: spoon, fork, knife, plate?$q$, $q$[{"text":"spoon","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"knife","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"plate","is_correct":true},{"text":"fork","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$plate$q$, $q$Spoon, fork, and knife are UTENSILS you hold to eat, but a plate is a dish, so the plate does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: spoon, fork, knife, plate?$q$, $q$[{"text":"spoon","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"knife","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"plate","is_correct":true},{"text":"fork","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$plate$q$, $q$Spoon, fork, and knife are UTENSILS you hold to eat, but a plate is a dish, so the plate does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -680,7 +680,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('ab4105ed-82fb-5c8b-bcfa-d5d9f16422d0', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'medium',
-   $q$Which word does NOT belong with the others: robin, sparrow, eagle, bat?$q$, $q$[{"text":"robin","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"eagle","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"sparrow","is_correct":false,"misconception_token":"class-too-broad-category"},{"text":"bat","is_correct":true}]$q$::jsonb, $q$bat$q$, $q$Robin, sparrow, and eagle are all BIRDS, but a bat is a mammal that flies, so the bat does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: robin, sparrow, eagle, bat?$q$, $q$[{"text":"robin","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"eagle","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"sparrow","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"bat","is_correct":true}]$q$::jsonb, $q$bat$q$, $q$Robin, sparrow, and eagle are all BIRDS, but a bat is a mammal that flies, so the bat does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -689,7 +689,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('5bc6e6f1-7670-5a09-9b80-4bcb15e9bcd1', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'medium',
-   $q$Which word does NOT belong with the others: rose, tulip, daisy, oak?$q$, $q$[{"text":"oak","is_correct":true},{"text":"rose","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"daisy","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"tulip","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$oak$q$, $q$Rose, tulip, and daisy are all FLOWERS, but an oak is a tree, so "oak" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: rose, tulip, daisy, oak?$q$, $q$[{"text":"oak","is_correct":true},{"text":"rose","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"daisy","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"tulip","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$oak$q$, $q$Rose, tulip, and daisy are all FLOWERS, but an oak is a tree, so "oak" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -698,7 +698,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('9417b32f-d013-5780-86b4-844fde221caa', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'medium',
-   $q$Which word does NOT belong with the others: copper, iron, gold, wood?$q$, $q$[{"text":"copper","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"wood","is_correct":true},{"text":"gold","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"iron","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$wood$q$, $q$Copper, iron, and gold are all METALS, but wood is not a metal, so "wood" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: copper, iron, gold, wood?$q$, $q$[{"text":"copper","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"wood","is_correct":true},{"text":"gold","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"iron","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$wood$q$, $q$Copper, iron, and gold are all METALS, but wood is not a metal, so "wood" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -707,7 +707,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('72ad214a-f80a-5dd0-a293-9bb3c0194586', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'medium',
-   $q$Which word does NOT belong with the others: shark, whale, tuna, salmon?$q$, $q$[{"text":"tuna","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"shark","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"whale","is_correct":true},{"text":"salmon","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$whale$q$, $q$Shark, tuna, and salmon are all FISH, but a whale is a mammal that lives in the sea, so the whale does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: shark, whale, tuna, salmon?$q$, $q$[{"text":"tuna","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"shark","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"whale","is_correct":true},{"text":"salmon","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$whale$q$, $q$Shark, tuna, and salmon are all FISH, but a whale is a mammal that lives in the sea, so the whale does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -716,7 +716,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('f7fefc0f-0090-5c2c-bd3b-3b806437fc15', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'medium',
-   $q$Which word does NOT belong with the others: Mercury, Venus, Mars, Moon?$q$, $q$[{"text":"Mercury","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"Mars","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"Venus","is_correct":false,"misconception_token":"class-too-broad-category"},{"text":"Moon","is_correct":true}]$q$::jsonb, $q$Moon$q$, $q$Mercury, Venus, and Mars are all PLANETS, but the Moon orbits Earth and is not a planet, so the Moon does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: Mercury, Venus, Mars, Moon?$q$, $q$[{"text":"Mercury","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"Mars","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"Venus","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"Moon","is_correct":true}]$q$::jsonb, $q$Moon$q$, $q$Mercury, Venus, and Mars are all PLANETS, but the Moon orbits Earth and is not a planet, so the Moon does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -725,7 +725,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('6802d8d9-db3c-5765-9799-8fcb19077980', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'medium',
-   $q$Which word does NOT belong with the others: guitar, violin, drum, singer?$q$, $q$[{"text":"singer","is_correct":true},{"text":"guitar","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"drum","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"violin","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$singer$q$, $q$Guitar, violin, and drum are INSTRUMENTS, but a singer is a person, so "singer" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: guitar, violin, drum, singer?$q$, $q$[{"text":"singer","is_correct":true},{"text":"guitar","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"drum","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"violin","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$singer$q$, $q$Guitar, violin, and drum are INSTRUMENTS, but a singer is a person, so "singer" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -734,7 +734,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('248e1e24-2712-5954-b64b-af4e2cbc0eb5', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'hard',
-   $q$Which word does NOT belong with the others: python, cobra, lizard, frog?$q$, $q$[{"text":"python","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"frog","is_correct":true},{"text":"lizard","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"cobra","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$frog$q$, $q$Python, cobra, and lizard are all REPTILES, but a frog is an amphibian, so the frog does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: python, cobra, lizard, frog?$q$, $q$[{"text":"python","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"frog","is_correct":true},{"text":"lizard","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"cobra","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$frog$q$, $q$Python, cobra, and lizard are all REPTILES, but a frog is an amphibian, so the frog does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -743,7 +743,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('e01141a6-64c8-5baf-ab8f-d3c88397f434', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'hard',
-   $q$Which word does NOT belong with the others: square, rectangle, rhombus, triangle?$q$, $q$[{"text":"square","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"rhombus","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"triangle","is_correct":true},{"text":"rectangle","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$triangle$q$, $q$Square, rectangle, and rhombus all have FOUR sides, but a triangle has three sides, so the triangle does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: square, rectangle, rhombus, triangle?$q$, $q$[{"text":"square","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"rhombus","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"triangle","is_correct":true},{"text":"rectangle","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$triangle$q$, $q$Square, rectangle, and rhombus all have FOUR sides, but a triangle has three sides, so the triangle does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -752,7 +752,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('c251ab9f-f98f-5ddb-b0fe-a23a5dd89651', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'hard',
-   $q$Which word does NOT belong with the others: violet, indigo, crimson, canvas?$q$, $q$[{"text":"violet","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"crimson","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"indigo","is_correct":false,"misconception_token":"class-too-broad-category"},{"text":"canvas","is_correct":true}]$q$::jsonb, $q$canvas$q$, $q$Violet, indigo, and crimson are all COLORS, but canvas is a cloth you paint on, so "canvas" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: violet, indigo, crimson, canvas?$q$, $q$[{"text":"violet","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"crimson","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"indigo","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"canvas","is_correct":true}]$q$::jsonb, $q$canvas$q$, $q$Violet, indigo, and crimson are all COLORS, but canvas is a cloth you paint on, so "canvas" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -761,7 +761,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('a24dd24a-cba1-5d5e-a40a-1e5595fc8c18', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'hard',
-   $q$Which word does NOT belong with the others: sonnet, haiku, limerick, novel?$q$, $q$[{"text":"novel","is_correct":true},{"text":"sonnet","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"limerick","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"haiku","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$novel$q$, $q$Sonnet, haiku, and limerick are all kinds of POEMS, but a novel is a long prose story, so "novel" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: sonnet, haiku, limerick, novel?$q$, $q$[{"text":"novel","is_correct":true},{"text":"sonnet","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"limerick","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"haiku","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$novel$q$, $q$Sonnet, haiku, and limerick are all kinds of POEMS, but a novel is a long prose story, so "novel" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -770,7 +770,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('d8859f0d-70f3-5fe8-b7b2-2d7a07997033', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'hard',
-   $q$Which word does NOT belong with the others: oxygen, hydrogen, helium, water?$q$, $q$[{"text":"oxygen","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"water","is_correct":true},{"text":"helium","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"hydrogen","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$water$q$, $q$Oxygen, hydrogen, and helium are all ELEMENTS, but water is a compound made of two elements, so "water" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: oxygen, hydrogen, helium, water?$q$, $q$[{"text":"oxygen","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"water","is_correct":true},{"text":"helium","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"hydrogen","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$water$q$, $q$Oxygen, hydrogen, and helium are all ELEMENTS, but water is a compound made of two elements, so "water" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,
@@ -779,7 +779,7 @@ insert into public.generated_questions
   (id, template_id, skill_id, sat_alignment, difficulty, stem, choices, correct_answer, solution, status)
 values
   ('2c77ca67-0a71-5007-a8bc-e6f5b654f563', null, (select id from public.skills where slug = 'prep-verbal-classification'), null, 'hard',
-   $q$Which word does NOT belong with the others: addition, subtraction, division, equation?$q$, $q$[{"text":"addition","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"division","is_correct":false,"misconception_token":"class-wrong-attribute"},{"text":"equation","is_correct":true},{"text":"subtraction","is_correct":false,"misconception_token":"class-too-broad-category"}]$q$::jsonb, $q$equation$q$, $q$Addition, subtraction, and division are all OPERATIONS, but an equation is a full math statement, so "equation" does not belong.$q$, 'published')
+   $q$Which word does NOT belong with the others: addition, subtraction, division, equation?$q$, $q$[{"text":"addition","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"division","is_correct":false,"misconception_token":"class-picked-a-member"},{"text":"equation","is_correct":true},{"text":"subtraction","is_correct":false,"misconception_token":"class-picked-a-member"}]$q$::jsonb, $q$equation$q$, $q$Addition, subtraction, and division are all OPERATIONS, but an equation is a full math statement, so "equation" does not belong.$q$, 'published')
 on conflict (id) do update set
   template_id=excluded.template_id, skill_id=excluded.skill_id, sat_alignment=excluded.sat_alignment,
   difficulty=excluded.difficulty, stem=excluded.stem, choices=excluded.choices,

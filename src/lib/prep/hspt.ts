@@ -3,10 +3,10 @@ import type { PrepModule } from './types.js'
 /**
  * HSPT (High School Placement Test) structure.
  *
- * Taken by 8th-grade students for 9th-grade admission. The section NAMES and
- * ORDER below are correct; every questionCount, timeLimitSec, and questionTypes
- * value is a PLACEHOLDER (see the per-section TODOs) and must be verified against
- * current official HSPT specs before launch.
+ * Taken by 8th-grade students for 9th-grade admission. Section counts and time
+ * limits are the current official HSPT specs: Verbal 60q/16min, Quantitative
+ * 52q/30min, Reading 62q/25min, Mathematics 64q/45min, Language 60q/25min.
+ * questionTypes are the working question-type tags the prep engine maps on.
  */
 export const HSPT: PrepModule = {
   id: 'hspt',
@@ -17,8 +17,6 @@ export const HSPT: PrepModule = {
     {
       id: 'verbal-skills',
       name: 'Verbal Skills',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official HSPT specs before launch.
       questionCount: 60,
       timeLimitSec: 960,
       questionTypes: ['synonyms', 'antonyms', 'analogies', 'logic', 'verbal_classification'],
@@ -26,8 +24,6 @@ export const HSPT: PrepModule = {
     {
       id: 'quantitative-skills',
       name: 'Quantitative Skills',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official HSPT specs before launch.
       questionCount: 52,
       timeLimitSec: 1800,
       questionTypes: ['number_series', 'quantitative_comparison', 'number_manipulation', 'geometric_comparison'],
@@ -35,8 +31,6 @@ export const HSPT: PrepModule = {
     {
       id: 'reading',
       name: 'Reading',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official HSPT specs before launch.
       questionCount: 62,
       timeLimitSec: 1500,
       questionTypes: ['reading_comprehension', 'main_idea', 'vocabulary_in_context'],
@@ -44,8 +38,6 @@ export const HSPT: PrepModule = {
     {
       id: 'mathematics',
       name: 'Mathematics',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official HSPT specs before launch.
       questionCount: 64,
       timeLimitSec: 2700,
       questionTypes: ['math_concepts', 'problem_solving', 'arithmetic', 'algebra', 'geometry'],
@@ -53,8 +45,6 @@ export const HSPT: PrepModule = {
     {
       id: 'language',
       name: 'Language',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official HSPT specs before launch.
       questionCount: 60,
       timeLimitSec: 1500,
       questionTypes: ['grammar_usage', 'punctuation', 'capitalization', 'spelling', 'composition'],

@@ -3,12 +3,10 @@ import type { PrepModule } from './types.js'
 /**
  * ISEE (Independent School Entrance Exam) structure.
  *
- * The ISEE is offered at Lower (grades 5-6), Middle (7-8), and Upper (9-12)
- * levels; this single module spans that whole range. The section NAMES and ORDER
- * are the same across levels and are correct here, but every questionCount,
- * timeLimitSec, and questionTypes value is a PLACEHOLDER (see the per-section
- * TODOs) and must be verified against current official ISEE specs — and split by
- * level — before launch.
+ * These are the official ISEE Middle/Upper Level counts and time limits: Verbal
+ * Reasoning 40q/20min, Quantitative Reasoning 37q/35min, Reading Comprehension
+ * 36q/35min, Mathematics Achievement 47q/40min, and the Essay at 30min
+ * (unscored). Lower Level differs; split by level before shipping Lower.
  */
 export const ISEE: PrepModule = {
   id: 'isee',
@@ -19,8 +17,6 @@ export const ISEE: PrepModule = {
     {
       id: 'verbal-reasoning',
       name: 'Verbal Reasoning',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official ISEE specs before launch.
       questionCount: 40,
       timeLimitSec: 1200,
       questionTypes: ['synonyms', 'sentence_completion'],
@@ -28,8 +24,6 @@ export const ISEE: PrepModule = {
     {
       id: 'quantitative-reasoning',
       name: 'Quantitative Reasoning',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official ISEE specs before launch.
       questionCount: 37,
       timeLimitSec: 2100,
       questionTypes: ['word_problems', 'quantitative_comparison'],
@@ -37,8 +31,6 @@ export const ISEE: PrepModule = {
     {
       id: 'reading-comprehension',
       name: 'Reading Comprehension',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official ISEE specs before launch.
       questionCount: 36,
       timeLimitSec: 2100,
       questionTypes: ['main_idea', 'supporting_details', 'inference', 'vocabulary_in_context'],
@@ -46,8 +38,6 @@ export const ISEE: PrepModule = {
     {
       id: 'mathematics-achievement',
       name: 'Mathematics Achievement',
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official ISEE specs before launch.
       questionCount: 47,
       timeLimitSec: 2400,
       questionTypes: ['arithmetic', 'algebra', 'geometry', 'data_analysis', 'problem_solving'],
@@ -56,18 +46,18 @@ export const ISEE: PrepModule = {
       id: 'essay',
       name: 'Essay',
       essay: true,
-      // TODO: placeholder values — verify questionCount, timeLimitSec, and
-      //   questionTypes against current official ISEE specs before launch.
       questionCount: 1,
       timeLimitSec: 1800,
       questionTypes: ['essay_prompt'],
     },
   ],
+  // Official ISEE Middle/Upper order. A short break falls AFTER Quantitative
+  // Reasoning and AFTER Mathematics Achievement.
   fullTestComposition: [
     'verbal-reasoning',
-    'quantitative-reasoning',
+    'quantitative-reasoning', // break after this section
     'reading-comprehension',
-    'mathematics-achievement',
+    'mathematics-achievement', // break after this section
     'essay',
   ],
 }

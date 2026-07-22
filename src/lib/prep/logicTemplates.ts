@@ -65,7 +65,7 @@ export const LOGIC_MISCONCEPTIONS: Record<string, string> = {
   [CLASS_ASSOCIATED]:
     'That word is connected to the group, but it is not a member of it. Being related is not the same as belonging.',
   [CLASS_MEMBER]:
-    'That word actually DOES belong with the others, so it cannot be the odd one out.',
+    'That word actually DOES belong with the others — it shares the same category, so it cannot be the odd one out. Look for the ONE word that breaks the pattern.',
 }
 
 // --- Raw item shape ---------------------------------------------------------
@@ -837,8 +837,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'carrot',
     d: [
       dd('apple', CLASS_MEMBER),
-      dd('grape', CLASS_WRONG_ATTR),
-      dd('banana', CLASS_TOO_BROAD),
+      dd('grape', CLASS_MEMBER),
+      dd('banana', CLASS_MEMBER),
     ],
     solution: 'Apple, banana, and grape are all FRUITS, but a carrot is a vegetable, so the carrot does not belong.',
   },
@@ -848,8 +848,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'boat',
     d: [
       dd('car', CLASS_MEMBER),
-      dd('bus', CLASS_WRONG_ATTR),
-      dd('truck', CLASS_TOO_BROAD),
+      dd('bus', CLASS_MEMBER),
+      dd('truck', CLASS_MEMBER),
     ],
     solution: 'Car, truck, and bus all travel on ROADS, but a boat travels on water, so the boat does not belong.',
   },
@@ -859,8 +859,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'tall',
     d: [
       dd('red', CLASS_MEMBER),
-      dd('blue', CLASS_WRONG_ATTR),
-      dd('green', CLASS_TOO_BROAD),
+      dd('blue', CLASS_MEMBER),
+      dd('green', CLASS_MEMBER),
     ],
     solution: 'Red, green, and blue are all COLORS, but "tall" describes size, so "tall" does not belong.',
   },
@@ -870,8 +870,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'oak',
     d: [
       dd('dog', CLASS_MEMBER),
-      dd('rabbit', CLASS_WRONG_ATTR),
-      dd('cat', CLASS_TOO_BROAD),
+      dd('rabbit', CLASS_MEMBER),
+      dd('cat', CLASS_MEMBER),
     ],
     solution: 'Dog, cat, and rabbit are all ANIMALS, but an oak is a tree, so "oak" does not belong.',
   },
@@ -881,8 +881,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'red',
     d: [
       dd('circle', CLASS_MEMBER),
-      dd('triangle', CLASS_WRONG_ATTR),
-      dd('square', CLASS_TOO_BROAD),
+      dd('triangle', CLASS_MEMBER),
+      dd('square', CLASS_MEMBER),
     ],
     solution: 'Circle, square, and triangle are all SHAPES, but "red" is a color, so "red" does not belong.',
   },
@@ -892,8 +892,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'plate',
     d: [
       dd('spoon', CLASS_MEMBER),
-      dd('knife', CLASS_WRONG_ATTR),
-      dd('fork', CLASS_TOO_BROAD),
+      dd('knife', CLASS_MEMBER),
+      dd('fork', CLASS_MEMBER),
     ],
     solution: 'Spoon, fork, and knife are UTENSILS you hold to eat, but a plate is a dish, so the plate does not belong.',
   },
@@ -905,8 +905,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'bat',
     d: [
       dd('robin', CLASS_MEMBER),
-      dd('eagle', CLASS_WRONG_ATTR),
-      dd('sparrow', CLASS_TOO_BROAD),
+      dd('eagle', CLASS_MEMBER),
+      dd('sparrow', CLASS_MEMBER),
     ],
     solution: 'Robin, sparrow, and eagle are all BIRDS, but a bat is a mammal that flies, so the bat does not belong.',
   },
@@ -916,8 +916,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'oak',
     d: [
       dd('rose', CLASS_MEMBER),
-      dd('daisy', CLASS_WRONG_ATTR),
-      dd('tulip', CLASS_TOO_BROAD),
+      dd('daisy', CLASS_MEMBER),
+      dd('tulip', CLASS_MEMBER),
     ],
     solution: 'Rose, tulip, and daisy are all FLOWERS, but an oak is a tree, so "oak" does not belong.',
   },
@@ -927,8 +927,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'wood',
     d: [
       dd('copper', CLASS_MEMBER),
-      dd('gold', CLASS_WRONG_ATTR),
-      dd('iron', CLASS_TOO_BROAD),
+      dd('gold', CLASS_MEMBER),
+      dd('iron', CLASS_MEMBER),
     ],
     solution: 'Copper, iron, and gold are all METALS, but wood is not a metal, so "wood" does not belong.',
   },
@@ -938,8 +938,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'whale',
     d: [
       dd('tuna', CLASS_MEMBER),
-      dd('shark', CLASS_WRONG_ATTR),
-      dd('salmon', CLASS_TOO_BROAD),
+      dd('shark', CLASS_MEMBER),
+      dd('salmon', CLASS_MEMBER),
     ],
     solution: 'Shark, tuna, and salmon are all FISH, but a whale is a mammal that lives in the sea, so the whale does not belong.',
   },
@@ -949,8 +949,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'Moon',
     d: [
       dd('Mercury', CLASS_MEMBER),
-      dd('Mars', CLASS_WRONG_ATTR),
-      dd('Venus', CLASS_TOO_BROAD),
+      dd('Mars', CLASS_MEMBER),
+      dd('Venus', CLASS_MEMBER),
     ],
     solution: 'Mercury, Venus, and Mars are all PLANETS, but the Moon orbits Earth and is not a planet, so the Moon does not belong.',
   },
@@ -960,8 +960,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'singer',
     d: [
       dd('guitar', CLASS_MEMBER),
-      dd('drum', CLASS_WRONG_ATTR),
-      dd('violin', CLASS_TOO_BROAD),
+      dd('drum', CLASS_MEMBER),
+      dd('violin', CLASS_MEMBER),
     ],
     solution: 'Guitar, violin, and drum are INSTRUMENTS, but a singer is a person, so "singer" does not belong.',
   },
@@ -973,8 +973,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'frog',
     d: [
       dd('python', CLASS_MEMBER),
-      dd('lizard', CLASS_WRONG_ATTR),
-      dd('cobra', CLASS_TOO_BROAD),
+      dd('lizard', CLASS_MEMBER),
+      dd('cobra', CLASS_MEMBER),
     ],
     solution: 'Python, cobra, and lizard are all REPTILES, but a frog is an amphibian, so the frog does not belong.',
   },
@@ -984,8 +984,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'triangle',
     d: [
       dd('square', CLASS_MEMBER),
-      dd('rhombus', CLASS_WRONG_ATTR),
-      dd('rectangle', CLASS_TOO_BROAD),
+      dd('rhombus', CLASS_MEMBER),
+      dd('rectangle', CLASS_MEMBER),
     ],
     solution: 'Square, rectangle, and rhombus all have FOUR sides, but a triangle has three sides, so the triangle does not belong.',
   },
@@ -995,8 +995,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'canvas',
     d: [
       dd('violet', CLASS_MEMBER),
-      dd('crimson', CLASS_WRONG_ATTR),
-      dd('indigo', CLASS_TOO_BROAD),
+      dd('crimson', CLASS_MEMBER),
+      dd('indigo', CLASS_MEMBER),
     ],
     solution: 'Violet, indigo, and crimson are all COLORS, but canvas is a cloth you paint on, so "canvas" does not belong.',
   },
@@ -1006,8 +1006,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'novel',
     d: [
       dd('sonnet', CLASS_MEMBER),
-      dd('limerick', CLASS_WRONG_ATTR),
-      dd('haiku', CLASS_TOO_BROAD),
+      dd('limerick', CLASS_MEMBER),
+      dd('haiku', CLASS_MEMBER),
     ],
     solution: 'Sonnet, haiku, and limerick are all kinds of POEMS, but a novel is a long prose story, so "novel" does not belong.',
   },
@@ -1017,8 +1017,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'water',
     d: [
       dd('oxygen', CLASS_MEMBER),
-      dd('helium', CLASS_WRONG_ATTR),
-      dd('hydrogen', CLASS_TOO_BROAD),
+      dd('helium', CLASS_MEMBER),
+      dd('hydrogen', CLASS_MEMBER),
     ],
     solution: 'Oxygen, hydrogen, and helium are all ELEMENTS, but water is a compound made of two elements, so "water" does not belong.',
   },
@@ -1028,8 +1028,8 @@ const CLASSIFICATION_ITEMS: RawItem[] = [
     answer: 'equation',
     d: [
       dd('addition', CLASS_MEMBER),
-      dd('division', CLASS_WRONG_ATTR),
-      dd('subtraction', CLASS_TOO_BROAD),
+      dd('division', CLASS_MEMBER),
+      dd('subtraction', CLASS_MEMBER),
     ],
     solution: 'Addition, subtraction, and division are all OPERATIONS, but an equation is a full math statement, so "equation" does not belong.',
   },

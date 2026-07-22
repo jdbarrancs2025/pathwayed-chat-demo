@@ -42,7 +42,17 @@ describe('prep logic + verbal classification templates', () => {
           expect(wrong).toHaveLength(3)
           const tokens = wrong.map((c) => c.misconception_token)
           expect(tokens.every((t): t is string => !!t)).toBe(true)
-          expect(new Set(tokens).size).toBe(3) // three DISTINCT tokens
+          // Distinctness is strict everywhere EXCEPT verbal-classification
+          // "which does NOT belong" items: there all three distractors DO belong
+          // (one shared misconception), so one shared token is correct — three
+          // artificial tokens would be worse.
+          const isOddOneOut =
+            skill.slug === 'prep-verbal-classification' && /does NOT belong/i.test(item.stem)
+          if (isOddOneOut) {
+            expect(new Set(tokens).size).toBe(1)
+          } else {
+            expect(new Set(tokens).size).toBe(3)
+          }
           for (const tok of tokens) {
             expect(LOGIC_MISCONCEPTIONS[tok as string]).toBeTruthy() // every token has an explanation
           }
