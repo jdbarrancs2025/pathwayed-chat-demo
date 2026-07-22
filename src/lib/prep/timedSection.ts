@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { fetchPracticeQuestions, fetchQuestionsByIds, type PracticeQuestion } from '@/lib/questions'
 import type { PrepModule, PrepSection } from '@/lib/prep/types'
-import { standinSkillFor } from '@/lib/prep/standinSkills'
+import { prepSkillFor } from '@/lib/prep/prepSkills'
 
 /**
  * Client wrapper for the timed-section engine. The DATABASE owns time, transitions
@@ -85,7 +85,7 @@ function shuffle<T>(arr: T[]): T[] {
  */
 async function selectQuestions(section: PrepSection): Promise<PracticeQuestion[]> {
   const slugs = Array.from(
-    new Set(section.questionTypes.map((t) => standinSkillFor(t)).filter((s): s is string => !!s)),
+    new Set(section.questionTypes.map((t) => prepSkillFor(t)?.slug).filter((s): s is string => !!s)),
   )
   const perSlug = await Promise.all(
     slugs.map((slug) => fetchPracticeQuestions(slug, section.questionCount > 0 ? section.questionCount : 20)),

@@ -10,8 +10,12 @@
  * as-is, no math/markdown). Returns null for an unknown/absent token so the
  * caller falls back to the plain verdict + worked solution.
  */
+import { VERBAL_MISCONCEPTIONS } from '@/lib/prep/verbalTemplates'
 
 const EXPLANATIONS: Record<string, string> = {
+  // Prep verbal (synonyms/antonyms) — tokens defined in prep/verbalTemplates.ts.
+  ...VERBAL_MISCONCEPTIONS,
+
   // percent-of
   'overstated-the-percent':
     'Close! It looks like you used a percent a little higher than the one in the question. Re-read the percent, then take that much of the number.',

@@ -9,7 +9,7 @@ import {
   isKidEntitled,
   testDayCountdown,
 } from '@/lib/prep/entitlements'
-import { STANDIN_SUBJECT, questionTypeLabel, standinSkillFor } from '@/lib/prep/standinSkills'
+import { prepSkillFor, questionTypeLabel } from '@/lib/prep/prepSkills'
 import { listAttempts, type PrepAttempt } from '@/lib/prep/timedSection'
 import { getSkillMastery } from '@/lib/mastery'
 import { resolveSkillIdsBySlug } from '@/lib/skills'
@@ -100,7 +100,7 @@ export function PrepModuleHome() {
     let active = true
     const slugs = Array.from(
       new Set(
-        module.sections.flatMap((sec) => sec.questionTypes.map((t) => standinSkillFor(t)).filter((x): x is string => !!x)),
+        module.sections.flatMap((sec) => sec.questionTypes.map((t) => prepSkillFor(t)?.slug).filter((x): x is string => !!x)),
       ),
     )
     if (slugs.length === 0) return
@@ -138,12 +138,12 @@ export function PrepModuleHome() {
   }
 
   const launchType = (questionType: string) => {
-    const slug = standinSkillFor(questionType)
-    if (!slug || !id) return
+    const ref = prepSkillFor(questionType)
+    if (!ref || !id) return
     if (tab === 'train') {
-      navigate(`/students/${id}/session/${STANDIN_SUBJECT}?skill=${encodeURIComponent(slug)}`)
+      navigate(`/students/${id}/session/${ref.sessionSubject}?skill=${encodeURIComponent(ref.slug)}`)
     } else {
-      navigate(`/students/${id}/practice/${encodeURIComponent(slug)}`)
+      navigate(`/students/${id}/practice/${encodeURIComponent(ref.slug)}`)
     }
   }
 
@@ -159,7 +159,7 @@ export function PrepModuleHome() {
           <h3 style={{ margin: '0 0 8px' }}>{sec.name}</h3>
           <div style={{ display: 'grid', gap: 6 }}>
             {sec.questionTypes.map((type) => {
-              const slug = standinSkillFor(type)
+              const slug = prepSkillFor(type)?.slug ?? null
               const acc = slug ? slugAccuracy.get(slug) ?? null : null
               return (
                 <button

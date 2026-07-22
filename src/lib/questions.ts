@@ -281,6 +281,9 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   const skills: PracticeableSkill[] = []
   for (const s of skillRows ?? []) {
     if (!s.slug || !s.name) continue // need a slug to route practice to
+    // Prep-only skills (subject 'prep-*') are isolated from the K-12 practice
+    // picker + diagnostic; the prep engine reaches them by slug directly.
+    if (typeof s.subject === 'string' && s.subject.startsWith('prep-')) continue
     skills.push({
       skill_id: s.id,
       slug: s.slug,
