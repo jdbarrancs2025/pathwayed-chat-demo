@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Student } from '@/lib/students'
 import { PREP_MODULES, getPrepModule } from '@/lib/prep/registry'
 import type { PrepModule } from '@/lib/prep/types'
 import { loadPrepProgress } from '@/lib/prep/prepProgressLoad'
-import type { PrepProgress } from '@/lib/prep/prepProgress'
+import { TEASER_MIN_COVERED_SKILLS, type PrepProgress } from '@/lib/prep/prepProgress'
 import { PREP_PRICE_MONTHLY } from '@/lib/prep/pricing'
 import {
   ACTIVE_PREP_STATUSES,
@@ -129,6 +129,35 @@ export function AdmissionsPrepPanel({
       else next.add(studentId)
       return next
     })
+  }
+
+  // Free readiness teasers: grade-eligible children on a qualifying plan who are NOT
+  // yet entitled to a module. One teaser card per (child, module). Non-qualifying
+  // accounts (no plan) get none — they can't buy, so no upsell.
+  const teasers = useMemo(() => {
+    const out: { student: Student; module: PrepModule }[] = []
+    for (const s of students) {
+      for (const m of PREP_MODULES) {
+        if (!planQualifiesForBand(sub?.status ?? null, sub?.plan ?? null, m.gradeBand)) continue
+        if (!isGradeEligible(s.grade, m)) continue
+        const entitled = (entitlements ?? []).some(
+          (e) => e.studentId === s.id && e.moduleId === m.id && ACTIVE_PREP_STATUSES.has(e.status),
+        )
+        if (entitled) continue
+        out.push({ student: s, module: m })
+      }
+    }
+    return out
+  }, [students, sub, entitlements])
+
+  // Buy area, scrolled into view when a teaser's "Unlock" preselects a child/module.
+  const buyRef = useRef<HTMLDivElement>(null)
+  const startUnlock = (studentId: string, mId: string) => {
+    setModuleId(mId)
+    setSelected(new Set([studentId]))
+    setError('')
+    setNotice('')
+    setTimeout(() => buyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60)
   }
 
   const pickModule = (id: string) => {
@@ -292,6 +321,24 @@ export function AdmissionsPrepPanel({
         </div>
       )}
 
+      {/* Free readiness teasers — the discovery funnel. One per (grade-eligible,
+          not-yet-entitled) child × module, on qualifying accounts only. Shows the
+          mastery-only readiness number (or a building state) and an Unlock action
+          that preselects the child + module in the purchase flow below. */}
+      {teasers.length > 0 && (
+        <div style={{ marginTop: 14, display: 'grid', gap: 10 }}>
+          {teasers.map(({ student, module: m }) => (
+            <PrepTeaserCard
+              key={`${student.id}-${m.id}`}
+              student={student}
+              module={m}
+              moduleName={m.name}
+              onUnlock={() => startUnlock(student.id, m.id)}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Module picker. */}
       <div style={{ display: 'grid', gap: 8, marginTop: 14 }}>
         {PREP_MODULES.map((m) => {
@@ -333,7 +380,7 @@ export function AdmissionsPrepPanel({
 
       {/* Child selection — only when the account holds a qualifying plan. */}
       {module && accountEligible && (
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop: 12 }} ref={buyRef}>
           <p style={{ fontWeight: 600, fontSize: 13.5, margin: '0 0 6px' }}>Which children?</p>
           {students.length === 0 && (
             <p className="muted" style={{ fontSize: 13, margin: 0 }}>
@@ -512,6 +559,106 @@ function PrepChildProgress({
           <b style={{ color: '#5A6172' }}>Focus areas:</b> {progress.weakestTypes.map((t) => t.label).join(', ')}
         </p>
       )}
+    </div>
+  )
+}
+
+/** "math", "math and reading", "math, reading, and language". */
+function humanList(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? ''
+  if (items.length === 2) return `${items[0]} and ${items[1]}`
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`
+}
+
+/**
+ * Free readiness teaser (discovery funnel) for a grade-eligible child who is NOT yet
+ * entitled to this module, on a qualifying account. Shows the MASTERY-ONLY readiness
+ * number when there's enough coverage (TEASER_MIN_COVERED_SKILLS distinct skills with
+ * graded evidence), otherwise a friendly "building a picture" state — never a number
+ * from almost nothing. Both states end in the same Unlock action, which preselects
+ * this child + module in the purchase flow. Client-computed from mastery under
+ * existing RLS; the child has no timed attempts, so masteryReadiness == readiness.
+ */
+function PrepTeaserCard({
+  student,
+  module,
+  moduleName,
+  onUnlock,
+}: {
+  student: Student
+  module: PrepModule
+  moduleName: string
+  onUnlock: () => void
+}) {
+  const [progress, setProgress] = useState<PrepProgress | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    loadPrepProgress(student.id, module)
+      .then((p) => active && setProgress(p))
+      .catch(() => active && setProgress(null))
+      .finally(() => active && setLoading(false))
+    return () => {
+      active = false
+    }
+  }, [student.id, module])
+
+  const firstName = student.first_name || 'Your child'
+  const showNumber =
+    !!progress && progress.masteryReadiness != null && progress.coveredSkillCount >= TEASER_MIN_COVERED_SKILLS
+  const subjects = progress?.coveredSubjects ?? []
+
+  const wrap: React.CSSProperties = {
+    padding: '13px 15px',
+    background: '#F4F8FF',
+    border: '1px dashed #B9CCEC',
+    borderRadius: 12,
+    display: 'grid',
+    gap: 10,
+  }
+
+  return (
+    <div style={wrap}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <span style={{ fontSize: 11.5, fontWeight: 700, color: '#3A5A9A', letterSpacing: 0.3, textTransform: 'uppercase' }}>
+          {moduleName} Prep · free preview
+        </span>
+      </div>
+
+      {loading ? (
+        <p className="muted" style={{ fontSize: 12.5, margin: 0 }}>Loading {firstName}’s preview…</p>
+      ) : showNumber ? (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ fontSize: 14.5, fontWeight: 700, color: '#1C2230' }}>{firstName}’s {moduleName} readiness:</span>
+            <span style={{ fontSize: 26, fontWeight: 800, color: readinessColor(progress!.masteryReadiness as number), lineHeight: 1 }}>
+              {progress!.masteryReadiness}
+            </span>
+          </div>
+          <p className="muted" style={{ fontSize: 12, margin: '5px 0 0' }}>
+            An early read from the practice {firstName} has already done — a coaching signal, not a predicted test score.
+            {subjects.length > 0 && <> Based on their work in {humanList(subjects)} so far.</>}
+          </p>
+        </div>
+      ) : (
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 600, color: '#1C2230', margin: 0 }}>
+            We’re building a picture of {firstName}’s {moduleName} readiness.
+          </p>
+          <p className="muted" style={{ fontSize: 12, margin: '4px 0 0' }}>
+            As {firstName} keeps practicing, an early readiness read will appear here.
+          </p>
+        </div>
+      )}
+
+      <button
+        className="btn btn-primary"
+        style={{ width: 'auto', alignSelf: 'start', fontSize: 13, padding: '8px 16px' }}
+        onClick={onUnlock}
+      >
+        Unlock full test prep
+      </button>
     </div>
   )
 }

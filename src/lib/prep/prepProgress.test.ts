@@ -29,6 +29,24 @@ describe('computePrepProgress', () => {
     expect(p.sections).toEqual([])
     expect(p.weakestTypes).toEqual([])
     expect(p.readiness).toBeNull()
+    expect(p.masteryReadiness).toBeNull()
+    expect(p.coveredSkillCount).toBe(0)
+    expect(p.coveredSubjects).toEqual([])
+  })
+
+  it('mastery-only readiness + coverage for a not-yet-entitled child (no timed attempts)', () => {
+    // No attempts (unentitled child can't take timed sections), only practice mastery.
+    const acc = new Map<string, number | null>([
+      ['prep-synonyms', 40], // reading
+      ['prep-antonyms', 50], // reading
+      ['prep-number-series', 60], // math
+    ])
+    const p = computePrepProgress(MODULE, [], acc)
+    expect(p.hasAttempts).toBe(false)
+    expect(p.masteryReadiness).toBe(50) // mean(40,50,60)
+    expect(p.readiness).toBe(50) // blend == mastery term when no sections
+    expect(p.coveredSkillCount).toBe(3)
+    expect(p.coveredSubjects).toEqual(['math', 'reading']) // stable order, writing->language absent here
   })
 
   it('per-section trend + personal best from timed scores', () => {
