@@ -31,6 +31,8 @@ import { PREP_SENTENCE_COMPLETION_SKILLS } from '../src/lib/prep/sentenceComplet
 import { PREP_NUMBER_SERIES_SKILLS } from '../src/lib/prep/numberSeriesTemplates'
 import { PREP_QUANT_COMPARE_SKILLS } from '../src/lib/prep/quantCompareTemplates'
 import { PREP_LOGIC_SKILLS } from '../src/lib/prep/logicTemplates'
+import { PREP_SAT_TRANSITIONS_SKILLS } from '../src/lib/prep/satTransitions'
+import { PREP_SAT_WORDS_IN_CONTEXT_SKILLS } from '../src/lib/prep/satWordsInContext'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const seedsDir = join(here, '..', 'seeds')
@@ -69,6 +71,9 @@ const GROUPS: Group[] = [
   { file: '0018_prep_number_series_questions.sql', label: 'number series', tax: QUANT, skills: PREP_NUMBER_SERIES_SKILLS },
   { file: '0019_prep_quant_compare_questions.sql', label: 'quantitative comparisons', tax: QUANT, skills: PREP_QUANT_COMPARE_SKILLS },
   { file: '0020_prep_logic_questions.sql', label: 'logic + verbal classification', tax: VERBAL, skills: PREP_LOGIC_SKILLS },
+  // SAT-specific authored R&W skills (transitions, words-in-context). The other SAT
+  // domains lean on existing banks (already seeded), so only these two need a seed.
+  { file: '0021_prep_sat_questions.sql', label: 'SAT reading & writing', tax: VERBAL, skills: [...PREP_SAT_TRANSITIONS_SKILLS, ...PREP_SAT_WORDS_IN_CONTEXT_SKILLS] },
 ]
 
 for (const g of GROUPS) {

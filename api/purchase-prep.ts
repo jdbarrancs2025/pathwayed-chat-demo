@@ -74,13 +74,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const plan = profile?.plan as string | null | undefined
 
     // Eligibility (enforced here, not just in the UI): the account needs an active
-    // or trialing learning plan whose grade coverage reaches the module's band —
-    // Elementary is excluded for a 6-8 module; Middle and High qualify.
+    // or trialing learning plan whose grade coverage reaches the module's band.
+    // Elementary is excluded for a 6-8 module (HSPT/ISEE); SAT's band is [9,12], so
+    // planQualifiesForBand excludes a Middle-only plan too — SAT is High-tier only.
     const mod = getPrepModule(moduleId)
     if (!mod || !planQualifiesForBand(status, plan, mod.gradeBand)) {
-      return res
-        .status(403)
-        .json({ error: "Admissions Prep requires an active Middle or High School plan." })
+      // Message reflects the module's required tier: SAT ([9,12]) needs a High plan.
+      const tier = mod && mod.gradeBand[0] >= 9 ? "a High School plan" : "a Middle or High School plan"
+      return res.status(403).json({ error: `Admissions Prep requires an active ${tier}.` })
     }
 
     const stripe = new Stripe(secretKey)

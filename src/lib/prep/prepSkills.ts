@@ -65,6 +65,21 @@ export const PREP_SKILLS: Record<string, PrepSkillRef> = {
   //      timed MCQ engine, so prepSkillFor('essay_prompt') is never used to render;
   //      the mapping stays only so the type resolves to a harmless real slug. ----
   essay_prompt: { slug: 'data-analysis', sessionSubject: 'writing' },
+
+  // ---- SAT (Digital SAT content domains) ----
+  // Reading & Writing: two domains are SAT-specific AUTHORED prep skills
+  // (transitions, words-in-context); the other two lean on close existing reading/
+  // writing banks where they genuinely overlap (central ideas/evidence -> main-idea;
+  // boundaries/conventions -> advanced-punctuation).
+  information_and_ideas: { slug: 'main-idea', sessionSubject: 'reading' }, // OVERLAP: central ideas + command of evidence
+  craft_and_structure: { slug: 'prep-sat-words-in-context', sessionSubject: 'reading' }, // REAL PREP (authored)
+  expression_of_ideas: { slug: 'prep-sat-transitions', sessionSubject: 'writing' }, // REAL PREP (authored)
+  standard_english_conventions: { slug: 'advanced-punctuation', sessionSubject: 'writing' }, // OVERLAP: boundaries/grammar
+  // Math: SAT math genuinely overlaps existing banks. 'algebra' reuses the existing
+  // entry above (algebra-1-concepts). The rest lean on close existing math skills.
+  advanced_math: { slug: 'expressions', sessionSubject: 'math' }, // OVERLAP (THIN): SAT nonlinear -> expressions
+  problem_solving_data_analysis: { slug: 'data-analysis', sessionSubject: 'math' }, // OVERLAP
+  geometry_trigonometry: { slug: 'geometry', sessionSubject: 'math' }, // OVERLAP (THIN): no trig-specific bank yet
 }
 
 /** Resolve a prep question type to its skill ref, or null if unmapped. */

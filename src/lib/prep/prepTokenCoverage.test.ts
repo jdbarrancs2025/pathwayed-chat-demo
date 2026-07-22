@@ -6,6 +6,8 @@ import { PREP_SENTENCE_COMPLETION_SKILLS } from './sentenceCompletionTemplates'
 import { PREP_NUMBER_SERIES_SKILLS } from './numberSeriesTemplates'
 import { PREP_QUANT_COMPARE_SKILLS } from './quantCompareTemplates'
 import { PREP_LOGIC_SKILLS } from './logicTemplates'
+import { PREP_SAT_TRANSITIONS_SKILLS } from './satTransitions'
+import { PREP_SAT_WORDS_IN_CONTEXT_SKILLS } from './satWordsInContext'
 
 /**
  * Central check that the per-module misconception tokens actually resolve through
@@ -21,6 +23,8 @@ const ALL_PREP_SKILLS: PrepSkill[] = [
   ...PREP_NUMBER_SERIES_SKILLS,
   ...PREP_QUANT_COMPARE_SKILLS,
   ...PREP_LOGIC_SKILLS,
+  ...PREP_SAT_TRANSITIONS_SKILLS,
+  ...PREP_SAT_WORDS_IN_CONTEXT_SKILLS,
 ]
 
 describe('prep misconception token coverage (via explainMisconception)', () => {

@@ -16,6 +16,8 @@ import { SENTENCE_COMPLETION_MISCONCEPTIONS } from '@/lib/prep/sentenceCompletio
 import { NUMBER_SERIES_MISCONCEPTIONS } from '@/lib/prep/numberSeriesTemplates'
 import { QUANT_COMPARE_MISCONCEPTIONS } from '@/lib/prep/quantCompareTemplates'
 import { LOGIC_MISCONCEPTIONS } from '@/lib/prep/logicTemplates'
+import { SAT_TRANSITIONS_MISCONCEPTIONS } from '@/lib/prep/satTransitions'
+import { SAT_WORDS_IN_CONTEXT_MISCONCEPTIONS } from '@/lib/prep/satWordsInContext'
 
 const EXPLANATIONS: Record<string, string> = {
   // Prep tokens — defined per template module in src/lib/prep/*Templates.ts.
@@ -25,6 +27,8 @@ const EXPLANATIONS: Record<string, string> = {
   ...NUMBER_SERIES_MISCONCEPTIONS,
   ...QUANT_COMPARE_MISCONCEPTIONS,
   ...LOGIC_MISCONCEPTIONS,
+  ...SAT_TRANSITIONS_MISCONCEPTIONS,
+  ...SAT_WORDS_IN_CONTEXT_MISCONCEPTIONS,
 
   // percent-of
   'overstated-the-percent':

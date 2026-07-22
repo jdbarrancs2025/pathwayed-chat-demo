@@ -4,7 +4,7 @@ import { PREP_MODULES, getPrepModule } from '@/lib/prep/registry'
 import type { PrepModule } from '@/lib/prep/types'
 import { loadPrepProgress } from '@/lib/prep/prepProgressLoad'
 import { TEASER_MIN_COVERED_SKILLS, type PrepProgress } from '@/lib/prep/prepProgress'
-import { PREP_PRICE_MONTHLY } from '@/lib/prep/pricing'
+import { prepPriceFor } from '@/lib/prep/pricing'
 import {
   ACTIVE_PREP_STATUSES,
   cancelPrep,
@@ -21,7 +21,16 @@ import {
 import { formatMoney, intervalSuffix, planQualifiesForBand } from '@/lib/billing'
 import { getSubscription, type Subscription } from '@/lib/profile'
 
-const priceLabel = `${formatMoney(PREP_PRICE_MONTHLY)}${intervalSuffix('monthly')}`
+/** Per-module price label, e.g. "$29/mo" — prices differ by module (SAT is higher). */
+const priceLabelFor = (moduleId: string) => `${formatMoney(prepPriceFor(moduleId))}${intervalSuffix('monthly')}`
+
+/** Which plan tier a module's grade band requires, in parent-facing copy. SAT
+ *  ([9,12]) needs a High plan; HSPT/ISEE ([6,8]) a Middle or High plan. */
+function planCopyForBand(band: [number, number]): string {
+  if (band[0] >= 9) return 'a High School plan'
+  if (band[0] >= 6) return 'a Middle or High School plan'
+  return 'a qualifying plan'
+}
 
 /** Friendly date like "January 3, 2026", or '' if the ISO string is missing/invalid. */
 function formatDate(iso: string | null): string {
@@ -236,7 +245,7 @@ export function AdmissionsPrepPanel({
     <div className="panel" style={{ padding: '16px 18px', marginTop: 16 }}>
       <h3 style={{ margin: 0 }}>Admissions Prep</h3>
       <p className="muted" style={{ fontSize: 13, margin: '6px 0 0' }}>
-        Add a test-prep module for a child. {priceLabel} per student.
+        Add a test-prep module for a child, priced per student.
       </p>
 
       {/* Current entitlements as per-child line items, each cancelable. */}
@@ -274,7 +283,7 @@ export function AdmissionsPrepPanel({
                       {badge.label}
                     </span>
                   </span>
-                  {scheduledEnd ? null : <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabel}</b>}
+                  {scheduledEnd ? null : <b style={{ color: '#1C2230', flexShrink: 0 }}>{priceLabelFor(e.moduleId)}</b>}
                 </div>
 
                 {/* Test date drives the child's home tile + module countdown. */}
@@ -378,7 +387,7 @@ export function AdmissionsPrepPanel({
             >
               <span style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>{m.name} Prep</span>
               <span style={{ fontWeight: 700, fontSize: 15, color: '#003078', flexShrink: 0 }}>
-                {priceLabel}
+                {priceLabelFor(m.id)}
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#5A6172' }}> / student</span>
               </span>
             </button>
@@ -386,10 +395,11 @@ export function AdmissionsPrepPanel({
         })}
       </div>
 
-      {/* No qualifying plan: show the modules but no purchase action. */}
+      {/* No qualifying plan: show the modules but no purchase action. The required
+          tier depends on the selected module's band (SAT is High-only). */}
       {module && !accountEligible && (
         <p className="muted" style={{ fontSize: 13, margin: '12px 0 0' }}>
-          Available with a Middle or High School plan.
+          Available with {planCopyForBand(module.gradeBand)}.
         </p>
       )}
 
@@ -449,7 +459,7 @@ export function AdmissionsPrepPanel({
           >
             {busy
               ? 'Working…'
-              : `Add ${module.name} Prep${selected.size ? ` (${selected.size} × ${priceLabel})` : ''}`}
+              : `Add ${module.name} Prep${selected.size ? ` (${selected.size} × ${priceLabelFor(module.id)})` : ''}`}
           </button>
         </div>
       )}
