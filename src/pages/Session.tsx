@@ -13,7 +13,7 @@ import { SessionWorkspace } from '@/components/SessionWorkspace'
 import { NikkiFace } from '@/components/NikkiFace'
 import { MathText } from '@/components/MathText'
 import { NikkiMarkdown } from '@/components/chat/NikkiMarkdown'
-import { recordSessionMastery } from '@/lib/skills'
+import { getSkillNameBySlug, recordSessionMastery } from '@/lib/skills'
 import { resolveFocusForSlug } from '@/lib/focusSkills'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { getVoiceMuted, setVoiceMuted } from '@/lib/voicePrefs'
@@ -103,7 +103,7 @@ export function Session() {
     // and re-entering the same skill resumes; homework/plain sessions key on subject.
     const transcriptKey = focusSlug ? `${subject}:${focusSlug}` : subject
     let active = true
-    Promise.all([getStudent(id), loadTranscript(id, transcriptKey)]).then(([s, saved]) => {
+    Promise.all([getStudent(id), loadTranscript(id, transcriptKey)]).then(async ([s, saved]) => {
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })
@@ -120,8 +120,16 @@ export function Session() {
       // Skills-building launches carry ?skill=<slug>; name it so the lesson is
       // focused (the diagnose-first prompt then checks that skill before teaching).
       const band = scopeBandForGrade(s.grade)
-      const focusLabel =
-        focusSlug && band && isScopeSubject(subject) ? skillLabel(band, subject, focusSlug) : null
+      // Prep skills (prep-*) carry their display name in the taxonomy (skills.name),
+      // so resolve it there rather than through the K-12 scopeSequence label, which
+      // doesn't know them and would leave the raw slug in Nikki's greeting.
+      let focusLabel: string | null = null
+      if (focusSlug?.startsWith('prep-')) {
+        focusLabel = await getSkillNameBySlug(focusSlug)
+        if (!active) return
+      } else if (focusSlug && band && isScopeSubject(subject)) {
+        focusLabel = skillLabel(band, subject, focusSlug)
+      }
       // Writing-composition lessons run the writing studio: pick the original
       // prompt (stable per student+skill) shown in the writing space and coached
       // against by Nikki.

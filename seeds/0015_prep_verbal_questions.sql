@@ -902,7 +902,7 @@ values
    null,
    (select id from public.skills where slug = 'prep-antonyms'),
    null, 'easy',
-   $q$Which word means most nearly the OPPOSITE of ABUNDANT?$q$, $q$[{"text":"ample","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"scarce","is_correct":true},{"text":"costly","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"limited","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$scarce$q$, $q$Abundant means "existing in large amounts; plentiful", so the word that means the opposite is scarce.$q$, 'published')
+   $q$Which word means most nearly the OPPOSITE of ABUNDANT?$q$, $q$[{"text":"ample","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"scarce","is_correct":true},{"text":"costly","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"modest","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$scarce$q$, $q$Abundant means "existing in large amounts; plentiful", so the word that means the opposite is scarce.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1028,7 +1028,7 @@ values
    null,
    (select id from public.skills where slug = 'prep-antonyms'),
    null, 'easy',
-   $q$Which word means most nearly the OPPOSITE of HONEST?$q$, $q$[{"text":"deceitful","is_correct":true},{"text":"sincere","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"rude","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"sneaky","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$deceitful$q$, $q$Honest means "truthful and sincere", so the word that means the opposite is deceitful.$q$, 'published')
+   $q$Which word means most nearly the OPPOSITE of HONEST?$q$, $q$[{"text":"deceitful","is_correct":true},{"text":"sincere","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"rude","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"secretive","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$deceitful$q$, $q$Honest means "truthful and sincere", so the word that means the opposite is deceitful.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1064,7 +1064,7 @@ values
    null,
    (select id from public.skills where slug = 'prep-antonyms'),
    null, 'easy',
-   $q$Which word means most nearly the OPPOSITE of BOLD?$q$, $q$[{"text":"fearless","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"rude","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"timid","is_correct":true},{"text":"shy","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$timid$q$, $q$Bold means "willing to take risks; confident and daring", so the word that means the opposite is timid.$q$, 'published')
+   $q$Which word means most nearly the OPPOSITE of BOLD?$q$, $q$[{"text":"fearless","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"rude","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"timid","is_correct":true},{"text":"quiet","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$timid$q$, $q$Bold means "willing to take risks; confident and daring", so the word that means the opposite is timid.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1136,7 +1136,7 @@ values
    null,
    (select id from public.skills where slug = 'prep-antonyms'),
    null, 'easy',
-   $q$Which word means most nearly the OPPOSITE of REVEAL?$q$, $q$[{"text":"expose","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"display","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"conceal","is_correct":true},{"text":"cover","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$conceal$q$, $q$Reveal means "to make something known; to show", so the word that means the opposite is conceal.$q$, 'published')
+   $q$Which word means most nearly the OPPOSITE of REVEAL?$q$, $q$[{"text":"expose","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"display","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"conceal","is_correct":true},{"text":"guard","is_correct":false,"misconception_token":"verbal-opposite-near-miss"}]$q$::jsonb, $q$conceal$q$, $q$Reveal means "to make something known; to show", so the word that means the opposite is conceal.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,
@@ -1226,7 +1226,7 @@ values
    null,
    (select id from public.skills where slug = 'prep-antonyms'),
    null, 'medium',
-   $q$Which word means most nearly the OPPOSITE of HOSTILE?$q$, $q$[{"text":"aggressive","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"rude","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"welcoming","is_correct":false,"misconception_token":"verbal-opposite-near-miss"},{"text":"friendly","is_correct":true}]$q$::jsonb, $q$friendly$q$, $q$Hostile means "unfriendly and aggressive", so the word that means the opposite is friendly.$q$, 'published')
+   $q$Which word means most nearly the OPPOSITE of HOSTILE?$q$, $q$[{"text":"aggressive","is_correct":false,"misconception_token":"verbal-opposite-picked-synonym"},{"text":"rude","is_correct":false,"misconception_token":"verbal-opposite-same-topic"},{"text":"neutral","is_correct":false,"misconception_token":"verbal-opposite-near-miss"},{"text":"friendly","is_correct":true}]$q$::jsonb, $q$friendly$q$, $q$Hostile means "unfriendly and aggressive", so the word that means the opposite is friendly.$q$, 'published')
 on conflict (id) do update set
   template_id    = excluded.template_id,
   skill_id       = excluded.skill_id,

@@ -11,10 +11,20 @@
  * caller falls back to the plain verdict + worked solution.
  */
 import { VERBAL_MISCONCEPTIONS } from '@/lib/prep/verbalTemplates'
+import { ANALOGY_MISCONCEPTIONS } from '@/lib/prep/analogyTemplates'
+import { SENTENCE_COMPLETION_MISCONCEPTIONS } from '@/lib/prep/sentenceCompletionTemplates'
+import { NUMBER_SERIES_MISCONCEPTIONS } from '@/lib/prep/numberSeriesTemplates'
+import { QUANT_COMPARE_MISCONCEPTIONS } from '@/lib/prep/quantCompareTemplates'
+import { LOGIC_MISCONCEPTIONS } from '@/lib/prep/logicTemplates'
 
 const EXPLANATIONS: Record<string, string> = {
-  // Prep verbal (synonyms/antonyms) — tokens defined in prep/verbalTemplates.ts.
+  // Prep tokens — defined per template module in src/lib/prep/*Templates.ts.
   ...VERBAL_MISCONCEPTIONS,
+  ...ANALOGY_MISCONCEPTIONS,
+  ...SENTENCE_COMPLETION_MISCONCEPTIONS,
+  ...NUMBER_SERIES_MISCONCEPTIONS,
+  ...QUANT_COMPARE_MISCONCEPTIONS,
+  ...LOGIC_MISCONCEPTIONS,
 
   // percent-of
   'overstated-the-percent':

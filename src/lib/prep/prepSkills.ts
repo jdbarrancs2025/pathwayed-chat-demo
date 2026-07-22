@@ -48,16 +48,20 @@ export const PREP_SKILLS: Record<string, PrepSkillRef> = {
   spelling: { slug: 'author-purpose', sessionSubject: 'reading' }, // THIN: no spelling skill
   composition: { slug: 'modifier-placement', sessionSubject: 'writing' }, // THIN: essay handled separately later
 
-  // ---- INTERIM (new verbal/quant types, pending real authoring — iterate) ----
-  analogies: { slug: 'factors-multiples', sessionSubject: 'math' }, // INTERIM
-  sentence_completion: { slug: 'expressions', sessionSubject: 'writing' }, // INTERIM
-  number_series: { slug: 'factors-multiples', sessionSubject: 'math' }, // INTERIM
-  quantitative_comparison: { slug: 'integers-rational-numbers', sessionSubject: 'math' }, // INTERIM
-  number_manipulation: { slug: 'decimal-operations', sessionSubject: 'math' }, // INTERIM
-  geometric_comparison: { slug: 'geometry', sessionSubject: 'math' }, // INTERIM
-  logic: { slug: 'linear-equations', sessionSubject: 'math' }, // INTERIM
-  verbal_classification: { slug: 'factors-multiples', sessionSubject: 'math' }, // INTERIM
-  essay_prompt: { slug: 'data-analysis', sessionSubject: 'writing' }, // INTERIM (essay engine later)
+  // ---- REAL PREP (authored, iteration 2) ----
+  analogies: { slug: 'prep-analogies', sessionSubject: 'reading' },
+  sentence_completion: { slug: 'prep-sentence-completion', sessionSubject: 'reading' },
+  number_series: { slug: 'prep-number-series', sessionSubject: 'math' },
+  quantitative_comparison: { slug: 'prep-quantitative-comparison', sessionSubject: 'math' },
+  logic: { slug: 'prep-logic', sessionSubject: 'reading' },
+  verbal_classification: { slug: 'prep-verbal-classification', sessionSubject: 'reading' },
+
+  // ---- REAL EXISTING (quantitative-skills types deliberately on close existing math skills) ----
+  number_manipulation: { slug: 'decimal-operations', sessionSubject: 'math' },
+  geometric_comparison: { slug: 'geometry', sessionSubject: 'math' },
+
+  // ---- INTERIM (essay engine ships later — step 11) ----
+  essay_prompt: { slug: 'data-analysis', sessionSubject: 'writing' }, // INTERIM
 }
 
 /** Resolve a prep question type to its skill ref, or null if unmapped. */

@@ -50,6 +50,17 @@ export async function resolveSkillIdsBySlug(slugs: string[]): Promise<Map<string
   return map
 }
 
+/**
+ * The taxonomy display name for a skill slug (skills.name), or null if unknown.
+ * Used so a session greeting names the skill properly ("Synonyms") instead of the
+ * raw slug — the display name lives in the taxonomy, not in the client.
+ */
+export async function getSkillNameBySlug(slug: string): Promise<string | null> {
+  if (!slug) return null
+  const { data } = await supabase.from('skills').select('name').eq('slug', slug).maybeSingle()
+  return data?.name ?? null
+}
+
 // ---------------------------------------------------------------------------
 // "Skills practiced" detection (Phase 1 heuristic)
 // ---------------------------------------------------------------------------
