@@ -1,9 +1,12 @@
 /**
  * Build a short context-biasing prompt for the transcription endpoint. Passed as
  * the model's `prompt`, it nudges recognition toward this lesson's vocabulary,
- * spells the child's name right, and (for math) tells the model to expect a
- * number, which is the single biggest defense against the classic short-numeric
- * hallucination (a child saying "277" coming back as "New York City 7").
+ * spells the child's name right, and — for MATH sessions — unconditionally tells
+ * the model to write numbers as digits and to expect operation vocabulary. That
+ * math bias is the single biggest defense against the observed failures: bare
+ * numbers mis-heard ("9" -> "4", "32" -> "you too") and operation phrases mangled
+ * ("subtract five from those" -> "Track five from those studs"). A further
+ * problem-specific digit hint is added when the last question was numeric.
  *
  * Kept to a few sentences, well under ~200 tokens: the model only reads roughly
  * the last 224 tokens, and a long prompt crowds out the actual audio.
@@ -12,7 +15,7 @@
 /** A compact word list per subject. Plain, high-frequency lesson terms, not an
  *  exhaustive glossary — just enough to tip homophones the right way. */
 const SUBJECT_VOCAB: Record<string, string> = {
-  math: 'number, count, add, subtract, plus, minus, times, divide, equals, sum, difference, product, fraction, numerator, denominator, decimal, place value, factor, multiple, equation, angle, area, perimeter',
+  math: 'number, digit, count, add, plus, subtract, minus, take away, times, multiply, divide, equals, negative, positive, both sides, greater than, less than, sum, difference, product, quotient, fraction, numerator, denominator, decimal, place value, factor, multiple, equation, square root, angle, area, perimeter',
   reading: 'story, character, sentence, paragraph, letter, sound, vowel, syllable, rhyme, meaning, main idea, detail, author, title',
   writing: 'sentence, paragraph, capital letter, period, comma, spelling, noun, verb, adjective, topic, detail, edit, draft',
   science: 'plant, animal, energy, matter, solid, liquid, gas, force, motion, water cycle, experiment, observe, temperature, measure',
@@ -50,10 +53,18 @@ export function buildTranscriptionPrompt(opts: {
   const subject = opts.subject ?? ''
   const isMath = MATH_SUBJECTS.has(subject)
 
-  // (a) Framing: who is speaking and what an answer tends to look like.
+  // (a) Framing: who is speaking and what an answer tends to look like. For math,
+  //     immediately follow with a strong, ALWAYS-ON style hint: spoken numbers are
+  //     digits (not number-words) and operation vocabulary is expected. This is the
+  //     main defense against the observed failures — bare "9"/"32" mis-heard, and
+  //     "subtract five from those" heard as "Track five from those studs". Placed
+  //     early so it survives the length cap even with a long vocab list.
   if (isMath) {
     parts.push(
-      'A young student is answering a math tutoring question out loud. Answers are often numbers or short math phrases.',
+      'A young student is answering a math tutoring question out loud. They say numbers and math operations aloud.',
+    )
+    parts.push(
+      'Write spoken numbers as digits — for example 9, 32, 405 — never spelled out as words. Expect math operation words such as subtract, add, multiply, divide, equals, negative, and both sides — for example "subtract 5 from those" or "divide both sides by 3".',
     )
   } else if (subject) {
     parts.push(`A young student is answering a ${subject} tutoring question out loud.`)

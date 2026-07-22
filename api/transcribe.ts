@@ -56,10 +56,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const transcription = await openai.audio.transcriptions.create({
       file,
-      // gpt-4o-mini-transcribe is markedly more accurate than whisper-1 on the
-      // short, soft, disfluent speech young kids produce. Same request shape:
-      // it accepts file + language + prompt and returns { text } by default.
-      model: "gpt-4o-mini-transcribe",
+      // gpt-4o-transcribe (the full model, not the mini) is OpenAI's most accurate
+      // transcription model, and its edge over mini shows up precisely on the hard
+      // audio here: soft/disfluent young-kid speech and short numeric utterances
+      // (bare "9"/"32" and operation phrases like "subtract five"). Same request
+      // shape as before — file + language + prompt, returns { text } by default —
+      // so the rest of the pipeline is untouched.
+      model: "gpt-4o-transcribe",
       // Locked to the session language (see SESSION_LANGUAGE) — auto-detect on
       // short kid utterances is a known source of wrong-language transcripts.
       language: SESSION_LANGUAGE.whisper,
