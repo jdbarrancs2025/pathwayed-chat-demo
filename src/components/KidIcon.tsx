@@ -373,11 +373,24 @@ const PATHS: Record<IconName, { fill: string; svg: React.ReactNode }> = {
   },
 }
 
-export function KidIcon({ name, size = 40 }: { name: string; size?: number }) {
+/**
+ * `size` fixes the icon at an exact px square, for callers that need one.
+ * Omit it (the question surfaces do) to emit a viewBox-only SVG that CSS sizes
+ * against its container, which is what lets picture items scale with the
+ * question card instead of sitting at a fixed small size.
+ */
+export function KidIcon({ name, size }: { name: string; size?: number }) {
   const icon = PATHS[name as IconName]
   if (!icon) return null
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill={icon.fill} aria-hidden="true" focusable="false">
+    <svg
+      {...(size === undefined ? {} : { width: size, height: size })}
+      viewBox="0 0 64 64"
+      fill={icon.fill}
+      aria-hidden="true"
+      focusable="false"
+      shapeRendering="geometricPrecision"
+    >
       {icon.svg}
     </svg>
   )

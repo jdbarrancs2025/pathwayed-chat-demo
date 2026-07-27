@@ -13,11 +13,17 @@ interface PictureQuestionProps {
   showState: boolean
 }
 
-function group(image: string, count: number, size: number) {
+/**
+ * A row of picture icons. `variant` selects the CSS sizing band rather than a
+ * pixel size: the icons are viewBox-only SVGs, so `.picq-group svg` scales them
+ * against the question card and they stay crisp at any size. Sizing lives in
+ * app-screens.css so the evaluation and lesson flows cannot drift apart.
+ */
+function group(image: string, count: number, variant: 'solo' | 'count' | 'tile') {
   return (
-    <span className="picq-group" aria-hidden="true">
+    <span className={`picq-group picq-group-${variant}`} aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
-        <KidIcon key={i} name={image} size={size} />
+        <KidIcon key={i} name={image} />
       ))}
     </span>
   )
@@ -33,7 +39,11 @@ export function PictureQuestion({ prompt, choices, answered, selected, onPick, s
   return (
     <div className="picq">
       {/* A single word-picture (phonics) shows large; a counting group shows smaller. */}
-      {prompt && <div className="picq-prompt">{group(prompt.image, prompt.count, prompt.count === 1 ? 96 : 48)}</div>}
+      {prompt && (
+        <div className="picq-prompt">
+          {group(prompt.image, prompt.count, prompt.count === 1 ? 'solo' : 'count')}
+        </div>
+      )}
       <div className="picq-tiles" data-count={choices.length}>
         {choices.map((c, i) => {
           const tile = c.tile
@@ -50,7 +60,7 @@ export function PictureQuestion({ prompt, choices, answered, selected, onPick, s
               {tile?.kind === 'number' || tile?.kind === 'letter' ? (
                 <span className="picq-num">{tile.value}</span>
               ) : tile?.kind === 'object_group' ? (
-                group(tile.image, tile.count, 30)
+                group(tile.image, tile.count, 'tile')
               ) : (
                 <span className="picq-num">{c.text}</span>
               )}
