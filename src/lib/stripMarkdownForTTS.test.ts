@@ -57,6 +57,34 @@ describe('stripMarkdownForTTS — markdown', () => {
   })
 })
 
+describe('stripMarkdownForTTS: URLs', () => {
+  it('removes bare URLs so they are never read aloud', () => {
+    expect(spoken('Go to https://example.com/page?a=1 now')).toBe('Go to now')
+    expect(spoken('See www.example.com today')).toBe('See today')
+  })
+
+  it('keeps the visible text of a markdown link', () => {
+    expect(spoken('Read [this page](https://example.com) first')).toBe('Read this page first')
+  })
+})
+
+describe('stripMarkdownForTTS: plain-text fractions', () => {
+  it('speaks simple fractions as words', () => {
+    expect(spoken('Shade 3/4 of it')).toBe('Shade three fourths of it')
+    expect(spoken('That is 1/2 exactly')).toBe('That is one half exactly')
+    expect(spoken('Add 1/3 and 2/3')).toBe('Add one third and two thirds')
+  })
+
+  it('leaves dates and out-of-range denominators alone', () => {
+    expect(spoken('due 3/4/2026')).toBe('due 3/4/2026')
+    expect(spoken('scored 40/50 points')).toBe('scored 40/50 points')
+  })
+
+  it('is idempotent on already-converted text', () => {
+    expect(spoken(stripMarkdownForTTS('Shade 3/4 of it'))).toBe('Shade three fourths of it')
+  })
+})
+
 describe('stripMarkdownForTTS — combined realistic message', () => {
   it('speaks clean words, no emoji/LaTeX/symbols', () => {
     const out = stripMarkdownForTTS('Nice! 👍 $\\frac{2}{4}$ is the same as $\\frac{1}{2}$.')

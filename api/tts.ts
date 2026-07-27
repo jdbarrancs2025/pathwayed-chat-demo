@@ -11,8 +11,12 @@ interface TtsRequest {
 // Warm, calm, widely-available ElevenLabs preset voice ("Rachel") — a good
 // default for reading to young children. Override with ELEVENLABS_VOICE_ID.
 const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"
-// Low-latency, natural model suitable for back-and-forth tutoring.
-const MODEL_ID = "eleven_turbo_v2_5"
+// Low-latency, natural model suitable for back-and-forth tutoring. Turbo trades
+// some articulation for speed, which is one suspect in the reported slurring;
+// eleven_multilingual_v2 is clearer but roughly doubles time-to-first-audio.
+// Left on turbo by default and made overridable so the swap can be A/B tested in
+// a real session (set ELEVENLABS_MODEL_ID) without a code change.
+const DEFAULT_MODEL_ID = "eleven_turbo_v2_5"
 const MAX_CHARS = 2500
 
 /**
@@ -56,11 +60,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       body: JSON.stringify({
         text: input,
-        model_id: MODEL_ID,
+        model_id: process.env.ELEVENLABS_MODEL_ID || DEFAULT_MODEL_ID,
         voice_settings: {
-          stability: 0.5,
+          // Clarity baseline for a child listener. Below ~0.5 the voice starts
+          // improvising prosody, which is what reads as slurring on fast lines;
+          // pushing it much higher makes Nikki sound flat.
+          stability: 0.55,
           similarity_boost: 0.75,
           style: 0.0,
+          // Pinned so no future default can speed the voice up on us.
+          speed: 1.0,
           use_speaker_boost: true,
         },
       }),

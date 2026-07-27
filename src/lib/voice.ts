@@ -3,6 +3,8 @@
 // speechSynthesis so the app degrades gracefully instead of going silent. Audio
 // for a given piece of text is cached for the session to avoid re-fetching (cost).
 
+import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
+
 export interface SpeakOptions {
   /** Optional ElevenLabs voice id override (normally the server default is used). */
   voiceId?: string
@@ -25,9 +27,15 @@ let current: HTMLAudioElement | null = null
 // it has been superseded and bail out.
 let playToken = 0
 
-/** Strip markdown so the voice doesn't read out asterisks, hashes, etc. */
+/**
+ * Single sanitization gate for this path. Previously this only deleted a handful
+ * of punctuation characters, so callers that passed raw model output (Practice's
+ * solution text, Flashcards) could still hand LaTeX, links, and code fences to
+ * ElevenLabs. stripMarkdownForTTS is the full converter and is safe to run on
+ * already-clean text, so callers that pre-sanitize are unaffected.
+ */
 function cleanForSpeech(text: string): string {
-  return text.replace(/[*#`_>]/g, "").trim()
+  return stripMarkdownForTTS(text).trim()
 }
 
 /**
@@ -48,8 +56,14 @@ function splitForSpeech(text: string): string[] {
     }
     let rest = s
     while (rest.length > MAX) {
+      // Always cut on whitespace. The old fallback sliced at exactly MAX when no
+      // space was found early enough, which split a word across two separate
+      // ElevenLabs requests, and each half was then voiced as its own utterance,
+      // which is heard as a slur or stutter. Prefer the last space before MAX;
+      // if there isn't a usable one, run past MAX to the next space instead.
       let cut = rest.lastIndexOf(" ", MAX)
-      if (cut < 60) cut = MAX
+      if (cut < 60) cut = rest.indexOf(" ", MAX)
+      if (cut === -1) break // one unbroken run: emit it whole below
       out.push(rest.slice(0, cut).trim())
       rest = rest.slice(cut).trim()
     }

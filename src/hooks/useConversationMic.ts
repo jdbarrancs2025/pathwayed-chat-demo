@@ -23,11 +23,20 @@ const SPEECH_RMS = 0.008
 //   HIGHER = waits longer before ending a turn (more forgiving of mid-sentence
 //            pauses — good for kids who pause to think), but slower to respond.
 //   LOWER  = ends turns faster, but can cut a child off mid-sentence.
-const SILENCE_MS = 1300
+//   1300ms cut children off mid-sentence in live testing: a normal breath or a
+//   pause to decode the next word is routinely longer than that. 2500ms clears
+//   a natural reading pause at the cost of ~1.2s more before Nikki replies.
+const SILENCE_MS = 2500
 // ─────────────────────────────────────────────────────────────────────────────
 const MIN_SPEECH_MS = 300 // ignore blips shorter than this
-const MAX_UTTERANCE_MS = 14000 // hard cap so it always flushes
+// Hard cap so a segment always flushes. Only reached when the silence detector
+// never fires (e.g. a noisy room holding RMS above SPEECH_RMS); 14s used to
+// split a child reading a passage aloud straight down the middle of a sentence.
+const MAX_UTTERANCE_MS = 45000
 const MIN_BLOB_BYTES = 1500 // drop near-empty segments
+// iOS Safari can fire `stop` ahead of the final `dataavailable`, dropping the
+// tail of the utterance. Wait for both before handing the blob off.
+const FINAL_CHUNK_GRACE_MS = 250
 
 function mapError(err: unknown): string {
   if (err instanceof DOMException) {
@@ -61,7 +70,6 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
   const ctxRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const recorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
   const rafRef = useRef<number | null>(null)
   const activeRef = useRef(false)
 
@@ -100,7 +108,6 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
       ctxRef.current = null
     }
     analyserRef.current = null
-    chunksRef.current = []
     speakingRef.current = false
   }, [])
 
@@ -110,14 +117,32 @@ export function useConversationMic({ onUtterance, isPaused }: Options) {
     if (recorderRef.current && recorderRef.current.state === 'recording') return
 
     const rec = new MediaRecorder(stream, MIME ? { mimeType: MIME } : undefined)
-    chunksRef.current = []
+
+    // Chunks are per-segment locals, not a shared ref: the next segment starts
+    // as soon as this recorder leaves the 'recording' state, which can be before
+    // this one has delivered its final chunk.
+    const chunks: Blob[] = []
+    // Deliver the utterance exactly once, only after the recorder has stopped
+    // AND its final slice has arrived (the two can land in either order).
+    let stopped = false
+    let delivered = false
+    let graceTimer: ReturnType<typeof setTimeout> | null = null
+    const deliver = () => {
+      if (delivered || !stopped) return
+      delivered = true
+      if (graceTimer != null) clearTimeout(graceTimer)
+      const blob = new Blob(chunks, { type: MIME })
+      if (blob.size >= MIN_BLOB_BYTES) onUtteranceRef.current(blob, MIME)
+    }
+
     rec.ondataavailable = (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data)
+      if (e.data.size > 0) chunks.push(e.data)
+      if (stopped) deliver()
     }
     rec.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: MIME })
-      chunksRef.current = []
-      if (blob.size >= MIN_BLOB_BYTES) onUtteranceRef.current(blob, MIME)
+      stopped = true
+      graceTimer = setTimeout(deliver, FINAL_CHUNK_GRACE_MS)
+      if (chunks.length > 0) deliver()
     }
     recorderRef.current = rec
     speakingRef.current = false

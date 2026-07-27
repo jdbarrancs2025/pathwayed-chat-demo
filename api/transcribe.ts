@@ -11,6 +11,41 @@ interface TranscribeRequest {
   prompt?: string
 }
 
+// Stock phrases the Whisper-family models emit when handed silence or noise.
+// They are memorized from the YouTube-heavy training set, not heard in the
+// audio. Matched case-insensitively as substrings.
+const HALLUCINATION_PHRASES = [
+  "thank you for watching",
+  "please subscribe",
+  "thanks for watching",
+]
+
+// Characters that legitimately appear in an English tutoring answer. Anything
+// outside this set (Japanese kana, Devanagari, CJK) is the model language-hopping
+// on unclear audio rather than transcribing what the child said.
+// The en and em dash code points are emitted by the model in real
+// English transcripts, so they count as Latin rather than pushing a line under
+// the ratio. Written as escapes to keep literal dash characters out of the source.
+const LATIN_CHAR = /[A-Za-z0-9\s.,!?'"()[\]{}\-\u2013\u2014:;/\\%$&+=*@#°^|~`]/
+const MIN_LATIN_RATIO = 0.7
+
+/**
+ * True when a transcript should be treated as "no speech" rather than returned
+ * to the child's chat: empty, mostly non-Latin, or a known hallucination.
+ */
+export function isNoSpeech(text: string): boolean {
+  const trimmed = text.trim()
+  if (!trimmed) return true
+
+  const lower = trimmed.toLowerCase()
+  if (HALLUCINATION_PHRASES.some((phrase) => lower.includes(phrase))) return true
+
+  // Count by code point so a single CJK/emoji character is not double-counted.
+  const chars = Array.from(trimmed)
+  const latin = chars.filter((c) => LATIN_CHAR.test(c)).length
+  return latin / chars.length < MIN_LATIN_RATIO
+}
+
 /** Map MIME types to file extensions for the OpenAI API */
 function getExtension(mimeType: string): string {
   if (mimeType.startsWith("audio/webm")) return "webm"
@@ -71,7 +106,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ...(biasPrompt ? { prompt: biasPrompt } : {}),
     })
 
-    return res.status(200).json({ text: transcription.text })
+    // Gate the transcript before it can reach the chat. A rejected transcript
+    // comes back as { noSpeech: true } with no text, so the client shows the
+    // retry cue instead of sending a hallucinated message to Nikki.
+    const text = transcription.text ?? ""
+    if (isNoSpeech(text)) {
+      console.warn("Transcribe rejected as no-speech:", JSON.stringify(text.slice(0, 120)))
+      return res.status(200).json({ noSpeech: true })
+    }
+
+    return res.status(200).json({ text })
   } catch (error) {
     console.error("Transcribe API error:", error)
     return res.status(500).json({ error: "Transcription failed" })

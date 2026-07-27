@@ -40,6 +40,15 @@ export function stripMarkdownForTTS(text: string): string {
   result = result.replace(/^[\s]*[-*+]\s+/gm, '') // unordered list markers
   result = result.replace(/^[\s]*\d+\.\s+/gm, '') // ordered list markers
 
+  // 3b) Bare URLs. Markdown links are already reduced to their text above, so
+  //     anything left is a raw address. Never read a URL out to a child.
+  result = result.replace(/\bhttps?:\/\/\S+/gi, ' ')
+  result = result.replace(/\bwww\.\S+/gi, ' ')
+
+  // 3c) Plain-text fractions ("3/4" -> "three fourths"). Runs after URL removal
+  //     so path separators are already gone.
+  result = speakSimpleFractions(result)
+
   // 4) Stray math symbols (in case Unicode slipped past the LaTeX rules).
   result = result
     .replace(/×/g, ' times ')
@@ -60,6 +69,46 @@ export function stripMarkdownForTTS(text: string): string {
   result = result.replace(/ +([,.!?;:])/g, '$1') // no space before punctuation
   result = result.replace(/\n{3,}/g, '\n\n')
   return result.trim()
+}
+
+const NUMBER_WORDS = [
+  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+  'seventeen', 'eighteen', 'nineteen', 'twenty',
+]
+
+/** Denominator -> [singular, plural] spoken form. */
+const DENOMINATOR_WORDS: Record<number, [string, string]> = {
+  2: ['half', 'halves'],
+  3: ['third', 'thirds'],
+  4: ['fourth', 'fourths'],
+  5: ['fifth', 'fifths'],
+  6: ['sixth', 'sixths'],
+  7: ['seventh', 'sevenths'],
+  8: ['eighth', 'eighths'],
+  9: ['ninth', 'ninths'],
+  10: ['tenth', 'tenths'],
+  11: ['eleventh', 'elevenths'],
+  12: ['twelfth', 'twelfths'],
+}
+
+/**
+ * Speak plain-text fractions the way a teacher would: "3/4" -> "three fourths",
+ * "1/2" -> "one half". Deliberately conservative: it only fires on a bare
+ * numerator/denominator pair that is NOT part of a longer run of digits and
+ * slashes (so dates like 3/4/2026 and ratios like 100/200 are left alone), and
+ * only for denominators with a clean spoken name. Anything it can't say safely
+ * is left for the model to read as-is rather than guessed at.
+ */
+function speakSimpleFractions(s: string): string {
+  return s.replace(/(?<![\w/.])(\d{1,2})\/(\d{1,2})(?![\w/.])/g, (match, rawNum: string, rawDen: string) => {
+    const numerator = Number(rawNum)
+    const denominator = Number(rawDen)
+    const denomWord = DENOMINATOR_WORDS[denominator]
+    const numWord = NUMBER_WORDS[numerator]
+    if (!denomWord || !numWord || numerator === 0) return match
+    return `${numWord} ${numerator === 1 ? denomWord[0] : denomWord[1]}`
+  })
 }
 
 /**

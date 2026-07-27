@@ -1,4 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
+
+// Schedule the first PCM chunk this far ahead of the clock. Without any lead-in,
+// a chunk that arrives even slightly late lands behind ctx.currentTime and gets
+// snapped forward, which drops a silent notch into the middle of a word. Costs
+// 150ms of added latency and absorbs 150ms of network jitter.
+const SCHEDULE_LEAD_S = 0.15
 
 // Module-level singleton — only one AudioContext per page (Safari limits to 4)
 let sharedAudioContext: AudioContext | null = null
@@ -92,10 +99,14 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
   }, [])
 
   const speak = useCallback(
-    async (text: string) => {
+    async (rawText: string) => {
       // Cancel any current playback/fetch
       stop()
 
+      // Sanitize here as well as at the call sites, so no caller can hand
+      // ElevenLabs markdown, LaTeX, or a URL to try to pronounce. Safe to run on
+      // already-clean text.
+      const text = stripMarkdownForTTS(rawText)
       if (!text.trim()) return
 
       if (!isMountedRef.current) return
@@ -182,9 +193,12 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
           source.connect(ctx.destination)
           activeSourcesRef.current.push(source)
 
-          // Snap forward if we've fallen behind
-          if (nextStartTime < ctx.currentTime) {
-            nextStartTime = ctx.currentTime
+          // Snap forward if we've fallen behind. The lead-in makes this rare on
+          // the first chunk; when it does fire mid-stream it is a genuine
+          // underrun and a small gap is better than overlapping audio.
+          const earliest = ctx.currentTime + (isFirstChunk ? SCHEDULE_LEAD_S : 0)
+          if (nextStartTime < earliest) {
+            nextStartTime = earliest
           }
 
           source.start(nextStartTime)

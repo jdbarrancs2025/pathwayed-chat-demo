@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { Send, Mic, Square, Loader2, Calculator } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAudioRecorder } from "@/hooks/useAudioRecorder"
-import { transcribeAudio } from "@/lib/transcribe"
+import { transcribeAudio, NO_SPEECH_MESSAGE } from "@/lib/transcribe"
 import { buildTranscriptionPrompt } from "@/lib/transcriptionPrompt"
 import { WaveformVisualizer } from "./WaveformVisualizer"
 import { MathKeyboard } from "./MathKeyboard"
@@ -23,6 +23,7 @@ interface ChatInputProps {
 export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [isTranscribing, setIsTranscribing] = useState(false)
+  const [micError, setMicError] = useState("")
   const [mathKeyboardOpen, setMathKeyboardOpen] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -33,6 +34,7 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
     stopRecording,
     audioBlob,
     mimeType,
+    secondsLeft,
     error: recorderError,
   } = useAudioRecorder()
 
@@ -61,6 +63,7 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
     if (isRecording) {
       stopRecording()
     } else {
+      setMicError("")
       await startRecording()
     }
   }, [isRecording, startRecording, stopRecording])
@@ -78,13 +81,23 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
 
     async function transcribe() {
       setIsTranscribing(true)
+      setMicError("")
       try {
-        const text = await transcribeAudio(blob, mime, buildTranscriptionPrompt({ subject }))
-        if (!cancelled && text) {
-          setMessage(text)
-          // Focus textarea so user can edit before sending
-          setTimeout(() => textareaRef.current?.focus(), 50)
+        const { text, noSpeech } = await transcribeAudio(
+          blob,
+          mime,
+          buildTranscriptionPrompt({ subject }),
+        )
+        if (cancelled) return
+        // Silence, noise, or a hallucinated transcript: leave the box untouched
+        // and prompt a retry rather than dropping garbage in for the kid to send.
+        if (noSpeech || !text) {
+          setMicError(NO_SPEECH_MESSAGE)
+          return
         }
+        setMessage(text)
+        // Focus textarea so user can edit before sending
+        setTimeout(() => textareaRef.current?.focus(), 50)
       } catch {
         // Silently fail — user can still type manually
         console.error("Transcription error")
@@ -301,7 +314,9 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
                 isRecording={isRecording}
                 className="flex-1"
               />
-              <span className="text-xs text-accent font-medium whitespace-nowrap">Recording...</span>
+              <span className="text-xs text-accent font-medium whitespace-nowrap">
+                {secondsLeft === null ? "Recording..." : `${secondsLeft}s left`}
+              </span>
             </div>
           ) : isTranscribing ? (
             <div className="flex-1 flex items-center gap-2 py-2.5 px-2 min-h-[40px]">
@@ -350,9 +365,9 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
           )}
         </div>
 
-        {/* Recorder error message */}
-        {recorderError && (
-          <p className="text-center text-xs text-red-500 mt-2">{recorderError}</p>
+        {/* Recorder / no-speech retry message */}
+        {(recorderError || micError) && (
+          <p className="text-center text-xs text-red-500 mt-2">{recorderError || micError}</p>
         )}
 
         {/* Helper text - hidden on small screens where keyboard shortcuts are less relevant */}
