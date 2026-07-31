@@ -10,6 +10,7 @@ import { TopMenu } from '@/components/TopMenu'
 import { NikkiFace } from '@/components/NikkiFace'
 import { AvatarModePicker } from '@/components/AvatarModePicker'
 import { PrepModuleTiles } from '@/components/prep/PrepModuleTiles'
+import { TestReadinessCard } from '@/components/TestReadinessCard'
 import '@/styles/app-screens.css'
 
 /**
@@ -231,6 +232,10 @@ export function KidHome() {
           {/* Test-prep module tiles — one per module the child is entitled to
               (status 'active' only). Renders nothing when there are none. */}
           <PrepModuleTiles studentId={student.id} />
+
+          {/* HSPT, ISEE and SAT results, read-only. Owns its own gating: below
+              grade 9 (or without above-grade consent) the SAT row is omitted. */}
+          <TestReadinessCard studentId={student.id} audience="student" />
         </section>
 
         <div className="foot">

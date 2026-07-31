@@ -3,13 +3,7 @@ import { useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { avColor, gradeLabel, initials, levelLabel, listStudents, type Student } from '@/lib/students'
 import { getLastActivity } from '@/lib/sessions'
-import {
-  ensureFreshReadiness,
-  getSatPayload,
-  pathwayBandLabel,
-  type ReadinessView,
-  type SatProjectionPayload,
-} from '@/lib/readiness'
+import { ensureFreshReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { MASTERY_THRESHOLD } from '@/lib/lessonPath'
 import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
@@ -17,7 +11,7 @@ import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
 import { formatRelativeDay } from '@/lib/format'
 import { TopMenu } from '@/components/TopMenu'
-import { SatReadiness } from '@/components/SatReadiness'
+import { TestReadinessCard } from '@/components/TestReadinessCard'
 import '@/styles/app-screens.css'
 
 const SUBJECT_ACCENT: Record<string, string> = {
@@ -33,7 +27,6 @@ interface ChildData {
   student: Student
   readiness: ReadinessView
   mastery: StudentMasteryView
-  sat: SatProjectionPayload | null
   lastActivity: string | null
   placements: SubjectPlacement[]
 }
@@ -67,9 +60,9 @@ export function ParentArea() {
             getLastActivity(student.id),
             getSubjectPlacements(student.id, student.grade),
           ])
-          // After ensureFreshReadiness so the just-written 'sat' row is current.
-          const sat = await getSatPayload(student.id)
-          return { student, readiness, mastery, sat, lastActivity, placements }
+          // The 'sat' row that ensureFreshReadiness just wrote is read by
+          // TestReadinessCard, which owns the SAT row on this surface now.
+          return { student, readiness, mastery, lastActivity, placements }
         }),
       )
       if (!active) return
@@ -132,7 +125,7 @@ export function ParentArea() {
 
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
   const navigate = useNavigate()
-  const { student, readiness, mastery, sat, lastActivity, placements } = data
+  const { student, readiness, mastery, lastActivity, placements } = data
   const pathway = readiness.pathway
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
 
@@ -341,9 +334,10 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             </div>
           )}
 
-          {/* SAT / above-grade framing gated on this child's consent (placement
-              Phase 3) — matches the kid dashboard: declined = no SAT anywhere. */}
-          {student.above_grade_ok && <SatReadiness payload={sat} grade={student.grade} variant="parent" />}
+          {/* HSPT, ISEE and SAT in one read-only card. It owns the SAT row and
+              the above-grade consent gate that used to sit here, so SatReadiness
+              is no longer mounted standalone and SAT renders exactly once. */}
+          <TestReadinessCard studentId={student.id} audience="parent" />
 
           <div className="stat-row">
             <span className="muted">Last activity</span>

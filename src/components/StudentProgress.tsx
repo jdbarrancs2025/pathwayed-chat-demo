@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
-import {
-  buildCoachMessage,
-  buildTodaysPlan,
-  ensureFreshReadiness,
-  getSatPayload,
-  type ReadinessView,
-  type SatProjectionPayload,
-} from '@/lib/readiness'
+import { buildCoachMessage, buildTodaysPlan, ensureFreshReadiness, type ReadinessView } from '@/lib/readiness'
 import { subjectDisplayName } from '@/lib/subjects'
-import { SatReadiness } from '@/components/SatReadiness'
+import { TestReadinessCard } from '@/components/TestReadinessCard'
 
 /**
  * Academic OS Phase 1 — read-only student dashboard sections. Shows skill mastery
@@ -42,18 +35,14 @@ export function StudentProgress({
   studentId,
   grade,
   onOpenSubject,
-  showSatFraming = false,
 }: {
   studentId: string
   grade: string
   /** Deep-link into a subject session from a Today's Plan item. */
   onOpenSubject: (subject: string) => void
-  /** Whether the KID sees SAT framing (showKidSatFraming: consent + grade>=9). */
-  showSatFraming?: boolean
 }) {
   const [view, setView] = useState<StudentMasteryView | null>(null)
   const [readiness, setReadiness] = useState<ReadinessView | null>(null)
-  const [sat, setSat] = useState<SatProjectionPayload | null>(null)
 
   useEffect(() => {
     let active = true
@@ -67,16 +56,11 @@ export function StudentProgress({
 
   useEffect(() => {
     let active = true
-    // Read the SAT payload AFTER ensureFreshReadiness so it reflects any
-    // just-written recompute (the 'sat' row is excluded from the view above).
-    ensureFreshReadiness(studentId)
-      .then((r) => {
-        if (active) setReadiness(r)
-        return getSatPayload(studentId)
-      })
-      .then((p) => {
-        if (active) setSat(p)
-      })
+    // Recompute readiness for the coach + Today's Plan below. The SAT payload this
+    // writes is read by TestReadinessCard, which owns the SAT row now.
+    ensureFreshReadiness(studentId).then((r) => {
+      if (active) setReadiness(r)
+    })
     return () => {
       active = false
     }
@@ -175,10 +159,10 @@ export function StudentProgress({
         </h3>
         <p className="muted">A grade-level readiness score is coming in a later phase.</p>
       </section>
-      {/* Kid-facing SAT framing: consent + grade threshold (showKidSatFraming).
-          Below it the kid sees skill-focused language only; mastery + Today's
-          Plan above always reflect the child's real level. */}
-      {showSatFraming && <SatReadiness payload={sat} grade={grade} variant="student" />}
+      {/* HSPT, ISEE and SAT in one read-only card. It owns the SAT row and its
+          gating (consent + grade >= 9 for a kid), so SatReadiness is no longer
+          mounted standalone here and SAT renders exactly once on this surface. */}
+      <TestReadinessCard studentId={studentId} audience="student" />
     </div>
   )
 }

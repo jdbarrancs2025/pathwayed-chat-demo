@@ -2214,3 +2214,184 @@
     animation: none !important;
   }
 }
+
+/* Test Readiness card (HSPT, ISEE, SAT): read-only, both dashboards. The SAT
+   row is the existing SatReadiness component nested inside, so its own wrapper
+   is flattened here to avoid a card inside a card. */
+.trc .trc-module {
+  margin-top: 12px;
+}
+.trc .trc-module:first-of-type {
+  margin-top: 6px;
+}
+.trc .subj-name {
+  font-weight: 700;
+}
+.trc .trc-row .bar > i {
+  background: var(--navy);
+}
+.trc .trc-empty {
+  margin: 6px 0 0;
+}
+.trc .trc-none {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.trc .trc-band {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+}
+.trc .trc-band.developing {
+  color: var(--orange);
+  background: #fff;
+}
+.trc .trc-band.ontrack {
+  color: var(--navy);
+  background: #eef2fa;
+}
+.trc .trc-band.strong {
+  color: var(--grow);
+  background: #eaf7f1;
+}
+.trc .trc-composites {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-2);
+}
+.trc .trc-composite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 0;
+  font-size: 14px;
+}
+.trc .trc-composite-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.trc .trc-partial {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.trc .trc-partial-note,
+.trc .trc-note {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+.trc .trc-disclosure {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+.trc .trc-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 14px 0 6px;
+}
+.trc .trc-scale {
+  margin-top: 12px;
+  border-top: 1px solid var(--line-2);
+  padding-top: 10px;
+}
+.trc .trc-scale > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.trc .trc-scale-body {
+  margin-top: 8px;
+}
+.trc .trc-scale-body p {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.trc .trc-table {
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.trc .trc-table th,
+.trc .trc-table td {
+  border: 1px solid var(--line);
+  padding: 3px 12px;
+  text-align: left;
+  color: var(--muted);
+}
+.trc .trc-table th {
+  color: var(--ink);
+  font-weight: 700;
+}
+.trc .trc-history {
+  margin-top: 6px;
+}
+.trc .trc-hist-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line-2);
+  font-size: 13.5px;
+}
+.trc .trc-hist-date {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 12.5px;
+  min-width: 92px;
+}
+.trc .trc-hist-what {
+  flex: 1 1 auto;
+}
+.trc .trc-hist-mode {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.trc .trc-hist-score {
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+.trc .trc-incomplete {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* Nested SatReadiness: strip its standalone card chrome so it reads as a row of
+   this card on the student surface, and keep its parent-surface spacing. */
+.trc .trc-sat {
+  margin-top: 14px;
+}
+.trc .trc-sat > .panel {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+.trc .trc-sat > .pd-section {
+  margin-top: 0;
+}
