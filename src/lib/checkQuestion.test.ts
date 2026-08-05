@@ -26,6 +26,7 @@ const q = (id: string): PracticeQuestion => ({
   solution: null,
   render_mode: 'text',
   prompt: null,
+  difficulty: null,
 })
 
 describe('stripCheckMarker', () => {

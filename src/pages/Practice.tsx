@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, type Student } from '@/lib/students'
 import {
-  fetchPracticeQuestions,
+  fetchRampedQuestions,
   recordQuestionAttempt,
   scoreChoice,
   summarizeAttempts,
@@ -74,7 +74,11 @@ export function Practice() {
   useEffect(() => {
     if (!id) return
     let active = true
-    Promise.all([getStudent(id), fetchPracticeQuestions(skillSlug, SESSION_LENGTH)]).then(([s, qs]) => {
+    // Ramped to this student's rolling performance on the skill, preferring
+    // questions they have not seen. Falls back to the plain shuffled pool for
+    // skills with no internal difficulty spread.
+    fetchRampedQuestions(skillSlug, SESSION_LENGTH, id).then(async ({ questions: qs }) => {
+      const s = await getStudent(id)
       if (!active) return
       if (!s) {
         navigate('/students', { replace: true })

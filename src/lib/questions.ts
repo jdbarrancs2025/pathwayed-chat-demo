@@ -3,6 +3,14 @@ import { resolveSkillIdsBySlug } from '@/lib/skills'
 import { getActiveFocusSkillIds } from '@/lib/focusSkills'
 import { pickNextSkill, type SkillEvidence } from '@/lib/pickNextSkill'
 import { eligibleSkills, type LadderStudent } from '@/lib/gradeLadder'
+import {
+  bandFor,
+  parseDifficulty,
+  selectRamped,
+  RAMP_WINDOW,
+  type Difficulty,
+  type RampBand,
+} from '@/lib/difficultyRamp'
 import type { Json } from '@/lib/database.types'
 
 /** The student fields the grade ladder needs, plus the id used for the reads. */
@@ -54,6 +62,10 @@ export interface PracticeQuestion {
   render_mode: string
   // Visual prompt for audio-picture items (e.g. a group of objects to count).
   prompt: PicturePrompt | null
+  // Within-skill item hardness, or null when unlabelled. For 15 legacy math skills
+  // this tags the SKILL's staircase position rather than the item, which is why the
+  // ramp checks for a real spread before weighting (see difficultyRamp.ts).
+  difficulty: Difficulty | null
 }
 
 // --- Pure scoring / aggregation (unit-tested) --------------------------------
@@ -142,7 +154,7 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
 
   const { data, error } = await supabase
     .from('generated_questions')
-    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id, render_mode, prompt')
+    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id, render_mode, prompt, difficulty')
     .eq('skill_id', skillId)
     .eq('status', 'published')
   if (error) {
@@ -181,9 +193,83 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
       solution: row.solution,
       render_mode: typeof row.render_mode === 'string' ? row.render_mode : 'text',
       prompt: parsePrompt(row.prompt),
+      difficulty: parseDifficulty(row.difficulty),
     })
   }
   return shuffle(parsed).slice(0, limit)
+}
+
+/** generated_question_ids this student has already answered on a graded turn. */
+export async function fetchSeenQuestionIds(studentId: string, skillId: string): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('question_attempts')
+    .select('generated_question_id')
+    .eq('student_id', studentId)
+    .eq('skill_id', skillId)
+    .eq('is_diagnostic', false)
+  if (error) {
+    console.error('fetchSeenQuestionIds read failed', error)
+    return new Set()
+  }
+  return new Set((data ?? []).map((r) => r.generated_question_id).filter((v): v is string => !!v))
+}
+
+/**
+ * The last RAMP_WINDOW graded, non-diagnostic attempts on a skill, newest first,
+ * as is_correct flags. Feeds the ramp band. Best-effort: [] on a read failure,
+ * which lands the student on 'balanced' rather than guessing.
+ */
+export async function fetchRecentAttempts(studentId: string, skillId: string): Promise<boolean[]> {
+  const { data, error } = await supabase
+    .from('question_attempts')
+    .select('is_correct, created_at')
+    .eq('student_id', studentId)
+    .eq('skill_id', skillId)
+    .eq('is_diagnostic', false)
+    .order('created_at', { ascending: false })
+    .limit(RAMP_WINDOW)
+  if (error) {
+    console.error('fetchRecentAttempts read failed', error)
+    return []
+  }
+  return (data ?? []).map((r) => r.is_correct === true)
+}
+
+export interface RampedQuestions {
+  questions: PracticeQuestion[]
+  /** Which band was served. Exposed for logging and tests, not for the UI. */
+  band: RampBand
+}
+
+/**
+ * Serve a practice set RAMPED to this student's rolling performance on the skill.
+ *
+ * Deliberately a SEPARATE function from fetchPracticeQuestions rather than an
+ * optional parameter on it. The plain path is shared by the placement diagnostic,
+ * the practice SAT, and the timed prep engine, none of which may adapt to the
+ * student: a diagnostic that ramps is circular, and a mock exam that ramps stops
+ * being comparable. Keeping them on the untouched function means those callers get
+ * a zero-line diff and cannot be broken by anything here.
+ *
+ * Best-effort throughout: any failure degrades to the plain shuffled set.
+ */
+export async function fetchRampedQuestions(
+  skillSlug: string,
+  limit: number,
+  studentId: string,
+): Promise<RampedQuestions> {
+  const pool = await fetchPracticeQuestions(skillSlug, Number.MAX_SAFE_INTEGER)
+  if (!pool.length) return { questions: [], band: 'balanced' }
+
+  const skillId = pool[0].skill_id
+  const [recent, evidence, seenIds] = await Promise.all([
+    fetchRecentAttempts(studentId, skillId),
+    fetchSkillEvidence(studentId),
+    fetchSeenQuestionIds(studentId, skillId),
+  ])
+
+  const band = bandFor({ recent, status: evidence.get(skillId)?.status })
+  return { questions: selectRamped({ questions: pool, band, seenIds, limit }), band }
 }
 
 /**
@@ -195,7 +281,7 @@ export async function fetchQuestionsByIds(ids: string[]): Promise<PracticeQuesti
   if (ids.length === 0) return []
   const { data, error } = await supabase
     .from('generated_questions')
-    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id, render_mode, prompt')
+    .select('id, skill_id, sat_alignment, stem, choices, correct_answer, solution, passage_id, render_mode, prompt, difficulty')
     .in('id', ids)
     .eq('status', 'published')
   if (error) {
@@ -231,6 +317,7 @@ export async function fetchQuestionsByIds(ids: string[]): Promise<PracticeQuesti
       solution: row.solution,
       render_mode: typeof row.render_mode === 'string' ? row.render_mode : 'text',
       prompt: parsePrompt(row.prompt),
+      difficulty: parseDifficulty(row.difficulty),
     })
   }
   // Preserve the requested order (the frozen attempt order).

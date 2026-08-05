@@ -1,6 +1,6 @@
-import { supabase } from '@/lib/supabase'
 import {
-  fetchPracticeQuestions,
+  fetchRampedQuestions,
+  fetchSeenQuestionIds,
   listEligibleSkills,
   type LadderStudentRow,
   type PracticeQuestion,
@@ -36,6 +36,8 @@ export const CHECK_MIN_ASSISTANT_TURNS = 4
 export const CHECK_COOLDOWN_TURNS = 6
 /** Hard cap per session. */
 export const CHECK_MAX_PER_SESSION = 3
+/** How many ramped candidates to draw before picking the one to ask. */
+export const CHECK_POOL_SIZE = 5
 
 const MARKER_RX = /\[\[\s*check\s*\]\]/gi
 
@@ -138,23 +140,6 @@ export function chooseCheckQuestion(
   return pool[Math.min(pool.length - 1, Math.max(0, pick(pool.length)))] ?? null
 }
 
-/** generated_question_ids this student has already attempted on a graded turn. */
-export async function fetchSeenQuestionIds(studentId: string, skillId: string): Promise<Set<string>> {
-  const { data, error } = await supabase
-    .from('question_attempts')
-    .select('generated_question_id')
-    .eq('student_id', studentId)
-    .eq('skill_id', skillId)
-    .eq('is_diagnostic', false)
-  if (error) {
-    console.error('fetchSeenQuestionIds read failed', error)
-    return new Set()
-  }
-  return new Set(
-    (data ?? []).map((r) => r.generated_question_id).filter((v): v is string => !!v),
-  )
-}
-
 /**
  * The question to ask, or null when a check is not appropriate.
  *
@@ -177,12 +162,14 @@ export async function fetchCheckQuestion(
     const skill = eligible.find((s) => s.slug === focusSlug)
     if (!skill) return null // cleared, above the ceiling, or age-pinned out
 
-    const [questions, seen] = await Promise.all([
-      // The whole published pool for this skill; chooseCheckQuestion picks one.
-      fetchPracticeQuestions(focusSlug, Number.MAX_SAFE_INTEGER),
+    // Ramped like a practice set, so a check question tracks the same rolling
+    // performance the practice flow does. Ask for a handful rather than one, then
+    // pick within them, so the unseen preference still has room to work.
+    const [ramped, seen] = await Promise.all([
+      fetchRampedQuestions(focusSlug, CHECK_POOL_SIZE, student.id),
       fetchSeenQuestionIds(student.id, skill.skill_id),
     ])
-    return chooseCheckQuestion(questions, seen)
+    return chooseCheckQuestion(ramped.questions, seen)
   } catch (err) {
     console.error('fetchCheckQuestion threw', { err, focusSlug })
     return null
