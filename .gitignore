@@ -28,3 +28,13 @@ bun.lockb
 
 # Eval harness run artifacts
 eval/report.json
+
+# Supabase CLI scratch
+supabase/.temp/
+
+# Local review/verification artifacts. These are generated for a one-off content
+# review and are not part of the repo. samples-tiered-v2.md is the exception: it is
+# committed on purpose as the review record for seeds/0022.
+body*.json
+samples-grade*.md
+verification-list*.md

@@ -127,6 +127,44 @@ const EXPLANATIONS: Record<string, string> = {
   'answered-the-count':
     'That is the number of games, not the average. Divide the total points by the number of games.',
 
+  // --- Phase 3 tiered math (tieredMathTemplates.ts) --------------------------
+  // The hard tiers ask a child to reason BACKWARDS from a result, so their
+  // misconceptions are about direction, not arithmetic slips.
+
+  // multiplication, near-miss group counting
+  'counted-an-extra-group':
+    'Almost! That is one whole group too many. Count out exactly the number of groups the question asks for.',
+  'missed-a-group':
+    'So close — that is one group short. Count out exactly the number of groups the question asks for.',
+
+  // multiplication, unknown factor (3.OA.A.4)
+  'answered-the-product':
+    'That is the total already shown in the question. The box is one of the two numbers being multiplied — how many groups make that total?',
+  'answered-the-known-factor':
+    'That is the number already shown next to the box. The box is the other one — how many of that number make the total?',
+
+  // fractions, recovering the whole (3.NF)
+  'scaled-the-part-not-the-unit':
+    'Careful — that grew the part instead of the single piece. Find one piece first by dividing, then build the whole from those pieces.',
+  'answered-one-part':
+    'That is the size of just one equal piece. The question asks for the whole thing, so you need all of the pieces.',
+  'answered-the-part':
+    'That is the amount the question already gave you. It is only part of the whole — work back to find the whole number.',
+  'answered-the-denominator':
+    'That is the bottom number of the fraction, which tells you how many equal parts to make. Now find how big one of those parts is.',
+
+  // percentages, finding the whole (6.RP.A.3.C)
+  'took-the-percent-again':
+    'It looks like the percent was applied a second time. Here you already have the part, so work backwards to find the whole.',
+
+  // data analysis, working back from a mean (6.SP)
+  'answered-the-mean':
+    'That is the average, not the missing game. Find the season total first, then take away the points already counted.',
+  'subtracted-the-mean-instead':
+    'Close thinking, but that took away one average instead of the games already played. Work out the season total, then subtract the points so far.',
+  'dropped-one-game':
+    'That is the season total with one average game removed. Subtract the points actually scored in the earlier games instead.',
+
   // expressions / algebra (evaluate a*x + b, a*x + b*y)
   'wrong-order-of-operations':
     'Careful with the order — multiply before you add. Work out the times part first, then add the extra number.',
