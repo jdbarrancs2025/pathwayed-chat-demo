@@ -199,6 +199,21 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
   return shuffle(parsed).slice(0, limit)
 }
 
+/**
+ * Published skills plus this student's evidence, for the grade-position panel.
+ * One place so the panel cannot drift from what the picker considers published.
+ */
+export async function fetchGradePositionInputs(studentId: string): Promise<{
+  skills: PracticeableSkill[]
+  evidence: Map<string, SkillEvidence>
+}> {
+  const [skills, evidence] = await Promise.all([
+    listPracticeableSkills(),
+    fetchSkillEvidence(studentId),
+  ])
+  return { skills, evidence }
+}
+
 /** generated_question_ids this student has already answered on a graded turn. */
 export async function fetchSeenQuestionIds(studentId: string, skillId: string): Promise<Set<string>> {
   const { data, error } = await supabase

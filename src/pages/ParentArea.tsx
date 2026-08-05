@@ -8,6 +8,8 @@ import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { masteryDisplay, subjectSummary } from '@/lib/masteryDisplay'
 import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
 import { workingGradeNotice } from '@/lib/workingGradeCopy'
+import { buildGradePosition, positionCopy, type SubjectPosition } from '@/lib/gradePosition'
+import { fetchGradePositionInputs } from '@/lib/questions'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
 import { formatRelativeDay } from '@/lib/format'
@@ -29,6 +31,7 @@ interface ChildData {
   mastery: StudentMasteryView
   lastActivity: string | null
   placements: SubjectPlacement[]
+  positions: SubjectPosition[]
 }
 
 /**
@@ -54,15 +57,22 @@ export function ParentArea() {
       const [kids, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
       const data = await Promise.all(
         kids.map(async (student) => {
-          const [readiness, mastery, lastActivity, placements] = await Promise.all([
+          const [readiness, mastery, lastActivity, placements, gp] = await Promise.all([
             ensureFreshReadiness(student.id),
             getStudentMastery(student.id, student.grade),
             getLastActivity(student.id),
             getSubjectPlacements(student.id, student.grade),
+            fetchGradePositionInputs(student.id),
           ])
+          const positions = buildGradePosition({
+            grade: student.grade,
+            subjects: ['math', 'reading', 'writing'],
+            skills: gp.skills,
+            evidence: gp.evidence,
+          })
           // The 'sat' row that ensureFreshReadiness just wrote is read by
           // TestReadinessCard, which owns the SAT row on this surface now.
-          return { student, readiness, mastery, lastActivity, placements }
+          return { student, readiness, mastery, lastActivity, placements, positions }
         }),
       )
       if (!active) return
@@ -118,7 +128,7 @@ export function ParentArea() {
 
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
   const navigate = useNavigate()
-  const { student, readiness, mastery, lastActivity, placements } = data
+  const { student, readiness, mastery, lastActivity, placements, positions } = data
   const pathway = readiness.pathway
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
   // Shown only once the child's earned working grade has overtaken their real
@@ -181,6 +191,36 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
               )}
             </div>
           )}
+          {positions.length > 0 && (
+            <div className="pd-section">
+              <div className="pd-label">Grade level by subject</div>
+              {positions.map((p) => {
+                const copy = positionCopy(p, student.first_name, subjectDisplayName(p.subject))
+                return (
+                  <div key={p.subject} className="gp-row">
+                    <div className="subj-head">
+                      <span className="dot" style={{ background: accentFor(p.subject) }} />
+                      <span className="subj-name">{subjectDisplayName(p.subject)}</span>
+                      {p.workingGrade != null && (
+                        <span className="gp-badge">
+                          {p.workingGrade === 0 ? 'Kindergarten' : `Grade ${p.workingGrade}`}
+                        </span>
+                      )}
+                    </div>
+                    <p className="gp-headline">{copy.headline}</p>
+                    {copy.context && <p className="gp-line">{copy.context}</p>}
+                    {copy.next && <p className="gp-line">{copy.next}</p>}
+                  </div>
+                )
+              })}
+              <p className="gp-note">
+                This counts the skills {student.first_name} has cleared at each grade, which means
+                70% or better over at least 5 questions. It is not a grade-equivalent score and it
+                does not predict how they would do on a grade-level test.
+              </p>
+            </div>
+          )}
+
           {placements.length > 0 && (
             <div className="pd-section">
               <div className="pd-label">Placement by subject</div>
