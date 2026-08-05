@@ -1,15 +1,28 @@
 import Stripe from "stripe"
-import { createClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { isPrepModuleId, prepPriceEnv, prepStudentsMetaKey } from "./prep-core.js"
 import { planQualifiesForBand } from "./billing-core.js"
 import { getPrepModule } from "../src/lib/prep/registry.js"
+import { requireUser, requireOwnedStudents } from "./require-auth.js"
+import { rateLimit, BILLING_LIMIT } from "./rate-limit.js"
 
+/**
+ * IDENTITY COMES FROM THE SESSION. userId and email used to be read from the body.
+ * userId drove a service-role profiles lookup whose stripe_customer_id was then
+ * used to ADD A PAID ITEM to that subscription, so an unauthenticated caller who
+ * knew a user id could charge a stranger's saved card and hand the resulting
+ * entitlement to any student ids they liked. Both fields are gone from the shape.
+ *
+ * studentIds is still supplied, because the parent genuinely chooses which of their
+ * children to buy for, but every id is now verified to belong to the caller before
+ * anything is billed or entitled.
+ *
+ * No billing arithmetic changed: same price env, same quantity (ids.length), same
+ * proration behaviour.
+ */
 interface PurchasePrepRequest {
-  userId?: string
   moduleId?: string
   studentIds?: string[]
-  email?: string
 }
 
 // Subscriptions we can add a prep item to — the same set update-seats mutates.
@@ -32,18 +45,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" })
   }
 
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`prep-buy:${auth.userId}`, BILLING_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
+  }
+
   const secretKey = process.env.STRIPE_SECRET_KEY
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!secretKey || !supabaseUrl || !serviceKey) {
+  if (!secretKey) {
     return res.status(500).json({ error: "Billing is not configured" })
   }
 
   try {
-    const { userId, moduleId, studentIds, email } = req.body as PurchasePrepRequest
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" })
-    }
+    const { moduleId, studentIds } = req.body as PurchasePrepRequest
+    const userId = auth.userId
+    const email = auth.email ?? undefined
     if (!isPrepModuleId(moduleId)) {
       return res.status(400).json({ error: "Unknown prep module" })
     }
@@ -56,13 +75,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     const ids = Array.from(new Set(studentIds))
 
+    // Every child must be the caller's OWN before anything is billed or entitled.
+    // Fails closed, and a foreign id is indistinguishable from a missing one.
+    if (!(await requireOwnedStudents(res, auth, ids))) return
+
     const priceId = process.env[prepPriceEnv(moduleId)]
     if (!priceId) {
       return res.status(500).json({ error: "Prep module price is not configured" })
     }
 
-    // Service client (sb_secret_ key) — look up the parent's billing state.
-    const supabase = createClient(supabaseUrl, serviceKey)
+    // The CALLER's own billing state.
+    const supabase = auth.svc
     const { data: profile } = await supabase
       .from("profiles")
       .select("stripe_customer_id, subscription_status, plan")

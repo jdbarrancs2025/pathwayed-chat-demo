@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { authedJsonHeaders } from '@/lib/apiAuth'
 import type { PrepModule } from '@/lib/prep/types'
 
 /** A child's entitlement to a prep module, as read from prep_entitlements. */
@@ -121,10 +122,9 @@ export function testDayCountdown(dateStr: string | null): string | null {
 }
 
 interface PurchasePrepInput {
-  userId: string
   moduleId: string
+  /** The caller's OWN children. The server verifies every id before billing. */
   studentIds: string[]
-  email?: string
 }
 
 /**
@@ -136,7 +136,7 @@ interface PurchasePrepInput {
 export async function purchasePrep(input: PurchasePrepInput): Promise<{ added: boolean }> {
   const res = await fetch('/api/purchase-prep', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify(input),
   })
   if (!res.ok) throw new Error('Could not start the prep purchase')
@@ -158,8 +158,8 @@ export interface CancelPrepPreview {
 }
 
 interface CancelPrepInput {
-  userId: string
   moduleId: string
+  /** The caller's OWN children, or empty to cancel the whole module. Verified server-side. */
   studentIds: string[]
 }
 
@@ -171,7 +171,7 @@ interface CancelPrepInput {
 export async function previewCancelPrep(input: CancelPrepInput): Promise<CancelPrepPreview> {
   const res = await fetch('/api/cancel-prep', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify({ ...input, preview: true }),
   })
   if (!res.ok) throw new Error('Could not load cancel details')
@@ -187,7 +187,7 @@ export async function previewCancelPrep(input: CancelPrepInput): Promise<CancelP
 export async function cancelPrep(input: CancelPrepInput): Promise<CancelPrepPath> {
   const res = await fetch('/api/cancel-prep', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify(input),
   })
   if (!res.ok) throw new Error('Could not cancel the prep module')

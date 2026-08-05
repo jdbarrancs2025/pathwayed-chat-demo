@@ -1,5 +1,4 @@
 import Stripe from "stripe"
-import { createClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import {
   addonPriceEnv,
@@ -7,9 +6,20 @@ import {
   isBillingPeriod,
   isPlanId,
 } from "./billing-core.js"
+import { requireUser } from "./require-auth.js"
+import { rateLimit, BILLING_LIMIT } from "./rate-limit.js"
 
+/**
+ * IDENTITY COMES FROM THE SESSION. userId used to be read from the body and used
+ * for a service-role profiles lookup, so an unauthenticated caller who knew a user
+ * id could change what a stranger is billed in either direction, prorated against
+ * their saved card. There is no userId in the request shape any more.
+ *
+ * totalKids is DELIBERATELY unchanged: still taken from the body, still fed to the
+ * same computeExtraKids. This commit changes who you are allowed to act as, not
+ * what anyone is charged.
+ */
 interface UpdateSeatsRequest {
-  userId?: string
   totalKids?: number
 }
 
@@ -31,21 +41,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" })
   }
 
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`seats:${auth.userId}`, BILLING_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
+  }
+
   const secretKey = process.env.STRIPE_SECRET_KEY
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!secretKey || !supabaseUrl || !serviceKey) {
+  if (!secretKey) {
     return res.status(500).json({ error: "Billing is not configured" })
   }
 
   try {
-    const { userId, totalKids } = req.body as UpdateSeatsRequest
-    if (!userId || typeof totalKids !== "number" || !Number.isFinite(totalKids)) {
-      return res.status(400).json({ error: "userId and a numeric totalKids are required" })
+    const { totalKids } = req.body as UpdateSeatsRequest
+    if (typeof totalKids !== "number" || !Number.isFinite(totalKids)) {
+      return res.status(400).json({ error: "a numeric totalKids is required" })
     }
+    const userId = auth.userId
 
-    // Service client (sb_secret_ key) — look up the parent's billing state.
-    const supabase = createClient(supabaseUrl, serviceKey)
+    // The CALLER's own billing state. auth.userId comes from the verified token.
+    const supabase = auth.svc
     const { data: profile } = await supabase
       .from("profiles")
       .select("stripe_customer_id, plan, billing_period, subscription_status")

@@ -1,10 +1,23 @@
 import Stripe from "stripe"
-import { createClient, type SupabaseClient } from "@supabase/supabase-js"
+import type { SupabaseClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { isPrepModuleId, parsePrepStudentIds, prepPriceEnv, prepStudentsMetaKey } from "./prep-core.js"
+import { requireUser, requireOwnedStudents } from "./require-auth.js"
+import { rateLimit, BILLING_LIMIT } from "./rate-limit.js"
 
+/**
+ * IDENTITY COMES FROM THE SESSION. userId used to be read from the body and used
+ * for a service-role profiles lookup, so an unauthenticated caller who knew a user
+ * id could cancel a stranger's paid prep subscription and revoke their children's
+ * entitlements. There is no userId in the request shape any more.
+ *
+ * studentIds, when supplied, is verified against the caller before anything is
+ * revoked. Omitting it still means "cancel the whole module", which is scoped to
+ * the caller's own subscription and therefore safe by construction.
+ *
+ * No billing arithmetic changed: same paths, same proration, same period-end logic.
+ */
 interface CancelPrepRequest {
-  userId?: string
   moduleId?: string
   /** Children to remove. Omit or pass every current id to cancel the whole module. */
   studentIds?: string[]
@@ -73,18 +86,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" })
   }
 
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`prep-cancel:${auth.userId}`, BILLING_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
+  }
+
   const secretKey = process.env.STRIPE_SECRET_KEY
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!secretKey || !supabaseUrl || !serviceKey) {
+  if (!secretKey) {
     return res.status(500).json({ error: "Billing is not configured" })
   }
 
   try {
-    const { userId, moduleId, studentIds, preview } = req.body as CancelPrepRequest
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" })
-    }
+    const { moduleId, studentIds, preview } = req.body as CancelPrepRequest
+    const userId = auth.userId
     if (!isPrepModuleId(moduleId)) {
       return res.status(400).json({ error: "Unknown prep module" })
     }
@@ -93,12 +111,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ? studentIds.filter((s) => typeof s === "string" && s.length > 0)
         : null // null = cancel all for the module
 
+    // Named children must be the caller's own before any entitlement is revoked.
+    // Fails closed. Omitting the list cancels the whole module on the caller's OWN
+    // subscription, so there is nothing extra to verify in that branch.
+    if (requested && !(await requireOwnedStudents(res, auth, requested))) return
+
     const priceId = process.env[prepPriceEnv(moduleId)]
     if (!priceId) {
       return res.status(500).json({ error: "Prep module price is not configured" })
     }
 
-    const supabase = createClient(supabaseUrl, serviceKey)
+    const supabase = auth.svc
     const { data: profile } = await supabase
       .from("profiles")
       .select("stripe_customer_id")

@@ -194,8 +194,8 @@ export function Settings() {
           })()}
 
         {/* Billing */}
-        {user && <BillingPanel students={children} userId={user.id} email={user.email ?? ''} />}
-        {user && <AdmissionsPrepPanel students={children} userId={user.id} email={user.email ?? ''} />}
+        {user && <BillingPanel students={children} userId={user.id} />}
+        {user && <AdmissionsPrepPanel students={children} userId={user.id} />}
 
         {/* Account */}
         <div className="panel">

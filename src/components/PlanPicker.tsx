@@ -45,13 +45,9 @@ const chipBtn: React.CSSProperties = {
  */
 export function PlanPicker({
   students,
-  userId,
-  email,
   ctaLabel = 'Subscribe now',
 }: {
   students: Student[]
-  userId: string
-  email: string
   ctaLabel?: string
 }) {
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly')
@@ -68,7 +64,8 @@ export function PlanPicker({
     setError('')
     try {
       // On success this navigates to Stripe, so the page unloads — no reset needed.
-      await startCheckout({ plan, billingPeriod, totalKids, email, userId })
+      // No email/userId: the server takes both from the verified session.
+      await startCheckout({ plan, billingPeriod, totalKids })
     } catch {
       setError('Could not start checkout. Please try again.')
       setBusy(false)

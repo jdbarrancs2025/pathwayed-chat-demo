@@ -52,11 +52,9 @@ function formatDate(iso: string | null): string {
 export function AdmissionsPrepPanel({
   students,
   userId,
-  email,
 }: {
   students: Student[]
   userId: string
-  email: string
 }) {
   const [entitlements, setEntitlements] = useState<PrepEntitlement[] | null>(null)
   const [moduleId, setModuleId] = useState<string>(PREP_MODULES[0]?.id ?? '')
@@ -184,7 +182,7 @@ export function AdmissionsPrepPanel({
     setError('')
     setNotice('')
     try {
-      setPreview(await previewCancelPrep({ userId, moduleId: mId, studentIds: [sId] }))
+      setPreview(await previewCancelPrep({ moduleId: mId, studentIds: [sId] }))
     } catch {
       setError('Could not load cancel details. Please try again.')
       setConfirming(null)
@@ -197,7 +195,7 @@ export function AdmissionsPrepPanel({
     setError('')
     setNotice('')
     try {
-      const path = await cancelPrep({ userId, moduleId: mId, studentIds: [sId] })
+      const path = await cancelPrep({ moduleId: mId, studentIds: [sId] })
       const refreshed = await getPrepEntitlements(studentIds)
       setEntitlements(refreshed)
       setConfirming(null)
@@ -220,11 +218,11 @@ export function AdmissionsPrepPanel({
     setError('')
     setNotice('')
     try {
+      // No userId/email: the server takes both from the verified session, and
+      // checks every studentId belongs to the caller before billing.
       const { added } = await purchasePrep({
-        userId,
         moduleId: module.id,
         studentIds: [...selected],
-        email,
       })
       if (added) {
         // Added to the existing subscription (no redirect) — refresh line items.

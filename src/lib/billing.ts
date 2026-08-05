@@ -1,3 +1,5 @@
+import { authedJsonHeaders } from '@/lib/apiAuth'
+
 export type PlanId = 'elementary' | 'middle' | 'high'
 export type BillingPeriod = 'monthly' | 'annual'
 
@@ -75,19 +77,21 @@ interface CheckoutInput {
   plan: PlanId
   billingPeriod: BillingPeriod
   totalKids: number
-  email: string
-  userId: string
 }
 
 /**
  * Create a Checkout session server-side, then redirect to Stripe's hosted page.
  * The server returns a full Stripe Checkout URL, so we just navigate to it —
  * no Stripe.js / redirectToCheckout needed (card entry happens on Stripe).
+ *
+ * The buyer's identity and email are NOT sent: the server takes both from the
+ * verified session. Sending them would be ignored, and offering them here would
+ * invite a caller to think they were meaningful.
  */
 export async function startCheckout(input: CheckoutInput): Promise<void> {
   const res = await fetch('/api/create-checkout', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify(input),
   })
   if (!res.ok) throw new Error('Checkout failed')
@@ -102,23 +106,27 @@ export async function startCheckout(input: CheckoutInput): Promise<void> {
  * a parent with an active/trialing subscription adds a child beyond their plan's
  * included seats. Returns the resulting billable extra-kid count.
  */
-export async function updateSeats(userId: string, totalKids: number): Promise<number> {
+export async function updateSeats(totalKids: number): Promise<number> {
   const res = await fetch('/api/update-seats', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, totalKids }),
+    headers: await authedJsonHeaders(),
+    body: JSON.stringify({ totalKids }),
   })
   if (!res.ok) throw new Error('Could not update your subscription')
   const { extraKids } = (await res.json()) as { extraKids?: number }
   return extraKids ?? 0
 }
 
-/** Open the Stripe customer portal for the parent. */
-export async function openPortal(userId: string): Promise<void> {
+/**
+ * Open the Stripe customer portal for the SIGNED-IN parent. Takes no argument on
+ * purpose: the server resolves the customer from the verified session, so there is
+ * no user id for a caller to pass, correctly or otherwise.
+ */
+export async function openPortal(): Promise<void> {
   const res = await fetch('/api/create-portal', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId }),
+    headers: await authedJsonHeaders(),
+    body: '{}',
   })
   if (!res.ok) throw new Error('Portal failed')
   const { url } = (await res.json()) as { url?: string }

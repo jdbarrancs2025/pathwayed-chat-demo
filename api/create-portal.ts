@@ -1,39 +1,57 @@
 import Stripe from "stripe"
-import { createClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { requireUser } from "./require-auth.js"
+import { rateLimit, BILLING_LIMIT } from "./rate-limit.js"
 
-interface PortalRequest {
-  userId?: string
-}
-
+/**
+ * Open the Stripe billing portal for the SIGNED-IN parent.
+ *
+ * This endpoint used to take a userId from the request body, look up that
+ * profile's stripe_customer_id with the service role, and return a portal URL for
+ * it. Any unauthenticated caller who knew a user id could therefore open that
+ * user's billing portal: card details, invoices, billing address, and the ability
+ * to cancel their subscription.
+ *
+ * The identity now comes from the verified session and NOTHING else. There is no
+ * userId in the request shape at all, so there is nothing to spoof and no fallback
+ * path to get wrong.
+ */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
   }
+
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`portal:${auth.userId}`, BILLING_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
+  }
+
   const secretKey = process.env.STRIPE_SECRET_KEY
-  const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!secretKey || !supabaseUrl || !serviceKey) {
+  if (!secretKey) {
     return res.status(500).json({ error: "Billing is not configured" })
   }
 
   try {
-    const { userId } = req.body as PortalRequest
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" })
-    }
-
-    // Service client (sb_secret_ key) — look up the parent's Stripe customer id.
-    const supabase = createClient(supabaseUrl, serviceKey)
-    const { data } = await supabase
+    // Look up the CALLER's own Stripe customer. auth.userId comes from the verified
+    // token; the request body is not consulted.
+    const { data, error } = await auth.svc
       .from("profiles")
       .select("stripe_customer_id")
-      .eq("id", userId)
+      .eq("id", auth.userId)
       .maybeSingle()
+    if (error) {
+      console.error("create-portal profile read failed", error)
+      return res.status(500).json({ error: "Could not open the billing portal" })
+    }
 
     const customerId = data?.stripe_customer_id as string | null | undefined
     if (!customerId) {
-      return res.status(400).json({ error: "No subscription on file yet" })
+      // Clean, explicit failure. No fallback to any other customer, ever.
+      return res.status(404).json({ error: "no_billing_account" })
     }
 
     const stripe = new Stripe(secretKey)

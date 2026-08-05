@@ -213,7 +213,7 @@ export function AddChild() {
     // an unpaid child; the seat change is idempotent, so a retry won't double-charge.
     if (willBill) {
       try {
-        await updateSeats(user.id, childCount + 1)
+        await updateSeats(childCount + 1)
       } catch {
         setErrMsg("Sorry — we couldn't update your billing. Please try again.")
         setSaving(false)

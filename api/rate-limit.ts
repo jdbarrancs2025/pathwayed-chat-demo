@@ -35,6 +35,8 @@ export const TTS_LIMIT = 120
 export const TRANSCRIBE_LIMIT = 40
 /** A deck is generated in one shot; nobody needs many per minute. */
 export const FLASHCARDS_LIMIT = 10
+/** Checkout and the billing portal are not hot paths. A human clicks these once. */
+export const BILLING_LIMIT = 5
 
 /** Drop expired buckets so a long-lived instance does not grow unboundedly. */
 function sweep(now: number) {

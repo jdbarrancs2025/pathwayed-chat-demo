@@ -9,19 +9,44 @@ import {
   type BillingPeriod,
   type PlanId,
 } from "./billing-core.js"
+import { requireUser } from "./require-auth.js"
+import { rateLimit, BILLING_LIMIT } from "./rate-limit.js"
 
+/**
+ * Start a Stripe Checkout session for the SIGNED-IN parent.
+ *
+ * IDENTITY COMES FROM THE SESSION, NOT THE BODY. userId and email used to be taken
+ * from the request. metadata.user_id drives the webhook, which writes
+ * subscription_status, plan, paid_seats, and stripe_customer_id onto that profile
+ * with the service role, bypassing RLS. A caller who knew someone else's user id
+ * could therefore stamp a subscription with it and later cancel it, flipping a
+ * paying customer's account to 'canceled'. Both fields are now ignored if sent.
+ *
+ * totalKids is DELIBERATELY still taken from the body and left exactly as it was.
+ * Deriving it server-side would change the add-on quantity, and therefore what
+ * live customers are billed. That is a pricing change, not a security fix, and it
+ * is scoped separately.
+ */
 interface CheckoutRequest {
   plan: PlanId
   billingPeriod: BillingPeriod
   totalKids: number
-  email?: string
-  userId?: string
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
   }
+
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`checkout:${auth.userId}`, BILLING_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
+  }
+
   const secretKey = process.env.STRIPE_SECRET_KEY
   if (!secretKey) {
     return res.status(500).json({ error: "Stripe is not configured" })
@@ -29,7 +54,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const stripe = new Stripe(secretKey)
 
   try {
-    const { plan, billingPeriod, totalKids, email, userId } = req.body as CheckoutRequest
+    const { plan, billingPeriod, totalKids } = req.body as CheckoutRequest
+    // From the verified auth record. A minted K-8 identity has a non-routable
+    // placeholder email, but those accounts are school-covered and never reach
+    // checkout; undefined simply lets Stripe collect the address on its page.
+    const email = auth.email ?? undefined
+    const userId = auth.userId
 
     if (!isPlanId(plan) || !isBillingPeriod(billingPeriod)) {
       return res.status(400).json({ error: "Invalid plan or billing period" })
@@ -53,7 +83,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const origin = req.headers.origin || `https://${req.headers.host}`
     const metadata: Record<string, string> = {
-      user_id: userId ?? "",
+      // The verified caller. This is what the webhook matches a profile on.
+      user_id: userId,
       plan,
       billing_period: billingPeriod,
       extra_kids: String(extraKids),

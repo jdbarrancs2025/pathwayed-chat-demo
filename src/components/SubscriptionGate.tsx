@@ -72,7 +72,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
           deleted — every child’s saved progress is right where they left it.
         </p>
         <div className="panel" style={{ marginTop: 20, padding: '16px 18px' }}>
-          <PlanPicker students={students} userId={user.id} email={user.email ?? ''} ctaLabel="Subscribe now" />
+          <PlanPicker students={students} ctaLabel="Subscribe now" />
         </div>
       </div>
     </div>

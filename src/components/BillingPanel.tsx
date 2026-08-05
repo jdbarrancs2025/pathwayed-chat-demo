@@ -35,7 +35,7 @@ const badgeStyle = (bg: string, color: string): React.CSSProperties => ({
   borderRadius: 999,
 })
 
-export function BillingPanel({ students, userId, email }: { students: Student[]; userId: string; email: string }) {
+export function BillingPanel({ students, userId }: { students: Student[]; userId: string }) {
   const [sub, setSub] = useState<Subscription | null>(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -92,7 +92,7 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
     setBusy(true)
     setError('')
     try {
-      await openPortal(userId)
+      await openPortal()
     } catch {
       setError('Could not open the billing portal.')
       setBusy(false)
@@ -180,7 +180,7 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
         <p className="muted" style={{ fontSize: 13, margin: '0 0 12px' }}>
           Subscribe any time to keep learning without interruption.
         </p>
-        <PlanPicker students={students} userId={userId} email={email} ctaLabel="Subscribe now" />
+        <PlanPicker students={students} ctaLabel="Subscribe now" />
         {sub.stripeCustomerId && hasActivePrep && (
           <button className="btn btn-soft" style={{ marginTop: 12 }} disabled={busy} onClick={portal}>
             Manage billing
@@ -205,7 +205,7 @@ export function BillingPanel({ students, userId, email }: { students: Student[];
       <p className="muted" style={{ fontSize: 13, margin: '0 0 12px' }}>
         Subscribe to unlock learning sessions and homework help again. Your children’s progress is saved.
       </p>
-      <PlanPicker students={students} userId={userId} email={email} ctaLabel="Subscribe now" />
+      <PlanPicker students={students} ctaLabel="Subscribe now" />
       {sub?.stripeCustomerId && hasActivePrep && (
         <button className="btn btn-soft" style={{ marginTop: 12 }} disabled={busy} onClick={portal}>
           Manage billing

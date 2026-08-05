@@ -27,6 +27,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 
 export interface AuthedCaller {
   userId: string
+  /** The VERIFIED account email, from the auth record. Never from a request body. */
+  email: string | null
   /** Service-role client, already constructed. Reuse it rather than making another. */
   svc: SupabaseClient
 }
@@ -70,7 +72,10 @@ export async function requireUser(
     res.status(401).json({ error: "invalid_token" })
     return null
   }
-  return { userId, svc }
+  // A minted K-8 identity has a non-routable placeholder email; only real accounts
+  // carry a usable one. Callers that need it must handle null.
+  const email = data.user?.email?.trim().toLowerCase() || null
+  return { userId, email, svc }
 }
 
 /**
@@ -98,6 +103,53 @@ export async function ownsStudent(
     return false
   }
   return !!data
+}
+
+/**
+ * Does this authenticated user own EVERY one of these students?
+ *
+ * One query, not N: select the ids that match both the id list and the owning uid,
+ * then require the returned count to equal the requested count. A student that
+ * does not exist and a student that belongs to someone else are indistinguishable
+ * from the outside, which is deliberate.
+ *
+ * Fails CLOSED: a read error returns false, so an entitlement is never granted or
+ * revoked on the strength of a failed check.
+ */
+export async function ownsAllStudents(
+  svc: SupabaseClient,
+  userId: string,
+  studentIds: string[],
+): Promise<boolean> {
+  const ids = Array.from(new Set(studentIds.filter((s) => typeof s === "string" && s.length > 0)))
+  if (!ids.length) return false
+  const { data, error } = await svc
+    .from("students")
+    .select("id")
+    .eq("parent_id", userId)
+    .in("id", ids)
+  if (error) {
+    console.error("ownsAllStudents check failed", { error, userId, count: ids.length })
+    return false
+  }
+  return (data?.length ?? 0) === ids.length
+}
+
+/**
+ * Require that the caller owns every student named in the request. Sends 403 and
+ * returns false otherwise, without revealing which id was the problem or whether
+ * it exists at all.
+ */
+export async function requireOwnedStudents(
+  res: VercelResponse,
+  auth: AuthedCaller,
+  studentIds: string[],
+): Promise<boolean> {
+  if (!(await ownsAllStudents(auth.svc, auth.userId, studentIds))) {
+    res.status(403).json({ error: "not_your_student" })
+    return false
+  }
+  return true
 }
 
 /**
