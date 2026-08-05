@@ -120,6 +120,17 @@ export interface Database {
           // Placement (migration 0006): parent consent to show above-grade / SAT
           // framing. Governs framing only, not whether the child advances.
           above_grade_ok: boolean
+          // Earned skill grade ('K'=0 .. 12), null until the student is promoted.
+          // Defaults to `grade`. Raised by one rung when the ADVANCE bar is cleared
+          // on every skill at the current working grade in a subject; NEVER lowered
+          // automatically. Governs how far UP the practice ladder reaches. It does
+          // NOT govern content age-appropriateness — that stays pinned to `grade`
+          // (see CONTENT_AGE_CEILING_OFFSET in src/lib/gradeLadder.ts).
+          working_grade: number | null
+          // When and why the working grade last moved (migration 0021), so a
+          // promotion is auditable and explainable to a parent.
+          working_grade_updated_at: string | null
+          working_grade_reason: string | null
           // Parent-chosen Nikki visual per child: 'video' | 'orb' | 'voice'
           // (default 'video'). Check-constrained in the DB.
           avatar_mode: string
@@ -146,6 +157,9 @@ export interface Database {
           level: string
           learning_preferences?: Json
           above_grade_ok?: boolean
+          working_grade?: number | null
+          working_grade_updated_at?: string | null
+          working_grade_reason?: string | null
           avatar_mode?: string
           dean_student_id?: string | null
           school_covered?: boolean
@@ -160,6 +174,9 @@ export interface Database {
           level?: string
           learning_preferences?: Json
           above_grade_ok?: boolean
+          working_grade?: number | null
+          working_grade_updated_at?: string | null
+          working_grade_reason?: string | null
           avatar_mode?: string
           dean_student_id?: string | null
           school_covered?: boolean

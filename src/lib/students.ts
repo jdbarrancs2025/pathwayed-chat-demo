@@ -107,6 +107,40 @@ export async function updateStudent(id: string, input: StudentInput) {
   return supabase.from('students').update(input).eq('id', id)
 }
 
+/**
+ * Promote a child one rung up the skill ladder, recording when and why.
+ *
+ * ONLY EVER RAISES. The `lt` guard means a concurrent write that already promoted
+ * them wins, and a stale caller can never walk a student backwards. Working grade
+ * is not lowered automatically anywhere; a child who struggles at the new rung
+ * loops there on evidence rather than being demoted.
+ *
+ * Best-effort: a failure leaves the student at their current rung and is logged.
+ */
+export async function raiseWorkingGrade(
+  studentId: string,
+  to: number,
+  reason: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('students')
+    .update({
+      working_grade: to,
+      working_grade_updated_at: new Date().toISOString(),
+      working_grade_reason: reason,
+    })
+    .eq('id', studentId)
+    // Null means "never promoted", which is always below `to`. A plain .lt() would
+    // skip those rows, since SQL null comparisons are never true.
+    .or(`working_grade.is.null,working_grade.lt.${to}`)
+    .select('id')
+  if (error) {
+    console.error('raiseWorkingGrade failed', { error, studentId, to, reason })
+    return false
+  }
+  return (data?.length ?? 0) > 0
+}
+
 /** Focused write of just the Nikki avatar mode — the same students.avatar_mode
  *  field the edit form writes, so Settings and the edit form stay in sync. Does
  *  not touch grade, so it never triggers a reassessment. */

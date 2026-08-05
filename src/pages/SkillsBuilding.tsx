@@ -99,7 +99,7 @@ export function SkillsBuilding() {
     setLesson(null)
     setLessonLoading(true)
     setPhase('lesson')
-    const l = await nextLesson(student.id, student.grade, subject)
+    const l = await nextLesson(student.id, student, subject)
     setLesson(l)
     setLessonLoading(false)
   }

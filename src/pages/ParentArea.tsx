@@ -7,6 +7,7 @@ import { ensureFreshReadiness, pathwayBandLabel, type ReadinessView } from '@/li
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { MASTERY_THRESHOLD } from '@/lib/lessonPath'
 import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
+import { workingGradeNotice } from '@/lib/workingGradeCopy'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
 import { formatRelativeDay } from '@/lib/format'
@@ -128,6 +129,9 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
   const { student, readiness, mastery, lastActivity, placements } = data
   const pathway = readiness.pathway
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
+  // Shown only once the child's earned working grade has overtaken their real
+  // grade. Consent (above_grade_ok) decides the FRAMING, never the serving.
+  const promotion = workingGradeNotice(student)
 
   // Mastery-by-subject collapse. Collapsed by default so the panel opens clean;
   // the header still shows a "N of M mastered" summary without expanding.
@@ -167,6 +171,17 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
         </p>
       ) : (
         <>
+          {promotion && (
+            <div className="pd-section">
+              <div className="pd-label">Moving up</div>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>{promotion.headline}</p>
+              {promotion.detail && (
+                <p className="muted" style={{ margin: '4px 0 0', fontSize: 13, lineHeight: 1.5 }}>
+                  {promotion.detail}
+                </p>
+              )}
+            </div>
+          )}
           {placements.length > 0 && (
             <div className="pd-section">
               <div className="pd-label">Placement by subject</div>

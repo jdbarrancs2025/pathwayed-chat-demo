@@ -9,6 +9,7 @@ import {
   type PracticeQuestion,
 } from '@/lib/questions'
 import { recordPracticeResult } from '@/lib/skills'
+import { checkAndRaiseWorkingGrade } from '@/lib/promotion'
 import { explainMisconception } from '@/lib/misconceptions'
 import { MathText } from '@/components/MathText'
 import { MathFigure } from '@/components/MathFigure'
@@ -163,6 +164,10 @@ export function Practice() {
     } catch (err) {
       console.error('recordPracticeResult threw', err)
     }
+    // Ceiling detection: this session may have cleared the last skill at the
+    // student's working grade. Runs after the result is recorded so it sees freshly
+    // recomputed evidence. Best-effort — a failure never blocks the summary screen.
+    await checkAndRaiseWorkingGrade(student)
     setSaving(false)
   }
 

@@ -1,7 +1,12 @@
 import { supabase } from '@/lib/supabase'
 import { resolveSkillIdsBySlug } from '@/lib/skills'
+import { getActiveFocusSkillIds } from '@/lib/focusSkills'
 import { pickNextSkill, type SkillEvidence } from '@/lib/pickNextSkill'
+import { eligibleSkills, type LadderStudent } from '@/lib/gradeLadder'
 import type { Json } from '@/lib/database.types'
+
+/** The student fields the grade ladder needs, plus the id used for the reads. */
+export type LadderStudentRow = LadderStudent & { id: string }
 
 /**
  * Question Engine, Stage 3 — serve + score. Read-only access to PUBLISHED
@@ -244,6 +249,11 @@ export interface PracticeableSkill {
   // ('K'=0 .. 12) is the orderable key used to sequence skills grade-appropriately.
   ccss_grade: string | null
   ccss_grade_num: number | null
+  /** True when at least one published question for this skill is passage-backed.
+   *  Drives the content age ceiling in gradeLadder.ts. */
+  has_passages: boolean
+  /** skills.prerequisite_skills — slugs, used to justify reaching below band. */
+  prerequisite_skills: string[] | null
 }
 
 // Display order for grouping the practice picker by subject (mirrors the
@@ -261,7 +271,7 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   // so the intent is clear and it still holds if policies change.
   const { data: qRows, error: qError } = await supabase
     .from('generated_questions')
-    .select('skill_id')
+    .select('skill_id, passage_id')
     .eq('status', 'published')
   if (qError) {
     console.error('listPracticeableSkills: questions read failed', qError)
@@ -270,9 +280,15 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
   const skillIds = [...new Set((qRows ?? []).map((r) => r.skill_id).filter(Boolean))]
   if (!skillIds.length) return []
 
+  // Which skills serve passage-backed items. A passage carries age-bearing subject
+  // matter, so this is what pins those skills to the child's chronological grade.
+  const passageBacked = new Set(
+    (qRows ?? []).filter((r) => !!r.passage_id).map((r) => r.skill_id),
+  )
+
   const { data: skillRows, error: sError } = await supabase
     .from('skills')
-    .select('id, slug, name, subject, grade_band, ccss_grade, ccss_grade_num')
+    .select('id, slug, name, subject, grade_band, ccss_grade, ccss_grade_num, prerequisite_skills')
     .in('id', skillIds)
   if (sError) {
     console.error('listPracticeableSkills: skills read failed', sError)
@@ -293,6 +309,8 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
       grade_band: s.grade_band,
       ccss_grade: s.ccss_grade,
       ccss_grade_num: s.ccss_grade_num,
+      has_passages: passageBacked.has(s.id),
+      prerequisite_skills: s.prerequisite_skills ?? null,
     })
   }
 
@@ -336,20 +354,66 @@ export async function fetchSkillEvidence(studentId: string): Promise<Map<string,
 }
 
 /**
- * The next skill to "keep going" on: the student's weakest PRACTICEABLE skill
- * that they have NOT already cleared the ADVANCE bar on. Ranking lives in
- * pickNextSkill.ts (pure, unit-tested) and reads evidence — status,
- * evidence_accuracy, attempts_counted — not mastery_percentage.
+ * Skill ids this student has ever answered INCORRECTLY on a graded (non-diagnostic)
+ * attempt. One of the three pieces of evidence that justify reaching below the
+ * student's own band. Best-effort: an empty set just means no downward reach.
+ */
+export async function fetchMissedSkillIds(studentId: string): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('question_attempts')
+    .select('skill_id')
+    .eq('student_id', studentId)
+    .eq('is_diagnostic', false)
+    .eq('is_correct', false)
+  if (error) {
+    console.error('fetchMissedSkillIds read failed', error)
+    return new Set()
+  }
+  return new Set((data ?? []).map((r) => r.skill_id).filter(Boolean))
+}
+
+/**
+ * The skills this student may practice right now: every practiceable skill, minus
+ * the ones they have cleared, capped by the grade ladder, with below-band skills
+ * admitted only on evidence. The rules live in gradeLadder.ts.
  *
- * Returns null when every practiceable skill is already 'advanced' or 'mastered'.
- * That is deliberate: re-serving a cleared skill is the exact loop this replaces.
+ * NOTE: this scopes the PICKER. It deliberately does not gate
+ * fetchPracticeQuestions, so a skill reached directly by slug still serves. The
+ * prep engine depends on that: it routes a grade 9 student to grade 3
+ * Multiplication for HSPT arithmetic on purpose.
+ */
+export async function listEligibleSkills(student: LadderStudentRow): Promise<PracticeableSkill[]> {
+  const practiceable = await listPracticeableSkills()
+  if (!practiceable.length) return []
+  const [evidence, focusSkillIds, missedSkillIds] = await Promise.all([
+    fetchSkillEvidence(student.id),
+    getActiveFocusSkillIds(student.id),
+    fetchMissedSkillIds(student.id),
+  ])
+  return eligibleSkills({
+    student,
+    skills: practiceable,
+    evidence,
+    focusSkillIds,
+    missedSkillIds,
+  }) as PracticeableSkill[]
+}
+
+/**
+ * The next skill to "keep going" on: the student's weakest ELIGIBLE skill that they
+ * have NOT already cleared the ADVANCE bar on. Ranking lives in pickNextSkill.ts
+ * (pure, unit-tested) and reads evidence — status, evidence_accuracy,
+ * attempts_counted — not mastery_percentage.
+ *
+ * Returns null when every eligible skill is already 'advanced' or 'mastered'. That
+ * is deliberate: re-serving a cleared skill is the exact loop this replaces.
  * Best-effort.
  */
-export async function nextPracticeSkill(studentId: string): Promise<PracticeableSkill | null> {
-  const practiceable = await listPracticeableSkills()
-  if (!practiceable.length) return null
-  const evidence = await fetchSkillEvidence(studentId)
-  return pickNextSkill(practiceable, evidence)
+export async function nextPracticeSkill(student: LadderStudentRow): Promise<PracticeableSkill | null> {
+  const eligible = await listEligibleSkills(student)
+  if (!eligible.length) return null
+  const evidence = await fetchSkillEvidence(student.id)
+  return pickNextSkill(eligible, evidence)
 }
 
 // --- Read path: placement diagnostic set -------------------------------------

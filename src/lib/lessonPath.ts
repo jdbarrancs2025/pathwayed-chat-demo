@@ -5,6 +5,8 @@ import { gradeBand } from '@/lib/gradeBand'
 import { focusAreasByGrade } from '@/lib/focusAreas'
 import { scopeSequence, type ScopeBand, type ScopeSubject } from '@/lib/scopeSequence'
 import { isRecheckDue } from '@/lib/mastery'
+import { canPromoteToNextBand, type LadderStudent } from '@/lib/gradeLadder'
+import { listPracticeableSkills, fetchSkillEvidence } from '@/lib/questions'
 
 /**
  * Learning path — picks the day's lesson by walking the approved per-subject
@@ -57,6 +59,9 @@ export interface Lesson {
   /** True when surfaced as a spaced re-check: the mastered accuracy/count bar was
    *  met and the ≥3-day re-check is now due, so the durable claim can be confirmed. */
   fromRecheck?: boolean
+  /** True when this lesson comes from the band ABOVE the student's own: they
+   *  finished their band's track and earned the crossing. */
+  fromPromotion?: boolean
 }
 
 /** Display label for a slug, from focusAreas (the source of truth for names).
@@ -80,10 +85,10 @@ export function skillLabel(band: ScopeBand, subject: ScopeSubject, slug: string)
  */
 export async function nextLesson(
   studentId: string,
-  grade: string | undefined,
+  student: LadderStudent,
   subject: ScopeSubject,
 ): Promise<Lesson | null> {
-  const band = scopeBandForGrade(grade)
+  const band = scopeBandForGrade(student.grade)
   if (!band) return null
   const seq = scopeSequence[band][subject]
   if (!seq.length) return null
@@ -163,8 +168,64 @@ export async function nextLesson(
   if (nextSlug) {
     return { slug: nextSlug, label: skillLabel(band, subject, nextSlug), subject, band, trackComplete: false, fromFocus: false }
   }
+
+  // The band track is finished. Rather than parking the student on its last skill
+  // forever, try to cross into the next band. Permission comes from the same grade
+  // ladder the picker uses, so a student must have EARNED the widening; the content
+  // age pin rides along, which is what stops a strong young reader from being
+  // promoted into older material.
+  const promoted = await promoteBand(studentId, student, subject, band, known)
+  if (promoted) return promoted
+
   const last = seq[seq.length - 1]
   return { slug: last, label: skillLabel(band, subject, last), subject, band, trackComplete: true, fromFocus: false }
+}
+
+/**
+ * Cross a completed band track into the next band's track, returning the first
+ * skill there the student does not already know. Returns null when the ladder does
+ * not permit the crossing, when the next band has no track for this subject, or
+ * when every skill in it is already known (a genuinely finished subject).
+ *
+ * Deliberately lazy: only runs on the completed-track path, so the everyday walk
+ * pays nothing for it.
+ */
+async function promoteBand(
+  studentId: string,
+  student: LadderStudent,
+  subject: ScopeSubject,
+  band: ScopeBand,
+  known: (slug: string) => boolean,
+): Promise<Lesson | null> {
+  const [skills, evidence] = await Promise.all([
+    listPracticeableSkills(),
+    fetchSkillEvidence(studentId),
+  ])
+  const next = canPromoteToNextBand(student, band, subject, skills, evidence)
+  if (!next) return null
+
+  const nextSeq = scopeSequence[next][subject]
+  if (!nextSeq.length) return null
+
+  const idBySlug = await resolveSkillIdsBySlug(nextSeq)
+  const knownInNext = (slug: string): boolean => {
+    const id = idBySlug.get(slug)
+    if (!id) return false
+    const st = evidence.get(id)?.status
+    return st === 'advanced' || st === 'mastered' || known(slug)
+  }
+  const slug = nextSeq.find((s) => !knownInNext(s))
+  if (!slug) return null
+
+  return {
+    slug,
+    label: skillLabel(next, subject, slug),
+    subject,
+    band: next,
+    trackComplete: false,
+    fromFocus: false,
+    fromPromotion: true,
+  }
 }
 
 /** Whether the student has any mastery yet — drives the first-arrival diagnostic. */
