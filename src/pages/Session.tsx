@@ -18,7 +18,7 @@ import { resolveFocusForSlug } from '@/lib/focusSkills'
 import { speakWithNikki, stopNikkiSpeech } from '@/lib/voice'
 import { getVoiceMuted, setVoiceMuted } from '@/lib/voicePrefs'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
-import { transcribeAudio } from '@/lib/transcribe'
+import { transcribeAudio, NO_SPEECH_MESSAGE } from '@/lib/transcribe'
 import { buildTranscriptionPrompt } from '@/lib/transcriptionPrompt'
 import '@/styles/app-screens.css'
 
@@ -278,8 +278,10 @@ function SessionView({
     setTranscribing(true)
     setMicError('')
     transcribeAudio(blob, mime, transcriptionPrompt)
-      .then((text) => {
-        if (text) void sendMessage(text)
+      .then(({ text, noSpeech }) => {
+        // Silence, noise, or a hallucinated transcript: never send it to Nikki.
+        if (noSpeech || !text) setMicError(NO_SPEECH_MESSAGE)
+        else void sendMessage(text)
       })
       .catch(() => setMicError("Sorry, I couldn't hear that. Try again or type your message."))
       .finally(() => setTranscribing(false))
@@ -335,10 +337,11 @@ function SessionView({
     setTranscribing(true)
     setMicError('')
     transcribeAudio(recorder.audioBlob, recorder.mimeType, transcriptionPrompt)
-      .then((text) => {
+      .then(({ text, noSpeech }) => {
         if (cancelled) return
-        if (text) void sendMessage(text)
-        else setMicError("I didn't catch that — try again or type your message.")
+        // Silence, noise, or a hallucinated transcript: never send it to Nikki.
+        if (noSpeech || !text) setMicError(NO_SPEECH_MESSAGE)
+        else void sendMessage(text)
       })
       .catch(() => {
         if (!cancelled) setMicError("Sorry, I couldn't hear that. Try again or type your message.")
@@ -553,7 +556,9 @@ function SessionView({
                   ? 'Transcribing…'
                   : isReading
                     ? '🎙️ Listening — say it out loud. Tap the mic to stop.'
-                    : 'Listening… tap the mic to stop'}
+                    : recorder.secondsLeft !== null
+                      ? `Listening… ${recorder.secondsLeft}s left, tap the mic to stop`
+                      : 'Listening… tap the mic to stop'}
             </div>
           )}
           <div className="composer">
