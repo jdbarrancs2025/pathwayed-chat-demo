@@ -40,11 +40,11 @@ const MISREAD_INTERLEAVED = 'series-misread-interleaved'
  *  asserts every token used in the bank has an entry here. */
 export const NUMBER_SERIES_MISCONCEPTIONS: Record<string, string> = {
   [OFF_BY_ONE_STEP]:
-    'You applied the rule one time too many or too few. Count the steps carefully and stop exactly at the missing term — do not go one extra step or come up one short.',
+    'You applied the rule one time too many or too few. Count the steps carefully and stop exactly at the missing term, do not go one extra step or come up one short.',
   [WRONG_OPERATION]:
     'You continued with the wrong operation. Check whether the pattern adds, multiplies, or does something else, then use that SAME rule to find the next term.',
   [TEMPTING_MISREAD]:
-    'You read the pattern as the wrong kind. Look again at how each term changes — adding, multiplying, or squaring — before you pick the next number.',
+    'You read the pattern as the wrong kind. Look again at how each term changes, adding, multiplying, or squaring, before you pick the next number.',
   [MISREAD_INTERLEAVED]:
     'This is really TWO sequences taking turns. Follow only the terms in the same position (every other number), not all of the numbers as one single list.',
 }
@@ -348,7 +348,7 @@ function toItem(spec: Spec, slot: number): PrepItem {
   }
 }
 
-export const PREP_QUANT_SUBJECT = { key: 'subj-prep-quant', subject: 'prep-quant', name: 'Test Prep — Quantitative' }
+export const PREP_QUANT_SUBJECT = { key: 'subj-prep-quant', subject: 'prep-quant', name: 'Test Prep, Quantitative' }
 export const PREP_QUANT_DOMAIN = { key: 'dom-prep-quant', name: 'Quantitative Reasoning' }
 
 export const PREP_NUMBER_SERIES_SKILLS: PrepSkill[] = [

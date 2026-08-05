@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:api": "bun run scripts/dev-api.ts",
-    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p api/tsconfig.json --noEmit",
+    "build": "bun run typecheck && vite build",
     "lint": "eslint .",
     "test": "vitest run",
     "eval": "bun run eval/run.ts",

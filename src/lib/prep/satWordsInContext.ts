@@ -45,7 +45,7 @@ const WIC_OFF_CONTEXT = 'sat-wic-off-context' // a real word that simply ignores
  *  below has an entry here. */
 export const SAT_WORDS_IN_CONTEXT_MISCONCEPTIONS: Record<string, string> = {
   [WIC_WRONG_CONNOTATION]:
-    'This word is about the right topic, but its feeling — positive or negative — is wrong for what the passage is describing. Match the tone the context sets.',
+    'This word is about the right topic, but its feeling, positive or negative, is wrong for what the passage is describing. Match the tone the context sets.',
   [WIC_TOO_EXTREME]:
     'This word means something too strong or extreme for what the passage actually supports. The context calls for a milder, more measured word.',
   [WIC_RELATED_NOT_PRECISE]:
@@ -290,7 +290,7 @@ const FRAMES: Frame[] = [
   },
   {
     tier: 'medium', clue: 'example',
-    stem: "The coach's instructions were ______: run to the cone, turn left, and pass the ball — nothing was left to guesswork.",
+    stem: "The coach's instructions were ______: run to the cone, turn left, and pass the ball, nothing was left to guesswork.",
     answer: 'precise',
     d: [d('vague', WIC_WRONG_CONNOTATION), d('harsh', WIC_OFF_CONTEXT), d('lengthy', WIC_RELATED_NOT_PRECISE)],
     solution: 'Steps with "nothing left to guesswork" are "precise"; "lengthy" describes length, not the exactness the clue shows.',

@@ -73,7 +73,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: "A bee's dance shows other bees how much food a patch contains.", is_correct: false, misconception_token: 'contradicts-text' },
         ],
         solution:
-          'The passage explains that the dance\'s direction and length tell other bees where the food is — that is its main point. It never says bees prefer nearby flowers, that the dance is the only method, or that it signals how much food there is.',
+          'The passage explains that the dance\'s direction and length tell other bees where the food is, that is its main point. It never says bees prefer nearby flowers, that the dance is the only method, or that it signals how much food there is.',
       },
     ],
   },
@@ -95,7 +95,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Cities should replace all of their car lanes with bike lanes.', is_correct: false, misconception_token: 'too-broad' },
         ],
         solution:
-          'The passage says residents already own bikes but avoid traffic, and a separated lane removes that reason — so safety, not a lack of bikes, is the barrier. It never claims most lack bikes, discusses car traffic, or calls for replacing all car lanes.',
+          'The passage says residents already own bikes but avoid traffic, and a separated lane removes that reason, so safety, not a lack of bikes, is the barrier. It never claims most lack bikes, discusses car traffic, or calls for replacing all car lanes.',
       },
     ],
   },
@@ -152,7 +152,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Her brother calls out the opening line to remind her of it.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         ],
         solution:
-          "The rehearsed line returns the moment she sees her brother's encouraging grin, so a familiar face steadies her. She doesn't invent new lines, the lights don't change, and her brother only grins — he doesn't feed her the line.",
+          "The rehearsed line returns the moment she sees her brother's encouraging grin, so a familiar face steadies her. She doesn't invent new lines, the lights don't change, and her brother only grins, he doesn't feed her the line.",
       },
     ],
   },
@@ -174,7 +174,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Sea otters prefer kelp forests to every other habitat.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         ],
         solution:
-          'The passage shows that otters eating urchins keeps urchin numbers down so kelp can thrive — otters protect the kelp indirectly. Kelp does worse without otters, urchins eat kelp (not the reverse), and the passage never says otters prefer kelp habitats.',
+          'The passage shows that otters eating urchins keeps urchin numbers down so kelp can thrive, otters protect the kelp indirectly. Kelp does worse without otters, urchins eat kelp (not the reverse), and the passage never says otters prefer kelp habitats.',
       },
     ],
   },
@@ -209,7 +209,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Books were treated as a civic necessity.', is_correct: false, misconception_token: 'partly-right' },
         ],
         solution:
-          "The text states books were expensive and owned mainly by the wealthy. No ban is mentioned, reformers encouraged reading, and 'civic necessity' describes the reformers' view of libraries — not the reason books were scarce.",
+          "The text states books were expensive and owned mainly by the wealthy. No ban is mentioned, reformers encouraged reading, and 'civic necessity' describes the reformers' view of libraries, not the reason books were scarce.",
       },
     ],
   },
@@ -288,7 +288,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Most people had expected the pollution limits to work.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         ],
         solution:
-          'A comparison lake with the same limits but no mussels staying cloudy isolates the mussel as the cause — strong support. That the water cleared each year shows the effect but not its cause; the mussel\'s origin and people\'s expectations are irrelevant.',
+          'A comparison lake with the same limits but no mussels staying cloudy isolates the mussel as the cause, strong support. That the water cleared each year shows the effect but not its cause; the mussel\'s origin and people\'s expectations are irrelevant.',
       },
     ],
   },
@@ -297,7 +297,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
     skillSlug: 'evidence-based-reading',
     satAlignment: 'information-and-ideas',
     gradeBand: '9-12',
-    body: 'Grandfather rarely spoke about the years he spent at sea. But every so often, setting down his tea, he would describe a particular harbor at dusk — the smell of salt, the creak of the ropes — with such precision that the kitchen seemed to fall away. Then he would fall silent again, as if he had said too much.',
+    body: 'Grandfather rarely spoke about the years he spent at sea. But every so often, setting down his tea, he would describe a particular harbor at dusk, the smell of salt, the creak of the ropes, with such precision that the kitchen seemed to fall away. Then he would fall silent again, as if he had said too much.',
     items: [
       {
         slot: 13,
@@ -332,7 +332,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'smooth wing edges reduce noise better than frayed ones do.', is_correct: false, misconception_token: 'contradicts-text' },
         ],
         solution:
-          "The passage says owl feathers' frayed edges 'break up the rushing air' to muffle sound, and the wing copies that — so the jagged edge quiets noise by disrupting airflow. Speed isn't mentioned, owls aren't ranked against other animals, and frayed (not smooth) edges reduce the noise.",
+          "The passage says owl feathers' frayed edges 'break up the rushing air' to muffle sound, and the wing copies that, so the jagged edge quiets noise by disrupting airflow. Speed isn't mentioned, owls aren't ranked against other animals, and frayed (not smooth) edges reduce the noise.",
       },
     ],
   },
@@ -354,7 +354,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Riverside parks are more valuable than factories.', is_correct: false, misconception_token: 'out-of-scope' },
         ],
         solution:
-          "The author calls the park a 'hollow gift' precisely because it ignores the four hundred workers — that is the main point. The author doesn't reject parks in general, doesn't say the plan helps workers (the opposite), and doesn't compare the value of parks and factories.",
+          "The author calls the park a 'hollow gift' precisely because it ignores the four hundred workers, that is the main point. The author doesn't reject parks in general, doesn't say the plan helps workers (the opposite), and doesn't compare the value of parks and factories.",
       },
       {
         slot: 16,
@@ -389,7 +389,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'The older view claimed that eyes cost too much energy to maintain.', is_correct: false, misconception_token: 'partly-right' },
         ],
         solution:
-          'The contrast is between eye loss as passive decay (older) and as an energy-saving advantage that was favored (newer). The newer view says the loss helped (not harmed), says nothing about regrowing eyes, and it is the newer view — not the older — that stresses energy cost.',
+          'The contrast is between eye loss as passive decay (older) and as an energy-saving advantage that was favored (newer). The newer view says the loss helped (not harmed), says nothing about regrowing eyes, and it is the newer view, not the older, that stresses energy cost.',
       },
     ],
   },
@@ -424,7 +424,7 @@ const EBR_PASSAGES: ReadingPassage[] = [
           { text: 'Calorie labels are the single most effective public-health tool available.', is_correct: false, misconception_token: 'too-broad' },
         ],
         solution:
-          "The split result — little average effect but a real effect for motivated diners — points to behavior depending on the diner's goals. Labels don't move nearly all diners, removing them wouldn't help health, and the passage never ranks labels against other tools.",
+          "The split result, little average effect but a real effect for motivated diners, points to behavior depending on the diner's goals. Labels don't move nearly all diners, removing them wouldn't help health, and the passage never ranks labels against other tools.",
       },
     ],
   },
@@ -687,7 +687,7 @@ const MAIN_IDEA_PASSAGES: ReadingPassage[] = [
         { text: 'Owls do their hunting during the day.', is_correct: false, misconception_token: 'contradicts-text' },
         { text: 'Mice are the smartest of all animals.', is_correct: false, misconception_token: 'out-of-scope' },
       ],
-      solution: "The passage explains how owls' eyes and feathers make them good night hunters — that's the main idea. Large eyes are one detail, owls hunt at night (not day), and nothing is said about mice being smart.",
+      solution: "The passage explains how owls' eyes and feathers make them good night hunters, that's the main idea. Large eyes are one detail, owls hunt at night (not day), and nothing is said about mice being smart.",
     }],
   },
   {
@@ -752,7 +752,7 @@ const READING_COMP_PASSAGES: ReadingPassage[] = [
         { text: 'He chews the ball into little pieces.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         { text: 'He waits for Sam to go find the ball.', is_correct: false, misconception_token: 'reverses-relationship' },
       ],
-      solution: "The passage says Biscuit brings the ball back and drops it at Sam's feet. He doesn't hide or chew it, and Sam doesn't have to find it — Biscuit returns it.",
+      solution: "The passage says Biscuit brings the ball back and drops it at Sam's feet. He doesn't hide or chew it, and Sam doesn't have to find it, Biscuit returns it.",
     }],
   },
   {
@@ -791,7 +791,7 @@ const READING_COMP_PASSAGES: ReadingPassage[] = [
           { text: 'She thinks the tree will never grow any fruit.', is_correct: false, misconception_token: 'unsupported-inference' },
           { text: 'She cares only about apples and nothing else.', is_correct: false, misconception_token: 'out-of-scope' },
         ],
-        solution: "Ana waited three years and kept watering, then shared the apples — that shows patience. She didn't give up, she kept caring for the tree (so she didn't think it hopeless), and 'cares only about apples' isn't supported.",
+        solution: "Ana waited three years and kept watering, then shared the apples, that shows patience. She didn't give up, she kept caring for the tree (so she didn't think it hopeless), and 'cares only about apples' isn't supported.",
       },
     ],
   },
@@ -820,7 +820,7 @@ const READING_COMP_PASSAGES: ReadingPassage[] = [
         { text: 'He drives her home to get her lunch.', is_correct: false, misconception_token: 'out-of-scope' },
         { text: 'He eats her lunch for her.', is_correct: false, misconception_token: 'contradicts-text' },
       ],
-      solution: 'Ravi shares his sandwich and apple with Jena. He does not buy lunch, take her home, or eat her lunch — she forgot hers.',
+      solution: 'Ravi shares his sandwich and apple with Jena. He does not buy lunch, take her home, or eat her lunch, she forgot hers.',
     }],
   },
   {
@@ -943,7 +943,7 @@ const READING_COMP_PASSAGES: ReadingPassage[] = [
           { text: 'Sand from the desert floor.', is_correct: false, misconception_token: 'out-of-scope' },
           { text: 'Food that the camel finds along the way.', is_correct: false, misconception_token: 'partly-right' },
         ],
-        solution: 'The humps store fat for energy, not water. They do not hold water, sand, or food — the stored fat is what the body uses when food is scarce.',
+        solution: 'The humps store fat for energy, not water. They do not hold water, sand, or food, the stored fat is what the body uses when food is scarce.',
       },
       {
         slot: 16, difficulty: 'hard', stem: 'Why are wide feet helpful for a camel in the desert?',
@@ -1010,7 +1010,7 @@ const READING_COMP_PASSAGES: ReadingPassage[] = [
         { text: 'Bicycles cost too much for anyone to buy.', is_correct: false, misconception_token: 'contradicts-text' },
         { text: 'Birthdays are the best time to get gifts.', is_correct: false, misconception_token: 'out-of-scope' },
       ],
-      solution: 'Nadia saved half her allowance over months until she could buy the bike — saving a little adds up. She still spent some money, the bike was not unaffordable, and the lesson is not about birthdays.',
+      solution: 'Nadia saved half her allowance over months until she could buy the bike, saving a little adds up. She still spent some money, the bike was not unaffordable, and the lesson is not about birthdays.',
     }],
   },
 ]
@@ -1033,12 +1033,12 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
         { text: 'Outside in the rain.', is_correct: false, misconception_token: 'contradicts-text' },
         { text: 'In a real cave.', is_correct: false, misconception_token: 'plausible-but-unstated' },
       ],
-      solution: 'The story happens in the living room, where they built the fort. Not at school, outside, or a real cave — the rain is outside the window.',
+      solution: 'The story happens in the living room, where they built the fort. Not at school, outside, or a real cave, the rain is outside the window.',
     }],
   },
   {
     code: 'read-se-p02', skillSlug: 'story-elements', satAlignment: 'information-and-ideas', gradeBand: '3-5',
-    body: 'Theo could not find his other shoe anywhere. He looked under his bed and in the closet, but it was gone. Finally, he checked by the back door and found the shoe — his puppy had carried it there to chew.',
+    body: 'Theo could not find his other shoe anywhere. He looked under his bed and in the closet, but it was gone. Finally, he checked by the back door and found the shoe, his puppy had carried it there to chew.',
     items: [{
       slot: 2, difficulty: 'easy', stem: 'What is the problem in the story?',
       choices: [
@@ -1047,7 +1047,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
         { text: 'Theo is going to be late for school.', is_correct: false, misconception_token: 'out-of-scope' },
         { text: 'Theo has far too many shoes.', is_correct: false, misconception_token: 'contradicts-text' },
       ],
-      solution: 'The problem is the missing shoe. His puppy is not lost, he is not late for school, and he does not have too many shoes — he is missing one.',
+      solution: 'The problem is the missing shoe. His puppy is not lost, he is not late for school, and he does not have too many shoes, he is missing one.',
     }],
   },
   {
@@ -1062,7 +1062,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
           { text: 'Angry at the judges.', is_correct: false, misconception_token: 'plausible-but-unstated' },
           { text: 'Proud and confident.', is_correct: false, misconception_token: 'contradicts-text' },
         ],
-        solution: 'At the start, her shaking hands and doubt show Rosa is nervous and unsure. She is not bored, angry, or confident — that comes later.',
+        solution: 'At the start, her shaking hands and doubt show Rosa is nervous and unsure. She is not bored, angry, or confident, that comes later.',
       },
       {
         slot: 4, difficulty: 'medium', stem: 'How do Rosa\'s feelings change by the end of the story?',
@@ -1126,7 +1126,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
           { text: 'She waits for someone else to come rescue her.', is_correct: false, misconception_token: 'plausible-but-unstated' },
           { text: 'She sails farther out into the open sea.', is_correct: false, misconception_token: 'reverses-relationship' },
         ],
-        solution: 'She steers toward the island and into a calm cove before the storm. She does not swim, wait for rescue, or sail farther out — she heads to safety.',
+        solution: 'She steers toward the island and into a calm cove before the storm. She does not swim, wait for rescue, or sail farther out, she heads to safety.',
       },
     ],
   },
@@ -1155,7 +1155,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
         { text: 'It is perfectly fine to break a promise.', is_correct: false, misconception_token: 'reverses-relationship' },
         { text: 'His mom should do all of his chores for him.', is_correct: false, misconception_token: 'out-of-scope' },
       ],
-      solution: 'Jonah decides to write a note so he will not forget again — he learns to remember his responsibilities. He does not swear off animals, does not think breaking promises is fine, and does not hand his chores to his mom.',
+      solution: 'Jonah decides to write a note so he will not forget again, he learns to remember his responsibilities. He does not swear off animals, does not think breaking promises is fine, and does not hand his chores to his mom.',
     }],
   },
   {
@@ -1195,7 +1195,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
         { text: 'The wind blows the kite down all on its own.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         { text: 'Mia buys a brand-new kite instead.', is_correct: false, misconception_token: 'out-of-scope' },
       ],
-      solution: 'Her brother\'s rope-and-ball trick shakes the kite loose — that solves it. Mia does not climb up, the wind does not free it, and she does not buy a new one.',
+      solution: 'Her brother\'s rope-and-ball trick shakes the kite loose, that solves it. Mia does not climb up, the wind does not free it, and she does not buy a new one.',
     }],
   },
   {
@@ -1209,7 +1209,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
         { text: 'Cold and snowy.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         { text: 'So foggy that no one can see.', is_correct: false, misconception_token: 'out-of-scope' },
       ],
-      solution: 'It is rainy and wet — the field is muddy and full of puddles. It is not sunny, snowy, or too foggy to see.',
+      solution: 'It is rainy and wet, the field is muddy and full of puddles. It is not sunny, snowy, or too foggy to see.',
     }],
   },
   {
@@ -1224,7 +1224,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
           { text: 'Excited to show off.', is_correct: false, misconception_token: 'misreads-tone' },
           { text: 'Angry at the crowd.', is_correct: false, misconception_token: 'plausible-but-unstated' },
         ],
-        solution: 'Sanjay freezes and the silence feels endless, so he is afraid at first. He is not calm, showing off, or angry — relief comes only at the end.',
+        solution: 'Sanjay freezes and the silence feels endless, so he is afraid at first. He is not calm, showing off, or angry, relief comes only at the end.',
       },
       {
         slot: 16, difficulty: 'hard', stem: 'What is the turning point of the story?',
@@ -1263,7 +1263,7 @@ const STORY_ELEMENTS_PASSAGES: ReadingPassage[] = [
         { text: "She wants the old man's painting from the very start.", is_correct: false, misconception_token: 'unsupported-inference' },
         { text: 'She dislikes reading out loud.', is_correct: false, misconception_token: 'plausible-but-unstated' },
       ],
-      solution: 'Lila reads to her neighbor daily and asks for nothing, so she is kind and giving. She does not require payment, and she does not start out wanting the painting — it is a surprise.',
+      solution: 'Lila reads to her neighbor daily and asks for nothing, so she is kind and giving. She does not require payment, and she does not start out wanting the painting, it is a surprise.',
     }],
   },
   {
@@ -1353,7 +1353,7 @@ const VOCABULARY_PASSAGES: ReadingPassage[] = [
           { text: 'a loud complaint.', is_correct: false, misconception_token: 'out-of-scope' },
           { text: 'a wild guess.', is_correct: false, misconception_token: 'contradicts-text' },
         ],
-        solution: "The observation was what she noticed by watching the plants, so it means something seen by close watching. It is not a rule, a complaint, or a guess — she took careful notes.",
+        solution: "The observation was what she noticed by watching the plants, so it means something seen by close watching. It is not a rule, a complaint, or a guess, she took careful notes.",
       },
     ],
   },
@@ -1373,7 +1373,7 @@ const VOCABULARY_PASSAGES: ReadingPassage[] = [
   },
   {
     code: 'read-vo-p05', skillSlug: 'vocabulary', satAlignment: 'craft-and-structure', gradeBand: '3-5',
-    body: 'The desert was completely barren. For miles, there were no trees, no grass, and no water — only bare sand stretching to the horizon.',
+    body: 'The desert was completely barren. For miles, there were no trees, no grass, and no water, only bare sand stretching to the horizon.',
     items: [{
       slot: 6, difficulty: 'easy', stem: "As used in the passage, 'barren' most nearly means",
       choices: [
@@ -1515,7 +1515,7 @@ const VOCABULARY_PASSAGES: ReadingPassage[] = [
           { text: 'the end of a rope.', is_correct: false, misconception_token: 'out-of-scope' },
           { text: 'an easy path straight to the answer.', is_correct: false, misconception_token: 'contradicts-text' },
         ],
-        solution: "Clues leading to a 'dead end' means they went nowhere — no way forward. It does not refer to a real death or a rope, and it is the opposite of an easy path.",
+        solution: "Clues leading to a 'dead end' means they went nowhere, no way forward. It does not refer to a real death or a rope, and it is the opposite of an easy path.",
       },
     ],
   },

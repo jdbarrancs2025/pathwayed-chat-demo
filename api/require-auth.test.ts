@@ -77,7 +77,7 @@ describe("requireOwnedStudent", () => {
   it("400s when no student id is supplied", async () => {
     const { res, sent } = fakeRes()
     const svc = fakeSvc({ data: null, error: null })
-    const ok = await requireOwnedStudent(res, { userId: "u", svc: svc.client }, undefined)
+    const ok = await requireOwnedStudent(res, { userId: "u", email: "parent@example.com", svc: svc.client }, undefined)
     expect(ok).toBe(false)
     expect(sent.status).toBe(400)
     expect(sent.body).toEqual({ error: "student_id_required" })
@@ -86,7 +86,7 @@ describe("requireOwnedStudent", () => {
   it("403s for another user's child, and does not leak whether it exists", async () => {
     const { res, sent } = fakeRes()
     const svc = fakeSvc({ data: null, error: null })
-    const ok = await requireOwnedStudent(res, { userId: "u", svc: svc.client }, "stu-9")
+    const ok = await requireOwnedStudent(res, { userId: "u", email: "parent@example.com", svc: svc.client }, "stu-9")
     expect(ok).toBe(false)
     expect(sent.status).toBe(403)
     expect(sent.body).toEqual({ error: "not_your_student" })
@@ -95,7 +95,7 @@ describe("requireOwnedStudent", () => {
   it("passes for the caller's own child", async () => {
     const { res, sent } = fakeRes()
     const svc = fakeSvc({ data: { id: "stu-1" }, error: null })
-    const ok = await requireOwnedStudent(res, { userId: "u", svc: svc.client }, "stu-1")
+    const ok = await requireOwnedStudent(res, { userId: "u", email: "parent@example.com", svc: svc.client }, "stu-1")
     expect(ok).toBe(true)
     expect(sent.status).toBeUndefined()
   })
@@ -103,7 +103,7 @@ describe("requireOwnedStudent", () => {
   it("rejects a non-string student id", async () => {
     const { res, sent } = fakeRes()
     const svc = fakeSvc({ data: null, error: null })
-    expect(await requireOwnedStudent(res, { userId: "u", svc: svc.client }, 42)).toBe(false)
+    expect(await requireOwnedStudent(res, { userId: "u", email: "parent@example.com", svc: svc.client }, 42)).toBe(false)
     expect(sent.status).toBe(400)
   })
 })

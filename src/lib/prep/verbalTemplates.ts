@@ -59,7 +59,7 @@ export const VERBAL_MISCONCEPTIONS: Record<string, string> = {
   [SYN_OTHER_SENSE]:
     'That word matches a DIFFERENT meaning of the word in the question. Decide which sense is being used here, then match that one.',
   [SYN_OPPOSITE]:
-    'Careful — that word means the OPPOSITE. A synonym has to mean the same thing, not the reverse.',
+    'Careful, that word means the OPPOSITE. A synonym has to mean the same thing, not the reverse.',
   [SYN_SOUNDALIKE]:
     'That word looks or sounds like the word in the question, but it means something different. Match the meaning, not the spelling.',
   [ANT_SYNONYM]:
@@ -579,7 +579,7 @@ function antItem(w: WordEntry, slot: number): PrepItem {
   }
 }
 
-export const PREP_VERBAL_SUBJECT = { key: 'subj-prep-verbal', subject: 'prep-verbal', name: 'Test Prep — Verbal' }
+export const PREP_VERBAL_SUBJECT = { key: 'subj-prep-verbal', subject: 'prep-verbal', name: 'Test Prep, Verbal' }
 export const PREP_VERBAL_DOMAIN = { key: 'dom-prep-verbal', name: 'Verbal Reasoning' }
 
 export const PREP_VERBAL_SKILLS: PrepSkill[] = [

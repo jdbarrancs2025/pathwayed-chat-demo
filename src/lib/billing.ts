@@ -14,9 +14,9 @@ export interface PlanDef {
 
 // Display prices for the UI — these must match the configured Stripe prices.
 export const PLANS: PlanDef[] = [
-  { id: 'elementary', name: 'Elementary', grades: 'Grades K–5', included: 1, monthly: 15, annual: 149 },
-  { id: 'middle', name: 'Middle School', grades: 'Grades 6–8', included: 2, monthly: 24, annual: 239 },
-  { id: 'high', name: 'High School', grades: 'Grades 9–12', included: 2, monthly: 39, annual: 389 },
+  { id: 'elementary', name: 'Elementary', grades: 'Grades K-5', included: 1, monthly: 15, annual: 149 },
+  { id: 'middle', name: 'Middle School', grades: 'Grades 6-8', included: 2, monthly: 24, annual: 239 },
+  { id: 'high', name: 'High School', grades: 'Grades 9-12', included: 2, monthly: 39, annual: 389 },
 ]
 
 export const ADDON_PRICE: Record<BillingPeriod, number> = { monthly: 7.99, annual: 79 }

@@ -39,7 +39,7 @@ export const ESSAY_PROMPTS: EssayPrompt[] = [
   { id: 'memorable-day', text: 'Write about a day you will always remember. Describe what happened and why it stayed with you.' },
   { id: 'teach-a-class', text: 'If you could teach a class on any topic, what would it be? Describe what you would want your students to learn.' },
   { id: 'outdoors-experience', text: 'Describe an experience you had outdoors or in nature. What did you notice, and how did you feel?' },
-  { id: 'quality-matters', text: 'Which personal quality — such as honesty, kindness, or determination — matters most to you, and why? Use an example from your own life.' },
+  { id: 'quality-matters', text: 'Which personal quality, such as honesty, kindness, or determination, matters most to you, and why? Use an example from your own life.' },
   { id: 'tried-something-new', text: 'Write about a time you tried something new. What was it like, and what did you discover?' },
   { id: 'someone-dependable', text: 'Describe a person in your life you can always count on. What makes them so dependable?' },
   { id: 'future-self', text: 'Imagine yourself ten years from now. Describe the kind of person you hope to be and how you might get there.' },

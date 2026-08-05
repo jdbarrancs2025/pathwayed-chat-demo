@@ -166,7 +166,7 @@ export function PrepModuleHome() {
           ? 'Pick a topic and we’ll work through it together.'
           : 'Pick a topic for a short set of practice questions.'}
       </p>
-      {/* Essay sections are excluded here — the essay is written through its own
+      {/* Essay sections are excluded here, the essay is written through its own
           server-timed flow (Test tab -> Practice essay), never the MCQ Train/Practice. */}
       {module.sections.filter((sec) => !sec.essay).map((sec: PrepSection) => (
         <div key={sec.id} className="panel" style={{ padding: '14px 16px' }}>
@@ -315,7 +315,7 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
           </button>
         ))}
 
-        {/* ISEE practice essay — its own server-timed writing flow (essay:true
+        {/* ISEE practice essay, its own server-timed writing flow (essay:true
             section). Only shown for a module that has an essay section. */}
         {essaySection && (
           <button
@@ -334,7 +334,7 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
           </button>
         )}
 
-        {/* Full test — data model supports it (full_test_group_id) but the UI ships
+        {/* Full test, data model supports it (full_test_group_id) but the UI ships
             after single sections prove out. Composition includes short breaks after
             Quantitative Reasoning and Mathematics Achievement (see isee.ts). */}
         <div
@@ -374,7 +374,7 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
                     </span>
                   )}
                 </span>
-                <b style={{ fontSize: 14, color: '#003078', flexShrink: 0 }}>{a.score != null ? `${Math.round(a.score * 100)}%` : '—'}</b>
+                <b style={{ fontSize: 14, color: '#003078', flexShrink: 0 }}>{a.score != null ? `${Math.round(a.score * 100)}%` : '-'}</b>
               </button>
             ))}
           </div>
@@ -414,9 +414,9 @@ function PrepTestTab({ studentId, module }: { studentId: string; module: PrepMod
 function pacingLine(testDate: string | null): string | null {
   const d = daysUntilDate(testDate)
   if (d == null || d < 0) return null
-  if (d === 0) return 'It’s test day — you’ve got this. Trust your practice.'
+  if (d === 0) return 'It’s test day, you’ve got this. Trust your practice.'
   if (d <= 3) return 'Almost there! Keep practice light and steady, and get a good night’s sleep.'
-  if (d <= 14) return 'You’ve got time — a little practice each day adds up fast.'
+  if (d <= 14) return '’’ve got time, a little practice each day adds up fast.'
   return 'Plenty of time. Steady practice now makes test day feel easy.'
 }
 
@@ -485,7 +485,7 @@ function PrepProgressTab({
     return (
       <div className="panel" style={{ padding: '22px 18px', textAlign: 'center' }}>
         <div style={{ fontSize: 34, marginBottom: 6 }}>📈</div>
-        <h3 style={{ margin: '0 0 6px' }}>Your progress starts here</h3>
+        <h3 style={{ margin: '0 0 6px' }}>’r progress starts here</h3>
         <p className="muted" style={{ margin: '0 auto 14px', maxWidth: 340, fontSize: 13.5 }}>
           Take your first timed section and you’ll see your scores climb right here. Every try makes you stronger.
         </p>
@@ -507,7 +507,7 @@ function PrepProgressTab({
 
       {/* Per-section scores. */}
       <div>
-        <h3 style={{ fontSize: 14, margin: '2px 0 8px' }}>Your section scores</h3>
+        <h3 style={{ fontSize: 14, margin: '2px 0 8px' }}>’r section scores</h3>
         <div style={{ display: 'grid', gap: 8 }}>
           {progress.sections.map((s) => {
             const arrow = s.trend ? TREND_ARROW[s.trend] : null
@@ -523,11 +523,11 @@ function PrepProgressTab({
                 <ScoreBar value={s.latestScore} />
                 <p className="muted" style={{ margin: '7px 0 0', fontSize: 12.5 }}>
                   {s.isBest ? (
-                    <span style={{ color: '#1F9E6F', fontWeight: 700 }}>Your best {s.name} yet! 🎉</span>
+                    <span style={{ color: '#1F9E6F', fontWeight: 700 }}>’r best {s.name} yet! 🎉</span>
                   ) : s.attempts >= 2 ? (
                     <>Best so far: {s.bestScore}% · {s.attempts} attempts</>
                   ) : (
-                    <>Your first {s.name} — great start!</>
+                    <>’r first {s.name}. Great start!</>
                   )}
                 </p>
               </div>
@@ -536,7 +536,7 @@ function PrepProgressTab({
         </div>
       </div>
 
-      {/* What to work on next — never framed as failure. */}
+      {/* What to work on next, never framed as failure. */}
       {progress.weakestTypes.length > 0 && (
         <div>
           <h3 style={{ fontSize: 14, margin: '2px 0 4px' }}>What to work on next</h3>

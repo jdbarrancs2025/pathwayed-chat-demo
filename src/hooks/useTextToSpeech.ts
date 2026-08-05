@@ -147,7 +147,11 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
 
         const reader = body.getReader()
         const PCM_SAMPLE_RATE = 24000
-        let leftover = new Uint8Array(0)
+        // Typed over ArrayBufferLike to match what the stream reader yields. Newer
+      // TypeScript lib types make Uint8Array generic in its buffer, and a reader
+      // hands back Uint8Array<ArrayBufferLike> while `new Uint8Array()` is
+      // Uint8Array<ArrayBuffer>. Same runtime value either way.
+      let leftover: Uint8Array<ArrayBufferLike> = new Uint8Array(0)
         let nextStartTime = 0
         let isFirstChunk = true
         let lastSource: AudioBufferSourceNode | null = null
@@ -159,7 +163,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
           if (abortController.signal.aborted) break
 
           // Combine leftover bytes with new chunk
-          let data: Uint8Array
+          let data: Uint8Array<ArrayBufferLike>
           if (leftover.length > 0) {
             data = new Uint8Array(leftover.length + value.length)
             data.set(leftover, 0)

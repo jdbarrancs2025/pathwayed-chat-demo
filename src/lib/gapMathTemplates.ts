@@ -25,7 +25,7 @@ export interface GapChoice {
 }
 
 export interface GapItem {
-  slot: number // stable id within the skill (1..N) — deterministic + idempotent
+  slot: number // stable id within the skill (1..N), deterministic + idempotent
   difficulty: Difficulty
   stem: string
   choices: GapChoice[]
@@ -123,7 +123,7 @@ const PLACE_VALUE_3: GapMathSkill = {
         { text: '15', is_correct: false, misconception_token: 'added-the-parts' },
       ],
       solution:
-        '400 + 30 + 8 combines to 438 — 4 hundreds, 3 tens, 8 ones. 4,308 keeps the zeros, 483 swaps the tens and ones, and 15 just adds the digits.',
+        '400 + 30 + 8 combines to 438, 4 hundreds, 3 tens, 8 ones. 4,308 keeps the zeros, 483 swaps the tens and ones, and 15 just adds the digits.',
     },
     {
       slot: 6,
@@ -162,7 +162,7 @@ const PLACE_VALUE_3: GapMathSkill = {
         { text: '5', is_correct: false, misconception_token: 'read-wrong-digit' },
       ],
       solution:
-        'The 0 is in the tens place, so its value is 0 — it holds the spot so the 4 stays in the hundreds and 5 in the ones. It is not 10, you cannot skip it (that would make 45), and 5 is the ones digit.',
+        'The 0 is in the tens place, so its value is 0, it holds the spot so the 4 stays in the hundreds and 5 in the ones. It is not 10, you cannot skip it (that would make 45), and 5 is the ones digit.',
     },
     {
       slot: 9,
@@ -201,7 +201,7 @@ const PLACE_VALUE_3: GapMathSkill = {
         { text: '485', is_correct: false, misconception_token: 'subtracted-instead' },
       ],
       solution:
-        '495 + 10 = 505 — the 9 tens and the new ten make a whole new hundred. 496 adds only one, 595 adds a hundred, and 485 is ten less.',
+        '495 + 10 = 505, the 9 tens and the new ten make a whole new hundred. 496 adds only one, 595 adds a hundred, and 485 is ten less.',
     },
     {
       slot: 12,
@@ -227,7 +227,7 @@ const PLACE_VALUE_3: GapMathSkill = {
         { text: 'They are all equal', is_correct: false, misconception_token: 'thought-equal' },
       ],
       solution:
-        '591 has 5 hundreds and 9 tens — the most. 519 has only 1 ten, 195 has just 1 hundred (the smallest), and the same digits in different places are not equal.',
+        '591 has 5 hundreds and 9 tens, the most. 519 has only 1 ten, 195 has just 1 hundred (the smallest), and the same digits in different places are not equal.',
     },
     {
       slot: 14,
@@ -806,10 +806,10 @@ const EARLY_GEOMETRY_3: GapMathSkill = {
       { text: 'A pentagon', is_correct: false, misconception_token: 'wrong-shape-name' },
     ], solution: 'A trapezoid has exactly one pair of parallel sides. A square has two pairs.' },
     { slot: 14, difficulty: 'medium', stem: 'A rectangle is split into 4 parts that are NOT the same size. Can one part be called 1/4?', choices: [
-      { text: 'No — the parts must be equal to be fourths', is_correct: true },
-      { text: 'Yes — any 4 parts make fourths', is_correct: false, misconception_token: 'wrong-attribute' },
-      { text: 'No — it must be split into halves', is_correct: false, misconception_token: 'miscounted-sides' },
-      { text: 'Yes — each part is 1/2', is_correct: false, misconception_token: 'part-size-too-big' },
+      { text: 'No, the parts must be equal to be fourths', is_correct: true },
+      { text: 'Yes, any 4 parts make fourths', is_correct: false, misconception_token: 'wrong-attribute' },
+      { text: 'No, it must be split into halves', is_correct: false, misconception_token: 'miscounted-sides' },
+      { text: 'Yes, each part is 1/2', is_correct: false, misconception_token: 'part-size-too-big' },
     ], solution: 'A fraction like 1/4 means one of 4 EQUAL parts. Unequal parts cannot be called fourths.' },
     { slot: 15, difficulty: 'medium', stem: 'How many vertices (corners) does a hexagon have?', choices: [
       { text: '6', is_correct: true },

@@ -265,7 +265,7 @@ export function AdmissionsPrepPanel({
               <div key={key} style={{ display: 'grid', gap: 5 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, fontSize: 13.5 }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', color: '#1C2230' }}>
-                    <span>{moduleName(e.moduleId)} Prep — {nameOf(e.studentId)}</span>
+                    <span>{moduleName(e.moduleId)} Prep, {nameOf(e.studentId)}</span>
                     <span
                       style={{
                         fontSize: 11,
@@ -343,7 +343,7 @@ export function AdmissionsPrepPanel({
         </div>
       )}
 
-      {/* Free readiness teasers — the discovery funnel. One per (grade-eligible,
+      {/* Free readiness teasers, the discovery funnel. One per (grade-eligible,
           not-yet-entitled) child × module, on qualifying accounts only. Shows the
           mastery-only readiness number (or a building state) and an Unlock action
           that preselects the child + module in the purchase flow below. */}
@@ -401,7 +401,7 @@ export function AdmissionsPrepPanel({
         </p>
       )}
 
-      {/* Child selection — only when the account holds a qualifying plan. */}
+      {/* Child selection, only when the account holds a qualifying plan. */}
       {module && accountEligible && (
         <div style={{ marginTop: 12 }} ref={buyRef}>
           <p style={{ fontWeight: 600, fontSize: 13.5, margin: '0 0 6px' }}>Which children?</p>
@@ -545,7 +545,7 @@ function PrepChildProgress({
             <span style={{ fontSize: 12, fontWeight: 600, color: '#5A6172' }}>/ 100 · {moduleName} readiness</span>
           </div>
           <p className="muted" style={{ fontSize: 12, margin: '4px 0 0' }}>
-            A blend of practice mastery and recent timed-section scores — a coaching signal to guide practice, not a predicted test score.
+            A blend of practice mastery and recent timed-section scores, a coaching signal to guide practice, not a predicted test score.
           </p>
         </div>
       ) : (
@@ -660,7 +660,7 @@ function PrepTeaserCard({
             </span>
           </div>
           <p className="muted" style={{ fontSize: 12, margin: '5px 0 0' }}>
-            An early read from the practice {firstName} has already done — a coaching signal, not a predicted test score.
+            An early read from the practice {firstName} has already done, a coaching signal, not a predicted test score.
             {subjects.length > 0 && <> Based on their work in {humanList(subjects)} so far.</>}
           </p>
         </div>

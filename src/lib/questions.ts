@@ -25,12 +25,12 @@ export type LadderStudentRow = LadderStudent & { id: string }
 
 /** A K–2 pre-reader answer tile: a big numeral, or a group of N picture icons
  *  (rendered by the picture UI instead of a text label). */
-export interface PictureTile {
-  kind: 'number' | 'letter' | 'object_group'
-  value?: string // number & letter tiles
-  image?: string // object_group tiles (a curated KidIcon key)
-  count?: number // object_group tiles
-}
+/** A DISCRIMINATED union: narrowing on `kind` gives the fields that kind has.
+ *  It was previously one shape with every field optional, which meant the renderer
+ *  had to trust that an object_group tile really carried an image and a count. */
+export type PictureTile =
+  | { kind: 'number' | 'letter'; value: string }
+  | { kind: 'object_group'; image: string; count: number }
 
 /** The optional visual prompt for an audio-picture item (the group to count). */
 export interface PicturePrompt {

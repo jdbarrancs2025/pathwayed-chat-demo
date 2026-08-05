@@ -155,11 +155,11 @@ export function Settings() {
                       Remove
                     </button>
                   </div>
-                  {/* Per-child sign-in PIN — lets this child open their own space on a
+                  {/* Per-child sign-in PIN, lets this child open their own space on a
                       shared device. Optional; no PIN means direct entry as before. */}
                   <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #F3ECE0' }}>
                     <div style={{ fontSize: 13, color: '#5A6172', marginBottom: 8 }}>
-                      Sign-in PIN — lets {child.first_name} open their own space on a shared device.
+                      Sign-in PIN, lets {child.first_name} open their own space on a shared device.
                     </div>
                     <ChildPinControl
                       studentId={child.id}
@@ -180,7 +180,7 @@ export function Settings() {
           </button>
         </div>
 
-        {/* Active-profile seat picker — shown when the account has more active
+        {/* Active-profile seat picker, shown when the account has more active
             children than its seat cap, or has any paused child to reactivate.
             Lets the parent choose which children stay active (never deletes). */}
         {!loading &&
@@ -202,7 +202,7 @@ export function Settings() {
           <h3>Account</h3>
           <div className="stat-row">
             <span className="muted">Name</span>
-            <b>{name || '—'}</b>
+            <b>{name || '-'}</b>
           </div>
           {renaming ? (
             <div className="field" style={{ marginBottom: 0 }}>
@@ -222,7 +222,7 @@ export function Settings() {
             </button>
           )}
 
-          {/* Account-level parent PIN — gates the parent area / Sign out from a
+          {/* Account-level parent PIN, gates the parent area / Sign out from a
               kid session on a shared device. Optional (open access when unset). */}
           {user && (
             <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid #F3ECE0' }}>

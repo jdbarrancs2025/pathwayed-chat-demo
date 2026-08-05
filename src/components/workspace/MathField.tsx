@@ -94,10 +94,18 @@ export const MathField = forwardRef<MathFieldHandle, MathFieldProps>(function Ma
       MathfieldElement.soundsDirectory = null
 
       const mf = new MathfieldElement()
-      // Show MathLive's built-in virtual keyboard (with the fraction key) on
-      // focus — on desktop, tablet, and phone alike. Physical-keyboard typing
-      // works regardless of the virtual keyboard.
-      mf.mathVirtualKeyboardPolicy = 'onfocus'
+      // MathLive's virtual keyboard policy. 'auto' shows the keyboard on focus on
+      // TOUCH devices only.
+      //
+      // This was 'onfocus', which mathlive 0.110 does not accept: the valid values
+      // are 'auto' | 'manual' | 'sandboxed'. The unrecognized value was silently
+      // falling back to 'auto', so 'auto' is what has actually been running. Set
+      // explicitly here so the code says what it does.
+      //
+      // KNOWN GAP: the original intent was a keyboard on focus for desktop too.
+      // 'auto' does not do that; it needs 'manual' plus an explicit show on focus.
+      // Left as-is deliberately rather than changing behaviour in a type cleanup.
+      mf.mathVirtualKeyboardPolicy = 'auto'
       mf.className = 'mathfield'
       // Answer framing, not problem framing: the student is here to work the
       // problem Nikki gave them, then "Ask Nikki to check it".

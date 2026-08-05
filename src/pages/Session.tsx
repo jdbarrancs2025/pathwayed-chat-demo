@@ -71,7 +71,7 @@ function makeGreeting(
     return `Hi ${name}! I'm Nikki. Upload a photo or PDF of your${subjPhrase} homework using the panel on the right, and we'll work through it together. You can also just tell me what it's about.`
   }
   if (isComposition) {
-    return `Hi ${name}! I'm Nikki. Today we're going to write a paragraph together. I've put a writing prompt in your writing space on the right — read it, give it your best try, and then tap "Share with Nikki." I'll tell you what's working and help you make it even stronger. Take your time — ready when you are!`
+    return `Hi ${name}! I'm Nikki. Today we're going to write a paragraph together. I've put a writing prompt in your writing space on the right, read it, give it your best try, and then tap "Share with Nikki." I'll tell you what's working and help you make it even stronger. Take your time, ready when you are!`
   }
   if (focusLabel) {
     const satPhrase = fromSat ? ` This came up in your SAT Math practice, so let's strengthen it.` : ''
@@ -587,7 +587,7 @@ function SessionView({
                 : transcribing
                   ? 'Transcribing…'
                   : isReading
-                    ? '🎙️ Listening — say it out loud. Tap the mic to stop.'
+                    ? '🎙️ Listening, say it out loud. Tap the mic to stop.'
                     : recorder.secondsLeft !== null
                       ? `Listening… ${recorder.secondsLeft}s left, tap the mic to stop`
                       : 'Listening… tap the mic to stop'}
@@ -663,7 +663,7 @@ function SessionView({
             <NikkiFace mode={avatarMode} size={84} />
             <h1 style={{ fontSize: 22, margin: '20px 0 4px' }}>Leave this lesson?</h1>
             <p className="muted" style={{ margin: '0 0 20px' }}>
-              Leaving now will end this session — we haven’t finished this lesson yet.
+              Leaving now will end this session, we haven’t finished this lesson yet.
             </p>
             <button type="button" className="btn btn-primary" onClick={() => setShowLeaveWarning(false)}>
               Keep going

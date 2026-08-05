@@ -281,7 +281,7 @@ export function Diagnostic() {
         allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
       )
     } else if (!early) {
-      console.info('[diagnostic] run below placement floor — discarded, not seeded', allResults.length)
+      console.info('[diagnostic] run below placement floor, discarded, not seeded', allResults.length)
     }
     clearDiagnosticProgress(stu.id)
     setBusy(false)
@@ -377,7 +377,7 @@ export function Diagnostic() {
         <div className="shell">
           <TopMenu />
           <h1 className="greet">
-            {early ? `Yay — great job, ${student.first_name}!` : 'Perfect — I know just where to start you!'}
+            {early ? `Yay, great job, ${student.first_name}!` : 'Perfect, I know just where to start you!'}
           </h1>
           <p className="muted">
             {early ? 'Let’s go learn together!' : `Great effort, ${student.first_name}. Let’s jump into your first lesson.`}
@@ -407,7 +407,7 @@ export function Diagnostic() {
             <NikkiFace mode={avatarModeOf(student)} size={96} />
             <h1 className="greet">Let’s play, {student.first_name}!</h1>
             <p className="muted">
-              A quick counting and letters game. I’ll say each one out loud — just tap the picture. Ready?
+              A quick counting and letters game. I’ll say each one out loud, just tap the picture. Ready?
             </p>
           </div>
           <button className="btn btn-navy" style={{ marginTop: 14 }} onClick={beginEarly}>
@@ -427,7 +427,7 @@ export function Diagnostic() {
           <h1 className="greet">Let’s find {student.first_name}’s level</h1>
           <div className="panel">
             <p className="muted" style={{ margin: '0 0 10px' }}>
-              A few quick questions help us start {student.first_name} at the right level — not too easy, not too
+              A few quick questions help us start {student.first_name} at the right level, not too easy, not too
               hard. There’s nothing to study; they just answer what they can.
             </p>
             <p className="muted" style={{ margin: '0 0 10px' }}>
@@ -435,12 +435,12 @@ export function Diagnostic() {
               3rd-grade level, we can let them move ahead. Is that okay with you?
             </p>
             <p className="muted" style={{ margin: 0, fontSize: 12.5 }}>
-              Either way, {student.first_name} practices at the level that fits them — your choice only controls
+              Either way, {student.first_name} practices at the level that fits them, your choice only controls
               whether we show above-grade and SAT progress.
             </p>
           </div>
           <button className="btn btn-navy" onClick={() => handleStart(true)}>
-            Yes — let {student.first_name} get ahead when ready
+            Yes, let {student.first_name} get ahead when ready
           </button>
           <button className="btn btn-soft" style={{ marginTop: 10 }} onClick={() => handleStart(false)}>
             Keep it grade-focused for now
@@ -456,7 +456,7 @@ export function Diagnostic() {
       <div className="shell">
         <TopMenu />
         <p className="practice-solo">
-          {early ? 'Listen to Nikki, then tap your answer!' : 'Just do your best — this helps us find the right level for you.'}
+          {early ? 'Listen to Nikki, then tap your answer!' : 'Just do your best, this helps us find the right level for you.'}
         </p>
         {!early && (
           <div className="practice-progress muted">

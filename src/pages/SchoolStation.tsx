@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router"
 import { supabase } from "@/lib/supabase"
 import { deanSupabase } from "@/lib/deanSupabase"
+import type { Session } from "@supabase/supabase-js"
 import { schoolPinLogin } from "@/lib/schoolBridge"
 import { setSchoolSession } from "@/lib/schoolSession"
 
@@ -59,12 +60,15 @@ export function SchoolStation() {
 
   // Track the Dean staff session (also completes the PKCE OAuth return on load).
   useEffect(() => {
-    if (!deanSupabase) return
+    // Captured into a local so the narrowing survives into the async closure
+    // below. deanSupabase is null when the Dean env vars are not configured, and
+    // TypeScript will not carry a narrowing on an imported binding across a
+    // function boundary.
+    const dean = deanSupabase
+    if (!dean) return
     let active = true
 
-    const apply = async (session: Awaited<
-      ReturnType<typeof deanSupabase.auth.getSession>
-    >["data"]["session"]) => {
+    const apply = async (session: Session | null) => {
       if (!active) return
       if (!session?.user) {
         setStaffEmail(null)
@@ -74,8 +78,8 @@ export function SchoolStation() {
       }
       setStaffEmail(session.user.email ?? null)
       setStaffToken(session.access_token)
-      // The staff member's own school — server + Dean both re-validate the match.
-      const { data } = await deanSupabase
+      // The staff member's own school. Server + Dean both re-validate the match.
+      const { data } = await dean
         .from("profiles")
         .select("school_id")
         .eq("id", session.user.id)
@@ -83,8 +87,8 @@ export function SchoolStation() {
       if (active) setSchoolId((data?.school_id as string | null) ?? null)
     }
 
-    void deanSupabase.auth.getSession().then(({ data }) => apply(data.session))
-    const { data: sub } = deanSupabase.auth.onAuthStateChange((_e, s) => void apply(s))
+    void dean.auth.getSession().then(({ data }) => apply(data.session))
+    const { data: sub } = dean.auth.onAuthStateChange((_e, s) => void apply(s))
     return () => {
       active = false
       sub.subscription.unsubscribe()
@@ -110,7 +114,7 @@ export function SchoolStation() {
       return
     }
     if (!/^\d{4,6}$/.test(pin.trim())) {
-      setError("Enter the student's 4–6 digit PIN.")
+      setError("Enter the student's 4-6 digit PIN.")
       return
     }
     setBusy(true)
@@ -121,7 +125,7 @@ export function SchoolStation() {
     if (!r.covered || !r.student_id || !r.session) {
       setError(
         r.error === "staff_session_required" || r.error === "staff_session_invalid"
-          ? "Staff session expired — sign in again."
+          ? "Staff session expired, sign in again."
           : r.error === "rate_limited"
             ? "Too many attempts. Wait a moment and retry."
             : "No covered student found for that PIN.",
@@ -175,7 +179,7 @@ export function SchoolStation() {
         <>
           <p style={{ fontSize: 13, color: "#374151" }}>
             Signed in as <strong>{staffEmail}</strong>
-            {schoolId ? null : " — no school on this account"}
+            {schoolId ? null : ", no school on this account"}
             {"  "}
             <button
               onClick={() => void staffSignOut()}

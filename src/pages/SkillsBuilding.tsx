@@ -195,7 +195,7 @@ export function SkillsBuilding() {
               <NikkiFace mode={avatarModeOf(student)} size={96} />
               <h1 className="greet">Let’s get started, {student.first_name}!</h1>
               <p className="muted">
-                First, a quick check so I can pick just-right lessons for you. It’s short — no grades, just so I know
+                First, a quick check so I can pick just-right lessons for you. It’s short, no grades, just so I know
                 where to begin.
               </p>
             </div>
@@ -268,9 +268,9 @@ export function SkillsBuilding() {
                   <h1 className="greet">Today we’re working on {lesson.label}.</h1>
                   <p className="muted">
                     {lesson.fromFocus
-                      ? `This is one of the skills from your SAT Math practice — let’s strengthen it together.`
+                      ? `This is one of the skills from your SAT Math practice, let’s strengthen it together.`
                       : lesson.trackComplete
-                        ? `You’ve mastered every ${lesson.subject} skill here — let’s keep ${lesson.label} sharp.`
+                        ? `You’ve mastered every ${lesson.subject} skill here, let’s keep ${lesson.label} sharp.`
                         : `I’ll show you how it works and we’ll practice together.`}
                   </p>
                 </>

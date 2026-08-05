@@ -30,8 +30,8 @@ export function StudentHome() {
   // Dynamic header based on mode
   const headerText =
     state.mode === 'school'
-      ? "Hi Jordan — here's what your teacher wants you to work on"
-      : "Hi Jordan — here's what to work on today"
+      ? "Hi Jordan, here's what your teacher wants you to work on"
+      : "Hi Jordan, here's what to work on today"
 
   return (
     <PageLayout title="Student Home">

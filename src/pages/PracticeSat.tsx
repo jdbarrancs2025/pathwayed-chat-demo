@@ -86,7 +86,7 @@ export function PracticeSat() {
         <div className="shell">
           <TopMenu />
           <h1 className="greet">SAT Practice</h1>
-          <p className="muted">No practice questions are ready yet — check back soon!</p>
+          <p className="muted">No practice questions are ready yet, check back soon!</p>
           <button className="btn btn-navy" onClick={backToDashboard}>
             Back to my dashboard
           </button>
@@ -103,7 +103,7 @@ export function PracticeSat() {
           <h1 className="greet">SAT Practice</h1>
           <div className="panel">
             <p style={{ margin: 0 }}>
-              A short, SAT-style practice test — {questions.length} questions across a{' '}
+              A short, SAT-style practice test, {questions.length} questions across a{' '}
               <strong>Reading &amp; Writing</strong> section and a <strong>Math</strong> section. Answer them all, then
               I’ll show your score for each section and walk through anything you missed.
             </p>
@@ -153,7 +153,7 @@ export function PracticeSat() {
             </div>
             <p className="practice-encourage">{encouragement(summary.accuracy)}</p>
             <p className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
-              Raw practice score per section — not a scaled SAT score.
+              Raw practice score per section, not a scaled SAT score.
             </p>
           </div>
 
@@ -176,7 +176,7 @@ export function PracticeSat() {
                     </div>
                     <p className="sat-review-line">
                       <span className="muted">Your answer:</span>{' '}
-                      {chosenChoice ? <MathText content={chosenChoice.text} /> : <em>—</em>}
+                      {chosenChoice ? <MathText content={chosenChoice.text} /> : <em>-</em>}
                     </p>
                     <p className="sat-review-line">
                       <span className="muted">Correct answer:</span>{' '}
@@ -194,7 +194,7 @@ export function PracticeSat() {
             </div>
           ) : (
             <div className="panel">
-              <p style={{ margin: 0 }}>Perfect score — you didn’t miss any. 🎉</p>
+              <p style={{ margin: 0 }}>Perfect score, you didn’t miss any. 🎉</p>
             </div>
           )}
 
@@ -234,7 +234,7 @@ export function PracticeSat() {
     <div className="kid-screen">
       <div className="shell">
         <TopMenu />
-        <p className="practice-solo">SAT Practice — answer your best, review at the end.</p>
+        <p className="practice-solo">SAT Practice, answer your best, review at the end.</p>
         <div className="practice-progress muted">
           <span className="sat-section-tag">{sectionLabel}</span> · Question {index + 1} of {questions.length}
         </div>
@@ -269,7 +269,7 @@ export function PracticeSat() {
 
 // Always encouraging — a practice score is progress, never punishing.
 function encouragement(accuracy: number): string {
-  if (accuracy >= 80) return "Strong work — you're handling real SAT-style questions well."
+  if (accuracy >= 80) return "Strong work, you're handling real SAT-style questions well."
   if (accuracy >= 50) return 'Solid effort! Reviewing the misses below is exactly how the score climbs.'
-  return 'Great job sticking with it — the SAT takes practice. Review below and try again soon.'
+  return 'Great job sticking with it, the SAT takes practice. Review below and try again soon.'
 }

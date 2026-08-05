@@ -50,7 +50,7 @@ export function SeatPicker({
       <h3>Active profiles</h3>
       <p className="muted" style={{ fontSize: 13.5, margin: '4px 0 10px' }}>
         {overCap
-          ? `Your plan covers ${cap} active ${cap === 1 ? 'child' : 'children'}, but ${activeCount} are on. Choose which stay active — the rest are paused, not deleted.`
+          ? `Your plan covers ${cap} active ${cap === 1 ? 'child' : 'children'}, but ${activeCount} are on. Choose which stay active. The rest are paused, not deleted.`
           : `${activeCount} of ${cap} seats in use. Paused children keep all their progress and can be turned back on any time there’s room.`}
       </p>
       <div style={{ display: 'grid', gap: 8 }}>

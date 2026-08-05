@@ -90,7 +90,7 @@ export function NikkiChat({
           {/* Left: Title */}
           <div className="min-w-0">
             <h2 className="font-semibold text-primary">
-              Practice Session — N.I.K.K.I.
+              Practice Session, N.I.K.K.I.
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5">
               Answer each question to complete your session
@@ -99,7 +99,7 @@ export function NikkiChat({
 
           {/* Right: TTS controls */}
           <div className="flex items-center gap-2 shrink-0 pt-0.5">
-            {/* Stop button — only visible when TTS is active */}
+            {/* Stop button, only visible when TTS is active */}
             {ttsActive && (
               <button
                 onClick={stop}
@@ -115,7 +115,7 @@ export function NikkiChat({
               </button>
             )}
 
-            {/* Read aloud label — hidden on small screens */}
+            {/* Read aloud label, hidden on small screens */}
             <label
               htmlFor="read-aloud"
               className="hidden sm:block text-xs font-medium text-muted-foreground cursor-pointer select-none"
@@ -123,7 +123,7 @@ export function NikkiChat({
               Read aloud
             </label>
 
-            {/* Volume icon — shown on small screens only */}
+            {/* Volume icon, shown on small screens only */}
             {readAloud ? (
               <Volume2 className="h-4 w-4 text-primary sm:hidden" />
             ) : (
@@ -139,10 +139,10 @@ export function NikkiChat({
           </div>
         </div>
 
-        {/* TTS error — small text below header content */}
+        {/* TTS error, small text below header content */}
         {ttsError && (
           <p className="text-xs text-red-500 mt-1.5">
-            Voice playback failed — responses will still appear as text.
+            Voice playback failed, responses will still appear as text.
           </p>
         )}
       </div>

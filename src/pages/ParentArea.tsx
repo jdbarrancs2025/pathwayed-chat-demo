@@ -100,7 +100,7 @@ export function ParentArea() {
           )}
         </div>
 
-        {/* Real data we don't have yet — labeled, never faked. */}
+        {/* Real data we don't have yet, labeled, never faked. */}
         {children.length > 0 && (
           <section className="panel placeholder">
             <h3>
@@ -166,7 +166,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
 
       {!hasActivity ? (
         <p className="empty-progress">
-          No activity yet — when {student.first_name} starts practicing, their progress will show
+          No activity yet. When {student.first_name} starts practicing, their progress will show
           here.
         </p>
       ) : (
@@ -249,7 +249,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
                 </div>
               ) : (
                 <p className="empty-progress">
-                  Building toward strengths — keep practicing to unlock them.
+                  Building toward strengths, keep practicing to unlock them.
                 </p>
               )}
             </div>
@@ -272,7 +272,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
                 </div>
               ) : (
                 <p className="empty-progress">
-                  Nothing flagged — {student.first_name} is doing well across the board.
+                  Nothing flagged, {student.first_name} is doing well across the board.
                 </p>
               )}
             </div>

@@ -51,7 +51,7 @@ const CLASS_MEMBER = 'class-picked-a-member' // in odd-one-out, flagged a word t
  *  the shared misconceptions.ts) so the logic bank stands on its own. */
 export const LOGIC_MISCONCEPTIONS: Record<string, string> = {
   [LOGIC_REVERSED]:
-    'You flipped the rule around. "All A are B" does not mean "all B are A" — an arrow only points one way.',
+    'You flipped the rule around. "All A are B" does not mean "all B are A", an arrow only points one way.',
   [LOGIC_OVERGEN]:
     'That says more than the clues prove. Stick to exactly what you were told; do not stretch it any further.',
   [LOGIC_ASSUMPTION]:
@@ -59,13 +59,13 @@ export const LOGIC_MISCONCEPTIONS: Record<string, string> = {
   [LOGIC_ORDER]:
     'The order got mixed up. Line the clues up carefully (tallest to shortest, first to last) before you choose.',
   [CLASS_WRONG_ATTR]:
-    'You matched the wrong feature — like color, size, or spelling — instead of the group the word belongs to. Sort by category, not by how it looks.',
+    'You matched the wrong feature, like color, size, or spelling, instead of the group the word belongs to. Sort by category, not by how it looks.',
   [CLASS_TOO_BROAD]:
     'That word names a broader, more general category. It is too loose to be the exact match, and it still shares the group, so it is not the odd one out either.',
   [CLASS_ASSOCIATED]:
     'That word is connected to the group, but it is not a member of it. Being related is not the same as belonging.',
   [CLASS_MEMBER]:
-    'That word actually DOES belong with the others — it shares the same category, so it cannot be the odd one out. Look for the ONE word that breaks the pattern.',
+    'That word actually DOES belong with the others, it shares the same category, so it cannot be the odd one out. Look for the ONE word that breaks the pattern.',
 }
 
 // --- Raw item shape ---------------------------------------------------------
@@ -190,7 +190,7 @@ const LOGIC_ITEMS: RawItem[] = [
   {
     tier: 'easy',
     stem: 'Everyone in the chess club can play chess. Tom can play chess. Is Tom definitely in the chess club?',
-    answer: 'No — playing chess does not prove he is a member',
+    answer: 'No, playing chess does not prove he is a member',
     d: [
       dd('Yes, he must be a member', LOGIC_REVERSED),
       dd('Yes, everyone who can play is a member', LOGIC_OVERGEN),
@@ -253,7 +253,7 @@ const LOGIC_ITEMS: RawItem[] = [
       dd('Yes, since all river fish are sharks', LOGIC_REVERSED),
       dd('Yes, sharks need river water', LOGIC_ASSUMPTION),
     ],
-    solution: 'Only SOME fish live in rivers, so we cannot say every shark does — the word "some" does not cover all.',
+    solution: 'Only SOME fish live in rivers, so we cannot say every shark does, the word "some" does not cover all.',
   },
   {
     tier: 'medium',
@@ -313,7 +313,7 @@ const LOGIC_ITEMS: RawItem[] = [
   {
     tier: 'medium',
     stem: 'If the alarm rings, everyone must leave. The alarm did NOT ring. What must happen?',
-    answer: 'Nothing is required — they may stay',
+    answer: 'Nothing is required, they may stay',
     d: [
       dd('Everyone must leave anyway', LOGIC_OVERGEN),
       dd('The alarm rang because they left', LOGIC_REVERSED),
@@ -330,7 +330,7 @@ const LOGIC_ITEMS: RawItem[] = [
       dd('Yes, since all cleat-wearers are students', LOGIC_REVERSED),
       dd('Yes, the school hands them out', LOGIC_ASSUMPTION),
     ],
-    solution: 'Only SOME students play soccer, so only those students must wear cleats — not every student.',
+    solution: 'Only SOME students play soccer, so only those students must wear cleats, not every student.',
   },
   {
     tier: 'medium',

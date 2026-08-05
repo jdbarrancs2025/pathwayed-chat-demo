@@ -58,7 +58,7 @@ export interface PreReaderItem {
   /** The SPOKEN prompt — Nikki reads it aloud; the child does not read it. */
   stem: string
   prompt: Prompt
-  choices: PreReaderChoice[] // 2–4 tiles, exactly one correct, kind distractors
+  choices: PreReaderChoice[] // 2-4 tiles, exactly one correct, kind distractors
   /** A short, warm, count-it-together message — spoken on a wrong tap and to explain. */
   solution: string
   /**
@@ -168,7 +168,7 @@ const COUNTING_K: PreReaderSkill = {
       { text: '3', is_correct: true, tile: grp('star', 3) },
       { text: '2', is_correct: false, tile: grp('star', 2) },
       { text: '4', is_correct: false, tile: grp('star', 4) },
-    ], solution: "Let's count each group. One, two, three — this group shows 3!" },
+    ], solution: "Let's count each group. One, two, three, this group shows 3!" },
     { slot: 11, difficulty: 'easy', stem: 'Tap the group that shows 4.', prompt: null, choices: [
       { text: '4', is_correct: true, tile: grp('apple', 4) },
       { text: '3', is_correct: false, tile: grp('apple', 3) },
@@ -406,22 +406,22 @@ const LETTER_NAMING_K: PreReaderSkill = {
     { slot: 6, difficulty: 'medium', stem: 'Can you find the letter H? Tap it.', prompt: null, choices: [ltrChoice('H', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's H! Well done!" },
     { slot: 7, difficulty: 'medium', stem: 'Can you find the letter K? Tap it.', prompt: null, choices: [ltrChoice('K', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's K! Great!" },
     { slot: 8, difficulty: 'medium', stem: 'Can you find the letter L? Tap it.', prompt: null, choices: [ltrChoice('L', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's L! Nice!" },
-    { slot: 9, difficulty: 'easy', stem: 'Can you find the letter O? Tap it.', prompt: null, choices: [ltrChoice('O', true), ltrChoice('S'), ltrChoice('M')], solution: "That's O — the round one! Great!" },
+    { slot: 9, difficulty: 'easy', stem: 'Can you find the letter O? Tap it.', prompt: null, choices: [ltrChoice('O', true), ltrChoice('S'), ltrChoice('M')], solution: "That's O, the round one! Great!" },
     { slot: 10, difficulty: 'medium', stem: 'Can you find the letter R? Tap it.', prompt: null, choices: [ltrChoice('R', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's R! Well done!" },
     { slot: 11, difficulty: 'easy', stem: 'Can you find the letter S? Tap it.', prompt: null, choices: [ltrChoice('S', true), ltrChoice('M'), ltrChoice('T'), ltrChoice('B')], solution: "That's S! Nice finding!" },
     { slot: 12, difficulty: 'easy', stem: 'Can you find the letter T? Tap it.', prompt: null, choices: [ltrChoice('T', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('B')], solution: "That's T! Great!" },
     { slot: 13, difficulty: 'medium', stem: 'Can you find the letter W? Tap it.', prompt: null, choices: [ltrChoice('W', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's W! Well done!" },
-    { slot: 14, difficulty: 'hard', stem: 'Can you find the letter Z? Tap it.', prompt: null, choices: [ltrChoice('Z', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's Z — the very last letter! Great!" },
+    { slot: 14, difficulty: 'hard', stem: 'Can you find the letter Z? Tap it.', prompt: null, choices: [ltrChoice('Z', true), ltrChoice('S'), ltrChoice('M'), ltrChoice('T')], solution: "That's Z, the very last letter! Great!" },
     // --- Lowercase: hear a letter name, tap the little letter ---
-    { slot: 15, difficulty: 'medium', stem: 'Tap the little letter a.', prompt: null, choices: [ltrChoice('a', true), ltrChoice('s'), ltrChoice('m')], solution: "Yes — that's little a! Nice!" },
-    { slot: 16, difficulty: 'medium', stem: 'Tap the little letter c.', prompt: null, choices: [ltrChoice('c', true), ltrChoice('s'), ltrChoice('m')], solution: "Yes — little c! Great!" },
+    { slot: 15, difficulty: 'medium', stem: 'Tap the little letter a.', prompt: null, choices: [ltrChoice('a', true), ltrChoice('s'), ltrChoice('m')], solution: "Yes, that's little a! Nice!" },
+    { slot: 16, difficulty: 'medium', stem: 'Tap the little letter c.', prompt: null, choices: [ltrChoice('c', true), ltrChoice('s'), ltrChoice('m')], solution: "Yes, little c! Great!" },
     { slot: 17, difficulty: 'medium', stem: 'Tap the little letter e.', prompt: null, choices: [ltrChoice('e', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little e! Well done!" },
     { slot: 18, difficulty: 'medium', stem: 'Tap the little letter f.', prompt: null, choices: [ltrChoice('f', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little f! Nice!" },
     { slot: 19, difficulty: 'medium', stem: 'Tap the little letter h.', prompt: null, choices: [ltrChoice('h', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little h! Great!" },
     { slot: 20, difficulty: 'hard', stem: 'Tap the little letter k.', prompt: null, choices: [ltrChoice('k', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little k! Well done!" },
     { slot: 21, difficulty: 'medium', stem: 'Tap the little letter l.', prompt: null, choices: [ltrChoice('l', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('a')], solution: "That's little l! Nice!" },
     { slot: 22, difficulty: 'medium', stem: 'Tap the little letter m.', prompt: null, choices: [ltrChoice('m', true), ltrChoice('s'), ltrChoice('t'), ltrChoice('a')], solution: "That's little m! Great!" },
-    { slot: 23, difficulty: 'easy', stem: 'Tap the little letter o.', prompt: null, choices: [ltrChoice('o', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little o — nice and round! Nice!" },
+    { slot: 23, difficulty: 'easy', stem: 'Tap the little letter o.', prompt: null, choices: [ltrChoice('o', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little o, nice and round! Nice!" },
     { slot: 24, difficulty: 'medium', stem: 'Tap the little letter r.', prompt: null, choices: [ltrChoice('r', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('t')], solution: "That's little r! Well done!" },
     { slot: 25, difficulty: 'easy', stem: 'Tap the little letter s.', prompt: null, choices: [ltrChoice('s', true), ltrChoice('m'), ltrChoice('t'), ltrChoice('a')], solution: "That's little s! Great!" },
     { slot: 26, difficulty: 'medium', stem: 'Tap the little letter t.', prompt: null, choices: [ltrChoice('t', true), ltrChoice('s'), ltrChoice('m'), ltrChoice('a')], solution: "That's little t! Nice!" },

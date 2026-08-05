@@ -83,7 +83,7 @@ export function KidHome() {
             <h1 className="greet" style={{ marginTop: 8 }}>Hi, {student.first_name}!</h1>
             <p className="muted">
               This profile is paused right now. A parent can turn it back on in Settings once there’s room on
-              the plan — nothing has been lost.
+              the plan, nothing has been lost.
             </p>
             <button className="btn btn-soft" style={{ marginTop: 16 }} onClick={() => navigate('/settings')}>
               Go to Settings
@@ -145,7 +145,7 @@ export function KidHome() {
           </div>
         )}
 
-        {/* Optional placement offer — shown once for an unplaced grades-3-12 child,
+        {/* Optional placement offer, shown once for an unplaced grades-3-12 child,
             never forced. Taking it seeds their level; skipping just starts a lesson
             and the offer returns next visit until they're placed. */}
         {offerPlacement && (
@@ -156,7 +156,7 @@ export function KidHome() {
             <div style={{ flex: 1, minWidth: 200 }}>
               <h3 style={{ marginBottom: 4 }}>Find your level first?</h3>
               <p className="muted" style={{ margin: 0, fontSize: 13.5 }}>
-                A few quick questions help Nikki start you at just the right spot. Totally optional — you can jump
+                A few quick questions help Nikki start you at just the right spot. Totally optional, you can jump
                 straight into a lesson instead.
               </p>
             </div>
@@ -211,7 +211,7 @@ export function KidHome() {
             </div>
           </button>
 
-          {/* Practice SAT — HS only (grades 9–12) AND SAT-framing consent. Hidden
+          {/* Practice SAT, HS only (grades 9-12) AND SAT-framing consent. Hidden
               for everyone else; the route re-checks the same gate. */}
           {canTakePracticeSat(student) && (
             <button
@@ -224,12 +224,12 @@ export function KidHome() {
               </div>
               <div>
                 <h3>SAT Practice</h3>
-                <p>A short, SAT-style Reading &amp; Writing + Math practice — see how you’d do.</p>
+                <p>A short, SAT-style Reading &amp; Writing + Math practice, see how you’d do.</p>
               </div>
             </button>
           )}
 
-          {/* Test-prep module tiles — one per module the child is entitled to
+          {/* Test-prep module tiles, one per module the child is entitled to
               (status 'active' only). Renders nothing when there are none. */}
           <PrepModuleTiles studentId={student.id} />
 

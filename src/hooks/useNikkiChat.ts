@@ -123,7 +123,7 @@ async function streamResponse(
  */
 export function useNikkiChat({ context }: UseNikkiChatOptions): UseNikkiChatReturn {
   const [messages, setMessages] = useState<Message[]>([])
-  const [isLoading, setIsLoading] = useState(true) // true by default — auto-start fires immediately
+  const [isLoading, setIsLoading] = useState(true) // true by default, auto-start fires immediately
   const [error, setError] = useState<string | null>(null)
   const [currentQuestion, setCurrentQuestion] = useState<number | null>(null)
   const [totalQuestions, setTotalQuestions] = useState<number | null>(null)

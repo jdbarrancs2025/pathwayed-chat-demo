@@ -11,7 +11,7 @@ export type AvatarMode = 'video' | 'orb' | 'voice'
 export const AVATAR_MODES: { id: AvatarMode; label: string; desc: string }[] = [
   { id: 'video', label: 'Video', desc: "Nikki's animated face" },
   { id: 'orb', label: 'Orb', desc: 'A calmer animated orb' },
-  { id: 'voice', label: 'Voice only', desc: 'A simple nameplate — no animated face' },
+  { id: 'voice', label: 'Voice only', desc: 'A simple nameplate, no animated face' },
 ]
 
 /** Resolve a student's avatar mode, defaulting to video for null/legacy/invalid. */

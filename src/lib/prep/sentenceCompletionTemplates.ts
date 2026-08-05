@@ -50,7 +50,7 @@ export const SENTENCE_COMPLETION_MISCONCEPTIONS: Record<string, string> = {
   [SC_IGNORED_RESTATEMENT]:
     'The sentence restates the clue with a phrase like "that is" or "in other words," so the blank should MATCH the clue\'s meaning. This choice does not mean the same thing.',
   [SC_WRONG_TONE]:
-    'This word is about the right topic, but its feeling — positive or negative — is wrong for what the sentence is describing.',
+    'This word is about the right topic, but its feeling, positive or negative, is wrong for what the sentence is describing.',
   [SC_OFF_TOPIC]:
     'This word can fit the grammar, but it ignores the clue in the sentence, so it does not actually make sense in the blank.',
   [SC_SECOND_BLANK_MISMATCH]:
@@ -236,7 +236,7 @@ const FRAMES: Frame[] = [
     stem: 'The guide was ___; that is, he was ___ and eager to help everyone.',
     answer: 'kind . . . helpful',
     d: [d('kind . . . unhelpful', SC_SECOND_BLANK_MISMATCH), d('mean . . . helpful', SC_FIRST_BLANK_MISMATCH), d('harsh . . . cold', SC_IGNORED_RESTATEMENT)],
-    solution: 'The phrase "that is" signals RESTATEMENT: both blanks must describe a friendly guide — kind and helpful.',
+    solution: 'The phrase "that is" signals RESTATEMENT: both blanks must describe a friendly guide, kind and helpful.',
   },
 
   // ============================= MEDIUM =============================
@@ -396,7 +396,7 @@ const FRAMES: Frame[] = [
     stem: 'The witness gave a ___ account; that is, a report that was ___ and easy to follow.',
     answer: 'coherent . . . clear',
     d: [d('coherent . . . muddled', SC_SECOND_BLANK_MISMATCH), d('rambling . . . clear', SC_FIRST_BLANK_MISMATCH), d('confusing . . . vague', SC_IGNORED_RESTATEMENT)],
-    solution: 'The phrase "that is" signals RESTATEMENT: both blanks describe an easy-to-follow account — coherent and clear.',
+    solution: 'The phrase "that is" signals RESTATEMENT: both blanks describe an easy-to-follow account, coherent and clear.',
   },
 
   // ============================= HARD =============================
@@ -542,7 +542,7 @@ const FRAMES: Frame[] = [
     stem: 'The scholar was ___; that is, she was ___ and reluctant to boast of her many achievements.',
     answer: 'modest . . . humble',
     d: [d('modest . . . boastful', SC_SECOND_BLANK_MISMATCH), d('arrogant . . . humble', SC_FIRST_BLANK_MISMATCH), d('vain . . . proud', SC_IGNORED_RESTATEMENT)],
-    solution: 'The phrase "that is" signals RESTATEMENT: both blanks describe someone who will not boast — modest and humble.',
+    solution: 'The phrase "that is" signals RESTATEMENT: both blanks describe someone who will not boast, modest and humble.',
   },
   {
     tier: 'hard', clue: 'contrast', blanks: 2,

@@ -69,11 +69,11 @@ export const QUANT_COMPARE_MISCONCEPTIONS: Record<string, string> = {
   [QC_COMPUTED_ONE]:
     'You worked out only one column (or stopped partway) and then guessed. Figure out BOTH columns all the way, then compare them.',
   [QC_SWAPPED]:
-    'You mixed up the columns — the value you put in Column A really belongs to Column B, or the other way around. Check which value goes with which column.',
+    'You mixed up the columns, the value you put in Column A really belongs to Column B, or the other way around. Check which value goes with which column.',
   [QC_ARITH]:
     'A small arithmetic slip (order of operations, or a times/plus mistake) changed your result. Redo the calculation one careful step at a time.',
   [QC_IGNORED_COND]:
-    'You skipped a fact the problem told you. That given condition settles the answer — go back and use it.',
+    'You skipped a fact the problem told you. That given condition settles the answer, go back and use it.',
   [QC_MISREAD]:
     'You read one of the expressions wrong. Re-read exactly what each column says before you compute anything.',
   [QC_TESTED_ONE]:
@@ -358,7 +358,7 @@ function buildItem(slot: number, s: Spec): PrepItem {
   return { slot, difficulty: s.tier, stem: s.stem, choices, solution: s.solution }
 }
 
-export const PREP_QUANT_SUBJECT = { key: 'subj-prep-quant', subject: 'prep-quant', name: 'Test Prep — Quantitative' }
+export const PREP_QUANT_SUBJECT = { key: 'subj-prep-quant', subject: 'prep-quant', name: 'Test Prep, Quantitative' }
 export const PREP_QUANT_DOMAIN = { key: 'dom-prep-quant', name: 'Quantitative Reasoning' }
 
 export const PREP_QUANT_COMPARE_SKILLS: PrepSkill[] = [

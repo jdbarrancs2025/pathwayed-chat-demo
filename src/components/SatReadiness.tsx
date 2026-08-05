@@ -24,7 +24,7 @@ import { satPacingTone } from '@/lib/satFraming'
 // Defined ONCE — the non-negotiable framing strings shared by both surfaces.
 const METHODOLOGY = 'Projected from demonstrated mastery, refined as your child practices.'
 const TRAJECTORY_DISCLAIMER =
-  'Junior-year potential is where they could land if they master weak and untouched skills — a potential, not a prediction.'
+  'Junior-year potential is where they could land if they master weak and untouched skills, a potential, not a prediction.'
 
 // Pacing message: readiness comes from MASTERING the material, not from reaching a
 // grade. "Ready by 11th" is a target, not a gate — a strong-mastery student is
@@ -32,15 +32,15 @@ const TRAJECTORY_DISCLAIMER =
 const PACING: Record<Variant, Record<'ahead' | 'building', string>> = {
   student: {
     ahead:
-      "You're ahead of the usual pace! Readiness comes from mastering the skills, not waiting for a grade — keep it up and you'll be ready early.",
+      "You're ahead of the usual pace! Readiness comes from mastering the skills, not waiting for a grade, keep it up and you'll be ready early.",
     building:
-      "Readiness comes from mastering the skills, not reaching a certain grade. Master them and you're ready — as soon as that takes you, not a moment later.",
+      "Readiness comes from mastering the skills, not reaching a certain grade. Master them and you're ready, as soon as that takes you, not a moment later.",
   },
   parent: {
     ahead:
-      'Ahead of the usual pace — readiness comes from mastered skills, not a grade. A strong-mastery student is ready early, ahead of the typical junior-year timeline.',
+      'Ahead of the usual pace, readiness comes from mastered skills, not a grade. A strong-mastery student is ready early, ahead of the typical junior-year timeline.',
     building:
-      "Readiness comes from mastered skills, not a grade. As your child masters the material they become ready — potentially ahead of the typical junior-year timeline, never held to it.",
+      "Readiness comes from mastered skills, not a grade. As your child masters the material they become ready, potentially ahead of the typical junior-year timeline, never held to it.",
   },
 }
 
@@ -60,7 +60,7 @@ const COPY: Record<Variant, Record<'empty' | 'foundation' | 'insufficient' | 'co
   student: {
     empty: 'As your child practices SAT-aligned skills, a readiness estimate will appear here.',
     foundation:
-      "You're building skills that lead toward the SAT. Keep practicing — these are the foundations that get them there.",
+      "You're building skills that lead toward the SAT. Keep practicing, these are the foundations that get them there.",
     insufficient: "A little more SAT-skill practice and we'll project a score range. Here's where things stand so far.",
     college: 'On track toward college-level work. Below is an estimated SAT range from demonstrated mastery.',
     sat: 'Here is an estimated SAT range from demonstrated mastery.',
@@ -68,7 +68,7 @@ const COPY: Record<Variant, Record<'empty' | 'foundation' | 'insufficient' | 'co
   parent: {
     empty: 'As your child practices SAT-aligned skills, a readiness estimate will appear here.',
     foundation:
-      'Your child is building foundational skills toward college readiness — no SAT estimate yet; that comes as they grow these skills.',
+      'Your child is building foundational skills toward college readiness, no SAT estimate yet; that comes as they grow these skills.',
     insufficient:
       'A little more SAT-skill practice and an estimated score range will appear. Here is where things stand so far.',
     college:

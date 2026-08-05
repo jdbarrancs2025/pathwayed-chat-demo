@@ -48,7 +48,7 @@ export function ParentPinControl({ parentId }: ParentPinControlProps) {
     const { error } = await setParentPin(pin)
     setBusy(false)
     if (error) {
-      setErr('Could not save — try again.')
+      setErr('Could not save, try again.')
       return
     }
     setEditing(false)
@@ -62,7 +62,7 @@ export function ParentPinControl({ parentId }: ParentPinControlProps) {
     const { error } = await clearParentPin()
     setBusy(false)
     if (error) {
-      setErr('Could not remove — try again.')
+      setErr('Could not remove, try again.')
       return
     }
     setHasPin(false)
@@ -72,7 +72,7 @@ export function ParentPinControl({ parentId }: ParentPinControlProps) {
     <div style={{ marginTop: 4 }}>
       <div className="stat-row">
         <span className="muted">Parent PIN</span>
-        <b>{hasPin === null ? '—' : hasPin ? '🔒 On' : 'Off'}</b>
+        <b>{hasPin === null ? '-' : hasPin ? '🔒 On' : 'Off'}</b>
       </div>
       <p style={{ fontSize: 13, color: '#5A6172', margin: '8px 0 0' }}>
         A 4-digit parent PIN locks the Parent dashboard, Settings, and Sign out while a child is signed in on

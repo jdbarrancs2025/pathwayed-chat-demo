@@ -74,7 +74,7 @@ export function StudentProgress({
 
   return (
     <div className="progress">
-      {/* AI Coach — near the top: the "what should I do next" anchor */}
+      {/* AI Coach, near the top: the "what should I do next" anchor */}
       <section className="panel coach">
         <h3>Your Coach</h3>
         <p className="coach-msg">{buildCoachMessage(readiness)}</p>
@@ -109,7 +109,7 @@ export function StudentProgress({
           ))
         ) : (
           <p className="empty-progress">
-            No progress yet — start a session and your skills will grow here. 🌱
+            No progress yet, start a session and your skills will grow here. 🌱
           </p>
         )}
       </section>
@@ -130,7 +130,7 @@ export function StudentProgress({
         )}
       </section>
 
-      {/* Today's Plan — derived from readiness, deep-links into sessions. */}
+      {/* Today's Plan, derived from readiness, deep-links into sessions. */}
       <section className="panel">
         <h3>Today’s Plan</h3>
         {plan.length ? (
@@ -152,7 +152,7 @@ export function StudentProgress({
         )}
       </section>
 
-      {/* Remaining placeholders — labeled, no logic behind them yet. */}
+      {/* Remaining placeholders, labeled, no logic behind them yet. */}
       <section className="panel placeholder">
         <h3>
           Readiness Score <span className="soon">Phase 2</span>

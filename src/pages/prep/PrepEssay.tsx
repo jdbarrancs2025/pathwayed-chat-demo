@@ -299,7 +299,7 @@ export function PrepEssay() {
               <h2 style={{ margin: '0 0 4px' }}>Practice essay</h2>
               <p className="muted" style={{ margin: '0 0 14px', fontSize: 13.5 }}>
                 You’ll have {Math.round(timeLimitSec / 60)} minutes to write, just like the real ISEE. The schools you
-                apply to will read this essay, so do your best — and Nikki will give you feedback when you’re done.
+                apply to will read this essay, so do your best, and Nikki will give you feedback when you’re done.
               </p>
             </div>
             <div style={{ background: '#FBF8F3', border: '1.4px solid #ECE4D8', borderRadius: 12, padding: '14px 16px', margin: '0 0 16px' }}>
@@ -328,7 +328,7 @@ export function PrepEssay() {
         <div className="shell">
           <div style={{ textAlign: 'center', marginTop: 8 }}>
             <NikkiFace mode={student ? avatarModeOf(student) : undefined} size={110} />
-            <h1 className="greet" style={{ margin: '6px 0 2px' }}>Essay done — great work!</h1>
+            <h1 className="greet" style={{ margin: '6px 0 2px' }}>Essay done. Great work!</h1>
             <p className="muted" style={{ margin: 0 }}>Here’s Nikki’s feedback on your writing.</p>
           </div>
 
@@ -340,7 +340,7 @@ export function PrepEssay() {
           <div className="panel" style={{ padding: '14px 16px', marginTop: 10 }}>
             <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: '#8A7F6D', letterSpacing: 0.3 }}>WHAT YOU WROTE</p>
             <p style={{ margin: '6px 0 0', fontSize: 14, color: '#1C2230', lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>
-              {text.trim() || 'You didn’t write anything this time — give it a try next round!'}
+              {text.trim() || 'You didn’t write anything this time, give it a try next round!'}
             </p>
           </div>
 
@@ -397,7 +397,7 @@ export function PrepEssay() {
         </div>
         {urgent && (
           <p style={{ textAlign: 'center', color: '#B0432E', fontSize: 12.5, fontWeight: 600, margin: '0 0 8px' }}>
-            Under two minutes — start wrapping up your last thoughts.
+            Under two minutes, start wrapping up your last thoughts.
           </p>
         )}
 

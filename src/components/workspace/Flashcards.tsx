@@ -156,7 +156,7 @@ export function Flashcards({ childName, grade, level }: { childName: string; gra
     <>
       <p className="wshint">
         Flashcards for sight words and vocabulary. Type a word list or topic, let Nikki choose for you, or upload a
-        photo or PDF of words or an assignment — Nikki turns it into a set.
+        photo or PDF of words or an assignment, Nikki turns it into a set.
       </p>
       <div className="field" style={{ marginTop: 0 }}>
         <label htmlFor="flash-topic">Words or topic (optional)</label>

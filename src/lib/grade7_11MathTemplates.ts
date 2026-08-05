@@ -594,7 +594,7 @@ const PROBABILITY_MODELS_7: GapMathSkill = {
       { text: '$\\frac{1}{6}$', is_correct: false, misconception_token: 'counted-one-even' },
       { text: '$\\frac{1}{3}$', is_correct: false, misconception_token: 'miscounted-evens' },
       { text: '$\\frac{2}{3}$', is_correct: false, misconception_token: 'overcounted' },
-    ], solution: 'Even faces are 2, 4, 6 — 3 of 6, so P = 3/6 = 1/2.' },
+    ], solution: 'Even faces are 2, 4, 6, 3 of 6, so P = 3/6 = 1/2.' },
     { slot: 6, difficulty: 'easy', stem: 'What is the probability of an impossible event?', choices: [
       { text: '0', is_correct: true },
       { text: '1', is_correct: false, misconception_token: 'confused-with-certain' },
@@ -624,7 +624,7 @@ const PROBABILITY_MODELS_7: GapMathSkill = {
       { text: '$\\frac{1}{6}$', is_correct: false, misconception_token: 'counted-one-face' },
       { text: '$\\frac{1}{2}$', is_correct: false, misconception_token: 'included-four' },
       { text: '$\\frac{2}{3}$', is_correct: false, misconception_token: 'used-complement' },
-    ], solution: 'Greater than 4 means 5 or 6 — 2 of 6, so 2/6 = 1/3.' },
+    ], solution: 'Greater than 4 means 5 or 6, 2 of 6, so 2/6 = 1/3.' },
     { slot: 11, difficulty: 'medium', stem: 'On a spinner, $P(A) = 0.3$ and $P(B) = 0.5$. What is $P(C)$ if C is the only other outcome?', choices: [
       { text: '0.2', is_correct: true },
       { text: '0.8', is_correct: false, misconception_token: 'added-instead-of-subtracting' },
@@ -660,7 +660,7 @@ const PROBABILITY_MODELS_7: GapMathSkill = {
       { text: '$\\frac{1}{10}$', is_correct: false, misconception_token: 'counted-one' },
       { text: '$\\frac{1}{3}$', is_correct: false, misconception_token: 'used-3-in-denominator' },
       { text: '$\\frac{4}{10}$', is_correct: false, misconception_token: 'included-ten' },
-    ], solution: 'Multiples of 3 in 1–10 are 3, 6, 9 — three of ten: 3/10.' },
+    ], solution: 'Multiples of 3 in 1-10 are 3, 6, 9, three of ten: 3/10.' },
     { slot: 17, difficulty: 'medium', stem: 'A spinner is spun 20 times and lands on red 8 times. What is the experimental probability of red?', choices: [
       { text: '$\\frac{2}{5}$', is_correct: true },
       { text: '$\\frac{3}{5}$', is_correct: false, misconception_token: 'used-non-red' },
@@ -976,7 +976,7 @@ const QUADRATIC_FUNCTIONS_11: GapMathSkill = {
       { text: '$(3, 0)$', is_correct: false, misconception_token: 'swapped-coordinates' },
       { text: '$(0, -3)$', is_correct: false, misconception_token: 'sign-error' },
       { text: '$(-3, 0)$', is_correct: false, misconception_token: 'swapped-and-sign' },
-    ], solution: 'y = x² + 3 has vertex at (0, 3) — shifted up 3.' },
+    ], solution: 'y = x² + 3 has vertex at (0, 3), shifted up 3.' },
     { slot: 2, difficulty: 'easy', stem: 'The parabola $y = -2x^2$ opens:', choices: [
       { text: 'downward', is_correct: true },
       { text: 'upward', is_correct: false, misconception_token: 'ignored-negative-leading' },
@@ -1328,7 +1328,7 @@ const SYSTEMS_OF_EQUATIONS_11: GapMathSkill = {
       { text: 'no solution', is_correct: false, misconception_token: 'assumed-parallel' },
       { text: 'one solution', is_correct: false, misconception_token: 'assumed-single-point' },
       { text: '$(5, 0)$', is_correct: false, misconception_token: 'picked-one-point' },
-    ], solution: 'The second equation is twice the first — the same line — so infinitely many solutions.' },
+    ], solution: 'The second equation is twice the first, the same line, so infinitely many solutions.' },
     { slot: 16, difficulty: 'medium', stem: 'Solve: $y = -x + 4$ and $y = x - 2$.', choices: [
       { text: '$(3, 1)$', is_correct: true },
       { text: '$(1, 3)$', is_correct: false, misconception_token: 'swapped-coordinates' },

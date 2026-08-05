@@ -41,7 +41,7 @@ export function ChildPinControl({ studentId, hasPin, onChanged }: ChildPinContro
     const { error } = await setStudentPin(studentId, pin)
     setBusy(false)
     if (error) {
-      setErr('Could not save — try again.')
+      setErr('Could not save, try again.')
       return
     }
     setEditing(false)
@@ -55,7 +55,7 @@ export function ChildPinControl({ studentId, hasPin, onChanged }: ChildPinContro
     const { error } = await clearStudentPin(studentId)
     setBusy(false)
     if (error) {
-      setErr('Could not remove — try again.')
+      setErr('Could not remove, try again.')
       return
     }
     onChanged?.(false)

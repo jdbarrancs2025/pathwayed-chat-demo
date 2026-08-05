@@ -275,7 +275,10 @@ export function buildHistory(
   essays: HistoryEssayInput[],
   modules: PrepModule[],
 ): HistoryRow[] {
-  const moduleById = new Map(modules.map((m) => [m.id, m]))
+  // Keyed by plain string: module ids arrive from the database as text, so a
+  // lookup must accept any string and simply miss. Every read below already
+  // handles undefined.
+  const moduleById = new Map<string, PrepModule>(modules.map((m) => [m.id, m]))
   const iseeName = moduleById.get('isee')?.name ?? 'ISEE'
 
   const rows: HistoryRow[] = []

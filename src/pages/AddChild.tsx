@@ -200,7 +200,7 @@ export function AddChild() {
         setAboveGradeConsent(id, aboveGradeOk),
       ])
       if (updateError || consentError) {
-        setErrMsg('Sorry — something went wrong saving. Please try again.')
+        setErrMsg('Sorry, something went wrong saving. Please try again.')
         setSaving(false)
         setConfirmReassess(false)
         return
@@ -215,7 +215,7 @@ export function AddChild() {
       try {
         await updateSeats(childCount + 1)
       } catch {
-        setErrMsg("Sorry — we couldn't update your billing. Please try again.")
+        setErrMsg("Sorry, we couldn't update your billing. Please try again.")
         setSaving(false)
         setConfirmBilling(false)
         return
@@ -404,7 +404,7 @@ export function AddChild() {
               )}
             </div>
 
-            {/* SAT / above-grade FRAMING consent — editable post-onboarding. Wired
+            {/* SAT / above-grade FRAMING consent, editable post-onboarding. Wired
                 to the same students.above_grade_ok field the placement step writes.
                 Framing/emphasis only: it enables SAT-readiness framing + the SAT
                 Practice card, never access or advancement (mastery still governs). */}
@@ -445,7 +445,7 @@ export function AddChild() {
               </div>
             )}
 
-            {/* Free-trial seat limit reached — subscribing is required to add more. */}
+            {/* Free-trial seat limit reached, subscribing is required to add more. */}
             {needsSubscribe && (
               <div
                 style={{
@@ -507,10 +507,10 @@ export function AddChild() {
                   textAlign: 'left',
                 }}
               >
-                <div style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>New grade — quick re-check</div>
+                <div style={{ fontWeight: 700, fontSize: 14.5, color: '#1C2230' }}>New grade, quick re-check</div>
                 <p style={{ fontSize: 13.5, color: '#5A6172', margin: '4px 0 0' }}>
                   Changing {name.trim() || 'their'}’s grade means we’ll do a short fresh assessment to reset their
-                  level. What they’ve already mastered is kept — we’ll save and start it now.
+                  level. What they’ve already mastered is kept, we’ll save and start it now.
                 </p>
               </div>
             )}

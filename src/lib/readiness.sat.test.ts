@@ -24,11 +24,14 @@ function srow(over: Partial<SatSkillRow> & { slug: string; sat_alignment: string
 
 // 4 fresh, fully-weighted math skills -> clears the low-data gate (>= 4 attempted).
 function fourMath(over: Partial<SatSkillRow> = {}): SatSkillRow[] {
+  // Spread FIRST so slug and sat_alignment cannot be overridden: they are the
+  // identity of each row, and SatSkillRow types sat_alignment as nullable, so a
+  // trailing spread widened it to string | null.
   return [
-    srow({ slug: 'm1', sat_alignment: 'algebra', ...over }),
-    srow({ slug: 'm2', sat_alignment: 'algebra', ...over }),
-    srow({ slug: 'm3', sat_alignment: 'advanced-math', ...over }),
-    srow({ slug: 'm4', sat_alignment: 'advanced-math', ...over }),
+    srow({ ...over, slug: 'm1', sat_alignment: 'algebra' }),
+    srow({ ...over, slug: 'm2', sat_alignment: 'algebra' }),
+    srow({ ...over, slug: 'm3', sat_alignment: 'advanced-math' }),
+    srow({ ...over, slug: 'm4', sat_alignment: 'advanced-math' }),
   ]
 }
 

@@ -34,12 +34,12 @@ export function gradeBand(grade?: string): GradeBand {
 export function gradeBandLabel(band: GradeBand): string {
   switch (band) {
     case 'k-2':
-      return 'K–2 (early reader)'
+      return 'K-2 (early reader)'
     case '3-5':
-      return 'Grades 3–5'
+      return 'Grades 3-5'
     case '6-8':
-      return 'Grades 6–8'
+      return 'Grades 6-8'
     case '9-12':
-      return 'Grades 9–12'
+      return 'Grades 9-12'
   }
 }

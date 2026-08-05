@@ -336,7 +336,7 @@ export function PrepTimedSection() {
         </div>
         {urgent && (
           <p style={{ textAlign: 'center', color: '#B0432E', fontSize: 12.5, fontWeight: 600, margin: '0 0 8px' }}>
-            Under two minutes — wrap up your answers.
+            Under two minutes, wrap up your answers.
           </p>
         )}
 
@@ -458,7 +458,7 @@ export function PrepTimedSection() {
         </div>
       </div>
 
-      {/* Leave warning — a warning, not a block. */}
+      {/* Leave warning, a warning, not a block. */}
       {leaving && (
         <div style={overlayStyle}>
           <div className="panel" style={{ padding: 20, maxWidth: 380, textAlign: 'center' }}>

@@ -45,7 +45,7 @@ export function AppRoutes() {
       {/* K-8 staff-supervised station: staff SSO (Dean) then student PIN entry. */}
       <Route path="/school" element={<SchoolStation />} />
       <Route path="/students" element={<StudentPicker />} />
-      {/* Learning surface — gated by the app-managed trial. Once the trial ends
+      {/* Learning surface, gated by the app-managed trial. Once the trial ends
           with no active subscription, SubscriptionGate blocks entry (for all
           children on the account) and shows a parent-facing subscribe prompt.
           School-covered students bypass it entirely (checked first). */}
@@ -55,13 +55,13 @@ export function AppRoutes() {
       <Route path="/students/:id/homework" element={<SubscriptionGate><HomeworkStart /></SubscriptionGate>} />
       <Route path="/students/:id/session/:subject" element={<SubscriptionGate><Session /></SubscriptionGate>} />
       <Route path="/students/:id/practice/:skill" element={<SubscriptionGate><Practice /></SubscriptionGate>} />
-      {/* Practice SAT — Phase 1: HS-only, consent-gated, Math-only. The page
+      {/* Practice SAT, Phase 1: HS-only, consent-gated, Math-only. The page
           re-checks the gate and redirects anyone who fails it. */}
       <Route path="/students/:id/practice-sat" element={<SubscriptionGate><PracticeSat /></SubscriptionGate>} />
       {/* Test-prep module shell (kid-facing). NOT behind SubscriptionGate: prep is
           separately paid, so a prep-only family (expired/no learning plan but an
           active prep entitlement) must still reach it. The page's own entitlement
-          check (active/past_due for this module) is the gate — it redirects home
+          check (active/past_due for this module) is the gate, it redirects home
           otherwise. Child identity comes from getStudent(id) under RLS. */}
       <Route path="/students/:id/prep/:moduleId" element={<PrepModuleHome />} />
       {/* Timed section engine + review. Ungated like the module home; each page
@@ -73,7 +73,7 @@ export function AppRoutes() {
           on the feedback/review screen). */}
       <Route path="/students/:id/prep/:moduleId/essay" element={<PrepEssay />} />
       <Route path="/students/:id/prep/:moduleId/essay/review/:attemptId" element={<PrepEssay />} />
-      {/* Placement diagnostic — Phase 1 (silent scoring). Temporary direct-hit
+      {/* Placement diagnostic, Phase 1 (silent scoring). Temporary direct-hit
           verification route; not yet wired into onboarding. */}
       <Route path="/students/:id/diagnostic" element={<Diagnostic />} />
       <Route path="/parent" element={<ParentArea />} />
@@ -84,7 +84,7 @@ export function AppRoutes() {
       <Route path="/parent-setup" element={<ParentSetup />} />
       <Route path="/student" element={<StudentHome />} />
       <Route path="/student/:subject" element={<StudentSubject />} />
-      {/* Legacy mock parent screens (ParentDashboard, ParentView) retired — both
+      {/* Legacy mock parent screens (ParentDashboard, ParentView) retired, both
           old routes now redirect to the one real dashboard. (/parent-view is
           still linked from the untouched legacy StudentHome, so we redirect
           rather than 404 it.) */}

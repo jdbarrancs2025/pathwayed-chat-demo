@@ -69,7 +69,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
         </h1>
         <p className="muted">
           Subscribe to unlock learning sessions and homework help for your children again. Nothing has been
-          deleted — every child’s saved progress is right where they left it.
+          deleted, every child’s saved progress is right where they left it.
         </p>
         <div className="panel" style={{ marginTop: 20, padding: '16px 18px' }}>
           <PlanPicker students={students} ctaLabel="Subscribe now" />

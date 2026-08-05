@@ -55,7 +55,7 @@ function friendlyAuthError(raw: string, mode: 'signin' | 'signup'): string {
   )
     return 'Email and password sign-in is turned off for this project right now.'
   if (m.includes('already registered') || m.includes('already been registered') || m.includes('already exists'))
-    return 'An account with this email already exists — switch to the Sign in tab.'
+    return 'An account with this email already exists, switch to the Sign in tab.'
   if (m.includes('password should be at least') || m.includes('at least 6'))
     return 'Please use a password with at least 6 characters.'
   if (m.includes('invalid email') || m.includes('unable to validate email'))
@@ -388,7 +388,7 @@ export function Welcome() {
 
         {/* Discoverable entry to the K-8 classroom station (staff signs in first,
             then a student enters their PIN). 9-12 school SSO needs no separate
-            entry — those students use the sign-in buttons above and SchoolLoginGate
+            entry, those students use the sign-in buttons above and SchoolLoginGate
             recognizes a covered school email automatically. */}
         <p style={{ color: '#9aa1ad', fontSize: 12, margin: '18px 0 0' }}>
           School staff?{' '}

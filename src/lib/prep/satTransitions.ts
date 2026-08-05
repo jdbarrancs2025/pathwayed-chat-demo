@@ -40,7 +40,7 @@ const TRANS_WRONG_SEQUENCE = 'sat-trans-wrong-sequence' // picked a time/sequenc
  *  asserts every token used below has an entry here. */
 export const SAT_TRANSITIONS_MISCONCEPTIONS: Record<string, string> = {
   [TRANS_WRONG_CONTRAST]:
-    'This is a contrast transition (like "However," or "In contrast,"). It tells the reader the second idea pushes AGAINST the first. Here the ideas do not clash — they agree or build on each other — so a contrast word sends the wrong signal.',
+    'This is a contrast transition (like "However," or "In contrast,"). It tells the reader the second idea pushes AGAINST the first. Here the ideas do not clash, they agree or build on each other, so a contrast word sends the wrong signal.',
   [TRANS_WRONG_CONTINUATION]:
     'This is an addition transition (like "In addition," or "Similarly,"). It tells the reader the second idea keeps going in the SAME direction. Here the ideas actually turn or clash, so an addition word hides the shift.',
   [TRANS_WRONG_CAUSE]:

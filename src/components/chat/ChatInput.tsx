@@ -288,7 +288,7 @@ export function ChatInput({ subject, onSendMessage, disabled }: ChatInputProps) 
             )}
           </button>
 
-          {/* Math keyboard toggle — only for math sessions */}
+          {/* Math keyboard toggle, only for math sessions */}
           {isMathSubject && (
             <button
               type="button"

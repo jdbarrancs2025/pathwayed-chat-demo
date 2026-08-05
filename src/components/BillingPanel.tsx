@@ -116,7 +116,7 @@ export function BillingPanel({ students, userId }: { students: Student[]; userId
       <div className="panel" style={{ padding: '16px 18px' }}>
         <h3 style={{ margin: 0 }}>Billing</h3>
         <p className="muted" style={{ fontSize: 13, margin: '8px 0 0' }}>
-          Covered by your school — no personal subscription needed.
+          Covered by your school, no personal subscription needed.
         </p>
       </div>
     )

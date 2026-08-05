@@ -109,7 +109,7 @@ export function Practice() {
         <div className="shell">
           <TopMenu />
           <h1 className="greet">Practice</h1>
-          <p className="muted">No practice questions are ready yet — check back soon!</p>
+          <p className="muted">No practice questions are ready yet, check back soon!</p>
           <button className="btn btn-navy" onClick={() => navigate(`/students/${student.id}`)}>
             Back to my dashboard
           </button>
@@ -159,7 +159,7 @@ export function Practice() {
       // null means the mastery upsert returned [] (it logged the underlying error
       // in commitMasterySignals) — surface that the session didn't persist.
       if (!update) {
-        console.error('recordPracticeResult returned null — mastery not written', {
+        console.error('recordPracticeResult returned null, mastery not written', {
           studentId: student.id,
           skillId: questions[0].skill_id,
           accuracy: summary.accuracy,
@@ -257,7 +257,7 @@ export function Practice() {
           {answered && (
             <div className="practice-feedback">
               <p className={`practice-verdict ${lastResult?.isCorrect ? 'good' : 'soft'}`}>
-                {lastResult?.isCorrect ? 'Correct! 🎉' : `Good try — the answer is ${current.correct_answer}.`}
+                {lastResult?.isCorrect ? 'Correct! 🎉' : `Good try, the answer is ${current.correct_answer}.`}
               </p>
               {mistakeHint && <p className="practice-explain">{mistakeHint}</p>}
               {current.solution && (
@@ -280,5 +280,5 @@ export function Practice() {
 function encouragement(accuracy: number): string {
   if (accuracy >= 80) return "You're really getting this. Keep up the great work!"
   if (accuracy >= 50) return 'Nice effort! Every round of practice makes you stronger.'
-  return 'Great job sticking with it — practice is exactly how we get better. Try another round soon!'
+  return 'Great job sticking with it, practice is exactly how we get better. Try another round soon!'
 }

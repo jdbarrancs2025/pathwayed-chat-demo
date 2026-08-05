@@ -61,7 +61,7 @@ export function Consent() {
       consented_at: new Date().toISOString(),
     })
     if (consentError) {
-      setError('Sorry — something went wrong saving your permission. Please try again.')
+      setError('Sorry, something went wrong saving your permission. Please try again.')
       setSubmitting(false)
       return
     }

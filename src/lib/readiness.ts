@@ -250,7 +250,7 @@ const SAT_EVIDENCE_SCALE = 3
 const SAT_TRAJ_HALF_WIDTH = 60
 const SAT_GAPS_CAP = 6
 const SAT_TIMELINE_NOTE =
-  'Projected ranges are transparent estimates from current mastery — a coaching signal, not a calibrated SAT predictor. The trajectory is a junior-year ceiling: where you could land if you bring weak and untouched SAT-aligned skills to about 85% mastery (not a trend from past scores — there is no score history).'
+  'Projected ranges are transparent estimates from current mastery, a coaching signal, not a calibrated SAT predictor. The trajectory is a junior-year ceiling: where you could land if you bring weak and untouched SAT-aligned skills to about 85% mastery (not a trend from past scores, there is no score history).'
 
 /** Confidence-weighted mastery % over rows, or null when there's no evidence. */
 function weightedPct(rows: ReadinessSkillRow[], now: number): { pct: number | null; evidence: number } {
@@ -548,12 +548,20 @@ export interface ReadinessView {
   hasAny: boolean
 }
 
+/**
+ * Narrow stored jsonb into SkillRefs. Written as a loop with an explicit cast
+ * rather than a `x is SkillRef` predicate: TypeScript rejects that predicate
+ * because SkillRef has no index signature and so is not assignable to Json, even
+ * though the runtime shape check is exactly right. The behaviour is unchanged.
+ */
 function asRefs(v: Json | null | undefined): SkillRef[] {
   if (!Array.isArray(v)) return []
-  return v.filter(
-    (x): x is SkillRef =>
-      !!x && typeof x === 'object' && 'slug' in x && 'name' in x && 'subject' in x,
-  )
+  const out: SkillRef[] = []
+  for (const x of v) {
+    if (!x || typeof x !== 'object' || Array.isArray(x)) continue
+    if ('slug' in x && 'name' in x && 'subject' in x) out.push(x as unknown as SkillRef)
+  }
+  return out
 }
 
 interface ReadinessRowLite {

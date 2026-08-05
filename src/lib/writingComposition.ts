@@ -20,9 +20,9 @@ export function isCompositionSkill(slug: string | null | undefined): boolean {
 /** Original paragraph-writing prompts (grade 3–5 seed of SAT Expression of Ideas:
  *  a topic sentence, two or three supports, and a sensible order). */
 const PARAGRAPH_WRITING_PROMPTS: string[] = [
-  'Think about a place you really enjoy — maybe a park, your own room, a relative’s house, or somewhere you’ve visited. Write a paragraph about it. Start with a sentence that tells what the place is, then give two or three reasons you like it.',
+  'Think about a place you really enjoy, maybe a park, your own room, a relative’s house, or somewhere you’ve visited. Write a paragraph about it. Start with a sentence that tells what the place is, then give two or three reasons you like it.',
   'If you could add one new rule at your school, what would it be? Write a paragraph that tells your rule in the first sentence, then gives two or three reasons it would be a good idea.',
-  'Think of something you know how to do well — a game, a recipe, a trick, or a chore. Write a paragraph that names it in the first sentence, then explains two or three things someone would need to know to do it too.',
+  'Think of something you know how to do well, a game, a recipe, a trick, or a chore. Write a paragraph that names it in the first sentence, then explains two or three things someone would need to know to do it too.',
 ]
 
 const PROMPTS_BY_SKILL: Record<string, string[]> = {

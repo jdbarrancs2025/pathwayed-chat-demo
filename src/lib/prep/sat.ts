@@ -30,28 +30,28 @@ export const SAT: PrepModule = {
   sections: [
     {
       id: 'reading-writing-1',
-      name: 'Reading and Writing — Module 1',
+      name: 'Reading and Writing, Module 1',
       questionCount: 27,
       timeLimitSec: 1920,
       questionTypes: ['information_and_ideas', 'craft_and_structure', 'expression_of_ideas', 'standard_english_conventions'],
     },
     {
       id: 'reading-writing-2',
-      name: 'Reading and Writing — Module 2',
+      name: 'Reading and Writing, Module 2',
       questionCount: 27,
       timeLimitSec: 1920,
       questionTypes: ['information_and_ideas', 'craft_and_structure', 'expression_of_ideas', 'standard_english_conventions'],
     },
     {
       id: 'math-1',
-      name: 'Math — Module 1',
+      name: 'Math, Module 1',
       questionCount: 22,
       timeLimitSec: 2100,
       questionTypes: ['algebra', 'advanced_math', 'problem_solving_data_analysis', 'geometry_trigonometry'],
     },
     {
       id: 'math-2',
-      name: 'Math — Module 2',
+      name: 'Math, Module 2',
       questionCount: 22,
       timeLimitSec: 2100,
       questionTypes: ['algebra', 'advanced_math', 'problem_solving_data_analysis', 'geometry_trigonometry'],

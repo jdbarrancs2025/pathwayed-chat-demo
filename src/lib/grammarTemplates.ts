@@ -26,7 +26,7 @@ export interface GrammarChoice {
 }
 
 export interface GrammarItem {
-  slot: number // stable id key within a skill (1..N) — deterministic + idempotent
+  slot: number // stable id key within a skill (1..N), deterministic + idempotent
   difficulty: Difficulty
   stem: string // the SAT-style passage with the conventions choice point (a blank)
   choices: GrammarChoice[] // exactly one correct + 3 distinct-token distractors
@@ -74,7 +74,7 @@ const SUBJECT_VERB_AGREEMENT: GrammarTemplate = {
         { text: 'to present', is_correct: false, misconception_token: 'used-infinitive' },
       ],
       solution:
-        'A collective noun like "committee" acting as one unit takes a singular verb — and "its" confirms it — so "presents" is correct.',
+        'A collective noun like "committee" acting as one unit takes a singular verb, and "its" confirms it, so "presents" is correct.',
     },
     {
       slot: 3,
@@ -502,7 +502,7 @@ const PUNCTUATION_BASICS: GrammarTemplate = {
         { text: 'lighthouse:', is_correct: false, misconception_token: 'colon-needs-complete-clause' },
       ],
       solution:
-        'The "which" clause adds nonessential information, so it is set off with commas — a comma opens it after "lighthouse."',
+        'The "which" clause adds nonessential information, so it is set off with commas, a comma opens it after "lighthouse."',
     },
     {
       slot: 15,
@@ -563,7 +563,7 @@ const PUNCTUATION_BASICS: GrammarTemplate = {
       choices: [
         { text: 'speaker,', is_correct: true },
         { text: 'speaker', is_correct: false, misconception_token: 'missing-comma' },
-        { text: 'speaker—', is_correct: false, misconception_token: 'unpaired-dash' },
+        { text: 'speaker-', is_correct: false, misconception_token: 'unpaired-dash' },
         { text: 'speaker;', is_correct: false, misconception_token: 'semicolon-misused' },
       ],
       solution:
@@ -877,7 +877,7 @@ const PRONOUN_AGREEMENT: GrammarTemplate = {
         { text: 'which', is_correct: false, misconception_token: 'which-for-person' },
         { text: 'what', is_correct: false, misconception_token: 'wrong-pronoun-type' },
       ],
-      solution: '"The committee selected [whom]" — the pronoun is the object of "selected," so "whom" is correct. "Who" is a subject pronoun, and "which"/"what" don\'t refer to a person.',
+      solution: '"The committee selected [whom]", the pronoun is the object of "selected," so "whom" is correct. "Who" is a subject pronoun, and "which"/"what" don\'t refer to a person.',
     },
     {
       slot: 4,
@@ -985,7 +985,7 @@ const PRONOUN_AGREEMENT: GrammarTemplate = {
         { text: 'which', is_correct: false, misconception_token: 'which-for-person' },
         { text: 'whose', is_correct: false, misconception_token: 'wrong-pronoun-type' },
       ],
-      solution: '"The students admired [whom]" — the pronoun is the object of "admired," so "whom." "Who" is a subject form, "which" is for things, and "whose" shows possession.',
+      solution: '"The students admired [whom]", the pronoun is the object of "admired," so "whom." "Who" is a subject form, "which" is for things, and "whose" shows possession.',
     },
     {
       slot: 13,
@@ -1033,7 +1033,7 @@ const PRONOUN_AGREEMENT: GrammarTemplate = {
         { text: 'ourselves', is_correct: false, misconception_token: 'reflexive-misuse' },
         { text: 'our', is_correct: false, misconception_token: 'wrong-pronoun-type' },
       ],
-      solution: '"To us students" — after the preposition "to," use the object pronoun "us." "We" is a subject form, "ourselves" is reflexive, and "our" is possessive.',
+      solution: '"To us students", after the preposition "to," use the object pronoun "us." "We" is a subject form, "ourselves" is reflexive, and "our" is possessive.',
     },
     {
       slot: 17,
@@ -1057,7 +1057,7 @@ const PRONOUN_AGREEMENT: GrammarTemplate = {
         { text: 'which', is_correct: false, misconception_token: 'which-for-person' },
         { text: 'what', is_correct: false, misconception_token: 'wrong-pronoun-type' },
       ],
-      solution: '"The critics had once dismissed [whom]" — object of "dismissed," so "whom." "Who" is a subject form, "which" is for things, and "what" does not refer to a person.',
+      solution: '"The critics had once dismissed [whom]", object of "dismissed," so "whom." "Who" is a subject form, "which" is for things, and "what" does not refer to a person.',
     },
     {
       slot: 19,
@@ -1361,7 +1361,7 @@ const ADVANCED_PUNCTUATION: GrammarTemplate = {
       stem: "The lead ______ a marine biologist with two decades of experience, presented the team's findings to the board.",
       choices: [
         { text: 'researcher,', is_correct: true },
-        { text: 'researcher—', is_correct: false, misconception_token: 'unpaired-dash' },
+        { text: 'researcher-', is_correct: false, misconception_token: 'unpaired-dash' },
         { text: 'researcher;', is_correct: false, misconception_token: 'semicolon-misused' },
         { text: 'researcher:', is_correct: false, misconception_token: 'colon-needs-complete-clause' },
       ],
@@ -1430,9 +1430,9 @@ const ADVANCED_PUNCTUATION: GrammarTemplate = {
     {
       slot: 8,
       difficulty: 'easy',
-      stem: 'The final exhibit ______ by far the most popular—featured artifacts recovered from a shipwreck.',
+      stem: 'The final exhibit ______ by far the most popular-featured artifacts recovered from a shipwreck.',
       choices: [
-        { text: 'hall—', is_correct: true },
+        { text: 'hall-', is_correct: true },
         { text: 'hall', is_correct: false, misconception_token: 'unpaired-dash' },
         { text: 'hall;', is_correct: false, misconception_token: 'semicolon-misused' },
         { text: 'hall:', is_correct: false, misconception_token: 'colon-needs-complete-clause' },
@@ -1502,9 +1502,9 @@ const ADVANCED_PUNCTUATION: GrammarTemplate = {
     {
       slot: 14,
       difficulty: 'medium',
-      stem: 'The three lead ______ a biologist, a chemist, and a physicist—shared the prize equally.',
+      stem: 'The three lead ______ a biologist, a chemist, and a physicist-shared the prize equally.',
       choices: [
-        { text: 'researchers—', is_correct: true },
+        { text: 'researchers-', is_correct: true },
         { text: 'researchers,', is_correct: false, misconception_token: 'comma-in-complex-list' },
         { text: 'researchers:', is_correct: false, misconception_token: 'colon-needs-complete-clause' },
         { text: 'researchers;', is_correct: false, misconception_token: 'semicolon-misused' },
@@ -1533,14 +1533,14 @@ const ADVANCED_PUNCTUATION: GrammarTemplate = {
         { text: 'need;', is_correct: false, misconception_token: 'semicolon-misused' },
         { text: 'need,', is_correct: false, misconception_token: 'unnecessary-comma' },
       ],
-      solution: 'A colon can\'t follow a verb like "need" — the words before a colon must form a complete sentence. Here the list is the verb\'s object, so no mark is needed.',
+      solution: 'A colon can\'t follow a verb like "need", the words before a colon must form a complete sentence. Here the list is the verb\'s object, so no mark is needed.',
     },
     {
       slot: 17,
       difficulty: 'medium',
-      stem: 'Every member of the crew—from the captain to the youngest ______ received a commendation for the rescue.',
+      stem: 'Every member of the crew-from the captain to the youngest ______ received a commendation for the rescue.',
       choices: [
-        { text: 'deckhand—', is_correct: true },
+        { text: 'deckhand-', is_correct: true },
         { text: 'deckhand,', is_correct: false, misconception_token: 'unpaired-dash' },
         { text: 'deckhand;', is_correct: false, misconception_token: 'semicolon-misused' },
         { text: 'deckhand:', is_correct: false, misconception_token: 'colon-needs-complete-clause' },
@@ -1562,9 +1562,9 @@ const ADVANCED_PUNCTUATION: GrammarTemplate = {
     {
       slot: 19,
       difficulty: 'hard',
-      stem: 'The award recognized her many ______ teaching, mentoring, and community outreach—over a thirty-year career.',
+      stem: 'The award recognized her many ______ teaching, mentoring, and community outreach-over a thirty-year career.',
       choices: [
-        { text: 'contributions—', is_correct: true },
+        { text: 'contributions-', is_correct: true },
         { text: 'contributions,', is_correct: false, misconception_token: 'comma-in-complex-list' },
         { text: 'contributions:', is_correct: false, misconception_token: 'colon-needs-complete-clause' },
         { text: 'contributions;', is_correct: false, misconception_token: 'semicolon-misused' },

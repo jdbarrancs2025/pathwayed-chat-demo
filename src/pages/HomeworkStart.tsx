@@ -44,7 +44,7 @@ export function HomeworkStart() {
         >
           <NikkiFace mode={avatarModeOf(student)} size={96} />
           <h1 className="greet">What’s the homework?</h1>
-          <p className="muted">Pick the subject and bring me a photo or PDF — we’ll work through it together.</p>
+          <p className="muted">Pick the subject and bring me a photo or PDF, we’ll work through it together.</p>
         </div>
         <section className="opener">
           {SUBJECTS.map((s) => (

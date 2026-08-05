@@ -64,7 +64,7 @@ export function buildTranscriptionPrompt(opts: {
       'A young student is answering a math tutoring question out loud. They say numbers and math operations aloud.',
     )
     parts.push(
-      'Write spoken numbers as digits — for example 9, 32, 405 — never spelled out as words. Expect math operation words such as subtract, add, multiply, divide, equals, negative, and both sides — for example "subtract 5 from those" or "divide both sides by 3".',
+      'Write spoken numbers as digits, for example 9, 32, 405, never spelled out as words. Expect math operation words such as subtract, add, multiply, divide, equals, negative, and both sides, for example "subtract 5 from those" or "divide both sides by 3".',
     )
   } else if (subject) {
     parts.push(`A young student is answering a ${subject} tutoring question out loud.`)

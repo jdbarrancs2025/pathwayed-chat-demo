@@ -35,7 +35,7 @@ export function WritingSpace({ prompt, onSendText }: WritingSpaceProps) {
         <p className="writing-prompt-text">{prompt}</p>
       </div>
       <p className="wshint">
-        Write your paragraph below. When you’re ready, share it with Nikki — you can keep making it better and share
+        Write your paragraph below. When you’re ready, share it with Nikki. You can keep making it better and share
         again as many times as you like.
       </p>
       <textarea
