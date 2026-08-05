@@ -10,6 +10,7 @@ import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/li
 import { workingGradeNotice } from '@/lib/workingGradeCopy'
 import { buildGradePosition, positionCopy, type SubjectPosition } from '@/lib/gradePosition'
 import { fetchGradePositionInputs } from '@/lib/questions'
+import { readStatus } from '@/lib/readStatus'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
 import { formatRelativeDay } from '@/lib/format'
@@ -32,6 +33,9 @@ interface ChildData {
   lastActivity: string | null
   placements: SubjectPlacement[]
   positions: SubjectPosition[]
+  /** The skills/evidence read behind `positions` failed. An empty panel would
+   *  otherwise be indistinguishable from a child who has cleared nothing. */
+  positionsFailed: boolean
 }
 
 /**
@@ -49,37 +53,61 @@ export function ParentArea() {
   // Captured at load time (not during render — keeps render pure) for the
   // relative "last activity" labels.
   const [now, setNow] = useState(0)
+  // The load threw, or the children read itself failed. Without this an exception
+  // left the page on "Loading…" for good, and a failed children read rendered
+  // "No children yet", inviting a parent to re-add a child who already exists.
+  const [pageFailed, setPageFailed] = useState(false)
 
   useEffect(() => {
     if (!user) return
     let active = true
     void (async () => {
-      const [kids, displayName] = await Promise.all([listStudents(user.id), getDisplayName(user.id)])
-      const data = await Promise.all(
-        kids.map(async (student) => {
-          const [readiness, mastery, lastActivity, placements, gp] = await Promise.all([
-            ensureFreshReadiness(student.id),
-            getStudentMastery(student.id, student.grade),
-            getLastActivity(student.id),
-            getSubjectPlacements(student.id, student.grade),
-            fetchGradePositionInputs(student.id),
-          ])
-          const positions = buildGradePosition({
-            grade: student.grade,
-            subjects: ['math', 'reading', 'writing'],
-            skills: gp.skills,
-            evidence: gp.evidence,
-          })
-          // The 'sat' row that ensureFreshReadiness just wrote is read by
-          // TestReadinessCard, which owns the SAT row on this surface now.
-          return { student, readiness, mastery, lastActivity, placements, positions }
-        }),
-      )
-      if (!active) return
-      setName(displayName)
-      setChildren(data)
-      setNow(Date.now())
-      setLoading(false)
+      try {
+        const kidsStatus = readStatus()
+        const [kids, displayName] = await Promise.all([
+          listStudents(user.id, kidsStatus),
+          getDisplayName(user.id),
+        ])
+        const data = await Promise.all(
+          kids.map(async (student) => {
+            const [readiness, mastery, lastActivity, placements, gp] = await Promise.all([
+              ensureFreshReadiness(student.id),
+              getStudentMastery(student.id, student.grade),
+              getLastActivity(student.id),
+              getSubjectPlacements(student.id, student.grade),
+              fetchGradePositionInputs(student.id),
+            ])
+            const positions = buildGradePosition({
+              grade: student.grade,
+              subjects: ['math', 'reading', 'writing'],
+              skills: gp.skills,
+              evidence: gp.evidence,
+            })
+            // The 'sat' row that ensureFreshReadiness just wrote is read by
+            // TestReadinessCard, which owns the SAT row on this surface now.
+            return {
+              student,
+              readiness,
+              mastery,
+              lastActivity,
+              placements,
+              positions,
+              positionsFailed: gp.loadFailed,
+            }
+          }),
+        )
+        if (!active) return
+        setName(displayName)
+        setChildren(data)
+        setPageFailed(kidsStatus.failed)
+        setNow(Date.now())
+        setLoading(false)
+      } catch (err) {
+        console.error('parent dashboard load failed', err)
+        if (!active) return
+        setPageFailed(true)
+        setLoading(false)
+      }
     })()
     return () => {
       active = false
@@ -99,6 +127,14 @@ export function ParentArea() {
           {loading ? (
             <div className="panel">
               <p className="muted">Loading…</p>
+            </div>
+          ) : pageFailed ? (
+            /* NOT "no children yet". We could not read them, which is a different
+               thing to tell a parent. */
+            <div className="panel">
+              <p className="muted">
+                We could not load your children's progress right now. Refreshing usually fixes it.
+              </p>
             </div>
           ) : children.length === 0 ? (
             <div className="panel">
@@ -128,8 +164,12 @@ export function ParentArea() {
 
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
   const navigate = useNavigate()
-  const { student, readiness, mastery, lastActivity, placements, positions } = data
+  const { student, readiness, mastery, lastActivity, placements, positions, positionsFailed } = data
   const pathway = readiness.pathway
+  // A read error or a thrown recompute. Distinct from having no evidence: a child
+  // with NO readiness row at all has not been measured yet, which is a true and
+  // ordinary state, so only an unreadable EXISTING row counts as a failure here.
+  const loadFailed = readiness.loadFailed || (!!pathway && pathway.measuredSkills == null)
   const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
   // Shown only once the child's earned working grade has overtaken their real
   // grade. Consent (above_grade_ok) decides the FRAMING, never the serving.
@@ -158,10 +198,16 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             {gradeLabel(student.grade)} · {levelLabel(student.level)}
           </div>
         </div>
-        {/* A score is shown ONLY when graded evidence stands behind it. With no
-            measured skills we show a dash, never a 0: a child who has not answered
-            anything has not scored badly, and "0" reads as a failing grade. */}
-        {pathway && pathway.measuredSkills > 0 ? (
+        {/* THREE states, never two. A score is shown ONLY when graded evidence
+            stands behind it; with no measured skills we say "not measured yet",
+            never a 0 (a child who has not answered anything has not scored badly).
+            A failed read is the third state and must never be dressed up as
+            having nothing to report. */}
+        {loadFailed ? (
+          <div className="pd-score pd-score-unmeasured">
+            <span className="pd-score-cap">Pathway · could not load</span>
+          </div>
+        ) : pathway && pathway.measuredSkills != null && pathway.measuredSkills > 0 ? (
           <div className="pd-score">
             <span className="pd-score-num">{pathway.score}</span>
             <span className="pd-score-cap">Pathway · {pathwayBandLabel(pathway.score)}</span>
@@ -191,7 +237,17 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
               )}
             </div>
           )}
-          {positions.length > 0 && (
+          {/* A failed read shows the panel with an honest message. Hiding it would
+              have said, by omission, that there was nothing to report. */}
+          {positionsFailed && (
+            <div className="pd-section">
+              <div className="pd-label">Grade level by subject</div>
+              <p className="empty-progress">
+                We could not load this right now. Refreshing usually fixes it.
+              </p>
+            </div>
+          )}
+          {!positionsFailed && positions.length > 0 && (
             <div className="pd-section">
               <div className="pd-label">Grade level by subject</div>
               {positions.map((p) => {
@@ -259,7 +315,12 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
           {pathway && (
             <div className="pd-section">
               <div className="pd-label">Strengths</div>
-              {pathway.measuredSkills === 0 ? (
+              {loadFailed ? (
+                <p className="empty-progress">
+                  We could not load this right now. Nothing is wrong with {student.first_name}'s
+                  progress, we just could not read it. Refreshing usually fixes it.
+                </p>
+              ) : pathway.measuredSkills === 0 ? (
                 <p className="empty-progress">
                   Not measured yet. Strengths appear once {student.first_name} has answered
                   enough questions on a skill for us to be sure, which is 70% or better over at
@@ -288,7 +349,11 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
           {pathway && (
             <div className="pd-section">
               <div className="pd-label">Areas needing support</div>
-              {pathway.measuredSkills === 0 ? (
+              {loadFailed ? (
+                <p className="empty-progress">
+                  We could not load this right now. Refreshing usually fixes it.
+                </p>
+              ) : pathway.measuredSkills === 0 ? (
                 <p className="empty-progress">
                   Not measured yet. We only flag a skill once {student.first_name} has actually
                   answered questions on it, so nothing here is a guess.

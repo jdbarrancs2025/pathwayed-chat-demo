@@ -82,12 +82,47 @@ describe('buildReadinessView - measuredSkills survives the read', () => {
     expect(v.pathway!.measuredSkills).toBe(0)
   })
 
-  it('tolerates a missing recommendations column without throwing', () => {
-    const withColumn = row()
-    const withoutColumn = { ...withColumn, recommendations: undefined }
+  it('a missing recommendations column reports UNKNOWN, not zero', () => {
+    // The original bug's fingerprint: a select that forgot the column. It must
+    // never read as "not measured yet" (0). It is a defect, so it reports null
+    // and the dashboard says we could not load this.
+    const withoutColumn = { ...row(), recommendations: undefined }
     const v = buildReadinessView([withoutColumn])
     expect(v.pathway!.score).toBe(65)
+    expect(v.pathway!.measuredSkills).toBeNull()
+  })
+})
+
+describe('the THIRD state: could not load', () => {
+  it('a failed read is distinct from having no evidence', () => {
+    // Both produce no chips, but they mean opposite things to a parent.
+    const failed = buildReadinessView([], true)
+    const empty = buildReadinessView([], false)
+    expect(failed.loadFailed).toBe(true)
+    expect(empty.loadFailed).toBe(false)
+  })
+
+  it('carries the failure flag even when rows came back', () => {
+    // A partial failure: readiness read fine, the mastery read errored, so what we
+    // are showing may be stale. Say so rather than presenting it as current.
+    const v = buildReadinessView([row()], true)
+    expect(v.loadFailed).toBe(true)
+    expect(v.pathway!.score).toBe(65)
+  })
+
+  it('UNREADABLE measuredSkills reports null, not zero', () => {
+    // null is the signal the dashboard turns into "could not load". Zero would
+    // have said "not measured yet", which is a claim we cannot support.
+    expect(buildReadinessView([row({ recommendations: undefined })]).pathway!.measuredSkills).toBeNull()
+    expect(buildReadinessView([row({ recommendations: 'nonsense' })]).pathway!.measuredSkills).toBeNull()
+    expect(buildReadinessView([row({ recommendations: { other: 1 } })]).pathway!.measuredSkills).toBeNull()
+    expect(buildReadinessView([row({ recommendations: [1, 2] })]).pathway!.measuredSkills).toBeNull()
+  })
+
+  it('a genuine zero is still zero, not an error', () => {
+    const v = buildReadinessView([row({ recommendations: { measuredSkills: 0 } })])
     expect(v.pathway!.measuredSkills).toBe(0)
+    expect(v.loadFailed).toBe(false)
   })
 })
 

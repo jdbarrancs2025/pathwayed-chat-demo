@@ -586,14 +586,26 @@ export interface ReadinessRecord {
   strengths: SkillRef[]
   gaps: SkillRef[]
   nextSkillSlug: string | null
-  /** Skills with counted evidence behind the score. 0 means NOT MEASURED YET,
-   *  which the dashboard must show as an empty state, never as a score of 0. */
-  measuredSkills: number
+  /**
+   * Skills with counted evidence behind the score.
+   *   > 0  - show the score.
+   *   0    - NOT MEASURED YET; show the empty state, never a score of 0.
+   *   null - UNKNOWN; the stored value was missing or malformed, so we could not
+   *          tell. Show the error state, never the empty state.
+   */
+  measuredSkills: number | null
 }
 export interface ReadinessView {
   pathway: ReadinessRecord | null
   bySubject: Record<string, ReadinessRecord>
   hasAny: boolean
+  /**
+   * TRUE when a read failed or a recompute threw. This is NOT the same as having
+   * no evidence, and the UI must not conflate them: telling a parent there is
+   * nothing to say, when the truth is that we failed to look, is the one failure
+   * mode this whole surface exists to avoid.
+   */
+  loadFailed: boolean
 }
 
 /**
@@ -621,12 +633,24 @@ interface ReadinessRowLite {
   recommendations?: Json
 }
 
-/** Pull measuredSkills out of the spare jsonb column. A row written by an older
- *  engine has no such field; treat it as unmeasured rather than inventing a count. */
-function readMeasuredSkills(raw: Json | undefined): number {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return 0
+/**
+ * Pull measuredSkills out of the spare jsonb column.
+ *
+ * Returns null for UNKNOWN, which is deliberately distinct from 0. Zero means we
+ * looked and there is no evidence. Null means we could not tell: the column was
+ * not selected, or holds a shape we do not recognise. Collapsing those two into 0
+ * is what let a missing SELECT column render as "not measured yet" on an account
+ * whose score was 65.
+ *
+ * A legacy empty array IS a known benign shape (older engines wrote it), so it
+ * reports 0; the engine-version bump recomputes those rows on next view anyway.
+ */
+function readMeasuredSkills(raw: Json | undefined): number | null {
+  if (raw === undefined) return null // column not selected: a bug, not an empty state
+  if (Array.isArray(raw)) return raw.length === 0 ? 0 : null // legacy [] is benign
+  if (!raw || typeof raw !== 'object') return null
   const v = (raw as Record<string, unknown>).measuredSkills
-  return typeof v === 'number' && Number.isFinite(v) ? v : 0
+  return typeof v === 'number' && Number.isFinite(v) ? v : null
 }
 
 // Only these readiness_type values are subjects. Other types (notably 'sat')
@@ -635,8 +659,8 @@ function readMeasuredSkills(raw: Json | undefined): number {
 const SUBJECT_TYPES = new Set<string>(SUBJECTS)
 
 /** Pure: shape raw readiness_scores rows into a view. Exported for testing. */
-export function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
-  if (!rows.length) return { pathway: null, bySubject: {}, hasAny: false }
+export function buildReadinessView(rows: ReadinessRowLite[], loadFailed = false): ReadinessView {
+  if (!rows.length) return { pathway: null, bySubject: {}, hasAny: false, loadFailed }
   let pathway: ReadinessRecord | null = null
   const bySubject: Record<string, ReadinessRecord> = {}
   for (const r of rows) {
@@ -651,7 +675,7 @@ export function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
     else if (SUBJECT_TYPES.has(r.readiness_type)) bySubject[r.readiness_type] = rec
     // else (e.g. 'sat'): ignored here; read directly by the SAT view.
   }
-  return { pathway, bySubject, hasAny: true }
+  return { pathway, bySubject, hasAny: true, loadFailed }
 }
 
 /** Read this student's readiness_scores (pathway + per-subject). Read-only,
@@ -661,7 +685,10 @@ export async function getReadiness(studentId: string): Promise<ReadinessView> {
     .from('readiness_scores')
     .select('readiness_type, score, strengths, gaps, next_skill_slug, recommendations')
     .eq('student_id', studentId)
-  if (error || !data) return { pathway: null, bySubject: {}, hasAny: false }
+  if (error || !data) {
+    console.error('getReadiness read failed', error)
+    return { pathway: null, bySubject: {}, hasAny: false, loadFailed: true }
+  }
   return buildReadinessView(data)
 }
 
@@ -784,6 +811,10 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
     // same as an empty result (it's why mastery came back empty for a non-owner).
     if (readinessRes.error) console.error('readiness_scores read failed', readinessRes.error)
     if (masteryRes.error) console.error('student_skill_mastery read failed', masteryRes.error)
+    // Either read failing means what we are about to show may be incomplete or
+    // stale. Carry that to the view so the parent is told we could not look,
+    // rather than being told there is nothing to see.
+    const readFailed = !!readinessRes.error || !!masteryRes.error
 
     const readinessRows = readinessRes.data ?? []
     const masteryUpdatedAt = (masteryRes.data ?? []).map((m) => m.updated_at)
@@ -796,17 +827,22 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
       masteryUpdatedAt,
       currentEngineVersion: ENGINE_VERSION,
     })
-    if (!stale) return buildReadinessView(readinessRows)
+    if (!stale) return buildReadinessView(readinessRows, readFailed)
 
     await recordReadiness(studentId)
-    const { data: fresh } = await supabase
+    const { data: fresh, error: freshError } = await supabase
       .from('readiness_scores')
       .select('readiness_type, score, strengths, gaps, next_skill_slug, recommendations')
       .eq('student_id', studentId)
-    return buildReadinessView(fresh ?? readinessRows)
+    if (freshError) console.error('readiness_scores re-read failed', freshError)
+    return buildReadinessView(fresh ?? readinessRows, readFailed || !!freshError)
   } catch (err) {
     console.error('ensureFreshReadiness failed', err)
-    return getReadiness(studentId)
+    // Fall back to whatever is stored, but STILL report the failure. The stored
+    // rows may be stale or absent precisely because the recompute threw, so a
+    // successful fallback read must not be allowed to look like a clean load.
+    const fallback = await getReadiness(studentId)
+    return { ...fallback, loadFailed: true }
   }
 }
 

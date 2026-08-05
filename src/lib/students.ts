@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import type { ReadStatus } from '@/lib/readStatus'
 import type { Database } from '@/lib/database.types'
 
 export type Student = Database['public']['Tables']['students']['Row']
@@ -54,14 +55,25 @@ export function initials(name: string): string {
 }
 
 /** Children belonging to a parent, ordered stably by id so avatar colors are consistent. */
-export async function listStudents(parentId: string): Promise<Student[]> {
+/**
+ * This parent's children. Best-effort: [] on a read failure.
+ *
+ * Pass a ReadStatus when an empty list would be SHOWN to someone. "No children
+ * yet, add one to get started" is an invitation to re-add a child who already
+ * exists, and a failed read must never produce it.
+ */
+export async function listStudents(parentId: string, status?: ReadStatus): Promise<Student[]> {
   const { data, error } = await supabase
     .from('students')
     .select('*')
     .eq('parent_id', parentId)
     .order('id', { ascending: true })
 
-  if (error || !data) return []
+  if (error || !data) {
+    console.error('listStudents read failed', error)
+    if (status) status.failed = true
+    return []
+  }
   return data
 }
 

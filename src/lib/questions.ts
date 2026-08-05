@@ -11,6 +11,7 @@ import {
   type Difficulty,
   type RampBand,
 } from '@/lib/difficultyRamp'
+import { readStatus, type ReadStatus } from '@/lib/readStatus'
 import type { Json } from '@/lib/database.types'
 
 /** The student fields the grade ladder needs, plus the id used for the reads. */
@@ -202,16 +203,22 @@ export async function fetchPracticeQuestions(skillSlug: string, limit: number): 
 /**
  * Published skills plus this student's evidence, for the grade-position panel.
  * One place so the panel cannot drift from what the picker considers published.
+ *
+ * loadFailed is true when either read errored. The panel must say so rather than
+ * quietly rendering nothing, which reads to a parent as "no progress".
  */
 export async function fetchGradePositionInputs(studentId: string): Promise<{
   skills: PracticeableSkill[]
   evidence: Map<string, SkillEvidence>
+  loadFailed: boolean
 }> {
+  const skillStatus = readStatus()
+  const evidenceStatus = readStatus()
   const [skills, evidence] = await Promise.all([
-    listPracticeableSkills(),
-    fetchSkillEvidence(studentId),
+    listPracticeableSkills(skillStatus),
+    fetchSkillEvidence(studentId, evidenceStatus),
   ])
-  return { skills, evidence }
+  return { skills, evidence, loadFailed: skillStatus.failed || evidenceStatus.failed }
 }
 
 /** generated_question_ids this student has already answered on a graded turn. */
@@ -368,7 +375,7 @@ const PRACTICE_SUBJECT_ORDER = ['math', 'reading', 'writing', 'science']
  * subject then name. Drives the dashboard practice picker — skills without
  * questions never appear. Best-effort: returns [] on any read error, never throws.
  */
-export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
+export async function listPracticeableSkills(status?: ReadStatus): Promise<PracticeableSkill[]> {
   // RLS already limits the client to status='published'; the filter is explicit
   // so the intent is clear and it still holds if policies change.
   const { data: qRows, error: qError } = await supabase
@@ -377,6 +384,7 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
     .eq('status', 'published')
   if (qError) {
     console.error('listPracticeableSkills: questions read failed', qError)
+    if (status) status.failed = true
     return []
   }
   const skillIds = [...new Set((qRows ?? []).map((r) => r.skill_id).filter(Boolean))]
@@ -394,6 +402,7 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
     .in('id', skillIds)
   if (sError) {
     console.error('listPracticeableSkills: skills read failed', sError)
+    if (status) status.failed = true
     return []
   }
 
@@ -438,12 +447,15 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
  * legacy self-rating ramp. Best-effort: an empty map on read failure just means
  * every skill looks untouched.
  */
-export async function fetchSkillEvidence(studentId: string): Promise<Map<string, SkillEvidence>> {
+export async function fetchSkillEvidence(studentId: string, status?: ReadStatus): Promise<Map<string, SkillEvidence>> {
   const { data, error } = await supabase
     .from('student_skill_mastery')
     .select('skill_id, status, evidence_accuracy, attempts_counted')
     .eq('student_id', studentId)
-  if (error) console.error('fetchSkillEvidence read failed', error)
+  if (error) {
+    console.error('fetchSkillEvidence read failed', error)
+    if (status) status.failed = true
+  }
   const byId = new Map<string, SkillEvidence>()
   for (const m of data ?? []) {
     byId.set(m.skill_id, {

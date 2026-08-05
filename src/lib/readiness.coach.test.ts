@@ -27,7 +27,7 @@ const EMOJI = /\p{Extended_Pictographic}/u
 
 describe('buildCoachMessage', () => {
   it('no data -> friendly start prompt, no emoji', () => {
-    const msg = buildCoachMessage({ pathway: null, bySubject: {}, hasAny: false })
+    const msg = buildCoachMessage({ pathway: null, bySubject: {}, hasAny: false, loadFailed: false })
     expect(msg.toLowerCase()).toContain('start')
     expect(msg).not.toMatch(EMOJI)
   })
@@ -35,6 +35,7 @@ describe('buildCoachMessage', () => {
   it('focus: a mid score with a gap names the weakest skill', () => {
     const view: ReadinessView = {
       hasAny: true,
+    loadFailed: false,
       pathway: rec({
         score: 55,
         strengths: [ref('mult', 'Multiplication', 'math', 70)],
@@ -51,6 +52,7 @@ describe('buildCoachMessage', () => {
   it('celebrate: a strong score names a strength', () => {
     const view: ReadinessView = {
       hasAny: true,
+    loadFailed: false,
       pathway: rec({
         score: 88,
         strengths: [ref('mi', 'Main Idea', 'reading', 90)],
@@ -67,6 +69,7 @@ describe('buildCoachMessage', () => {
   it('encourage: a just-beginning student with no gaps gets encouragement', () => {
     const view: ReadinessView = {
       hasAny: true,
+    loadFailed: false,
       pathway: rec({ score: 15, strengths: [ref('a', 'A', 'math', 15)], gaps: [] }),
       bySubject: { math: rec({ score: 15 }) },
     }
@@ -80,6 +83,7 @@ describe('buildCoachMessage', () => {
   it('is deterministic for the same input', () => {
     const view: ReadinessView = {
       hasAny: true,
+    loadFailed: false,
       pathway: rec({ score: 55, gaps: [ref('frac', 'Fractions', 'math', 30)] }),
       bySubject: { math: rec({ score: 55 }) },
     }
@@ -89,12 +93,13 @@ describe('buildCoachMessage', () => {
 
 describe('buildTodaysPlan', () => {
   it('no data -> empty plan', () => {
-    expect(buildTodaysPlan({ pathway: null, bySubject: {}, hasAny: false })).toEqual([])
+    expect(buildTodaysPlan({ pathway: null, bySubject: {}, hasAny: false, loadFailed: false })).toEqual([])
   })
 
   it('derives 2-4 deduped items that deep-link to real subjects', () => {
     const view: ReadinessView = {
       hasAny: true,
+    loadFailed: false,
       pathway: rec({
         score: 50,
         strengths: [ref('mi', 'Main Idea', 'reading', 80)],
@@ -119,6 +124,7 @@ describe('buildTodaysPlan', () => {
   it('still produces a plan when there is only one practiced skill', () => {
     const view: ReadinessView = {
       hasAny: true,
+    loadFailed: false,
       pathway: rec({
         score: 60,
         strengths: [ref('frac', 'Fractions', 'math', 60)],
