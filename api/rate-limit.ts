@@ -25,6 +25,17 @@ export const CHAT_LIMIT = 30
 /** Window length. A tutoring turn every 2 seconds sustained is already abnormal. */
 export const CHAT_WINDOW_MS = 60_000
 
+/**
+ * Speech is chattier than chat by design: one tutoring turn can fire a streamed
+ * read, a replay, and the prefetch of several common phrases, and the K-2
+ * audio-picture flows read every question and every answer tile aloud.
+ */
+export const TTS_LIMIT = 120
+/** Each call is a recorded utterance, so this tracks how fast a child can talk. */
+export const TRANSCRIBE_LIMIT = 40
+/** A deck is generated in one shot; nobody needs many per minute. */
+export const FLASHCARDS_LIMIT = 10
+
 /** Drop expired buckets so a long-lived instance does not grow unboundedly. */
 function sweep(now: number) {
   if (buckets.size < 512) return

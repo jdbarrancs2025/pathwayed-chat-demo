@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
+import { authedJsonHeaders } from '@/lib/apiAuth'
 
 // Schedule the first PCM chunk this far ahead of the clock. Without any lead-in,
 // a chunk that arrives even slightly late lands behind ctx.currentTime and gets
@@ -130,7 +131,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       try {
         const response = await fetch('/api/tts', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await authedJsonHeaders(),
           body: JSON.stringify({ text, format: 'pcm' }),
           signal: abortController.signal,
         })
@@ -257,7 +258,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       uncached.map(async (phrase) => {
         const res = await fetch('/api/tts', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await authedJsonHeaders(),
           body: JSON.stringify({ text: phrase }),
         })
         if (!res.ok) return

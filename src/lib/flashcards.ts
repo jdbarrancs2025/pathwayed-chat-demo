@@ -1,3 +1,5 @@
+import { authedJsonHeaders } from '@/lib/apiAuth'
+
 export interface Flashcard {
   front: string
   back: string
@@ -30,7 +32,7 @@ function contextFor(ctx: CardContext): FlashcardsBody['context'] {
 async function requestCards(body: FlashcardsBody): Promise<Flashcard[]> {
   const res = await fetch('/api/flashcards', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error('Request failed')

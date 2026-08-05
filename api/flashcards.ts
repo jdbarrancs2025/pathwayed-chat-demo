@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { buildFlashcardsPrompt, type StudentContext } from "./prompts.js"
+import { requireUser } from "./require-auth.js"
+import { rateLimit, FLASHCARDS_LIMIT } from "./rate-limit.js"
 
 interface ImageInput {
   data: string // base64, without the data: prefix
@@ -44,6 +46,17 @@ function parseCards(raw: string): Flashcard[] {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
+  }
+
+  // AUTHENTICATION. Same class as chat: an open LLM generation endpoint that also
+  // accepts an image. No child is named in the request, so a session is the check.
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`flashcards:${auth.userId}`, FLASHCARDS_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY

@@ -4,6 +4,7 @@
 // for a given piece of text is cached for the session to avoid re-fetching (cost).
 
 import { stripMarkdownForTTS } from '@/lib/stripMarkdownForTTS'
+import { authedJsonHeaders } from '@/lib/apiAuth'
 
 export interface SpeakOptions {
   /** Optional ElevenLabs voice id override (normally the server default is used). */
@@ -79,7 +80,7 @@ async function fetchAudioUrl(text: string, voiceId?: string): Promise<string> {
 
   const res = await fetch("/api/tts", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify(voiceId ? { text, voiceId } : { text }),
   })
   if (!res.ok) throw new Error(`tts request failed: ${res.status}`)

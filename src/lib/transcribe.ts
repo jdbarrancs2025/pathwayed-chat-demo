@@ -1,3 +1,5 @@
+import { authedJsonHeaders } from '@/lib/apiAuth'
+
 export interface TranscriptionResult {
   /** The transcript, or '' when there was nothing usable to send. */
   text: string
@@ -36,7 +38,7 @@ export async function transcribeAudio(
 
   const res = await fetch('/api/transcribe', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authedJsonHeaders(),
     body: JSON.stringify(prompt ? { audio: base64, mimeType, prompt } : { audio: base64, mimeType }),
   })
   if (!res.ok) throw new Error(`transcribe failed: ${res.status}`)

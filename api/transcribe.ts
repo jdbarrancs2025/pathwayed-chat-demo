@@ -1,6 +1,8 @@
 import OpenAI, { toFile } from "openai"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { SESSION_LANGUAGE } from "./prompts.js"
+import { requireUser } from "./require-auth.js"
+import { rateLimit, TRANSCRIBE_LIMIT } from "./rate-limit.js"
 
 interface TranscribeRequest {
   audio: string // base64-encoded audio
@@ -58,6 +60,19 @@ function getExtension(mimeType: string): string {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
+  }
+
+  // AUTHENTICATION. This was an open Whisper proxy billed per second of audio, and
+  // it accepts a 25MB upload, so it was the most expensive open endpoint per call.
+  // A transcription request names no child (audio in, text out), so there is no
+  // ownership check to make; the session requirement is what closes it.
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  const limited = rateLimit(`transcribe:${auth.userId}`, TRANSCRIBE_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
   }
 
   const apiKey = process.env.OPENAI_API_KEY

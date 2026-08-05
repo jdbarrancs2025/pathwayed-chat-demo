@@ -1,4 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { requireUser } from "./require-auth.js"
+import { rateLimit, TTS_LIMIT } from "./rate-limit.js"
 
 interface TtsRequest {
   text: string
@@ -28,6 +30,21 @@ const MAX_CHARS = 2500
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
+  }
+
+  // AUTHENTICATION. This was an open ElevenLabs proxy billed per character. Every
+  // caller now presents a verified Supabase session. There is no student-ownership
+  // check because a TTS request names no child: it is text in, audio out. Requiring
+  // a session is what closes the abuse surface.
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  // Higher ceiling than chat: one tutoring turn can legitimately fire several TTS
+  // calls (a streamed reply, a replay, and the prefetch of common phrases).
+  const limited = rateLimit(`tts:${auth.userId}`, TTS_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
   }
 
   const apiKey = process.env.ELEVENLABS_API_KEY

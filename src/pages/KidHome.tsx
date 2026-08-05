@@ -238,6 +238,23 @@ export function KidHome() {
           <TestReadinessCard studentId={student.id} audience="student" />
         </section>
 
+        {/* Re-check, ALWAYS reachable. The placement offer above only appears for a
+            child with no mastery yet, so without this a student who has done any
+            work at all could not be reassessed from their own home screen. Mastery
+            is truth, so a child is never stuck at a level that stopped fitting.
+            Hidden only while the offer panel above is already asking the same thing.
+            ?fresh=1 starts a clean run rather than resuming a paused one, which is
+            what a deliberate re-check means. */}
+        {!offerPlacement && (
+          <button
+            type="button"
+            className="opener-reassess"
+            onClick={() => navigate(`/students/${student.id}/diagnostic?fresh=1`)}
+          >
+            Not quite right? Let’s check your level again
+          </button>
+        )}
+
         <div className="foot">
           Working level: {levelLabel(student.level).toLowerCase()} for {gradeLabel(student.grade).toLowerCase()}
         </div>
