@@ -38,7 +38,7 @@ describe('shape of the tiered set', () => {
     const existing = new Set(MATH_TEMPLATES.map((t) => t.code))
     for (const t of TIERED_MATH_TEMPLATES) {
       expect(existing.has(t.code)).toBe(false)
-      expect(t.code.endsWith('-v2')).toBe(true)
+      expect(t.code.endsWith('-v3')).toBe(true)
     }
     // And the codes are unique among themselves.
     expect(new Set(TIERED_MATH_TEMPLATES.map((t) => t.code)).size).toBe(12)
@@ -117,7 +117,7 @@ describe('GRADE ANCHORING — harder must not mean a later grade', () => {
     for (const tier of ['easy', 'medium', 'hard'] as const) {
       for (const item of sample(byTier('multiplication', tier))) {
         const { a, b } = item.slots
-        expect(a).toBeLessThanOrEqual(9)
+        expect(a).toBeLessThanOrEqual(10)
         expect(b).toBeLessThanOrEqual(10)
         expect(a * b).toBeLessThanOrEqual(100)
       }
@@ -174,10 +174,11 @@ describe('GRADE ANCHORING — harder must not mean a later grade', () => {
 })
 
 describe('tier separation is real', () => {
-  it('multiplication medium uses harder facts than easy', () => {
-    const easyMax = Math.max(...sample(byTier('multiplication', 'easy')).map((r) => r.slots.a))
-    const mediumMin = Math.min(...sample(byTier('multiplication', 'medium')).map((r) => r.slots.a))
-    expect(mediumMin).toBeGreaterThan(easyMax)
+  it('multiplication tiers are disjoint by product, so no fact appears in both', () => {
+    const easyProducts = sample(byTier('multiplication', 'easy')).map((r) => r.slots.a * r.slots.b)
+    const mediumProducts = sample(byTier('multiplication', 'medium')).map((r) => r.slots.a * r.slots.b)
+    expect(Math.max(...easyProducts)).toBeLessThanOrEqual(28)
+    expect(Math.min(...mediumProducts)).toBeGreaterThan(28)
   })
 
   it('percentages easy uses benchmark percents only', () => {

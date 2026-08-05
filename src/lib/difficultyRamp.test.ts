@@ -26,7 +26,16 @@ function authoredPool() {
   ]
 }
 
-/** The 15 legacy math skills: 20 items, all one difficulty. */
+/** A re-authored pool: 48 items, 16 easy / 20 medium / 12 hard, as seeded. */
+function tieredPool() {
+  return [
+    ...Array.from({ length: 16 }, (_, i) => q(`E${i}`, 'easy' as const)),
+    ...Array.from({ length: 20 }, (_, i) => q(`M${i}`, 'medium' as const)),
+    ...Array.from({ length: 12 }, (_, i) => q(`H${i}`, 'hard' as const)),
+  ]
+}
+
+/** The remaining legacy math skills: 20 items, all one difficulty. */
 function flatPool(level: Difficulty = 'easy') {
   return Array.from({ length: 20 }, (_, i) => q(`f${i}`, level))
 }
@@ -61,8 +70,8 @@ describe('bandFor — the four bands', () => {
 
   it('the ADVANCE bar overrides accuracy entirely', () => {
     // A student at 'advanced' gets hard only even on a bad recent run.
-    expect(bandFor({ recent: answers(1, 10), status: 'advanced' })).toBe('hard-only')
-    expect(bandFor({ recent: answers(1, 10), status: 'mastered' })).toBe('hard-only')
+    expect(bandFor({ recent: answers(1, 10), status: 'advanced' })).toBe('advanced')
+    expect(bandFor({ recent: answers(1, 10), status: 'mastered' })).toBe('advanced')
   })
 
   it('practicing status does not override accuracy', () => {
@@ -119,12 +128,19 @@ describe('selectRamped — weighting per band', () => {
     expect(c.hard).toBeGreaterThan(0)
   })
 
-  it('hard-only serves every hard item before anything else', () => {
-    // The pool holds only 4 hard items but the session wants 10, so it must top up
-    // rather than return a short set.
-    const picked = select(authoredPool(), 'hard-only')
-    expect(picked).toHaveLength(10)
-    expect(picked.slice(0, 4).every((p) => p.difficulty === 'hard')).toBe(true)
+  it('advanced leans hardest but still varies', () => {
+    const c = countBy(select(tieredPool(), 'advanced'))
+    expect(c.hard).toBeGreaterThan(c.medium + c.easy)
+    // The defect this replaced: six identical hard items in a row in production.
+    expect(c.easy + c.medium).toBeGreaterThan(0)
+    expect(c.easy + c.medium + c.hard).toBe(10)
+  })
+
+  it('hits the documented mix on a real 48-item pool', () => {
+    expect(countBy(select(tieredPool(), 'hard-weighted'))).toEqual({ easy: 1, medium: 2, hard: 7 })
+    expect(countBy(select(tieredPool(), 'easy-weighted'))).toEqual({ easy: 7, medium: 2, hard: 1 })
+    expect(countBy(select(tieredPool(), 'balanced'))).toEqual({ easy: 3, medium: 4, hard: 3 })
+    expect(countBy(select(tieredPool(), 'advanced'))).toEqual({ easy: 1, medium: 1, hard: 8 })
   })
 
   it('easy-weighted and hard-weighted genuinely differ on the same pool', () => {
@@ -135,6 +151,50 @@ describe('selectRamped — weighting per band', () => {
   })
 })
 
+describe('THE VARIETY FLOOR — no session of 10 is ever single-form', () => {
+  const BANDS: RampBand[] = ['easy-weighted', 'balanced', 'hard-weighted', 'advanced']
+
+  it.each(BANDS)('%s draws at least two difficulties from a spread pool', (band) => {
+    const picked = select(tieredPool(), band)
+    expect(picked).toHaveLength(10)
+    expect(new Set(picked.map((p) => p.difficulty)).size).toBeGreaterThanOrEqual(2)
+  })
+
+  it.each(BANDS)('%s stays varied on the thinner 8/8/4 pool too', (band) => {
+    const picked = select(authoredPool(), band)
+    expect(picked).toHaveLength(10)
+    expect(new Set(picked.map((p) => p.difficulty)).size).toBeGreaterThanOrEqual(2)
+  })
+
+  it('a FRESH question outranks variety when the unseen pool is one difficulty', () => {
+    // 40 of 48 seen, so the only unseen items are hard. Serving a repeat just to
+    // mix difficulty would be the wrong trade: the student learns more from a
+    // question they have not met. Variety yields here, deliberately.
+    const pool = tieredPool()
+    const seen = new Set(pool.slice(0, 40).map((p) => p.id))
+    const picked = select(pool, 'advanced', 10, seen)
+    expect(picked).toHaveLength(10)
+    expect(picked.slice(0, 8).every((p) => !seen.has(p.id))).toBe(true)
+    expect(picked.slice(0, 8).every((p) => p.difficulty === 'hard')).toBe(true)
+  })
+
+  it('stays varied when the unseen pool still has a spread', () => {
+    const pool = tieredPool()
+    const seen = new Set(pool.slice(0, 20).map((p) => p.id))
+    for (const band of BANDS) {
+      const picked = select(pool, band, 10, seen)
+      expect(picked.every((p) => !seen.has(p.id))).toBe(true)
+      expect(new Set(picked.map((p) => p.difficulty)).size).toBeGreaterThanOrEqual(2)
+    }
+  })
+
+  it('does not force variety on a pool that genuinely has one difficulty', () => {
+    const picked = select(flatPool('easy'), 'advanced')
+    expect(new Set(picked.map((p) => p.difficulty)).size).toBe(1)
+    expect(picked).toHaveLength(10)
+  })
+})
+
 describe('selectRamped — the no-spread fallback', () => {
   it('serves a normal full set for a single-difficulty pool', () => {
     const picked = select(flatPool('easy'), 'hard-weighted')
@@ -142,10 +202,10 @@ describe('selectRamped — the no-spread fallback', () => {
     expect(picked.every((p) => p.difficulty === 'easy')).toBe(true)
   })
 
-  it('no-spread wins over hard-only: never empty, never short', () => {
+  it('no-spread wins over every band: never empty, never short', () => {
     // An advanced student on a legacy 20-easy pool. Hard-only would have nothing to
     // serve; the fallback gives them the normal pool instead.
-    const picked = select(flatPool('easy'), 'hard-only')
+    const picked = select(flatPool('easy'), 'advanced')
     expect(picked).toHaveLength(10)
   })
 

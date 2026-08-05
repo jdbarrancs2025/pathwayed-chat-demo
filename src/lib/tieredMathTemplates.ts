@@ -24,14 +24,21 @@ import type { Difficulty } from '@/lib/difficultyRamp'
  * 4.NBT.B.5), or push percentages into compound interest. Operand ranges widen only
  * WITHIN what the grade's own standard allows.
  *
- * ADDITIVE ONLY. Every template code here ends -v2 and is new, so the deterministic
- * ids (sha1 of "code:slot") cannot collide with the v1 pool. No existing row is
- * updated, re-tagged, or deleted, and every question_attempts row stays joinable.
- * Seeded as DRAFT: nothing is served until it is reviewed and published.
+ * ADDITIVE ONLY. Every template code here ends -v3 and is new, so the deterministic
+ * ids (sha1 of "code:slot") cannot collide with the v1 pool OR with the v2 pool that
+ * is already published for multiplication. No existing row is updated, re-tagged, or
+ * deleted, and every question_attempts row stays joinable. Seeded as DRAFT: nothing
+ * is served until it is reviewed and published.
+ *
+ * WHY v3 RATHER THAN REGENERATING v2. Ids are sha1("code:slot"), so keeping the v2
+ * codes while changing generation would rewrite live published rows in place. That
+ * would silently re-label attempts as having been served content the student was
+ * never actually given. A new code namespace is the only additive way to change what
+ * a tier contains.
  */
 
 export interface TieredMathTemplate {
-  /** Stable idempotency key. The -v2 suffix keeps the id namespace distinct. */
+  /** Stable idempotency key. The -v3 suffix keeps the id namespace distinct. */
   code: string
   skillSlug: string
   satAlignment: string
@@ -40,6 +47,20 @@ export interface TieredMathTemplate {
   count: number
   /** The grade standard this tier sits on, quoted in the seed for review. */
   standard: string
+  /**
+   * Slot names that are INTERCHANGEABLE, so two draws whose values for them are the
+   * same multiset are the same item wearing different clothes.
+   *
+   * Multiplication is commutative, so the pool held both "box x 3 = 27" and
+   * "box x 9 = 27". Same two numbers, same product, no new thinking. With only 12
+   * hard items that made the pool feel roughly half its size. Naming the slots here
+   * lets the build script collapse those pairs.
+   *
+   * Deliberately NOT a generation-spec constraint: a constraint like a <= b would
+   * force the hidden factor to always be the smaller one, which is a pattern a
+   * student can exploit. This dedupes across items without biasing any item.
+   */
+  commutativeSlots?: string[]
   generationSpec: MathGenerationSpec
   distractorSpec: MathDistractorSpec
 }
@@ -53,25 +74,30 @@ export const TIER_COUNTS: Record<Difficulty, number> = { easy: 16, medium: 20, h
 
 /** EASY: the friendly tables (2, 3, 4, 5, 10) taught first. Recall. */
 const MULT_EASY: TieredMathTemplate = {
-  code: 'multiplication-g3-easy-v2',
+  code: 'multiplication-g3-easy-v3',
   skillSlug: 'multiplication',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'easy',
   count: TIER_COUNTS.easy,
   standard: '3.OA.C.7 - multiply within 100 (friendly factors)',
+  commutativeSlots: ['a', 'b'],
   generationSpec: {
     kind: 'template_math',
     schemaVersion: 1,
     responseType: 'multiple_choice',
     stemTemplate: 'What is ${a} \\times {b}$?',
     slots: [
-      // The tables a grade-3 student meets first.
-      { name: 'a', min: 2, max: 5 },
+      // Tiers are split by PRODUCT SIZE, not by which factor is which, so easy and
+      // medium are disjoint even after commuted pairs are collapsed. Splitting by
+      // factor would have put 2 x 6 in easy and 6 x 2 in medium, which are the same
+      // fact. Factors stay SINGLE DIGIT (10 included as the place-value friendly
+      // one): 3.OA.C.7 is products of two one-digit numbers, within 100.
+      { name: 'a', min: 2, max: 10 },
       { name: 'b', min: 2, max: 10 },
     ],
     answerFormula: 'a * b',
     answerFormat: 'integer',
-    constraints: ['a * b <= 100'],
+    constraints: ['a * b <= 28'],
     solutionTemplate: '${a} \\times {b} = {answer}$.',
   },
   // Every entry carries a DISTINCT token, including the backups. The v1 template
@@ -88,26 +114,27 @@ const MULT_EASY: TieredMathTemplate = {
 
 /** MEDIUM: the hard facts (6-9 times tables). Same standard, less friendly. */
 const MULT_MEDIUM: TieredMathTemplate = {
-  code: 'multiplication-g3-medium-v2',
+  code: 'multiplication-g3-medium-v3',
   skillSlug: 'multiplication',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'medium',
   count: TIER_COUNTS.medium,
   standard: '3.OA.C.7 - multiply within 100 (the harder facts)',
+  commutativeSlots: ['a', 'b'],
   generationSpec: {
     kind: 'template_math',
     schemaVersion: 1,
     responseType: 'multiple_choice',
     stemTemplate: 'What is ${a} \\times {b}$?',
     slots: [
-      // At least one factor from the 6-9 tables, which are the facts children
-      // reach last. Still single-digit, still within 100.
-      { name: 'a', min: 6, max: 9 },
-      { name: 'b', min: 3, max: 9 },
+      { name: 'a', min: 2, max: 10 },
+      { name: 'b', min: 2, max: 10 },
     ],
     answerFormula: 'a * b',
     answerFormat: 'integer',
-    constraints: ['a * b <= 100'],
+    // Strictly above the easy tier's ceiling and still within 100, so the two tiers
+    // share no fact and neither leaves grade 3.
+    constraints: ['a * b > 28', 'a * b <= 100'],
     solutionTemplate: '${a} \\times {b} = {answer}$.',
   },
   // Every entry carries a DISTINCT token, including the backups. The v1 template
@@ -129,20 +156,21 @@ const MULT_MEDIUM: TieredMathTemplate = {
  * grade-3 standard in its own right, NOT grade-4 work in disguise.
  */
 const MULT_HARD: TieredMathTemplate = {
-  code: 'multiplication-g3-hard-v2',
+  code: 'multiplication-g3-hard-v3',
   skillSlug: 'multiplication',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'hard',
   count: TIER_COUNTS.hard,
   standard: '3.OA.A.4 - determine the unknown factor',
+  commutativeSlots: ['a', 'b'],
   generationSpec: {
     kind: 'template_math',
     schemaVersion: 1,
     responseType: 'multiple_choice',
     stemTemplate: 'What number goes in the box? $\\square \\times {b} = {product}$',
     slots: [
-      { name: 'a', min: 3, max: 9 },
-      { name: 'b', min: 3, max: 9 },
+      { name: 'a', min: 3, max: 10 },
+      { name: 'b', min: 3, max: 10 },
     ],
     derived: [{ name: 'product', formula: 'a * b' }],
     answerFormula: 'a',
@@ -166,7 +194,7 @@ const MULT_HARD: TieredMathTemplate = {
 
 /** EASY: UNIT fractions only (one part of b), small friendly wholes. */
 const FRAC_EASY: TieredMathTemplate = {
-  code: 'fraction-of-number-g3-easy-v2',
+  code: 'fraction-of-number-g3-easy-v3',
   skillSlug: 'fractions',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'easy',
@@ -197,7 +225,7 @@ const FRAC_EASY: TieredMathTemplate = {
 
 /** MEDIUM: non-unit proper fractions in lowest terms, larger friendly wholes. */
 const FRAC_MEDIUM: TieredMathTemplate = {
-  code: 'fraction-of-number-g3-medium-v2',
+  code: 'fraction-of-number-g3-medium-v3',
   skillSlug: 'fractions',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'medium',
@@ -235,7 +263,7 @@ const FRAC_MEDIUM: TieredMathTemplate = {
  * direction of the reasoning, not the arithmetic.
  */
 const FRAC_HARD: TieredMathTemplate = {
-  code: 'fraction-of-number-g3-hard-v2',
+  code: 'fraction-of-number-g3-hard-v3',
   skillSlug: 'fractions',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'hard',
@@ -280,7 +308,7 @@ const FRAC_HARD: TieredMathTemplate = {
 
 /** EASY: benchmark percents only (10, 25, 50, 75) of friendly wholes. */
 const PCT_EASY: TieredMathTemplate = {
-  code: 'percent-of-g6-easy-v2',
+  code: 'percent-of-g6-easy-v3',
   skillSlug: 'percentages',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'easy',
@@ -314,7 +342,7 @@ const PCT_EASY: TieredMathTemplate = {
 
 /** MEDIUM: any 5-point percent, the full friendly-whole range. */
 const PCT_MEDIUM: TieredMathTemplate = {
-  code: 'percent-of-g6-medium-v2',
+  code: 'percent-of-g6-medium-v3',
   skillSlug: 'percentages',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'medium',
@@ -351,7 +379,7 @@ const PCT_MEDIUM: TieredMathTemplate = {
  * the percent"), so it is harder reasoning at the same grade, not grade-7 work.
  */
 const PCT_HARD: TieredMathTemplate = {
-  code: 'percent-of-g6-hard-v2',
+  code: 'percent-of-g6-hard-v3',
   skillSlug: 'percentages',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'hard',
@@ -388,7 +416,7 @@ const PCT_HARD: TieredMathTemplate = {
 
 /** EASY: small datasets, friendly means. */
 const MEAN_EASY: TieredMathTemplate = {
-  code: 'mean-from-total-g6-easy-v2',
+  code: 'mean-from-total-g6-easy-v3',
   skillSlug: 'data-analysis',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'easy',
@@ -421,7 +449,7 @@ const MEAN_EASY: TieredMathTemplate = {
 
 /** MEDIUM: the full range, means that are not multiples of 5. */
 const MEAN_MEDIUM: TieredMathTemplate = {
-  code: 'mean-from-total-g6-medium-v2',
+  code: 'mean-from-total-g6-medium-v3',
   skillSlug: 'data-analysis',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'medium',
@@ -456,7 +484,7 @@ const MEAN_MEDIUM: TieredMathTemplate = {
  * total, then subtract what is known) and still squarely 6.SP.
  */
 const MEAN_HARD: TieredMathTemplate = {
-  code: 'mean-from-total-g6-hard-v2',
+  code: 'mean-from-total-g6-hard-v3',
   skillSlug: 'data-analysis',
   satAlignment: 'problem-solving-data-analysis',
   difficulty: 'hard',

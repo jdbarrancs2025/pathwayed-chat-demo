@@ -21,6 +21,34 @@ describe('explainMisconception', () => {
     expect(text!.length).toBeGreaterThan(10)
   })
 
+  describe('copy quality', () => {
+    const allCopy = templateTokens
+      .map((t) => ({ token: t, text: explainMisconception(t) as string }))
+      .filter((e) => !!e.text)
+
+    it('contains no em-dashes or en-dashes', () => {
+      for (const { token, text } of allCopy) {
+        expect(text, `${token} uses a dash character`).not.toMatch(/[–—]/)
+      }
+    })
+
+    it('is never truncated mid-thought', () => {
+      // Caught "think of it as groups of." in production copy: a sentence that
+      // stops on a preposition reads as a bug to a parent.
+      // 'asks for.' and 'looking for.' are legitimate endings, so "for" is not listed.
+      const dangling = /\b(of|to|by|with|than|into|the|a|an)\.\s*$/i
+      for (const { token, text } of allCopy) {
+        expect(text, `${token} ends on a dangling word: "${text}"`).not.toMatch(dangling)
+      }
+    })
+
+    it('ends every explanation with real sentence punctuation', () => {
+      for (const { token, text } of allCopy) {
+        expect(text.trim(), `${token} has no end punctuation`).toMatch(/[.!?"']$/)
+      }
+    })
+  })
+
   it('returns null for an unknown or absent token (caller falls back)', () => {
     expect(explainMisconception('not-a-real-token')).toBeNull()
     expect(explainMisconception(null)).toBeNull()

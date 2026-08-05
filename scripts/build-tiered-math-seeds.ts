@@ -5,10 +5,10 @@
  *   bun run scripts/build-tiered-math-seeds.ts
  *   bun run scripts/build-tiered-math-seeds.ts --samples   # review output only
  *
- * Writes seeds/0022_tiered_math_questions.sql (templates + questions in one file).
+ * Writes seeds/{SEED_FILE} (templates + questions in one file).
  *
  * ADDITIVE AND NON-DESTRUCTIVE BY CONSTRUCTION:
- *   - every template code is new (-v2), so the deterministic id sha1("code:slot")
+ *   - every template code is new (-v3), so the deterministic id sha1("code:slot")
  *     cannot collide with an existing generated_questions row;
  *   - questions are inserted with status='draft', so nothing is served until a
  *     human publishes them;
@@ -23,7 +23,10 @@ import { writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { TIERED_MATH_TEMPLATES } from '../src/lib/tieredMathTemplates'
-import { generateQuestion } from '../src/lib/questionGen'
+import { generateQuestionDebug } from '../src/lib/questionGen'
+
+/** Bump when generation changes: a new namespace, never a rewrite in place. */
+const SEED_FILE = '0023_tiered_math_questions_v3.sql'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const seedsDir = join(here, '..', 'seeds')
@@ -54,21 +57,51 @@ function deterministicId(input: string): string {
 
 type Tpl = (typeof TIERED_MATH_TEMPLATES)[number]
 
-/** N distinct cached questions for a tier, deduped by stem. */
+/**
+ * Canonical key for an item, used to collapse COMMUTED DUPLICATES.
+ *
+ * Multiplication is commutative, so "box x 3 = 27" and "box x 9 = 27" are the same
+ * two numbers and the same product with no new thinking behind them. Sorting the
+ * values of the template's commutativeSlots makes both draws produce one key, so the
+ * second is skipped. Templates without commutativeSlots key on the stem alone, which
+ * is the previous behaviour exactly.
+ */
+function canonicalKey(t: Tpl, stem: string, slots: Record<string, number>): string {
+  if (!t.commutativeSlots?.length) return stem
+  const swapped = [...t.commutativeSlots].map((n) => slots[n]).sort((x, y) => x - y)
+  const rest = Object.keys(slots)
+    .filter((n) => !t.commutativeSlots!.includes(n))
+    .sort()
+    .map((n) => `${n}=${slots[n]}`)
+  return `${t.code}|${swapped.join('x')}|${rest.join(',')}`
+}
+
+/** N distinct cached questions for a tier, deduped by canonical key. */
 function buildCached(t: Tpl) {
-  const out: { slot: number; question: ReturnType<typeof generateQuestion> }[] = []
-  const seenStems = new Set<string>()
+  const out: { slot: number; question: ReturnType<typeof generateQuestionDebug>['question'] }[] = []
+  const seen = new Set<string>()
   const MAX_INDEX = 20000
   for (let index = 1; out.length < t.count && index <= MAX_INDEX; index++) {
-    const question = generateQuestion(t.generationSpec, t.distractorSpec, seedForIndex(index))
-    if (seenStems.has(question.stem)) continue
-    seenStems.add(question.stem)
+    const { question, slots } = generateQuestionDebug(t.generationSpec, t.distractorSpec, seedForIndex(index))
+    const key = canonicalKey(t, question.stem, slots)
+    if (seen.has(key)) continue
+    seen.add(key)
     out.push({ slot: out.length + 1, question })
   }
   if (out.length < t.count) {
     throw new Error(`${t.code}: only ${out.length} distinct questions available (need ${t.count})`)
   }
   return out
+}
+
+/** How many DISTINCT items a tier can produce, for the commutation report. */
+function capacity(t: Tpl, useCommutation: boolean): number {
+  const seen = new Set<string>()
+  for (let index = 1; index <= 20000; index++) {
+    const { question, slots } = generateQuestionDebug(t.generationSpec, t.distractorSpec, seedForIndex(index))
+    seen.add(useCommutation ? canonicalKey(t, question.stem, slots) : question.stem)
+  }
+  return seen.size
 }
 
 const HEADER = `-- PathwayEd — Phase 3 step 1: TIERED math questions (GENERATED).
@@ -83,7 +116,7 @@ const HEADER = `-- PathwayEd — Phase 3 step 1: TIERED math questions (GENERATE
 -- WHAT THIS DOES AND DOES NOT DO.
 --   DOES:     insert 12 NEW templates and 192 NEW questions, all status='draft'.
 --   DOES NOT: update, re-tag, or delete a single existing row. Every template code
---             ends -v2 and is new, so no deterministic id can collide with the
+--             ends -v3 and is new, so no deterministic id can collide with the
 --             live v1 pool, and every existing question_attempts row stays joinable
 --             with its per-question time median intact.
 --
@@ -161,12 +194,27 @@ group by 1, 2 order by 1, 2;
 commit;
 `
 
-writeFileSync(join(seedsDir, '0022_tiered_math_questions.sql'), sql)
-console.log(`Wrote seeds/0022_tiered_math_questions.sql (${templateCount} templates, ${questionCount} questions, all draft).`)
+writeFileSync(join(seedsDir, SEED_FILE), sql)
+console.log(`Wrote seeds/${SEED_FILE} (${templateCount} templates, ${questionCount} questions, all draft).`)
+
+// --- Commutation report: how many items the dedupe removes -------------------
+if (process.argv.includes('--commutation')) {
+  console.log('\ntemplate                        without  with  removed  need  headroom')
+  for (const t of TIERED_MATH_TEMPLATES) {
+    const without = capacity(t, false)
+    const withDedupe = capacity(t, true)
+    const flag = withDedupe < t.count ? '  *** SHORT ***' : ''
+    console.log(
+      `${t.code.padEnd(32)}${String(without).padStart(6)}${String(withDedupe).padStart(6)}` +
+        `${String(without - withDedupe).padStart(9)}${String(t.count).padStart(6)}` +
+        `${String(withDedupe - t.count).padStart(10)}${flag}`,
+    )
+  }
+}
 
 // --- Review samples as markdown ----------------------------------------------
 // Written from the SAME buildCached() call that produced the seed, so the file
-// cannot drift from what 0022 actually contains.
+// cannot drift from what the seed actually contains.
 if (process.argv.includes('--markdown')) {
   const PER_TIER = 3
   const bySkill = new Map<string, Tpl[]>()
@@ -174,12 +222,11 @@ if (process.argv.includes('--markdown')) {
     bySkill.set(t.skillSlug, [...(bySkill.get(t.skillSlug) ?? []), t])
   }
 
-  let md = `# Tiered math samples — seeds/0022 (draft)
+  let md = `# Tiered math samples - seeds/0023 v3 (draft)
 
 Generated by \`scripts/build-tiered-math-seeds.ts --markdown\` from
 \`src/lib/tieredMathTemplates.ts\`, the same source that produced
-\`seeds/0022_tiered_math_questions.sql\`. Everything below is DRAFT and is not
-served to anyone.
+\`seeds/${SEED_FILE}\`. Everything below is DRAFT and is not served to anyone.
 
 Three items per skill per tier. The correct choice is marked \`**<-- correct**\`;
 every other choice shows its misconception token.
@@ -209,8 +256,8 @@ every other choice shows its misconception token.
       }
     }
   }
-  writeFileSync(join(here, '..', 'samples-tiered-v2.md'), md)
-  console.log('Wrote samples-tiered-v2.md')
+  writeFileSync(join(here, '..', 'samples-tiered-v3.md'), md)
+  console.log('Wrote samples-tiered-v3.md')
 }
 
 // --- Review samples: N per skill per tier (console) ---------------------------
