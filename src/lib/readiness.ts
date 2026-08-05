@@ -770,7 +770,13 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
     const [readinessRes, masteryRes] = await Promise.all([
       supabase
         .from('readiness_scores')
-        .select('readiness_type, score, strengths, gaps, next_skill_slug, updated_at, engine_version')
+        // MUST include recommendations. When the stored rows turn out to be FRESH
+        // these exact rows are returned to the view, and measuredSkills lives in
+        // that column. Omitting it made every fresh row render as "not measured
+        // yet" with its real score sitting unread in the same object.
+        .select(
+          'readiness_type, score, strengths, gaps, next_skill_slug, recommendations, updated_at, engine_version',
+        )
         .eq('student_id', studentId),
       supabase.from('student_skill_mastery').select('updated_at').eq('student_id', studentId),
     ])
