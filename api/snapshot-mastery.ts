@@ -17,10 +17,10 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { requireCronSecret } from "./require-auth.js"
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
-const CRON_SECRET = process.env.CRON_SECRET
 
 // Supabase caps an un-ranged select at 1000 rows, so every read paginates — a
 // bigger population must never be silently truncated (that would drop children from
@@ -87,11 +87,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
   }
-  // Guarded exactly like admissions-season-email: when CRON_SECRET is set, require
-  // it as a bearer token so the endpoint can't be triggered anonymously.
-  if (CRON_SECRET && req.headers.authorization !== `Bearer ${CRON_SECRET}`) {
-    return res.status(401).json({ error: "Unauthorized" })
-  }
+  // Requires CRON_SECRET as a bearer token. Fails CLOSED: an unset secret returns
+  // 503 rather than running this unauthenticated (see requireCronSecret).
+  if (!requireCronSecret(req, res)) return
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
     return res.status(500).json({ error: "Server is missing Supabase configuration." })
   }

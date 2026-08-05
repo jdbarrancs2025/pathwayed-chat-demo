@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk"
 import { createClient } from "@supabase/supabase-js"
+import { rateLimit, ESSAY_FEEDBACK_LIMIT } from "./rate-limit.js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 
 /**
@@ -37,6 +38,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { attemptId } = (req.body ?? {}) as { attemptId?: string }
   if (!attemptId || typeof attemptId !== "string") {
     return res.status(400).json({ error: "attemptId is required" })
+  }
+
+  // Per-attempt cap. Keyed on the attempt rather than the caller because that is
+  // the unit of work: one essay earns a small number of feedback runs no matter how
+  // many times it is re-requested. Grading an essay is the single most expensive
+  // LLM call in the product, and this was the last uncapped authenticated one.
+  // The RLS read below is still what authorizes; this only bounds cost.
+  const limited = rateLimit(`essay:${attemptId}`, ESSAY_FEEDBACK_LIMIT)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
   }
 
   try {

@@ -16,12 +16,12 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { requireCronSecret } from "./require-auth.js"
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const EMAIL_PROVIDER_API_KEY = process.env.EMAIL_PROVIDER_API_KEY
 const EMAIL_FROM = process.env.EMAIL_FROM
-const CRON_SECRET = process.env.CRON_SECRET
 
 // Plans whose grade coverage reaches a 6-8 prep module (mirrors
 // billing.PLAN_GRADES / planQualifiesForBand: Elementary K-5 is excluded).
@@ -151,11 +151,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
   }
-  // Guarded exactly like trial-emails: when CRON_SECRET is set, require it as a
-  // bearer token so the endpoint can't be triggered anonymously.
-  if (CRON_SECRET && req.headers.authorization !== `Bearer ${CRON_SECRET}`) {
-    return res.status(401).json({ error: "Unauthorized" })
-  }
+  // Requires CRON_SECRET as a bearer token. Fails CLOSED: an unset secret returns
+  // 503 rather than running this unauthenticated (see requireCronSecret).
+  if (!requireCronSecret(req, res)) return
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
     return res.status(500).json({ error: "Server is missing Supabase configuration." })
   }

@@ -13,12 +13,12 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { requireCronSecret } from "./require-auth.js"
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const EMAIL_PROVIDER_API_KEY = process.env.EMAIL_PROVIDER_API_KEY
 const EMAIL_FROM = process.env.EMAIL_FROM
-const CRON_SECRET = process.env.CRON_SECRET
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -106,12 +106,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" })
   }
-  // When CRON_SECRET is configured, Vercel cron sends it as a bearer token.
-  // Require it so the endpoint can't be triggered anonymously; if unset, behave
-  // like the discipline console's cron (open, since it only sends idempotent mail).
-  if (CRON_SECRET && req.headers.authorization !== `Bearer ${CRON_SECRET}`) {
-    return res.status(401).json({ error: "Unauthorized" })
-  }
+  // Vercel cron sends CRON_SECRET as a bearer token. Fails CLOSED: an unset secret
+  // returns 503 rather than leaving this open (see requireCronSecret).
+  if (!requireCronSecret(req, res)) return
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
     return res.status(500).json({ error: "Server is missing Supabase configuration." })
   }

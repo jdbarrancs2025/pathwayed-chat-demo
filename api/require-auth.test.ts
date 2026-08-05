@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, afterEach } from "vitest"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { bearerToken, ownsStudent, requireOwnedStudent } from "./require-auth.js"
+import { bearerToken, ownsStudent, requireCronSecret, requireOwnedStudent } from "./require-auth.js"
 
 const req = (headers: Record<string, string>) => ({ headers }) as unknown as VercelRequest
 
@@ -42,6 +42,42 @@ describe("bearerToken", () => {
   it("returns empty for a missing or non-bearer header", () => {
     expect(bearerToken(req({}))).toBe("")
     expect(bearerToken(req({ authorization: "Basic abc" }))).toBe("")
+  })
+})
+
+describe("requireCronSecret", () => {
+  const original = process.env.CRON_SECRET
+  afterEach(() => {
+    if (original === undefined) delete process.env.CRON_SECRET
+    else process.env.CRON_SECRET = original
+  })
+
+  it("FAILS CLOSED when the secret is not configured", () => {
+    // The old guard was `if (CRON_SECRET && header !== ...)`, so an unset secret
+    // skipped the check and left endpoints that read every profile wide open.
+    delete process.env.CRON_SECRET
+    const { res, sent } = fakeRes()
+    expect(requireCronSecret(req({ authorization: "Bearer anything" }), res)).toBe(false)
+    expect(sent.status).toBe(503)
+    expect(sent.body).toEqual({ error: "cron_secret_not_configured" })
+  })
+
+  it("rejects a missing or wrong bearer token", () => {
+    process.env.CRON_SECRET = "s3cret"
+    const a = fakeRes()
+    expect(requireCronSecret(req({}), a.res)).toBe(false)
+    expect(a.sent.status).toBe(401)
+
+    const b = fakeRes()
+    expect(requireCronSecret(req({ authorization: "Bearer wrong" }), b.res)).toBe(false)
+    expect(b.sent.status).toBe(401)
+  })
+
+  it("passes the real cron caller", () => {
+    process.env.CRON_SECRET = "s3cret"
+    const { res, sent } = fakeRes()
+    expect(requireCronSecret(req({ authorization: "Bearer s3cret" }), res)).toBe(true)
+    expect(sent.status).toBeUndefined()
   })
 })
 

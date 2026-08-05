@@ -37,6 +37,12 @@ export const TRANSCRIBE_LIMIT = 40
 export const FLASHCARDS_LIMIT = 10
 /** Checkout and the billing portal are not hot paths. A human clicks these once. */
 export const BILLING_LIMIT = 5
+/**
+ * Keyed per ESSAY, not per user. One essay earns a few feedback runs however many
+ * times it is re-requested, and grading an essay is the most expensive single LLM
+ * call in the product.
+ */
+export const ESSAY_FEEDBACK_LIMIT = 3
 
 /** Drop expired buckets so a long-lived instance does not grow unboundedly. */
 function sweep(now: number) {

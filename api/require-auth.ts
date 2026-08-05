@@ -33,6 +33,33 @@ export interface AuthedCaller {
   svc: SupabaseClient
 }
 
+/**
+ * Guard a cron-triggered endpoint with the shared CRON_SECRET.
+ *
+ * FAILS CLOSED. The three cron endpoints previously guarded themselves with
+ * `if (CRON_SECRET && header !== ...)`, which means an UNSET secret skipped the
+ * check entirely and left the endpoint open to anyone. Those endpoints read every
+ * profile in the database and send mail, so an unset environment variable silently
+ * turned a private job into a public one. Missing configuration now returns 503 and
+ * refuses to run, which is the only safe reading of "we do not know who is calling".
+ *
+ * On failure this SENDS the response and returns false, so a handler can
+ * `if (!requireCronSecret(req, res)) return`.
+ */
+export function requireCronSecret(req: VercelRequest, res: VercelResponse): boolean {
+  const secret = process.env.CRON_SECRET
+  if (!secret) {
+    console.error("CRON_SECRET is not set; refusing to run a cron endpoint unauthenticated")
+    res.status(503).json({ error: "cron_secret_not_configured" })
+    return false
+  }
+  if (req.headers.authorization !== `Bearer ${secret}`) {
+    res.status(401).json({ error: "Unauthorized" })
+    return false
+  }
+  return true
+}
+
 /** Pull a bearer token from the Authorization header, or "" when absent. */
 export function bearerToken(req: VercelRequest): string {
   const h = req.headers.authorization
