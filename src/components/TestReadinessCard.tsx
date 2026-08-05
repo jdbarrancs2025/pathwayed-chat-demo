@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getStudent, type Student } from '@/lib/students'
 import { getSatPayload, type SatProjectionPayload } from '@/lib/readiness'
+import { trajectorySummary, type ModuleTrajectory } from '@/lib/prep/testTrajectory'
 import { showKidSatFraming } from '@/lib/satFraming'
 import { SatReadiness } from '@/components/SatReadiness'
 import { loadTestReadiness, type TestReadinessData } from '@/lib/prep/testReadinessLoad'
@@ -84,6 +85,7 @@ export function TestReadinessCard({
 
   const heading = (text: string) =>
     audience === 'parent' ? <div className="pd-label">{text}</div> : <h3>{text}</h3>
+
   const body = (
     <>
       {heading('Test Readiness')}
@@ -101,6 +103,17 @@ export function TestReadinessCard({
       {showSat && (
         <div className="trc-sat">
           <SatReadiness payload={sat} grade={grade} variant={audience} />
+        </div>
+      )}
+
+      {/* Direction BEFORE the raw list. A parent should see that Mathematics went
+          38% to 45% without having to scan two rows and subtract. */}
+      {data.trajectories.length > 0 && (
+        <div className="trc-trajectory">
+          {heading('Direction over time')}
+          {data.trajectories.map((t) => (
+            <TrajectoryBlock key={t.moduleId} trajectory={t} firstName={student.first_name} />
+          ))}
         </div>
       )}
 
@@ -283,4 +296,46 @@ function formatDate(iso: string | null): string {
   if (!iso) return ''
   const d = new Date(iso)
   return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+/**
+ * One test's direction, section by section. Measured percent correct only, with
+ * the same qualitative band the readiness blocks use. No projected scaled score,
+ * no percentile, and no arrow drawn from a single attempt.
+ */
+function TrajectoryBlock({
+  trajectory,
+  firstName,
+}: {
+  trajectory: ModuleTrajectory
+  firstName: string
+}) {
+  return (
+    <div className="trc-module">
+      <div className="subj-head">
+        <span className="subj-name">{trajectory.moduleName}</span>
+      </div>
+      {trajectory.sections.map((s) => (
+        <div key={s.sectionId} className="trj-row">
+          <div className="trj-top">
+            <span className="trj-name">{s.sectionName}</span>
+            <span className={`trj-dir trj-${s.direction ?? 'none'}`}>
+              {s.direction === 'up' ? 'Improving' : null}
+              {s.direction === 'down' ? 'Slipping' : null}
+              {s.direction === 'flat' ? 'Steady' : null}
+              {s.direction === null ? 'First attempt' : null}
+            </span>
+          </div>
+          <p className="trj-summary">{trajectorySummary(s, firstName)}</p>
+          <div className="trj-points">
+            {s.points.map((p, i) => (
+              <span key={i} className="trj-point">
+                {p.percent}%
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 }
