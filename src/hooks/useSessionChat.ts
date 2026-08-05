@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { saveTranscript, type StoredMessage } from '@/lib/sessions'
+import { stripCheckMarker, stripStreamingCheckMarker } from '@/lib/checkQuestion'
 
 export interface ChatMessage extends StoredMessage {
   id: string
@@ -55,7 +56,11 @@ async function streamInto(
       const parsed = JSON.parse(data)
       if (parsed.content) {
         content += parsed.content
-        setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content } : m)))
+        // Strip the check marker for DISPLAY on every tick, so a partially
+        // streamed "[[che" never flashes in the transcript. The raw accumulator
+        // keeps the marker; the caller strips it once at the end for persistence.
+        const shown = stripStreamingCheckMarker(content)
+        setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: shown } : m)))
       }
       if (parsed.error) throw new Error(parsed.error)
     } catch {
@@ -89,6 +94,12 @@ export function useSessionChat(opts: UseSessionChatOptions) {
   const [messages, setMessages] = useState<ChatMessage[]>(opts.initialMessages)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Nikki asked for a check question on her last turn. The caller decides whether
+  // the cadence and the ladder guards actually allow one, then clears this.
+  const [checkRequested, setCheckRequested] = useState(false)
+  // Assistant turns completed this session — the clock the cadence rules run on.
+  const [assistantTurns, setAssistantTurns] = useState(0)
+  const clearCheckRequest = useCallback(() => setCheckRequested(false), [])
 
   const optsRef = useRef(opts)
   optsRef.current = opts
@@ -102,7 +113,16 @@ export function useSessionChat(opts: UseSessionChatOptions) {
   )
 
   const sendMessage = useCallback(
-    async (text: string) => {
+    async (
+      text: string,
+      /**
+       * Per-call misconception nudge. Passed explicitly rather than read from the
+       * hook's options because the caller (a check question just answered) resolves
+       * it in the same tick as the send: a setState would not have applied yet, so
+       * the nudge would land on the turn AFTER the one it explains.
+       */
+      turnOpts?: { misconceptionNudge?: string | null },
+    ) => {
       const content = text.trim()
       if (!content || isLoading) return
 
@@ -135,13 +155,20 @@ export function useSessionChat(opts: UseSessionChatOptions) {
               level: o.level,
               focusSkill: o.focusSkill ?? undefined,
               writingPrompt: o.writingPrompt ?? undefined,
-              lastMisconceptionNudge: o.lastMisconceptionNudge ?? undefined,
+              lastMisconceptionNudge:
+                turnOpts?.misconceptionNudge ?? o.lastMisconceptionNudge ?? undefined,
             },
           }),
         })
         if (!response.ok) throw new Error('Failed to get response')
 
-        const reply = await streamInto(response, assistantId, setMessages)
+        const raw = await streamInto(response, assistantId, setMessages)
+        // Final strip: the marker is removed once, here, so it reaches neither the
+        // saved transcript nor the history sent back to the model on the next turn.
+        const { text: reply, requested } = stripCheckMarker(raw)
+        setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: reply } : m)))
+        setAssistantTurns((n) => n + 1)
+        if (requested) setCheckRequested(true)
         await persist([...convo, { id: assistantId, role: 'assistant', content: reply }])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong.')
@@ -215,7 +242,13 @@ export function useSessionChat(opts: UseSessionChatOptions) {
         })
         if (!response.ok) throw new Error('Failed to get response')
 
-        const reply = await streamInto(response, assistantId, setMessages)
+        const raw = await streamInto(response, assistantId, setMessages)
+        // Final strip: the marker is removed once, here, so it reaches neither the
+        // saved transcript nor the history sent back to the model on the next turn.
+        const { text: reply, requested } = stripCheckMarker(raw)
+        setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: reply } : m)))
+        setAssistantTurns((n) => n + 1)
+        if (requested) setCheckRequested(true)
         await persist([...convo, { id: assistantId, role: 'assistant', content: reply }])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong.')
@@ -233,5 +266,14 @@ export function useSessionChat(opts: UseSessionChatOptions) {
     [isLoading, persist],
   )
 
-  return { messages, isLoading, error, sendMessage, sendImageTurn }
+  return {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
+    sendImageTurn,
+    checkRequested,
+    clearCheckRequest,
+    assistantTurns,
+  }
 }

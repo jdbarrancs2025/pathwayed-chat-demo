@@ -6,6 +6,8 @@ import { subjectDisplayName } from '@/lib/subjects'
 import { skillLabel, scopeBandForGrade, isScopeSubject } from '@/lib/lessonPath'
 import { isCompositionSkill, pickWritingPrompt } from '@/lib/writingComposition'
 import { useSessionChat, type ChatMessage } from '@/hooks/useSessionChat'
+import { useCheckQuestion } from '@/hooks/useCheckQuestion'
+import { CheckQuestionCard } from '@/components/CheckQuestionCard'
 import { useAudioRecorder } from '@/hooks/useAudioRecorder'
 import { useConversationMic } from '@/hooks/useConversationMic'
 import { CallStage, type CallState } from '@/components/CallStage'
@@ -199,7 +201,15 @@ function SessionView({
   writingPrompt: string | null
 }) {
   const navigate = useNavigate()
-  const { messages, isLoading, sendMessage, sendImageTurn } = useSessionChat({
+  const {
+    messages,
+    isLoading,
+    sendMessage,
+    sendImageTurn,
+    checkRequested,
+    clearCheckRequest,
+    assistantTurns,
+  } = useSessionChat({
     studentId: student.id,
     subject,
     childName: student.first_name,
@@ -210,6 +220,18 @@ function SessionView({
     writingPrompt,
     transcriptKey,
     initialMessages,
+  })
+
+  // Nikki's mid-lesson check questions. A missed one threads its misconception
+  // nudge into the very next turn, so she works that specific mistake.
+  const check = useCheckQuestion({
+    student,
+    focusSlug,
+    checkRequested,
+    clearCheckRequest,
+    assistantTurns,
+    isLoading,
+    onAnswered: ({ nudge, summary }) => void sendMessage(summary, { misconceptionNudge: nudge }),
   })
 
   const [pane, setPane] = useState<'chat' | 'work'>('chat')
@@ -540,6 +562,16 @@ function SessionView({
                 )}
               </div>
             ))}
+            {/* Nikki's check question, sitting in the feed as one of her turns. */}
+            {check.question && (
+              <div className="msg nikki">
+                <CheckQuestionCard
+                  question={check.question}
+                  selectedIndex={check.selectedIndex}
+                  onPick={check.pick}
+                />
+              </div>
+            )}
             {showTyping && (
               <div className="typing">
                 <i />

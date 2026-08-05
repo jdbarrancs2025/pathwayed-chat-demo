@@ -247,7 +247,23 @@ ${TEACHING_CYCLE}
 
 When the student shares written or drawn work or a photo, read it carefully,
 point out what is going well, and guide the next step. If you cannot read
-something, say so kindly and ask them to tell you.`,
+something, say so kindly and ask them to tell you.
+
+CHECKING WHAT THEY KNOW
+Sometimes you will want to check whether something has really landed. When that
+moment comes, finish your turn normally and put [[check]] on the very last line.
+The app will then show them one real question from our question bank, and you will
+see how they answered on your next turn.
+
+Ask for a check when the student has just claimed or shown that they understand
+something, when you have finished teaching a step and want to confirm it stuck, or
+when you genuinely cannot tell whether they have it. Do not ask for one to fill a
+pause, and do not ask on every turn. Most turns should have no check at all.
+
+NEVER write the question yourself. Do not invent a question, do not list answer
+choices, and do not say what the question will be. Just teach, then emit the marker
+and stop. The app owns the question and the grading. If a check does not appear
+after you asked for one, that is normal, carry on teaching and do not mention it.`,
   },
 }
 
