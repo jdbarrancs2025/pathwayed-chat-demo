@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { getCombinedSystemPrompt, type Mode, type StudentContext } from "./prompts.js"
+import { requireUser, requireOwnedStudent } from "./require-auth.js"
+import { rateLimit } from "./rate-limit.js"
 
 interface ChatMessage {
   role: "user" | "assistant"
@@ -17,6 +19,8 @@ interface ChatRequest {
   mode: Mode
   context?: StudentContext
   image?: ImageInput
+  /** The child this conversation is about. Required for kid-tutor mode. */
+  studentId?: string
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -31,12 +35,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: "Anthropic API key not configured" })
   }
 
+  // AUTHENTICATION. This endpoint used to accept any POST from anyone, which made
+  // it an open LLM proxy on a production domain. Every caller must now present a
+  // valid Supabase session. One check covers all three identity paths (B2C, school
+  // SSO, and the minted K-8 PIN identity) because all three are ordinary Supabase
+  // sessions by the time a request is made — see require-auth.ts.
+  const auth = await requireUser(req, res)
+  if (!auth) return
+
+  // Per-user cap. Cheap, in-memory, per-instance; see rate-limit.ts for what that
+  // does and does not buy.
+  const limited = rateLimit(auth.userId)
+  if (!limited.allowed) {
+    res.setHeader("Retry-After", String(limited.retryAfterSec))
+    return res.status(429).json({ error: "rate_limited", retry_after: limited.retryAfterSec })
+  }
+
   const anthropic = new Anthropic({
     apiKey,
   })
 
   try {
-    const { messages, mode, context, image } = req.body as ChatRequest
+    const { messages, mode, context, image, studentId } = req.body as ChatRequest
 
     // Validate request body
     if (!messages || !Array.isArray(messages)) {
@@ -46,9 +66,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Mode is required" })
     }
 
+    // AUTHORIZATION. A tutoring turn is ABOUT a specific child, and the prompt is
+    // built from that child's name, grade, and level. Confirm the caller owns them
+    // before Nikki says anything, and then take those three fields from the
+    // DATABASE rather than from the request body, so a caller cannot authorize with
+    // their own child's id while passing another child's details.
+    let effectiveContext = context
+    if (mode === "kid-tutor") {
+      if (!(await requireOwnedStudent(res, auth, studentId))) return
+      const { data: row } = await auth.svc
+        .from("students")
+        .select("first_name, grade, level")
+        .eq("id", studentId as string)
+        .maybeSingle()
+      if (row && context) {
+        effectiveContext = {
+          ...context,
+          childName: row.first_name ?? context.childName,
+          grade: row.grade ?? context.grade,
+          level: row.level ?? context.level,
+        }
+      }
+    }
+
     // Claude takes the system prompt in a dedicated top-level field — only
     // user/assistant turns go in the messages array.
-    const systemPrompt = getCombinedSystemPrompt(mode, context)
+    const systemPrompt = getCombinedSystemPrompt(mode, effectiveContext)
 
     const anthropicMessages: Anthropic.MessageParam[] = messages.map((m) => ({
       role: m.role as "user" | "assistant",

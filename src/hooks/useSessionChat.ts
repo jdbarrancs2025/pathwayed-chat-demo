@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { saveTranscript, type StoredMessage } from '@/lib/sessions'
 import { stripCheckMarker, stripStreamingCheckMarker } from '@/lib/checkQuestion'
+import { authedJsonHeaders } from '@/lib/apiAuth'
 
 export interface ChatMessage extends StoredMessage {
   id: string
@@ -142,10 +143,13 @@ export function useSessionChat(opts: UseSessionChatOptions) {
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await authedJsonHeaders(),
           body: JSON.stringify({
             messages: apiMessages,
             mode: 'kid-tutor',
+            // The server verifies this child belongs to the caller, then reads
+            // their name/grade/level from the database rather than trusting these.
+            studentId,
             context: {
               subject: o.subject,
               focusAreas: o.focusAreas ?? [],
@@ -187,7 +191,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
         setIsLoading(false)
       }
     },
-    [isLoading, persist],
+    [isLoading, persist, studentId],
   )
 
   const sendImageTurn = useCallback(
@@ -222,10 +226,13 @@ export function useSessionChat(opts: UseSessionChatOptions) {
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await authedJsonHeaders(),
           body: JSON.stringify({
             messages: apiMessages,
             mode: 'kid-tutor',
+            // The server verifies this child belongs to the caller, then reads
+            // their name/grade/level from the database rather than trusting these.
+            studentId,
             context: {
               subject: o.subject,
               focusAreas: o.focusAreas ?? [],
@@ -263,7 +270,7 @@ export function useSessionChat(opts: UseSessionChatOptions) {
         setIsLoading(false)
       }
     },
-    [isLoading, persist],
+    [isLoading, persist, studentId],
   )
 
   return {

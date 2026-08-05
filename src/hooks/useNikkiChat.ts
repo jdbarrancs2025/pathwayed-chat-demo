@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import type { Message } from '@/components/chat/ChatMessage'
 import type { Subject, AppMode } from '@/lib/types'
 import { focusAreaLabels } from '@/lib/practiceQuestions'
+import { authedJsonHeaders } from '@/lib/apiAuth'
 
 interface NikkiChatContext {
   subject: Subject
@@ -184,7 +185,7 @@ export function useNikkiChat({ context }: UseNikkiChatOptions): UseNikkiChatRetu
 
         const response = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await authedJsonHeaders(),
           body: JSON.stringify(buildRequestBody(syntheticHistory)),
           signal: controller.signal,
         })
@@ -249,7 +250,7 @@ export function useNikkiChat({ context }: UseNikkiChatOptions): UseNikkiChatRetu
 
         const response = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await authedJsonHeaders(),
           body: JSON.stringify(buildRequestBody(messageHistory)),
         })
 
