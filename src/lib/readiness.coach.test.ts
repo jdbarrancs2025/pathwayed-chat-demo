@@ -19,6 +19,7 @@ const rec = (over: Partial<ReadinessRecord>): ReadinessRecord => ({
   strengths: [],
   gaps: [],
   nextSkillSlug: null,
+  measuredSkills: 3,
   ...over,
 })
 

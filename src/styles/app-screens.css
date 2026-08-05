@@ -2477,3 +2477,10 @@
 .trc .trc-sat > .pd-section {
   margin-top: 0;
 }
+
+/* Pathway with no graded evidence behind it. Deliberately muted and numberless:
+   a child who has not answered anything has not scored badly. */
+.pd-score.pd-score-unmeasured .pd-score-cap {
+  color: var(--muted);
+  font-weight: 600;
+}

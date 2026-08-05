@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { subjectDisplayName } from '@/lib/subjects'
+import type { MasteryStatus } from '@/lib/mastery'
 import type { Json } from '@/lib/database.types'
 
 /**
@@ -26,10 +27,10 @@ const CONFIDENCE_ATTEMPTS = 3 // attempts for full attempts-weight (tunable)
 const RECENCY_HALFLIFE_DAYS = 30 // mastery weight halves every ~month of no practice
 const RECENCY_FLOOR = 0.25 // old practice still counts a little, never zero
 const TOP_N = 3 // strengths / gaps list size
-// A skill is a STRENGTH only at/above STRENGTH_MIN and a GAP only below GAP_MAX.
-// STRENGTH_MIN > GAP_MAX, so the two lists can never overlap and a weak "best
-// skill" (e.g. 44%) is correctly a gap, never a strength. The band between them
-// is a neutral "developing" range.
+// Percentage thresholds used ONLY by the SAT projection, which still groups by
+// accuracy band. The Pathway strengths/gaps no longer use them: they classify on
+// the evidence bars (advanced/mastered vs practicing) so a skill can never be
+// called a strength or a gap without graded attempts behind it.
 const STRENGTH_MIN = 70
 const GAP_MAX = 60
 
@@ -37,20 +38,36 @@ const GAP_MAX = 60
 // readiness_scores row so a row computed by an older engine is detected as stale
 // and recomputed on next view. (v2 = the threshold-based strengths/gaps fix;
 // v3 = adds the SAT readiness projection — existing rows self-heal on next view.)
-export const ENGINE_VERSION = 3
+export const ENGINE_VERSION = 4
 const DAY_MS = 86_400_000
 
 // Subjects we publish a per-subject sub-score for (seeded subjects). The overall
 // Pathway Score still aggregates ALL practiced skills regardless of subject.
 const SUBJECTS = ['math', 'reading', 'writing'] as const
 
+/**
+ * One skill's EVIDENCE for the readiness engine.
+ *
+ * `mastery_percentage` and `attempts` used to carry the legacy self-rating ramp.
+ * They now carry `evidence_accuracy` and `attempts_counted` from the evidence
+ * engine (migration 0010), and `status` comes along so strengths and gaps can be
+ * classified by the real bars rather than by a percentage threshold.
+ *
+ * The field names are kept so computeBreakdown and computeSatProjection did not
+ * need rewriting; what changed is what is put in them, at the one place that reads
+ * the database (recordReadiness).
+ */
 export interface ReadinessSkillRow {
   slug: string
   name: string
   subject: string
+  /** evidence_accuracy: accuracy over counted attempts, 0 when there is none. */
   mastery_percentage: number
+  /** attempts_counted: graded, non-diagnostic, not-too-fast attempts. */
   attempts: number
   last_practiced: string | null
+  /** Evidence status. Absent is treated as 'not_started'. */
+  status?: MasteryStatus
 }
 
 export interface SkillRef {
@@ -61,10 +78,12 @@ export interface SkillRef {
 }
 
 export interface ReadinessBreakdown {
-  score: number // 0..100, confidence-weighted average of mastery
-  strengths: SkillRef[] // strongest skills (highest mastery)
-  gaps: SkillRef[] // weakest skills (lowest mastery)
+  score: number // 0..100, confidence-weighted average of evidence accuracy
+  strengths: SkillRef[] // skills cleared on evidence (advanced or mastered)
+  gaps: SkillRef[] // skills with evidence that have not cleared the advance bar
   nextSkillSlug: string | null // highest-leverage weak skill to practice next
+  /** Skills with counted evidence behind the score. 0 means NOT MEASURED. */
+  measuredSkills: number
 }
 
 export interface PathwayResult {
@@ -101,7 +120,18 @@ function toRef(r: ReadinessSkillRow): SkillRef {
  * the strongest/weakest skills and the next one to practice.
  *   score = sum(mastery_i * w_i) / sum(w_i),  w_i = attemptsWeight x recencyWeight
  */
-function computeBreakdown(rows: ReadinessSkillRow[], now: number): ReadinessBreakdown {
+/** A skill only counts once it has real graded evidence behind it. */
+function hasEvidence(r: ReadinessSkillRow): boolean {
+  return r.attempts > 0
+}
+
+function computeBreakdown(allRows: ReadinessSkillRow[], now: number): ReadinessBreakdown {
+  // EVIDENCE ONLY. A skill with zero counted attempts is not a strength, not a
+  // gap, and contributes nothing to the score. Before this filter the dashboard
+  // showed 39 strength/gap chips across live accounts, 27 of them for skills the
+  // child had never answered a graded question about, because a placement seed had
+  // written 25 or 70 into the legacy column.
+  const rows = allRows.filter(hasEvidence)
   let weighted = 0
   let totalWeight = 0
   for (const r of rows) {
@@ -111,19 +141,21 @@ function computeBreakdown(rows: ReadinessSkillRow[], now: number): ReadinessBrea
   }
   const score = totalWeight > 0 ? clamp(Math.round(weighted / totalWeight), 0, 100) : 0
 
-  // Strengths: only skills at/above STRENGTH_MIN, strongest first. If nothing
-  // clears the bar, strengths is empty (the UI shows "building toward strengths"
-  // rather than promoting a weak skill).
+  // Strengths: skills the child has actually CLEARED, by the evidence bars, not by
+  // a percentage threshold. advanced = >=70% over >=5 graded attempts; mastered
+  // adds a spaced re-check. Strongest first.
   const strengths = [...rows]
-    .filter((r) => r.mastery_percentage >= STRENGTH_MIN)
+    .filter((r) => r.status === 'advanced' || r.status === 'mastered')
     .sort((a, b) => b.mastery_percentage - a.mastery_percentage || a.name.localeCompare(b.name))
     .slice(0, TOP_N)
     .map(toRef)
 
-  // Gaps: only skills below GAP_MAX, weakest first; tie-break toward MORE
-  // attempts (a persistent weakness is higher-leverage than a brand-new skill).
+  // Gaps: skills with real evidence that have NOT cleared the advance bar, weakest
+  // first; tie-break toward MORE attempts (a persistent weakness is higher-leverage
+  // than a brand-new skill). A skill nobody has answered is neither a gap nor a
+  // strength, it is simply unmeasured.
   const gaps = [...rows]
-    .filter((r) => r.mastery_percentage < GAP_MAX)
+    .filter((r) => r.status !== 'advanced' && r.status !== 'mastered')
     .sort(
       (a, b) =>
         a.mastery_percentage - b.mastery_percentage ||
@@ -137,8 +169,12 @@ function computeBreakdown(rows: ReadinessSkillRow[], now: number): ReadinessBrea
     score,
     strengths,
     gaps,
-    // Next skill to practice = the weakest gap (none if nothing is below GAP_MAX).
+    // Next skill to practice = the weakest gap with real evidence behind it.
     nextSkillSlug: gaps[0]?.slug ?? null,
+    // How many skills the score actually rests on. ZERO is the honest
+    // "not measured yet", and is NOT the same thing as a score of 0. The UI must
+    // distinguish them: a child who has answered nothing has not scored badly.
+    measuredSkills: rows.length,
   }
 }
 
@@ -424,8 +460,10 @@ function readinessRow(studentId: string, readinessType: string, b: ReadinessBrea
     strengths: b.strengths as unknown as Json,
     gaps: b.gaps as unknown as Json,
     next_skill_slug: b.nextSkillSlug,
-    // Reserved for the future AI Coach; the engine does not populate it yet.
-    recommendations: [] as unknown as Json,
+    // Carries how many skills the score rests on, so the dashboard can tell
+    // "not measured yet" apart from "scored zero". Uses the spare jsonb column
+    // rather than a migration.
+    recommendations: { measuredSkills: b.measuredSkills } as unknown as Json,
     engine_version: ENGINE_VERSION,
   }
 }
@@ -456,9 +494,12 @@ function satReadinessRow(studentId: string, sat: SatEngineResult) {
  * block the student's flow.
  */
 export async function recordReadiness(studentId: string): Promise<void> {
+  // EVIDENCE COLUMNS, not the legacy self-rating ramp. This single select is what
+  // makes the Pathway score, the strengths, and the gaps honest: everything
+  // downstream is fed from here.
   const { data: masteryRows } = await supabase
     .from('student_skill_mastery')
-    .select('skill_id, mastery_percentage, attempts, last_practiced')
+    .select('skill_id, status, evidence_accuracy, attempts_counted, last_practiced')
     .eq('student_id', studentId)
   if (!masteryRows || !masteryRows.length) return
 
@@ -479,9 +520,10 @@ export async function recordReadiness(studentId: string): Promise<void> {
       slug: s.slug,
       name: s.name,
       subject: s.subject,
-      mastery_percentage: Number(m.mastery_percentage),
-      attempts: m.attempts,
+      mastery_percentage: m.evidence_accuracy == null ? 0 : Number(m.evidence_accuracy),
+      attempts: m.attempts_counted ?? 0,
       last_practiced: m.last_practiced,
+      status: (m.status as MasteryStatus) ?? 'not_started',
     })
   }
   if (!rows.length) return
@@ -515,9 +557,12 @@ export async function recordReadiness(studentId: string): Promise<void> {
       name: c.name,
       subject: c.subject,
       sat_alignment: c.sat_alignment,
-      mastery_percentage: m ? Number(m.mastery_percentage) : 0,
-      attempts: m ? m.attempts : 0,
+      // Evidence, same as the pathway rows above. A skill with a mastery row but
+      // no counted attempts reads as untouched here, which is what it is.
+      mastery_percentage: m?.evidence_accuracy == null ? 0 : Number(m.evidence_accuracy),
+      attempts: m?.attempts_counted ?? 0,
       last_practiced: m ? m.last_practiced : null,
+      status: (m?.status as MasteryStatus) ?? 'not_started',
     })
   }
   if (satRows.length) {
@@ -541,6 +586,9 @@ export interface ReadinessRecord {
   strengths: SkillRef[]
   gaps: SkillRef[]
   nextSkillSlug: string | null
+  /** Skills with counted evidence behind the score. 0 means NOT MEASURED YET,
+   *  which the dashboard must show as an empty state, never as a score of 0. */
+  measuredSkills: number
 }
 export interface ReadinessView {
   pathway: ReadinessRecord | null
@@ -570,6 +618,15 @@ interface ReadinessRowLite {
   strengths: Json
   gaps: Json
   next_skill_slug: string | null
+  recommendations?: Json
+}
+
+/** Pull measuredSkills out of the spare jsonb column. A row written by an older
+ *  engine has no such field; treat it as unmeasured rather than inventing a count. */
+function readMeasuredSkills(raw: Json | undefined): number {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return 0
+  const v = (raw as Record<string, unknown>).measuredSkills
+  return typeof v === 'number' && Number.isFinite(v) ? v : 0
 }
 
 // Only these readiness_type values are subjects. Other types (notably 'sat')
@@ -588,6 +645,7 @@ export function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
       strengths: asRefs(r.strengths),
       gaps: asRefs(r.gaps),
       nextSkillSlug: r.next_skill_slug,
+      measuredSkills: readMeasuredSkills(r.recommendations),
     }
     if (r.readiness_type === 'pathway') pathway = rec
     else if (SUBJECT_TYPES.has(r.readiness_type)) bySubject[r.readiness_type] = rec
@@ -601,7 +659,7 @@ export function buildReadinessView(rows: ReadinessRowLite[]): ReadinessView {
 export async function getReadiness(studentId: string): Promise<ReadinessView> {
   const { data, error } = await supabase
     .from('readiness_scores')
-    .select('readiness_type, score, strengths, gaps, next_skill_slug')
+    .select('readiness_type, score, strengths, gaps, next_skill_slug, recommendations')
     .eq('student_id', studentId)
   if (error || !data) return { pathway: null, bySubject: {}, hasAny: false }
   return buildReadinessView(data)
@@ -737,7 +795,7 @@ export async function ensureFreshReadiness(studentId: string): Promise<Readiness
     await recordReadiness(studentId)
     const { data: fresh } = await supabase
       .from('readiness_scores')
-      .select('readiness_type, score, strengths, gaps, next_skill_slug')
+      .select('readiness_type, score, strengths, gaps, next_skill_slug, recommendations')
       .eq('student_id', studentId)
     return buildReadinessView(fresh ?? readinessRows)
   } catch (err) {

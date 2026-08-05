@@ -12,6 +12,7 @@ function row(over: Partial<ReadinessSkillRow> & { slug: string }): ReadinessSkil
     mastery_percentage: 50,
     attempts: 3,
     last_practiced: daysAgo(0),
+    status: 'practicing' as const,
     ...over,
   }
 }
@@ -26,22 +27,22 @@ describe('computePathwayScore', () => {
     expect(r.bySubject).toEqual({})
   })
 
-  it('single strong skill (>= STRENGTH_MIN) is a strength, not a gap', () => {
+  it('a CLEARED skill is a strength, not a gap', () => {
     const r = computePathwayScore(
-      [row({ slug: 'fractions', mastery_percentage: 80, attempts: 3, last_practiced: daysAgo(0) })],
+      [row({ slug: 'fractions', mastery_percentage: 80, attempts: 3, last_practiced: daysAgo(0), status: 'advanced' })],
       NOW,
     )
     expect(r.pathway.score).toBe(80)
     expect(r.bySubject.math?.score).toBe(80)
     expect(r.pathway.strengths.map((s) => s.slug)).toEqual(['fractions'])
-    expect(r.pathway.gaps).toEqual([]) // 80 is not below GAP_MAX
+    expect(r.pathway.gaps).toEqual([]) // cleared skills are never gaps
     expect(r.pathway.nextSkillSlug).toBeNull() // no gap to target
   })
 
   it('a 44% skill is a GAP, not a strength — even if it is the best skill', () => {
     const r = computePathwayScore([row({ slug: 'division', mastery_percentage: 44, attempts: 4 })], NOW)
-    expect(r.pathway.strengths).toEqual([]) // 44 < STRENGTH_MIN(70)
-    expect(r.pathway.gaps.map((s) => s.slug)).toEqual(['division']) // 44 < GAP_MAX(60)
+    expect(r.pathway.strengths).toEqual([]) // not advanced/mastered
+    expect(r.pathway.gaps.map((s) => s.slug)).toEqual(['division'])
     expect(r.pathway.nextSkillSlug).toBe('division')
   })
 
@@ -51,7 +52,7 @@ describe('computePathwayScore', () => {
     // score = (90*1 + 30*0.08333) / (1 + 0.08333) = 92.5 / 1.08333 = 85.38 -> 85
     const r = computePathwayScore(
       [
-        row({ slug: 'a', mastery_percentage: 90, attempts: 3, last_practiced: daysAgo(0) }),
+        row({ slug: 'a', mastery_percentage: 90, attempts: 3, last_practiced: daysAgo(0), status: 'advanced' }),
         row({ slug: 'b', mastery_percentage: 30, attempts: 1, last_practiced: daysAgo(60) }),
       ],
       NOW,
@@ -79,30 +80,56 @@ describe('computePathwayScore', () => {
     expect(r.pathway.nextSkillSlug).toBe('r') // reading is the weaker
   })
 
-  it('caps strengths/gaps at the top 3, and the neutral band is neither', () => {
-    // 4 strengths (>=70), 1 neutral (65), 4 gaps (<60).
+  it('caps strengths/gaps at the top 3, split by the evidence bars', () => {
+    // Classification is by STATUS now, not by a percentage threshold: cleared
+    // skills are strengths, everything else with evidence is a gap.
     const rows = [
       row({ slug: 'g1', mastery_percentage: 10 }),
       row({ slug: 'g2', mastery_percentage: 20 }),
       row({ slug: 'g3', mastery_percentage: 30 }),
       row({ slug: 'g4', mastery_percentage: 40 }),
-      row({ slug: 'n1', mastery_percentage: 65 }), // neutral: not a strength, not a gap
-      row({ slug: 's1', mastery_percentage: 75 }),
-      row({ slug: 's2', mastery_percentage: 80 }),
-      row({ slug: 's3', mastery_percentage: 85 }),
-      row({ slug: 's4', mastery_percentage: 90 }),
+      row({ slug: 's1', mastery_percentage: 75, status: 'advanced' }),
+      row({ slug: 's2', mastery_percentage: 80, status: 'advanced' }),
+      row({ slug: 's3', mastery_percentage: 85, status: 'mastered' }),
+      row({ slug: 's4', mastery_percentage: 90, status: 'mastered' }),
     ]
     const r = computePathwayScore(rows, NOW)
     expect(r.pathway.strengths).toHaveLength(3)
     expect(r.pathway.gaps).toHaveLength(3)
     expect(r.pathway.strengths[0].slug).toBe('s4') // highest (90)
     expect(r.pathway.gaps[0].slug).toBe('g1') // lowest (10)
-    const allSlugs = [...r.pathway.strengths, ...r.pathway.gaps].map((s) => s.slug)
-    expect(allSlugs).not.toContain('n1') // neutral band excluded from both
     const overlap = r.pathway.strengths.filter((s) =>
       r.pathway.gaps.some((g) => g.slug === s.slug),
     )
     expect(overlap).toEqual([]) // never both
+  })
+
+  it('NEVER shows a skill with zero counted attempts as a strength or a gap', () => {
+    // The production contradiction: 27 of 39 chips were skills the child had never
+    // answered, because a placement seed wrote 25 or 70 into the legacy column.
+    const rows = [
+      row({ slug: 'seeded-low', mastery_percentage: 25, attempts: 0, status: 'not_started' }),
+      row({ slug: 'seeded-high', mastery_percentage: 70, attempts: 0, status: 'not_started' }),
+      row({ slug: 'ratios', mastery_percentage: 35, attempts: 0, status: 'not_started' }),
+    ]
+    const r = computePathwayScore(rows, NOW)
+    expect(r.pathway.strengths).toEqual([])
+    expect(r.pathway.gaps).toEqual([])
+    expect(r.pathway.nextSkillSlug).toBeNull()
+    // And the score is explicitly NOT MEASURED rather than a zero.
+    expect(r.pathway.measuredSkills).toBe(0)
+  })
+
+  it('reports how many skills the score rests on', () => {
+    const r = computePathwayScore(
+      [
+        row({ slug: 'a', attempts: 5 }),
+        row({ slug: 'b', attempts: 8 }),
+        row({ slug: 'c', attempts: 0 }), // no evidence, excluded
+      ],
+      NOW,
+    )
+    expect(r.pathway.measuredSkills).toBe(2)
   })
 
   it('two weak skills (both < GAP_MAX) -> empty strengths, both are gaps', () => {

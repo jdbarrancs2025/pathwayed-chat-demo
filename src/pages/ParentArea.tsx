@@ -22,7 +22,6 @@ const SUBJECT_ACCENT: Record<string, string> = {
   science: 'var(--science)',
 }
 const accentFor = (s: string) => SUBJECT_ACCENT[s] ?? 'var(--grow)'
-const READINESS_SUBJECTS = ['math', 'reading', 'writing']
 
 interface ChildData {
   student: Student
@@ -100,18 +99,11 @@ export function ParentArea() {
           )}
         </div>
 
-        {/* Real data we don't have yet, labeled, never faked. */}
-        {children.length > 0 && (
-          <section className="panel placeholder">
-            <h3>
-              More insights <span className="soon">Coming soon</span>
-            </h3>
-            <p className="muted">
-              Weekly progress and growth over time (needs practice history we don't store yet),
-              homework activity, learning habits, and attendance will appear here in a later update.
-            </p>
-          </section>
-        )}
+        {/* The "More insights" placeholder claimed practice history was not stored.
+            That was false: question_attempts has carried dated history since
+            migration 0004. Rather than replace one vague promise with another, the
+            panel is gone until the real panels land (test trajectory, grade-level
+            position, growth over time). */}
 
         <button className="btn btn-soft" onClick={() => navigate('/children/new')}>
           + Add a child
@@ -156,10 +148,17 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             {gradeLabel(student.grade)} · {levelLabel(student.level)}
           </div>
         </div>
-        {pathway && (
+        {/* A score is shown ONLY when graded evidence stands behind it. With no
+            measured skills we show a dash, never a 0: a child who has not answered
+            anything has not scored badly, and "0" reads as a failing grade. */}
+        {pathway && pathway.measuredSkills > 0 ? (
           <div className="pd-score">
             <span className="pd-score-num">{pathway.score}</span>
             <span className="pd-score-cap">Pathway · {pathwayBandLabel(pathway.score)}</span>
+          </div>
+        ) : (
+          <div className="pd-score pd-score-unmeasured">
+            <span className="pd-score-cap">Pathway · not measured yet</span>
           </div>
         )}
       </div>
@@ -212,30 +211,21 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             </div>
           )}
 
-          {readiness.hasAny && (
-            <div className="pd-section">
-              <div className="pd-label">Readiness by subject</div>
-              {READINESS_SUBJECTS.filter((s) => readiness.bySubject[s]).map((s) => {
-                const score = readiness.bySubject[s].score
-                return (
-                  <div key={s} className="skill-row">
-                    <div className="skill-top">
-                      <span className="skill-name">{subjectDisplayName(s)}</span>
-                      <span className="skill-pct">{score}%</span>
-                    </div>
-                    <div className="bar">
-                      <i style={{ width: `${score}%`, background: accentFor(s) }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+          {/* "Readiness by subject" removed. It was the same computation as the
+              test-readiness card lower down, rendered as a bare percentage with none
+              of that card's framing, so the page showed one number twice and the
+              weaker presentation first. */}
 
           {pathway && (
             <div className="pd-section">
               <div className="pd-label">Strengths</div>
-              {pathway.strengths.length > 0 ? (
+              {pathway.measuredSkills === 0 ? (
+                <p className="empty-progress">
+                  Not measured yet. Strengths appear once {student.first_name} has answered
+                  enough questions on a skill for us to be sure, which is 70% or better over at
+                  least 5 questions.
+                </p>
+              ) : pathway.strengths.length > 0 ? (
                 <div className="subject-chips">
                   {pathway.strengths.map((sk) => (
                     <span
@@ -249,7 +239,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
                 </div>
               ) : (
                 <p className="empty-progress">
-                  Building toward strengths, keep practicing to unlock them.
+                  No skill has cleared the bar yet. Keep practicing and they will appear here.
                 </p>
               )}
             </div>
@@ -258,7 +248,12 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
           {pathway && (
             <div className="pd-section">
               <div className="pd-label">Areas needing support</div>
-              {pathway.gaps.length > 0 ? (
+              {pathway.measuredSkills === 0 ? (
+                <p className="empty-progress">
+                  Not measured yet. We only flag a skill once {student.first_name} has actually
+                  answered questions on it, so nothing here is a guess.
+                </p>
+              ) : pathway.gaps.length > 0 ? (
                 <div className="subject-chips">
                   {pathway.gaps.map((sk) => (
                     <span
