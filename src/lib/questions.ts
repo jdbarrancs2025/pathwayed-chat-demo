@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { resolveSkillIdsBySlug } from '@/lib/skills'
+import { pickNextSkill, type SkillEvidence } from '@/lib/pickNextSkill'
 import type { Json } from '@/lib/database.types'
 
 /**
@@ -312,25 +313,43 @@ export async function listPracticeableSkills(): Promise<PracticeableSkill[]> {
 }
 
 /**
- * The next skill to "keep going" on: the lowest-mastery PRACTICEABLE skill for
- * this student (highest-leverage next step, matching the coach's weakest-skill
- * focus, using the seeded/earned mastery). Falls back to the first practiceable
- * skill when the student has no mastery yet. Returns null only if nothing is
- * practiceable. Best-effort.
+ * Read this student's evidence-driven mastery, keyed by skill. These are the
+ * signals the DB computes from real graded attempts (migration 0010), NOT the
+ * legacy self-rating ramp. Best-effort: an empty map on read failure just means
+ * every skill looks untouched.
+ */
+export async function fetchSkillEvidence(studentId: string): Promise<Map<string, SkillEvidence>> {
+  const { data, error } = await supabase
+    .from('student_skill_mastery')
+    .select('skill_id, status, evidence_accuracy, attempts_counted')
+    .eq('student_id', studentId)
+  if (error) console.error('fetchSkillEvidence read failed', error)
+  const byId = new Map<string, SkillEvidence>()
+  for (const m of data ?? []) {
+    byId.set(m.skill_id, {
+      status: (m.status as SkillEvidence['status']) ?? 'not_started',
+      evidence_accuracy: m.evidence_accuracy == null ? null : Number(m.evidence_accuracy),
+      attempts_counted: m.attempts_counted ?? 0,
+    })
+  }
+  return byId
+}
+
+/**
+ * The next skill to "keep going" on: the student's weakest PRACTICEABLE skill
+ * that they have NOT already cleared the ADVANCE bar on. Ranking lives in
+ * pickNextSkill.ts (pure, unit-tested) and reads evidence — status,
+ * evidence_accuracy, attempts_counted — not mastery_percentage.
+ *
+ * Returns null when every practiceable skill is already 'advanced' or 'mastered'.
+ * That is deliberate: re-serving a cleared skill is the exact loop this replaces.
+ * Best-effort.
  */
 export async function nextPracticeSkill(studentId: string): Promise<PracticeableSkill | null> {
   const practiceable = await listPracticeableSkills()
   if (!practiceable.length) return null
-  const { data, error } = await supabase
-    .from('student_skill_mastery')
-    .select('skill_id, mastery_percentage')
-    .eq('student_id', studentId)
-  if (error) console.error('nextPracticeSkill: mastery read failed', error)
-  const masteryById = new Map<string, number>()
-  for (const m of data ?? []) masteryById.set(m.skill_id, Number(m.mastery_percentage))
-  const practiced = practiceable.filter((s) => masteryById.has(s.skill_id))
-  const pool = practiced.length ? practiced : practiceable
-  return [...pool].sort((a, b) => (masteryById.get(a.skill_id) ?? 0) - (masteryById.get(b.skill_id) ?? 0))[0] ?? null
+  const evidence = await fetchSkillEvidence(studentId)
+  return pickNextSkill(practiceable, evidence)
 }
 
 // --- Read path: placement diagnostic set -------------------------------------
