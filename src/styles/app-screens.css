@@ -1505,6 +1505,18 @@
   background: #fbeee3;
   color: #b5651a;
 }
+/* Cleared the advance bar but not the durable mastered claim. Deliberately a
+   distinct blue rather than a lighter green, so it is not read as "nearly mastered". */
+.skill-state.advanced {
+  background: #e4ecf9;
+  color: #2b5599;
+}
+/* No counted evidence. Neutral on purpose: this is "we have not asked yet",
+   not a low score. */
+.skill-state.not-enough {
+  background: #eef0f3;
+  color: #5b6472;
+}
 .empty-progress {
   font-size: 14px;
   color: var(--muted);

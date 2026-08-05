@@ -108,6 +108,13 @@ export function computePrepProgress(
   module: PrepModule,
   attempts: PrepAttemptLite[],
   slugAccuracy: Map<string, number | null>,
+  /**
+   * Slugs the student has already cleared the ADVANCE bar on (status 'advanced' or
+   * 'mastered'). Used ONLY to keep them out of "what to work on next" — every other
+   * number here, including the readiness blend and coverage count, is unchanged, so
+   * the prep engine's scoring is untouched.
+   */
+  clearedSlugs: Set<string> = new Set(),
 ): PrepProgress {
   // ---- Per-section timed-score trend --------------------------------------
   const sectionName = (id: string) => module.sections.find((s) => s.id === id)?.name ?? id
@@ -166,7 +173,12 @@ export function computePrepProgress(
       if (ref?.sessionSubject) subjectsSeen.add(ref.sessionSubject)
     }
   }
-  const weakestTypes = [...typeRows]
+  // A student sitting at 'advanced' or 'mastered' is not sent back to the skill,
+  // however low its legacy practice accuracy reads. This is what parked a grade 9
+  // student on grade 3 Multiplication for 16 attempts at 88%: the prep tile kept
+  // offering it because nothing here knew they had already cleared it.
+  const weakestTypes = typeRows
+    .filter((t) => !clearedSlugs.has(t.slug))
     .sort((a, b) => a.accuracy - b.accuracy || a.label.localeCompare(b.label))
     .slice(0, WEAKEST_LIMIT)
   const coveredSubjects = SUBJECT_ORDER.filter((s) => subjectsSeen.has(s)).map((s) => SUBJECT_DISPLAY[s] ?? s)

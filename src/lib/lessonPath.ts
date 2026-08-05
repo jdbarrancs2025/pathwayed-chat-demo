@@ -15,11 +15,6 @@ import { listPracticeableSkills, fetchSkillEvidence } from '@/lib/questions'
  * moves ahead and is never held to grade pace.
  */
 
-// mastery_percentage at/above which a skill is "known well enough to move past".
-// Set at the diagnostic's correct-answer seed (60) so a student who demonstrated
-// a skill at placement skips it rather than being held to grade pace. Tunable.
-export const MASTERY_THRESHOLD = 60
-
 export const SCOPE_SUBJECTS: ScopeSubject[] = ['math', 'reading', 'writing']
 
 /** The three subjects that have a real skills-building track. */
@@ -98,17 +93,16 @@ export async function nextLesson(
     getActiveFocusSkillIds(studentId),
     supabase
       .from('student_skill_mastery')
-      .select('skill_id, mastery_percentage, status, first_bar_met_at, recheck_passed_at')
+      .select('skill_id, status, first_bar_met_at, recheck_passed_at')
       .eq('student_id', studentId),
   ])
   if (masteryRes.error) console.error('nextLesson: mastery read failed', masteryRes.error)
 
-  // Evidence-driven mastery (migration 0010) alongside the legacy/placement seed.
-  const masteryPctById = new Map<string, number>()
+  // Evidence-driven mastery only (migration 0010). mastery_percentage is no longer
+  // read here; see known() below.
   const statusById = new Map<string, string>()
   const recheckDueIds = new Set<string>()
   for (const m of masteryRes.data ?? []) {
-    masteryPctById.set(m.skill_id, Number(m.mastery_percentage))
     statusById.set(m.skill_id, (m.status as string) ?? 'not_started')
     if (isRecheckDue(m)) recheckDueIds.add(m.skill_id)
   }
@@ -152,16 +146,20 @@ export async function nextLesson(
     }
   }
 
-  // Normal walk. Skip a skill the student has ADVANCED past on evidence (>=70%
-  // over >=5 graded attempts → status advanced/mastered) OR that the placement/
-  // legacy seed put at/above the threshold. Additive over the old seed, so an
-  // evidence-ready kid moves on and a placed-out kid is never re-trapped.
+  // Normal walk. A skill is KNOWN only on evidence: status 'advanced' (>=70% over
+  // >=5 graded attempts) or 'mastered'.
+  //
+  // The legacy mastery_percentage fallback is deliberately gone. One correct answer
+  // on the placement diagnostic seeds that column to exactly 60, which was enough to
+  // skip a skill the student had answered a single question about. Against the live
+  // database, 52 of the 58 rows that fallback was carrying had ZERO counted attempts.
+  // Skills skipped on that basis will reappear in the walk, which is correct: they
+  // were never taught.
   const known = (slug: string): boolean => {
     const id = idBySlug.get(slug)
     if (!id) return false
     const st = statusById.get(id)
-    if (st === 'advanced' || st === 'mastered') return true
-    return (masteryPctById.get(id) ?? 0) >= MASTERY_THRESHOLD
+    return st === 'advanced' || st === 'mastered'
   }
 
   const nextSlug = seq.find((s) => !known(s))

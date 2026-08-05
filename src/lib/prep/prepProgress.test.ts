@@ -93,6 +93,40 @@ describe('computePrepProgress', () => {
     expect(p.weakestTypes[0].label).toBe('Antonyms')
   })
 
+  it('does not send a student back to a skill they have cleared', () => {
+    // The production shape: the prep tile kept offering a skill the student was
+    // already 'advanced' on, because nothing here knew.
+    const acc = new Map<string, number | null>([
+      ['prep-synonyms', 82],
+      ['prep-antonyms', 40],
+      ['prep-number-series', 65],
+    ])
+    const p = computePrepProgress(MODULE, [], acc, new Set(['prep-antonyms']))
+    expect(p.weakestTypes.map((t) => t.slug)).toEqual(['prep-number-series', 'prep-synonyms'])
+  })
+
+  it('leaves readiness and coverage untouched when a skill is cleared', () => {
+    // The guard is presentational: it must not move the prep engine's numbers.
+    const acc = new Map<string, number | null>([
+      ['prep-synonyms', 82],
+      ['prep-antonyms', 40],
+      ['prep-number-series', 65],
+    ])
+    const plain = computePrepProgress(MODULE, [], acc)
+    const guarded = computePrepProgress(MODULE, [], acc, new Set(['prep-antonyms']))
+    expect(guarded.readiness).toBe(plain.readiness)
+    expect(guarded.masteryReadiness).toBe(plain.masteryReadiness)
+    expect(guarded.coveredSkillCount).toBe(plain.coveredSkillCount)
+    expect(guarded.coveredSubjects).toEqual(plain.coveredSubjects)
+  })
+
+  it('offers nothing rather than a cleared skill when everything is cleared', () => {
+    const acc = new Map<string, number | null>([['prep-synonyms', 82], ['prep-antonyms', 40]])
+    const p = computePrepProgress(MODULE, [], acc, new Set(['prep-synonyms', 'prep-antonyms']))
+    expect(p.weakestTypes).toEqual([])
+    expect(p.coveredSkillCount).toBe(2)
+  })
+
   it('types without graded evidence are excluded', () => {
     const acc = new Map<string, number | null>([['prep-synonyms', 70], ['prep-antonyms', null]])
     const p = computePrepProgress(MODULE, [], acc)

@@ -64,6 +64,9 @@ export function PrepModuleHome() {
   const [testDate, setTestDate] = useState<string | null>(null)
   // Stand-in skill slug -> accuracy (0-100) when there is graded evidence, else null.
   const [slugAccuracy, setSlugAccuracy] = useState<Map<string, number | null>>(new Map())
+  // Slugs already at 'advanced' or 'mastered'. Keeps "what to work on next" from
+  // sending a student back to a skill they have demonstrably cleared.
+  const [clearedSlugs, setClearedSlugs] = useState<Set<string>>(new Set())
 
   const rawTab = searchParams.get('tab')
   const tab: Tab = TABS.some((t) => t.id === rawTab) ? (rawTab as Tab) : 'train'
@@ -110,12 +113,18 @@ export function PrepModuleHome() {
     Promise.all([resolveSkillIdsBySlug(slugs), getSkillMastery(student.id)]).then(([idBySlug, mastery]) => {
       if (!active) return
       const accById = new Map(mastery.map((m) => [m.skill_id, m.attempts_counted > 0 ? m.accuracy : null]))
+      const clearedIds = new Set(
+        mastery.filter((m) => m.status === 'advanced' || m.status === 'mastered').map((m) => m.skill_id),
+      )
       const next = new Map<string, number | null>()
+      const cleared = new Set<string>()
       for (const slug of slugs) {
         const skillId = idBySlug.get(slug)
         next.set(slug, skillId ? accById.get(skillId) ?? null : null)
+        if (skillId && clearedIds.has(skillId)) cleared.add(slug)
       }
       setSlugAccuracy(next)
+      setClearedSlugs(cleared)
     })
     return () => {
       active = false
@@ -227,6 +236,7 @@ export function PrepModuleHome() {
             studentId={student.id}
             module={module}
             slugAccuracy={slugAccuracy}
+            clearedSlugs={clearedSlugs}
             testDate={testDate}
             onGoToTest={() => setTab('test')}
           />
@@ -435,12 +445,14 @@ function PrepProgressTab({
   studentId,
   module,
   slugAccuracy,
+  clearedSlugs,
   testDate,
   onGoToTest,
 }: {
   studentId: string
   module: PrepModule
   slugAccuracy: Map<string, number | null>
+  clearedSlugs: Set<string>
   testDate: string | null
   onGoToTest: () => void
 }) {
@@ -454,12 +466,12 @@ function PrepProgressTab({
       const lite = attempts
         .filter((a) => a.status === 'submitted' || a.status === 'expired')
         .map((a) => ({ sectionId: a.sectionId, status: a.status as 'submitted' | 'expired', score: a.score, startedAt: a.startedAt }))
-      setProgress(computePrepProgress(module, lite, slugAccuracy))
+      setProgress(computePrepProgress(module, lite, slugAccuracy, clearedSlugs))
     })
     return () => {
       active = false
     }
-  }, [studentId, module, slugAccuracy])
+  }, [studentId, module, slugAccuracy, clearedSlugs])
 
   const pacing = pacingLine(testDate)
   const countdown = testDayCountdown(testDate)

@@ -28,10 +28,15 @@ export async function loadPrepProgress(studentId: string, module: PrepModule): P
   ])
 
   const accById = new Map(mastery.map((m) => [m.skill_id, m.attempts_counted > 0 ? m.accuracy : null]))
+  const clearedIds = new Set(
+    mastery.filter((m) => m.status === 'advanced' || m.status === 'mastered').map((m) => m.skill_id),
+  )
   const slugAccuracy = new Map<string, number | null>()
+  const clearedSlugs = new Set<string>()
   for (const slug of slugs) {
     const skillId = idBySlug.get(slug)
     slugAccuracy.set(slug, skillId ? accById.get(skillId) ?? null : null)
+    if (skillId && clearedIds.has(skillId)) clearedSlugs.add(slug)
   }
 
   const lite: PrepAttemptLite[] = attempts
@@ -43,5 +48,5 @@ export async function loadPrepProgress(studentId: string, module: PrepModule): P
       startedAt: a.startedAt,
     }))
 
-  return computePrepProgress(module, lite, slugAccuracy)
+  return computePrepProgress(module, lite, slugAccuracy, clearedSlugs)
 }

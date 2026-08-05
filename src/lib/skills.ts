@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import { focusAreasByGrade } from '@/lib/focusAreas'
 import { gradeBand, type GradeBand } from '@/lib/gradeBand'
 import { recordReadiness } from '@/lib/readiness'
+import { masteryDisplay, displayRank } from '@/lib/masteryDisplay'
+import type { MasteryStatus } from '@/lib/mastery'
 import type { StoredMessage } from '@/lib/sessions'
 import type { Json } from '@/lib/database.types'
 
@@ -420,8 +422,14 @@ export interface SkillMasteryRow {
   skill_id: string
   name: string
   subject: string
+  /** Legacy self-rating ramp. Retained for the Pathway score and history; it is
+   *  NOT what the dashboard states as a mastery claim. See masteryDisplay.ts. */
   mastery_percentage: number
   attempts: number
+  /** Evidence-driven signals (migration 0010) — what the dashboard presents. */
+  status: MasteryStatus
+  evidence_accuracy: number | null
+  attempts_counted: number
 }
 export interface SubjectMastery {
   subject: string
@@ -455,7 +463,14 @@ function bandFocusSubjects(band: GradeBand): string[] {
  * the day-one fallback subjects when there's no practice yet.
  */
 export function buildMasteryView(
-  masteryRows: { skill_id: string; mastery_percentage: number; attempts: number }[],
+  masteryRows: {
+    skill_id: string
+    mastery_percentage: number
+    attempts: number
+    status?: string | null
+    evidence_accuracy?: number | string | null
+    attempts_counted?: number | null
+  }[],
   skills: { id: string; name: string; subject: string; grade_band: string | null }[],
   band: GradeBand,
 ): StudentMasteryView {
@@ -470,14 +485,27 @@ export function buildMasteryView(
       subject: s.subject,
       mastery_percentage: Number(m.mastery_percentage),
       attempts: m.attempts,
+      status: (m.status as MasteryStatus) ?? 'not_started',
+      evidence_accuracy: m.evidence_accuracy == null ? null : Number(m.evidence_accuracy),
+      attempts_counted: m.attempts_counted ?? 0,
     })
   }
 
+  // Ordered by the strength of the claim we can actually make: mastered, then
+  // advanced, then building by accuracy, then the skills we have no evidence for.
   const bySubject: SubjectMastery[] = []
   for (const subject of SUBJECT_DISPLAY_ORDER) {
     const subjectSkills = rows
       .filter((r) => r.subject === subject)
-      .sort((a, b) => b.mastery_percentage - a.mastery_percentage || a.name.localeCompare(b.name))
+      .sort((a, b) => {
+        const da = masteryDisplay(a)
+        const db = masteryDisplay(b)
+        return (
+          displayRank(da.state) - displayRank(db.state) ||
+          (db.percent ?? -1) - (da.percent ?? -1) ||
+          a.name.localeCompare(b.name)
+        )
+      })
     if (subjectSkills.length) bySubject.push({ subject, skills: subjectSkills })
   }
 
@@ -494,7 +522,7 @@ export async function getStudentMastery(studentId: string, grade: string): Promi
   const band = gradeBand(grade)
   const { data: masteryRows, error } = await supabase
     .from('student_skill_mastery')
-    .select('skill_id, mastery_percentage, attempts')
+    .select('skill_id, mastery_percentage, attempts, status, evidence_accuracy, attempts_counted')
     .eq('student_id', studentId)
   if (error || !masteryRows || !masteryRows.length) {
     return { bySubject: [], currentSubjects: bandFocusSubjects(band), hasAny: false }

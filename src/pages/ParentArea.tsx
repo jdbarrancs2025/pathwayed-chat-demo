@@ -5,7 +5,7 @@ import { avColor, gradeLabel, initials, levelLabel, listStudents, type Student }
 import { getLastActivity } from '@/lib/sessions'
 import { ensureFreshReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
-import { MASTERY_THRESHOLD } from '@/lib/lessonPath'
+import { masteryDisplay, subjectSummary } from '@/lib/masteryDisplay'
 import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
 import { workingGradeNotice } from '@/lib/workingGradeCopy'
 import { getDisplayName } from '@/lib/profile'
@@ -282,15 +282,13 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             <div className="pd-section">
               <div className="pd-label">Mastery by subject</div>
               <p className="mastery-key">
-                These show how well {student.first_name} knows each skill so far, and grow as they practice.{' '}
-                <strong>60% or higher</strong> means they’ve mastered it and we move on; below that, we’re still
-                building. This is a learning estimate, not a test score.
+                These come from the questions {student.first_name} has actually answered.{' '}
+                <strong>Advanced</strong> means 70% or better over at least 5 questions, so we move on.{' '}
+                <strong>Mastered</strong> means 85% or better over at least 8 questions, checked again a few
+                days later to be sure it stuck. Where we have not asked enough questions yet, we say so
+                instead of showing a score.
               </p>
               {mastery.bySubject.map((group) => {
-                const total = group.skills.length
-                const masteredCount = group.skills.filter(
-                  (s) => s.mastery_percentage >= MASTERY_THRESHOLD,
-                ).length
                 const open = openSubjects.has(group.subject)
                 return (
                   <div key={group.subject} className="subj-group">
@@ -302,9 +300,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
                     >
                       <span className="dot" style={{ background: accentFor(group.subject) }} />
                       <span className="subj-name">{subjectDisplayName(group.subject)}</span>
-                      <span className="subj-summary">
-                        {masteredCount} of {total} mastered
-                      </span>
+                      <span className="subj-summary">{subjectSummary(group.skills)}</span>
                       <svg
                         className={`chev ${open ? 'open' : ''}`}
                         viewBox="0 0 24 24"
@@ -320,26 +316,28 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
                     </button>
                     {open &&
                       group.skills.map((sk) => {
-                        const isMastered = sk.mastery_percentage >= MASTERY_THRESHOLD
+                        const d = masteryDisplay(sk)
                         return (
                           <div key={sk.skill_id} className="skill-row">
                             <div className="skill-top">
                               <span className="skill-name">{sk.name}</span>
                               <span className="skill-right">
-                                <span className={`skill-state ${isMastered ? 'mastered' : 'building'}`}>
-                                  {isMastered ? 'Mastered' : 'Building'}
-                                </span>
-                                <span className="skill-pct">{sk.mastery_percentage}%</span>
+                                <span className={`skill-state ${d.state}`}>{d.label}</span>
+                                {/* No percentage without evidence: a number here would
+                                    imply a claim we have not earned. */}
+                                {d.percent != null && <span className="skill-pct">{d.percent}%</span>}
                               </span>
                             </div>
-                            <div className="bar">
-                              <i
-                                style={{
-                                  width: `${sk.mastery_percentage}%`,
-                                  background: accentFor(group.subject),
-                                }}
-                              />
-                            </div>
+                            {d.percent != null && (
+                              <div className="bar">
+                                <i
+                                  style={{
+                                    width: `${d.percent}%`,
+                                    background: accentFor(group.subject),
+                                  }}
+                                />
+                              </div>
+                            )}
                           </div>
                         )
                       })}
