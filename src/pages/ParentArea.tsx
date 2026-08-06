@@ -9,7 +9,17 @@ import { masteryDisplay, subjectSummary } from '@/lib/masteryDisplay'
 import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
 import { workingGradeNotice } from '@/lib/workingGradeCopy'
 import { buildGradePosition, positionCopy, type SubjectPosition } from '@/lib/gradePosition'
-import { fetchGradePositionInputs } from '@/lib/questions'
+import { fetchGradePositionInputs, fetchGrowthInputs } from '@/lib/questions'
+import {
+  buildGrowth,
+  growthCopy,
+  milestoneLabel,
+  shortDate,
+  undatedNote,
+  weekLabel,
+  GROWTH_MAX_MILESTONES,
+  type GrowthSummary,
+} from '@/lib/growth'
 import { readStatus } from '@/lib/readStatus'
 import { getDisplayName } from '@/lib/profile'
 import { subjectDisplayName } from '@/lib/subjects'
@@ -36,6 +46,8 @@ interface ChildData {
   /** The skills/evidence read behind `positions` failed. An empty panel would
    *  otherwise be indistinguishable from a child who has cleared nothing. */
   positionsFailed: boolean
+  growth: GrowthSummary
+  growthFailed: boolean
 }
 
 /**
@@ -70,12 +82,13 @@ export function ParentArea() {
         ])
         const data = await Promise.all(
           kids.map(async (student) => {
-            const [readiness, mastery, lastActivity, placements, gp] = await Promise.all([
+            const [readiness, mastery, lastActivity, placements, gp, gw] = await Promise.all([
               ensureFreshReadiness(student.id),
               getStudentMastery(student.id, student.grade),
               getLastActivity(student.id),
               getSubjectPlacements(student.id, student.grade),
               fetchGradePositionInputs(student.id),
+              fetchGrowthInputs(student.id),
             ])
             const positions = buildGradePosition({
               grade: student.grade,
@@ -83,6 +96,7 @@ export function ParentArea() {
               skills: gp.skills,
               evidence: gp.evidence,
             })
+            const growth = buildGrowth(gw.attempts, gw.skills, new Date())
             // The 'sat' row that ensureFreshReadiness just wrote is read by
             // TestReadinessCard, which owns the SAT row on this surface now.
             return {
@@ -93,6 +107,8 @@ export function ParentArea() {
               placements,
               positions,
               positionsFailed: gp.loadFailed,
+              growth,
+              growthFailed: gw.loadFailed,
             }
           }),
         )
@@ -162,9 +178,92 @@ export function ParentArea() {
   )
 }
 
+/**
+ * GROWTH OVER TIME. Two shapes: below the gate we say what is missing, above it
+ * we show measured weekly accuracy and the dated milestones behind it.
+ *
+ * Every number comes from graded question_attempts. Nothing here reads the legacy
+ * self-rating ramp or a mastery snapshot, and no date is taken from a stamped
+ * column, because those record when a recompute ran rather than when a child did
+ * something (see growth.ts).
+ */
+function GrowthPanel({ growth, firstName }: { growth: GrowthSummary; firstName: string }) {
+  const copy = growthCopy(growth, firstName)
+  const shown = growth.milestones.slice(0, GROWTH_MAX_MILESTONES)
+  const moreDated = growth.milestones.length - shown.length
+  const undated = undatedNote(growth, firstName)
+
+  return (
+    <>
+      <p className="gw-headline">{copy.headline}</p>
+      {copy.detail && <p className="gw-detail">{copy.detail}</p>}
+
+      {growth.gateMet && (
+        <div className="gw-weeks">
+          {growth.weeks.map((w) => (
+            <div key={w.start} className="gw-row">
+              <span className="gw-week">{weekLabel(w)}</span>
+              <span className={`gw-track ${w.percent == null ? 'gw-empty' : ''}`}>
+                {w.percent != null && <i style={{ width: `${w.percent}%` }} />}
+              </span>
+              <span className="gw-count">
+                {w.percent == null ? (
+                  'No practice'
+                ) : (
+                  <>
+                    <span className="gw-pct">{w.percent}%</span> of {w.attempts}
+                  </>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {shown.length > 0 && (
+        <div className="gw-ms">
+          {shown.map((m) => (
+            <div key={m.skillId} className="gw-ms-row">
+              <span className="gw-ms-dot" style={{ background: accentFor(m.subject) }} />
+              <span>{milestoneLabel(m)}</span>
+              <span className="gw-ms-date">{shortDate(m.date)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {(moreDated > 0 || undated) && (
+        <p className="gp-note">
+          {moreDated > 0 &&
+            `${firstName} has cleared ${moreDated} more ${moreDated === 1 ? 'skill' : 'skills'} before these. `}
+          {undated}
+        </p>
+      )}
+
+      {growth.gateMet && (
+        <p className="gp-note">
+          Each week counts the questions {firstName} answered that week and how many were right.
+          Milestone dates are the day the work itself cleared the bar, which is 70% or better over
+          at least 5 questions.
+        </p>
+      )}
+    </>
+  )
+}
+
 function ChildPanel({ data, index, now }: { data: ChildData; index: number; now: number }) {
   const navigate = useNavigate()
-  const { student, readiness, mastery, lastActivity, placements, positions, positionsFailed } = data
+  const {
+    student,
+    readiness,
+    mastery,
+    lastActivity,
+    placements,
+    positions,
+    positionsFailed,
+    growth,
+    growthFailed,
+  } = data
   const pathway = readiness.pathway
   // A read error or a thrown recompute. Distinct from having no evidence: a child
   // with NO readiness row at all has not been measured yet, which is a true and
@@ -377,6 +476,17 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
               )}
             </div>
           )}
+
+          <div className="pd-section">
+            <div className="pd-label">Growth over time</div>
+            {growthFailed ? (
+              <p className="empty-progress">
+                We could not load this right now. Refreshing usually fixes it.
+              </p>
+            ) : (
+              <GrowthPanel growth={growth} firstName={student.first_name} />
+            )}
+          </div>
 
           {mastery.hasAny && (
             <div className="pd-section">

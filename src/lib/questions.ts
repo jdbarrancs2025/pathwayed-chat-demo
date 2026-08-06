@@ -12,6 +12,7 @@ import {
   type RampBand,
 } from '@/lib/difficultyRamp'
 import { readStatus, type ReadStatus } from '@/lib/readStatus'
+import type { GrowthAttempt, MilestoneSkill } from '@/lib/growth'
 import type { Json } from '@/lib/database.types'
 
 /** The student fields the grade ladder needs, plus the id used for the reads. */
@@ -219,6 +220,78 @@ export async function fetchGradePositionInputs(studentId: string): Promise<{
     fetchSkillEvidence(studentId, evidenceStatus),
   ])
   return { skills, evidence, loadFailed: skillStatus.failed || evidenceStatus.failed }
+}
+
+/**
+ * Everything the growth panel needs: this student's graded attempt history, and
+ * the name/subject/status of every skill they have a mastery row for.
+ *
+ * Attempts are read WHOLE, not windowed. The weekly series only shows a window,
+ * but a milestone is dated by replaying a skill's history from its first attempt,
+ * and a truncated stream would move that date later than it happened. Per-student
+ * volumes are small (the busiest child in the live database has 52), so the cap
+ * exists to bound a pathological read, not to trim normal ones.
+ */
+const GROWTH_ATTEMPT_CAP = 5000
+
+export async function fetchGrowthInputs(studentId: string): Promise<{
+  attempts: GrowthAttempt[]
+  skills: MilestoneSkill[]
+  loadFailed: boolean
+}> {
+  const [attemptsRes, masteryRes] = await Promise.all([
+    supabase
+      .from('question_attempts')
+      .select('skill_id, is_correct, created_at')
+      .eq('student_id', studentId)
+      .eq('is_diagnostic', false)
+      .order('created_at', { ascending: true })
+      .limit(GROWTH_ATTEMPT_CAP),
+    supabase
+      .from('student_skill_mastery')
+      .select('skill_id, status')
+      .eq('student_id', studentId),
+  ])
+  if (attemptsRes.error) console.error('fetchGrowthInputs: attempts read failed', attemptsRes.error)
+  if (masteryRes.error) console.error('fetchGrowthInputs: mastery read failed', masteryRes.error)
+
+  const attempts: GrowthAttempt[] = (attemptsRes.data ?? []).map((a) => ({
+    skillId: a.skill_id,
+    isCorrect: a.is_correct,
+    createdAt: a.created_at,
+  }))
+
+  const masteryRows = masteryRes.data ?? []
+  const skillIds = [...new Set(masteryRows.map((m) => m.skill_id))]
+  let nameRows: { id: string; name: string; subject: string }[] = []
+  let nameFailed = false
+  if (skillIds.length) {
+    const { data, error } = await supabase.from('skills').select('id, name, subject').in('id', skillIds)
+    if (error) {
+      console.error('fetchGrowthInputs: skills read failed', error)
+      nameFailed = true
+    }
+    nameRows = data ?? []
+  }
+  const byId = new Map(nameRows.map((s) => [s.id, s]))
+
+  const skills: MilestoneSkill[] = []
+  for (const m of masteryRows) {
+    const s = byId.get(m.skill_id)
+    if (!s) continue // a skill we cannot name is one we cannot put in a list
+    skills.push({
+      skillId: m.skill_id,
+      name: s.name,
+      subject: s.subject,
+      status: (m.status as MilestoneSkill['status']) ?? 'not_started',
+    })
+  }
+
+  return {
+    attempts,
+    skills,
+    loadFailed: !!attemptsRes.error || !!masteryRes.error || nameFailed,
+  }
 }
 
 /** generated_question_ids this student has already answered on a graded turn. */
