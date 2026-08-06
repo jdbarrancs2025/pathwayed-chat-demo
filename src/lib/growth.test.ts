@@ -324,6 +324,27 @@ describe('copy', () => {
     expect(c.detail).toContain('has not answered any yet')
   })
 
+  it('does NOT argue with itself when cleared skills have no dated attempts', () => {
+    // The live shape: fixture rows cleared skills, then their attempts became
+    // unreadable. "Has not answered any yet" beside "has cleared 3 skills" read
+    // as a contradiction; it is now one sentence.
+    const skills: MilestoneSkill[] = [
+      { skillId: 'a', name: 'A', subject: 'math', status: 'mastered' },
+      { skillId: 'b', name: 'B', subject: 'math', status: 'mastered' },
+      { skillId: 'c', name: 'C', subject: 'reading', status: 'advanced' },
+    ]
+    const g = buildGrowth([], skills, now)
+    const c = growthCopy(g, 'Demo Student')
+    expect(c.headline).toBe('No dated practice to chart yet.')
+    expect(c.detail).toBe(
+      'Demo Student has 3 skills already cleared, but from work we cannot put a date on, so ' +
+        'there is no week by week picture to draw. New practice starts the history.',
+    )
+    expect(c.detail).not.toContain('has not answered any')
+    // And the note that used to repeat it stays quiet.
+    expect(undatedNote(g, 'Demo Student')).toBeNull()
+  })
+
   it('improvement is stated as arithmetic on two measured numbers', () => {
     const attempts = [
       ...day('a', at(2026, 6, 29), 10, 4),
@@ -374,14 +395,18 @@ describe('copy', () => {
     expect(undatedNote(g, 'Sam')).toBeNull()
   })
 
-  it('the undated note counts, and does not date, what it cannot date', () => {
+  it('counts, and does not date, what it cannot date', () => {
     const skills: MilestoneSkill[] = [
       { skillId: 'a', name: 'A', subject: 'math', status: 'advanced' },
       { skillId: 'b', name: 'B', subject: 'math', status: 'mastered' },
     ]
     const g = buildGrowth([], skills, now)
-    // No dated milestone precedes it, so it does not say "more".
-    expect(undatedNote(g, 'Sam')).toBe('Sam has cleared 2 skills that we cannot put a date on.')
+    expect(g.undatedCleared).toBe(2)
+    expect(g.milestones).toEqual([])
+    // With no dated practice at all the count is carried by the headline, so the
+    // note stays quiet rather than repeating it as a second, contradictory line.
+    expect(undatedNote(g, 'Sam')).toBeNull()
+    expect(growthCopy(g, 'Sam').detail).toContain('2 skills already cleared')
   })
 
   it('says "more" only when dated milestones precede the note', () => {

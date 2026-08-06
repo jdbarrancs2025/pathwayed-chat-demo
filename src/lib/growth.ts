@@ -349,6 +349,18 @@ export function growthCopy(g: GrowthSummary, firstName: string): GrowthCopy {
     const weeksWord = g.activeWeeks === 1 ? '1 week' : `${g.activeWeeks} weeks`
     const questions = g.totalAttempts === 1 ? '1 question' : `${g.totalAttempts} questions`
     if (g.totalAttempts === 0) {
+      // RECONCILED. "Has not answered any yet" next to "has cleared 3 skills"
+      // reads as an argument, and both were true: the cleared skills came from
+      // work whose attempts we can no longer read. Say it as one thought instead
+      // of two, and let undatedNote fall silent (it has already been said).
+      if (g.undatedCleared > 0) {
+        const skills =
+          g.undatedCleared === 1 ? '1 skill' : `${g.undatedCleared} skills`
+        return {
+          headline: 'No dated practice to chart yet.',
+          detail: `${firstName} has ${skills} already cleared, but from work we cannot put a date on, so there is no week by week picture to draw. New practice starts the history.`,
+        }
+      }
       return {
         headline: 'Not enough practice yet to show growth.',
         detail: `Growth needs ${GROWTH_MIN_WEEKS} different weeks of practice and ${GROWTH_MIN_ATTEMPTS} questions answered. ${firstName} has not answered any yet.`,
@@ -393,6 +405,9 @@ export function growthCopy(g: GrowthSummary, firstName: string): GrowthCopy {
 export function undatedNote(g: GrowthSummary, firstName: string): string | null {
   const n = g.undatedCleared
   if (n === 0) return null
+  // Already folded into the headline when there is no dated practice at all.
+  // Repeating it there made the panel contradict itself.
+  if (g.totalAttempts === 0) return null
   // "more" only makes sense when something precedes it in the list.
   const more = g.milestones.length > 0 ? 'more ' : ''
   return `${firstName} has cleared ${n} ${more}${n === 1 ? 'skill' : 'skills'} that we cannot put a date on.`

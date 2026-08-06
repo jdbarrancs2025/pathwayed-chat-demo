@@ -294,6 +294,29 @@ export async function fetchGrowthInputs(studentId: string): Promise<{
   }
 }
 
+/**
+ * Has this child ever answered a DIAGNOSTIC question?
+ *
+ * The parent dashboard needs it to decide between "No activity yet" and the real
+ * panels. Practice alone is not enough to detect: K-2 placement deliberately does
+ * not seed student_skill_mastery (see seedDiagnosticMastery), so a K-2 child who
+ * has completed the diagnostic has attempts but no mastery and no readiness. A
+ * head count is all that is needed, and it is cheaper than the placement read
+ * that used to stand in for this.
+ */
+export async function hasDiagnosticAttempts(studentId: string): Promise<boolean> {
+  const { count, error } = await supabase
+    .from('question_attempts')
+    .select('id', { count: 'exact', head: true })
+    .eq('student_id', studentId)
+    .eq('is_diagnostic', true)
+  if (error) {
+    console.error('hasDiagnosticAttempts read failed', error)
+    return false
+  }
+  return (count ?? 0) > 0
+}
+
 /** generated_question_ids this student has already answered on a graded turn. */
 export async function fetchSeenQuestionIds(studentId: string, skillId: string): Promise<Set<string>> {
   const { data, error } = await supabase

@@ -6,10 +6,9 @@ import { getLastActivity } from '@/lib/sessions'
 import { ensureFreshReadiness, pathwayBandLabel, type ReadinessView } from '@/lib/readiness'
 import { getStudentMastery, type StudentMasteryView } from '@/lib/skills'
 import { masteryDisplay, subjectSummary } from '@/lib/masteryDisplay'
-import { getSubjectPlacements, placementCopy, type SubjectPlacement } from '@/lib/subjectPlacement'
 import { workingGradeNotice } from '@/lib/workingGradeCopy'
 import { buildGradePosition, positionCopy, type SubjectPosition } from '@/lib/gradePosition'
-import { fetchGradePositionInputs, fetchGrowthInputs } from '@/lib/questions'
+import { fetchGradePositionInputs, fetchGrowthInputs, hasDiagnosticAttempts } from '@/lib/questions'
 import {
   buildGrowth,
   growthCopy,
@@ -41,7 +40,9 @@ interface ChildData {
   readiness: ReadinessView
   mastery: StudentMasteryView
   lastActivity: string | null
-  placements: SubjectPlacement[]
+  /** Completed the diagnostic. K-2 placement deliberately seeds no mastery, so
+   *  for those children this is the only sign they have done anything at all. */
+  placed: boolean
   positions: SubjectPosition[]
   /** The skills/evidence read behind `positions` failed. An empty panel would
    *  otherwise be indistinguishable from a child who has cleared nothing. */
@@ -82,11 +83,11 @@ export function ParentArea() {
         ])
         const data = await Promise.all(
           kids.map(async (student) => {
-            const [readiness, mastery, lastActivity, placements, gp, gw] = await Promise.all([
+            const [readiness, mastery, lastActivity, placed, gp, gw] = await Promise.all([
               ensureFreshReadiness(student.id),
               getStudentMastery(student.id, student.grade),
               getLastActivity(student.id),
-              getSubjectPlacements(student.id, student.grade),
+              hasDiagnosticAttempts(student.id),
               fetchGradePositionInputs(student.id),
               fetchGrowthInputs(student.id),
             ])
@@ -104,7 +105,7 @@ export function ParentArea() {
               readiness,
               mastery,
               lastActivity,
-              placements,
+              placed,
               positions,
               positionsFailed: gp.loadFailed,
               growth,
@@ -258,7 +259,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
     readiness,
     mastery,
     lastActivity,
-    placements,
+    placed,
     positions,
     positionsFailed,
     growth,
@@ -269,7 +270,7 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
   // with NO readiness row at all has not been measured yet, which is a true and
   // ordinary state, so only an unreadable EXISTING row counts as a failure here.
   const loadFailed = readiness.loadFailed || (!!pathway && pathway.measuredSkills == null)
-  const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placements.length > 0
+  const hasActivity = readiness.hasAny || mastery.hasAny || !!lastActivity || placed
   // Shown only once the child's earned working grade has overtaken their real
   // grade. Consent (above_grade_ok) decides the FRAMING, never the serving.
   const promotion = workingGradeNotice(student)
@@ -376,35 +377,16 @@ function ChildPanel({ data, index, now }: { data: ChildData; index: number; now:
             </div>
           )}
 
-          {placements.length > 0 && (
-            <div className="pd-section">
-              <div className="pd-label">Placement by subject</div>
-              {placements.map((p) => {
-                const copy = placementCopy(p.level, subjectDisplayName(p.subject), !!student.above_grade_ok)
-                return (
-                  <div key={p.subject} className="subj-group">
-                    <div className="subj-head">
-                      <span className="dot" style={{ background: accentFor(p.subject) }} />
-                      {subjectDisplayName(p.subject)}
-                      <span
-                        className="chip"
-                        style={{
-                          marginLeft: 8,
-                          color: accentFor(p.subject),
-                          borderColor: accentFor(p.subject),
-                        }}
-                      >
-                        {copy.band}
-                      </span>
-                    </div>
-                    <p className="muted" style={{ margin: '4px 0 0', fontSize: 13, lineHeight: 1.5 }}>
-                      {copy.nextStep}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+          {/* "Placement by subject" removed. It read the DIAGNOSTIC only, banded to
+              k-2/3-5/6-8/9-12 rather than a grade, never updated as the child
+              practiced, and could rest on a single answered question. It also
+              softened an above-grade result to "On grade level" when consent was
+              off, which sitting directly under counted facts read as a
+              contradiction rather than as tact. Grade level by subject reports the
+              same thing from graded evidence. The one thing placement had that a
+              count does not, the next-step sentence, now lives in positionCopy.
+              getSubjectPlacements and computeLevel are untouched: the diagnostic
+              still drives initial skill selection. */}
 
           {/* "Readiness by subject" removed. It was the same computation as the
               test-readiness card lower down, rendered as a bare percentage with none

@@ -107,10 +107,15 @@ export function TestReadinessCard({
       )}
 
       {/* Direction BEFORE the raw list. A parent should see that Mathematics went
-          38% to 45% without having to scan two rows and subtract. */}
+          38% to 45% without having to scan two rows and subtract.
+
+          NOT "Direction over time". That sat a scroll away from the practice
+          panel called "Growth over time", and two near-identical names on one
+          page invite a parent to read one panel's numbers as the other's. This
+          one is per test section; growth is everyday practice. */}
       {data.trajectories.length > 0 && (
         <div className="trc-trajectory">
-          {heading('Direction over time')}
+          {heading('How each section is trending')}
           {data.trajectories.map((t) => (
             <TrajectoryBlock key={t.moduleId} trajectory={t} firstName={student.first_name} />
           ))}
