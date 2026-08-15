@@ -1,6 +1,11 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { createClient } from "@supabase/supabase-js"
+import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import { deanPost, type ResolveResponse } from "./school-bridge.js"
+import {
+  ACTIVE_PREP_STATUS,
+  ACTIVE_PREP_STATUSES,
+  prepModulesForGrade,
+} from "../src/lib/prep/access.js"
 
 // Post-SSO school check for a 9-12 covered student. The client sends only its
 // OWN Supabase access token; the server derives the trusted email + uid from it,
@@ -21,6 +26,90 @@ function schoolIdForDomain(domain: string): string | null {
     return map[domain.toLowerCase()] ?? null
   } catch {
     return null
+  }
+}
+
+/**
+ * Give a covered student every prep module their GRADE qualifies for. The school
+ * bought a grade-band license, so grade decides this, not the school id: grade 12
+ * gets SAT (band 9-12), grade 7 gets HSPT + ISEE (band 6-8). A new school needs no
+ * config and a new module in the registry is picked up automatically.
+ *
+ * Nobody paid Stripe for these, so the rows carry a null subscription item and a
+ * null ends_at. Writes run as the service role (which bypasses the read-only RLS
+ * on prep_entitlements, exactly like the Stripe webhook); nothing here is
+ * client-callable.
+ *
+ * Idempotent and never a downgrade:
+ *   - an entitlement already in an entitled status is left untouched;
+ *   - a Stripe-backed row (non-null stripe_subscription_item_id) is never written,
+ *     even when it is canceled, so real billing state always wins;
+ *   - a lapsed school-covered row (canceled, no Stripe item) is reactivated.
+ * The insert is an ON CONFLICT DO NOTHING upsert on the (student_id, module_id)
+ * unique constraint, so two concurrent sign-ins cannot duplicate a row.
+ *
+ * Never throws: a student who cannot practice is a far smaller problem than a
+ * student who cannot sign in, so every failure is logged and swallowed.
+ */
+async function grantCoveredPrepEntitlements(
+  svc: SupabaseClient,
+  studentId: string,
+  grade: string,
+): Promise<void> {
+  try {
+    const modules = prepModulesForGrade(grade.trim())
+    if (modules.length === 0) return
+
+    const existing = await svc
+      .from("prep_entitlements")
+      .select("module_id, status, stripe_subscription_item_id")
+      .eq("student_id", studentId)
+    if (existing.error) {
+      console.error("school-login entitlement read error:", existing.error.message)
+      return
+    }
+    const byModule = new Map<string, { status: string; stripe_subscription_item_id: string | null }>(
+      (existing.data ?? []).map((r) => [r.module_id as string, r]),
+    )
+
+    const toInsert: Array<Record<string, unknown>> = []
+    for (const mod of modules) {
+      const row = byModule.get(mod.id)
+      if (!row) {
+        toInsert.push({
+          student_id: studentId,
+          module_id: mod.id,
+          status: ACTIVE_PREP_STATUS,
+          stripe_subscription_item_id: null,
+          ends_at: null,
+        })
+        continue
+      }
+      if (ACTIVE_PREP_STATUSES.has(row.status) || row.stripe_subscription_item_id) continue
+
+      // Lapsed and not Stripe-backed. The is(...) guard re-checks the Stripe item
+      // at write time so a webhook landing in between still wins.
+      const upd = await svc
+        .from("prep_entitlements")
+        .update({ status: ACTIVE_PREP_STATUS, ends_at: null })
+        .eq("student_id", studentId)
+        .eq("module_id", mod.id)
+        .is("stripe_subscription_item_id", null)
+      if (upd.error) {
+        console.error(`school-login entitlement update error (${mod.id}):`, upd.error.message)
+      }
+    }
+
+    if (toInsert.length > 0) {
+      const ins = await svc
+        .from("prep_entitlements")
+        .upsert(toInsert, { onConflict: "student_id,module_id", ignoreDuplicates: true })
+      if (ins.error) {
+        console.error("school-login entitlement insert error:", ins.error.message)
+      }
+    }
+  } catch (error) {
+    console.error("school-login entitlement grant error:", error)
   }
 }
 
@@ -109,6 +198,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       localId = ins.data.id
     }
+
+    // Both branches, so a student created before this shipped picks their modules
+    // up on the next sign-in rather than only new students getting them.
+    await grantCoveredPrepEntitlements(svc, localId, dean.grade)
 
     return res.status(200).json({
       covered: true,
