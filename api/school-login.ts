@@ -113,6 +113,98 @@ async function grantCoveredPrepEntitlements(
   }
 }
 
+/**
+ * One structured line per student who reached a MAPPED school domain and still did
+ * not come back covered. These are the students who are now using the app on their
+ * own unverified grade, so they need to be findable in the logs rather than being
+ * indistinguishable from ordinary B2C traffic.
+ *
+ * An UNMAPPED domain is deliberately NOT logged: that is every consumer sign-in in
+ * the product, and logging it would bury the handful of lines that matter.
+ *
+ * No email, no name, no token. The uid is enough to find the row, and the domain is
+ * enough to see which school is misconfigured; the address itself adds nothing that
+ * is worth putting in a log.
+ */
+function logUnresolved(
+  uid: string,
+  domain: string,
+  schoolId: string,
+  reason: string,
+  status: number,
+): void {
+  console.warn(
+    JSON.stringify({
+      event: "school_login_unresolved",
+      uid,
+      domain,
+      school_id: schoolId,
+      reason,
+      status,
+      at: new Date().toISOString(),
+    }),
+  )
+}
+
+/**
+ * Find an existing local row to LINK to this Dean student, for a student who used
+ * the app before their school roster existed.
+ *
+ * WHY THIS EXISTS. The lookup above keys on dean_student_id, which is null for
+ * every student who signed in before the bridge resolved. Without this step that
+ * lookup misses and the handler inserts a SECOND row: the student gets a fresh
+ * covered profile while their real one, holding all their mastery, sessions and
+ * entitlements, is orphaned under the same parent_id.
+ *
+ * ONLY WHEN IT IS UNAMBIGUOUS. Adoption overwrites first_name and grade from the
+ * console roster, so adopting the wrong row would rename a sibling and move them to
+ * another grade. Accounts in this product really do own several children (one holds
+ * six today), so this adopts ONLY when the account owns exactly one unlinked row.
+ * Zero means there is nothing to adopt and the caller inserts. Two or more means the
+ * Dean student cannot be told apart from their siblings, so the caller inserts a
+ * fresh row and this logs the ambiguity for a human to merge. Guessing is the one
+ * outcome that loses data.
+ *
+ * Rows already carrying a dean_student_id are excluded: those belong to a DIFFERENT
+ * Dean student, and the partial unique index on the column would reject the write
+ * anyway.
+ */
+export function chooseAdoptionTarget(rows: { id: string }[]): string | null {
+  return rows.length === 1 ? rows[0].id : null
+}
+
+async function adoptLocalStudent(
+  svc: SupabaseClient,
+  uid: string,
+  deanStudentId: string,
+): Promise<string | null> {
+  const { data, error } = await svc
+    .from("students")
+    .select("id")
+    .eq("parent_id", uid)
+    .is("dean_student_id", null)
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    console.error("school-login adopt lookup error:", error.message)
+    return null
+  }
+  const rows = (data ?? []) as { id: string }[]
+  const target = chooseAdoptionTarget(rows)
+  if (!target && rows.length > 1) {
+    console.warn(
+      JSON.stringify({
+        event: "school_login_adopt_ambiguous",
+        uid,
+        dean_student_id: deanStudentId,
+        candidates: rows.length,
+        at: new Date().toISOString(),
+      }),
+    )
+  }
+  return target
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" })
 
@@ -156,7 +248,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       product: "tutoring",
       email,
     })
-    if (!r.ok || !r.data.covered) return res.status(200).json({ covered: false })
+    // A MAPPED domain that does not come back covered is the case worth seeing: the
+    // student is about to use the app on their own unverified grade. Distinguish
+    // "the roster said no" from "we never got an answer", because the first is a
+    // missing roster row and the second is a broken bridge.
+    if (!r.ok) {
+      logUnresolved(uid, domain, schoolId, r.error, r.status)
+      return res.status(200).json({ covered: false })
+    }
+    if (!r.data.covered) {
+      logUnresolved(uid, domain, schoolId, "not_on_roster", r.status)
+      return res.status(200).json({ covered: false })
+    }
     const dean = r.data
 
     // Lookup-or-create the local row keyed by the stable Dean student id.
@@ -166,18 +269,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq("dean_student_id", dean.student_id)
       .maybeSingle()
 
-    let localId = existing.data?.id ?? null
+    // Nothing carries this Dean id yet. Before creating a second profile for
+    // someone who already has one, try to adopt the row they have been using.
+    let localId: string | null =
+      existing.data?.id ?? (await adoptLocalStudent(svc, uid, dean.student_id))
     if (localId) {
       // Keep it owned by the current session and refresh authoritative fields.
-      await svc
+      // dean_student_id is written here rather than only on insert, so this same
+      // statement LINKS an adopted row and is a no-op rewrite for a row that
+      // already matched. The console is authoritative for name and grade.
+      const upd = await svc
         .from("students")
         .update({
           parent_id: uid,
           first_name: dean.first_name,
           grade: dean.grade,
           school_covered: true,
+          dean_student_id: dean.student_id,
         })
         .eq("id", localId)
+
+      // BEST EFFORT, NEVER FATAL. This handler's standing rule is that a student who
+      // cannot practice beats a student who cannot sign in, so a failed refresh is
+      // logged and the sign-in continues on the row we already have. The next
+      // sign-in re-runs all of this and self-heals, because every write here is
+      // idempotent.
+      if (upd.error) {
+        // 23505 = the partial unique index on dean_student_id. Two sign-ins raced
+        // and the other linked a different row first, so that row is the real one.
+        if (upd.error.code === "23505") {
+          const winner = await svc
+            .from("students")
+            .select("id")
+            .eq("dean_student_id", dean.student_id)
+            .maybeSingle()
+          if (winner.data?.id) localId = winner.data.id
+          else console.error("school-login link conflict with no winner:", upd.error.message)
+        } else {
+          console.error("school-login update error:", upd.error.message)
+        }
+      }
     } else {
       const ins = await svc
         .from("students")
@@ -199,8 +330,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       localId = ins.data.id
     }
 
-    // Both branches, so a student created before this shipped picks their modules
-    // up on the next sign-in rather than only new students getting them.
+    // Unreachable in practice: every branch above either sets an id or has already
+    // returned. It is here so the grant below cannot be handed a null, and so a
+    // future branch that forgets to set one fails loudly instead of silently
+    // skipping the entitlement.
+    if (!localId) {
+      console.error("school-login resolved no local student id")
+      return res.status(500).json({ error: "server_error" })
+    }
+
+    // Adopted, matched, or freshly inserted, so a student created before this
+    // shipped picks their modules up on the next sign-in rather than only new
+    // students getting them.
     await grantCoveredPrepEntitlements(svc, localId, dean.grade)
 
     return res.status(200).json({
