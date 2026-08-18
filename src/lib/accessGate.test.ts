@@ -3,6 +3,7 @@ import {
   PAID_STATUSES,
   TRIAL_SEAT_CAP,
   billingPhase,
+  hasCoveredStudent,
   hasLearningAccess,
   includedSeatsForPlan,
   isTrialActive,
@@ -109,5 +110,34 @@ describe('includedSeatsForPlan', () => {
     expect(includedSeatsForPlan('high')).toBe(2)
     expect(includedSeatsForPlan(null)).toBe(1)
     expect(includedSeatsForPlan('college')).toBe(1)
+  })
+})
+
+describe('hasCoveredStudent', () => {
+  const kid = (over: Partial<{ active: boolean; school_covered: boolean }> = {}) => ({
+    active: true,
+    school_covered: false,
+    ...over,
+  })
+
+  it('is false for a family with no covered child (the B2C default)', () => {
+    expect(hasCoveredStudent([])).toBe(false)
+    expect(hasCoveredStudent([kid(), kid()])).toBe(false)
+  })
+
+  it('is true when an active child is school covered', () => {
+    expect(hasCoveredStudent([kid(), kid({ school_covered: true })])).toBe(true)
+  })
+
+  it('ignores an inactive covered child, so an over-cap child cannot hold the gate open', () => {
+    expect(hasCoveredStudent([kid({ active: false, school_covered: true })])).toBe(false)
+  })
+})
+
+describe('hasLearningAccess with database-sourced coverage', () => {
+  it('lets an expired covered account through, and still blocks the same account uncovered', () => {
+    const expired = sub({ status: 'free_trial', trialEnd: iso(-1 * DAY) })
+    expect(hasLearningAccess(expired, NOW, hasCoveredStudent([{ active: true, school_covered: true }]))).toBe(true)
+    expect(hasLearningAccess(expired, NOW, hasCoveredStudent([{ active: true, school_covered: false }]))).toBe(false)
   })
 })

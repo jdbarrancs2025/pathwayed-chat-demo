@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { isSchoolCovered } from '@/lib/schoolSession'
 import { getSubscription, type Subscription } from '@/lib/profile'
 import { listStudents, type Student } from '@/lib/students'
-import { hasLearningAccess } from '@/lib/accessGate'
+import { hasCoveredStudent, hasLearningAccess } from '@/lib/accessGate'
 import { PlanPicker } from '@/components/PlanPicker'
 import { TopMenu } from '@/components/TopMenu'
 import '@/styles/app-screens.css'
@@ -18,10 +18,23 @@ import '@/styles/app-screens.css'
  * ORDER MATTERS: school-covered students bypass entirely and are checked FIRST,
  * before any trial state is read (isSchoolCovered() short-circuits below). This
  * is the same covered-student bypass the Billing card uses.
+ *
+ * COVERAGE HAS TWO SOURCES, AND BOTH ARE SERVER-WRITTEN.
+ *   1. isSchoolCovered() - the sessionStorage flag from a verified Dean resolve.
+ *      Synchronous, so it bypasses without waiting on any read.
+ *   2. students.school_covered - the durable record of the same fact, for a
+ *      covered student who signed in normally and so has no school session.
+ *      Only trustworthy because migration 0025 leaves the service role its only
+ *      writer; see hasCoveredStudent() in accessGate.
+ *
+ * A NON-COVERED FAMILY IS UNAFFECTED. Source 2 resolves false for every B2C
+ * account, so the trial countdown, the day-seven lock and this subscribe prompt
+ * behave exactly as before. The students read it depends on was already being
+ * made here for the plan picker, so this adds no request.
  */
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { user } = useAuth()
-  const covered = isSchoolCovered()
+  const sessionCovered = isSchoolCovered()
   const [sub, setSub] = useState<Subscription | null>(null)
   const [students, setStudents] = useState<Student[]>([])
   // Snapshot the clock once at mount — a stable render-time value for the gate.
@@ -31,7 +44,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     // Covered students never touch billing state; an unauthenticated view (no
     // parent to check) is left to the pages' own handling. Either way, skip —
     // the render short-circuits to children before the loading gate below.
-    if (covered || !user) return
+    if (sessionCovered || !user) return
     let active = true
     Promise.all([getSubscription(user.id), listStudents(user.id)]).then(([s, kids]) => {
       if (!active) return
@@ -41,10 +54,10 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     return () => {
       active = false
     }
-  }, [covered, user])
+  }, [sessionCovered, user])
 
   // Covered → straight through. No user → preserve existing (ungated) behavior.
-  if (covered || !user) return <>{children}</>
+  if (sessionCovered || !user) return <>{children}</>
 
   // Still fetching (sub not yet loaded) — hold rather than flash the lock screen.
   if (!sub) {
@@ -57,7 +70,10 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     )
   }
 
-  if (hasLearningAccess(sub, now, covered)) return <>{children}</>
+  // The students list is loaded by now, so database coverage can be read. A
+  // covered student reaches this line (not the early return above) whenever they
+  // signed in without a school session.
+  if (hasLearningAccess(sub, now, hasCoveredStudent(students))) return <>{children}</>
 
   // Locked: parent-facing subscribe prompt with the plan picker.
   return (
