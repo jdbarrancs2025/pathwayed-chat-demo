@@ -25,11 +25,100 @@ const RECHECK_DELAY_DAYS = 3
 // can't inflate the number. True per-sitting timing is a follow-up.
 const SESSION_MINUTES_CAP = 120
 
+// A PostgREST filter travels in the GET URL, so one .in() holding every id a
+// school sends becomes a single enormous request line: a 471-student school
+// produced an 18,000-character URL. postgrest-js flags anything past 8,000
+// characters and the edge in front of the database never returned the response,
+// so the client retried three times and gave up with a transport error. That
+// read as "the students query failed" while the database had done nothing at
+// all. Ask in batches; every URL then stays a few kilobytes.
+const ID_BATCH = 100
+
+/**
+ * A PostgREST error, structurally. Named here rather than imported so the shape
+ * this function actually reads is visible at the top of the file.
+ */
+type QueryError = {
+  message?: string
+  details?: string
+  hint?: string | null
+  code?: string | null
+}
+
+type QueryResult<T> = { data: T[] | null; error: QueryError | null }
+
+type StudentRow = {
+  id: string
+  dean_student_id: string | null
+  first_name: string | null
+  grade: string | null
+}
+type SessionRow = {
+  student_id: string
+  started_at: string | null
+  ended_at: string | null
+  updated_at: string | null
+}
+type AttemptRow = { student_id: string; is_correct: boolean | null; created_at: string | null }
+type MasteryRow = {
+  student_id: string
+  skill_id: string
+  status: string | null
+  first_bar_met_at: string | null
+  recheck_passed_at: string | null
+}
+type FocusRow = { student_id: string; skill_id: string; created_at: string | null }
+type SkillRow = { id: string; name: string }
+
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json" },
   })
+}
+
+/**
+ * A failed query, said out loud.
+ *
+ * The caller is another server and this body is its only window into this one,
+ * so a bare code makes every outage look identical and sends whoever is reading
+ * the console here to dig through logs. PostgREST puts the actionable part in
+ * `hint` (for a 42501 it is the literal GRANT to run) and a stable `code` to
+ * branch on, so both travel with the message. None of these fields carry a
+ * secret: the bridge secret and the API key are never part of an error body.
+ */
+function queryFailed(query: string, err: QueryError | null): Response {
+  console.error(`school-progress: ${query} query failed`, err)
+  return json(
+    {
+      error: "query_failed",
+      query,
+      detail: err?.message ?? String(err),
+      hint: err?.hint ?? null,
+      code: err?.code ?? null,
+    },
+    500,
+  )
+}
+
+/**
+ * Run one .in() query per batch of ids and concatenate the rows.
+ *
+ * `build` receives a batch and returns the PostgREST query for it. The first
+ * error stops the walk and comes back whole, so a failure surfaces instead of
+ * quietly thinning the result. An empty id list runs no query at all.
+ */
+async function selectInBatches<T>(
+  ids: string[],
+  build: (batch: string[]) => PromiseLike<QueryResult<T>>,
+): Promise<{ data: T[]; error: QueryError | null }> {
+  const rows: T[] = []
+  for (let i = 0; i < ids.length; i += ID_BATCH) {
+    const { data, error } = await build(ids.slice(i, i + ID_BATCH))
+    if (error) return { data: rows, error }
+    rows.push(...(data ?? []))
+  }
+  return { data: rows, error: null }
 }
 
 Deno.serve(async (req) => {
@@ -71,14 +160,21 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   )
 
+  const now = Date.now()
+  const nowIso = new Date(now).toISOString()
+
   // 1) HARD scope: covered students whose dean_student_id is in the list. Nothing
   //    about parents, billing, or PINs is even selected.
-  const { data: studentRows, error: studentErr } = await supabase
-    .from("students")
-    .select("id, dean_student_id, first_name, grade")
-    .eq("school_covered", true)
-    .in("dean_student_id", requestedIds.length ? requestedIds : ["__none__"])
-  if (studentErr) return json({ error: "query_failed" }, 500)
+  const { data: studentRows, error: studentErr } = await selectInBatches<StudentRow>(
+    requestedIds,
+    (batch) =>
+      supabase
+        .from("students")
+        .select("id, dean_student_id, first_name, grade")
+        .eq("school_covered", true)
+        .in("dean_student_id", batch),
+  )
+  if (studentErr) return queryFailed("students", studentErr)
 
   const students = (studentRows ?? []).filter((s) => s.dean_student_id)
   const localIds = students.map((s) => s.id)
@@ -87,6 +183,7 @@ Deno.serve(async (req) => {
   // Nothing covered — honest empty result (still 200, no leak).
   if (localIds.length === 0) {
     return json({
+      generated_at: nowIso,
       students: {},
       rollup: {
         students_active: 0,
@@ -99,22 +196,41 @@ Deno.serve(async (req) => {
 
   // 2) Pull the progress signals for those students (only non-sensitive columns).
   const [sessRes, attRes, masteryRes, focusRes] = await Promise.all([
-    supabase.from("sessions").select("student_id, started_at, ended_at, updated_at").in("student_id", localIds),
-    supabase
-      .from("question_attempts")
-      .select("student_id, is_correct, created_at")
-      .in("student_id", localIds)
-      .eq("is_diagnostic", false),
-    supabase
-      .from("student_skill_mastery")
-      .select("student_id, skill_id, status, first_bar_met_at, recheck_passed_at")
-      .in("student_id", localIds),
-    supabase
-      .from("student_focus_skills")
-      .select("student_id, skill_id, created_at")
-      .in("student_id", localIds)
-      .is("resolved_at", null),
+    selectInBatches<SessionRow>(localIds, (batch) =>
+      supabase
+        .from("sessions")
+        .select("student_id, started_at, ended_at, updated_at")
+        .in("student_id", batch)),
+    selectInBatches<AttemptRow>(localIds, (batch) =>
+      supabase
+        .from("question_attempts")
+        .select("student_id, is_correct, created_at")
+        .in("student_id", batch)
+        .eq("is_diagnostic", false)),
+    selectInBatches<MasteryRow>(localIds, (batch) =>
+      supabase
+        .from("student_skill_mastery")
+        .select("student_id, skill_id, status, first_bar_met_at, recheck_passed_at")
+        .in("student_id", batch)),
+    selectInBatches<FocusRow>(localIds, (batch) =>
+      supabase
+        .from("student_focus_skills")
+        .select("student_id, skill_id, created_at")
+        .in("student_id", batch)
+        .is("resolved_at", null)),
   ])
+
+  // These four used to be read straight through, so a failure arrived as a
+  // student with zero minutes rather than as an error. Say so instead.
+  const progressQueries: [string, { error: QueryError | null }][] = [
+    ["sessions", sessRes],
+    ["question_attempts", attRes],
+    ["student_skill_mastery", masteryRes],
+    ["student_focus_skills", focusRes],
+  ]
+  for (const [name, res] of progressQueries) {
+    if (res.error) return queryFailed(name, res.error)
+  }
 
   // Resolve skill names for stuck / recheck skills.
   const skillIds = new Set<string>()
@@ -122,15 +238,13 @@ Deno.serve(async (req) => {
   for (const f of focusRes.data ?? []) if (f.skill_id) skillIds.add(f.skill_id)
   const skillName = new Map<string, string>()
   if (skillIds.size) {
-    const { data: skillRows } = await supabase
-      .from("skills")
-      .select("id, name")
-      .in("id", [...skillIds])
+    const { data: skillRows, error: skillErr } = await selectInBatches<SkillRow>(
+      [...skillIds],
+      (batch) => supabase.from("skills").select("id, name").in("id", batch),
+    )
+    if (skillErr) return queryFailed("skills", skillErr)
     for (const s of skillRows ?? []) skillName.set(s.id, s.name)
   }
-
-  const now = Date.now()
-  const nowIso = new Date(now).toISOString()
 
   // Per-student accumulators.
   type Acc = {
