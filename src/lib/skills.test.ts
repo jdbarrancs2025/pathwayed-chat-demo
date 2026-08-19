@@ -1,19 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { buildMasteryView, detectPracticedSlugs, nextMastery, ratingToAccuracy } from './skills'
+import { buildMasteryView, detectPracticedSlugs, nextMastery } from './skills'
 import type { StoredMessage } from './sessions'
 
 const msg = (content: string): StoredMessage => ({ role: 'assistant', content })
-
-describe('ratingToAccuracy', () => {
-  it('maps the three end-of-session ratings', () => {
-    expect(ratingToAccuracy('great')).toBe(100)
-    expect(ratingToAccuracy('ok')).toBe(70)
-    expect(ratingToAccuracy('confusing')).toBe(40)
-  })
-  it('falls back to a neutral value for unknown ratings', () => {
-    expect(ratingToAccuracy('whatever')).toBe(60)
-  })
-})
 
 describe('nextMastery (recency-weighted accuracy, attempts-ramped mastery)', () => {
   it('one great session => accuracy 100, attempts 1, mastery 25 (ramp = 1/4)', () => {

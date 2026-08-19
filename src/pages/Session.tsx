@@ -26,11 +26,6 @@ import '@/styles/app-screens.css'
 
 const VALID_SUBJECTS = new Set(['math', 'reading', 'writing', 'science', 'homework'])
 
-// Neutral mastery signal for a completed lesson (no rating is collected on
-// completion anymore). 'ok' maps to a mid accuracy —
-// completing counts as steady practice, not a strong or weak read.
-const NEUTRAL_COMPLETION_RATING = 'ok'
-
 // Speak in Nikki's ElevenLabs voice (falls back to the browser voice on
 // failure). setSpeaking drives the avatar's speaking ring while audio plays.
 // onBlocked (optional) fires when the browser refused all playback for lack of
@@ -421,20 +416,20 @@ function SessionView({
 
   const returnToWelcome = () => navigate(`/students/${student.id}`)
 
-  // Academic OS Phase 1: record skill mastery from this session's transcript
-  // (client-side under RLS). Best-effort — a failure here must never block the
-  // child returning to their welcome.
-  const recordMastery = async (rating: string) => {
+  // Record WHAT THIS SESSION COVERED onto the session row (client-side under RLS).
+  // It no longer writes mastery: completing a lesson is participation, and mastery
+  // is claimed only from graded check questions. Best-effort — a failure here must
+  // never block the child returning to their welcome.
+  const recordSessionSummary = async () => {
     try {
       await recordSessionMastery({
         studentId: student.id,
         subject,
         grade: student.grade,
         messages: messages.map(({ role, content }) => ({ role, content })),
-        rating,
       })
     } catch (err) {
-      console.error('mastery recording failed', err)
+      console.error('session summary recording failed', err)
     }
   }
 
@@ -454,15 +449,17 @@ function SessionView({
     if (focusSlug) await resolveFocusForSlug(student.id, focusSlug)
   }
 
-  // Completing the lesson (the "Done" button): a brief positive close, a neutral
-  // mastery signal (no rating is asked on completion anymore), then a smooth
-  // auto-return. Mastery is awaited so the write isn't cut off. A completed lesson
-  // never shows the leave warning — nothing is lost.
+  // Completing the lesson (the "Done" button): a brief positive close, the session
+  // summary, then a smooth auto-return. The write is awaited so it isn't cut off.
+  // A completed lesson never shows the leave warning — nothing is lost.
+  //
+  // Finishing moves no mastery on its own. Whatever the child's check answers
+  // earned was already recorded, question by question, as they answered them.
   const completeLesson = async () => {
     stopSpeak(setSpeaking)
     convoMic.stop()
     setNiceWork(true)
-    await recordMastery(NEUTRAL_COMPLETION_RATING)
+    await recordSessionSummary()
     await resolveFocusIfAny()
     window.setTimeout(returnToWelcome, 900)
   }

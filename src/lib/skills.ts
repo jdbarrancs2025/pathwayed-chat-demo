@@ -111,24 +111,6 @@ export function detectPracticedSlugs(subject: string, grade: string, messages: S
 // Mastery formula (Phase 1: recency-weighted running accuracy)
 // ---------------------------------------------------------------------------
 
-// The end-of-session self-rating ("how did that go?": great/ok/confusing) is an
-// explicit CONFIDENCE / SENTIMENT proxy — NOT graded accuracy. There is no
-// graded-answer signal yet, so it stands in as the per-session signal that feeds
-// the running accuracy. Documented placeholder; Phase 2 should replace it with
-// graded practice / assessment.
-export function ratingToAccuracy(rating: string): number {
-  switch (rating) {
-    case 'great':
-      return 100
-    case 'ok':
-      return 70
-    case 'confusing':
-      return 40
-    default:
-      return 60
-  }
-}
-
 // Weight on the latest session signal in the running accuracy average. Higher =
 // more reactive to the most recent practice; lower = smoother / more history-
 // weighted.
@@ -266,42 +248,47 @@ async function commitMasterySignals(
 }
 
 /**
- * After a finished tutoring session: detect skills practiced, resolve them to
- * skill_ids, recency-update each mastery row, and record the summary onto the
- * session row (skills_practiced + mastery_updates). Best-effort and side-effect-
- * only — returns the updates (also used by the dashboard's recent-progress view).
- * Never throws into the caller's happy path; mastery is non-critical in Phase 1.
+ * After a finished tutoring session: detect which skills the transcript shows were
+ * practiced and record that summary onto the session row.
+ *
+ * IT NO LONGER WRITES MASTERY, DELIBERATELY. It used to convert the child's
+ * end-of-session self-rating into a number and push it through
+ * commitMasterySignals into student_skill_mastery. Three things were wrong with
+ * that, and they compounded:
+ *
+ *   1. It was not even self-rating by the end. No rating is collected on
+ *      completion any more, so every session passed a hard-coded 'ok', which is a
+ *      constant 70 written for whichever skills a keyword scan of the transcript
+ *      happened to match.
+ *   2. It was a SECOND writer to a table whose meaning had moved. Since migration
+ *      0010 the column that matters is `status`, computed by a trigger from graded
+ *      question_attempts. Nothing reads the columns this wrote any more: nextLesson
+ *      stopped reading mastery_percentage, and readiness.ts repurposed that field
+ *      to carry evidence_accuracy.
+ *   3. Its INSERTs created rows with status defaulting to 'not_started', which is
+ *      much of why the table filled with rows that assert nothing. Those rows then
+ *      made "a mastery row exists" a misleading proxy for "has been placed".
+ *
+ * Mastery is now claimed only where graded work supports it: the trigger, fed by
+ * Practice and by chat check questions. Participation is not evidence.
+ *
+ * sessions.mastery_updates is stamped EMPTY rather than left stale, so the column
+ * says "mastery ran and claimed nothing" instead of holding an older run's numbers.
+ *
+ * Best-effort and side-effect-only. Never throws into the caller's happy path.
  */
 export async function recordSessionMastery(params: {
   studentId: string
   subject: string
   grade: string
   messages: StoredMessage[]
-  rating: string
-}): Promise<MasteryUpdate[]> {
-  const { studentId, subject, grade, messages, rating } = params
-
+}): Promise<void> {
+  const { studentId, subject, grade, messages } = params
+  // Still detected and still saved: the session summary is a legible record of what
+  // the lesson covered. It is a description of the conversation, not a claim about
+  // what the child now knows.
   const slugs = detectPracticedSlugs(subject, grade, messages)
-  if (!slugs.length) {
-    // Nothing recognizable practiced — still stamp an empty summary so the
-    // session row reflects that mastery ran.
-    await saveSessionSkills(studentId, subject, [], [])
-    return []
-  }
-
-  const idBySlug = await resolveSkillIdsBySlug(slugs)
-  if (!idBySlug.size) {
-    await saveSessionSkills(studentId, subject, slugs, [])
-    return []
-  }
-
-  // The whole session shares one self-rating signal across every practiced skill.
-  const sessionSignal = ratingToAccuracy(rating)
-  const entries = [...idBySlug].map(([slug, skill_id]) => ({ skill_id, slug, signal: sessionSignal }))
-  const updates = await commitMasterySignals(studentId, entries)
-
-  await saveSessionSkills(studentId, subject, slugs, updates)
-  return updates
+  await saveSessionSkills(studentId, subject, slugs, [])
 }
 
 /**
