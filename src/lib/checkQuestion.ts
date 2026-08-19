@@ -33,11 +33,30 @@ export const CHECK_MARKER = '[[check]]'
 /** Assistant turns that must pass before the FIRST check. Teach, then check. */
 export const CHECK_MIN_ASSISTANT_TURNS = 4
 /** Assistant turns that must pass between checks. */
-export const CHECK_COOLDOWN_TURNS = 6
-/** Hard cap per session. */
-export const CHECK_MAX_PER_SESSION = 3
-/** How many ramped candidates to draw before picking the one to ask. */
-export const CHECK_POOL_SIZE = 5
+export const CHECK_COOLDOWN_TURNS = 4
+/** Hard cap per lesson. */
+export const CHECK_MAX_PER_SESSION = 5
+/**
+ * Consecutive WRONG checks after which the lesson stops checking entirely.
+ *
+ * A child who is not getting it should be taught, not measured. Without this, an
+ * all-wrong lesson serves the full five and the child's own transcript narrates
+ * five failures in their own voice, which is the most punishing shape this feature
+ * can take. Two is early enough that the lesson turns back into teaching while the
+ * child still has most of it ahead of them.
+ *
+ * It gates Nikki's requests too, not just the app's. She cannot see a streak break
+ * without another check, so leaving her an override would just restore the drumbeat
+ * one request at a time.
+ *
+ * Answering wrong on purpose to escape checks is not an exploit worth guarding:
+ * every wrong answer is recorded as incorrect and drags real evidence accuracy
+ * down, so the student pays for it in the only currency this system has.
+ */
+export const CHECK_STRUGGLE_BACKOFF = 2
+/** How many ramped candidates to draw before picking the one to ask. Comfortably
+ *  more than CHECK_MAX_PER_SESSION so within-lesson exclusions still leave room. */
+export const CHECK_POOL_SIZE = 8
 
 const MARKER_RX = /\[\[\s*check\s*\]\]/gi
 
@@ -88,37 +107,62 @@ export interface CheckCadenceState {
   checksServed: number
   /** assistantTurns value when the last check was served, or null for none yet. */
   turnOfLastCheck: number | null
+  /** Consecutive WRONG answers on checks so far, reset by a correct one. */
+  consecutiveWrong: number
 }
+
+/**
+ * Who wants the check. 'nikki' is her [[check]] marker, the better signal because
+ * she can see the moment; 'app' is the cadence firing on its own so a lesson still
+ * produces evidence when she never asks.
+ */
+export type CheckTrigger = 'nikki' | 'app'
 
 /**
  * May a check be served right now?
  *
- * CADENCE, AND WHY THESE NUMBERS. A check only ever fires when Nikki asks for one
- * AND all three gates pass, so a struggling or quiet stretch produces none at all.
+ * WHY THE APP ASKS TOO, NOT JUST NIKKI. This used to fire only on her [[check]]
+ * marker, while the prompt told her most turns should have no check at all. Against
+ * the live database the result was ZERO recorded checks, ever: one session cleared
+ * every gate with 15 assistant turns and still produced none. Evidence a lesson only
+ * sometimes emits is not evidence a parent dashboard can rest on, and it left
+ * nextLesson permanently unable to advance. So the app runs the cadence now, and
+ * Nikki's marker moves a check EARLIER, to a moment she can see and it cannot.
+ *
+ * CADENCE, AND WHY THESE NUMBERS.
  *
  *   Teach first (4 turns). A check inside the opening exchange turns a lesson into
  *   an entrance exam. Four assistant turns is roughly "she has explained something
  *   and the student has responded to it twice".
  *
- *   Cooldown (6 turns). Long enough that a check reads as a natural pause rather
- *   than a quiz rhythm the student starts anticipating.
+ *   Cooldown (4 turns). Long enough to read as a natural pause, short enough that
+ *   the cap is reachable: 4 + 4x4 = 20 assistant turns for five checks, and three by
+ *   turn 12, which lands a typical lesson in the 3-to-5 band.
  *
- *   Cap (3 per session). This is the number that keeps tutoring from becoming
- *   testing. A typical session runs 20 to 30 assistant turns, so three checks is
- *   about one turn in eight, leaving roughly 90% of the conversation as teaching.
- *   It is also enough to matter: the ADVANCE bar needs 5 graded attempts, so a
- *   student who only ever works in chat reaches it in two sessions, and the
- *   8-attempt MASTERED floor in three. Slower than Practice, which is correct,
- *   because tutoring evidence should accumulate as a by-product of learning rather
- *   than replace the thing it measures.
+ *   Cap (5 per lesson). Enough that two solid lessons clear the 5-attempt ADVANCE
+ *   bar, few enough to stay a conversation: at 20 to 30 assistant turns that is
+ *   about one turn in five, leaving the rest as teaching. Tutoring evidence should
+ *   accumulate as a by-product of learning, not replace the thing it measures.
+ *
+ *   Struggle backoff (2 consecutive wrong). See CHECK_STRUGGLE_BACKOFF. This is the
+ *   one gate that can take a lesson BELOW three checks, deliberately: a child who is
+ *   not getting it gets taught for the rest of the lesson instead of measured.
  */
-export function shouldServeCheck(state: CheckCadenceState, requested: boolean): boolean {
-  if (!requested) return false
+export function shouldServeCheck(state: CheckCadenceState, trigger: CheckTrigger): boolean {
   if (state.checksServed >= CHECK_MAX_PER_SESSION) return false
   if (state.assistantTurns < CHECK_MIN_ASSISTANT_TURNS) return false
-  if (state.turnOfLastCheck != null && state.assistantTurns - state.turnOfLastCheck < CHECK_COOLDOWN_TURNS) {
+  if (state.consecutiveWrong >= CHECK_STRUGGLE_BACKOFF) return false
+  // Nikki's marker skips only the cooldown, never the cap, the teach-first floor or
+  // the backoff. She sees the teaching moment; those three protect the child.
+  if (
+    trigger === 'app' &&
+    state.turnOfLastCheck != null &&
+    state.assistantTurns - state.turnOfLastCheck < CHECK_COOLDOWN_TURNS
+  ) {
     return false
   }
+  // Even for Nikki, never two checks on one turn.
+  if (trigger === 'nikki' && state.turnOfLastCheck === state.assistantTurns) return false
   return true
 }
 
@@ -133,10 +177,16 @@ export function chooseCheckQuestion(
   questions: PracticeQuestion[],
   seenIds: Set<string>,
   pick: (n: number) => number = (n) => Math.floor(Math.random() * n),
+  askedThisLesson: Set<string> = new Set(),
 ): PracticeQuestion | null {
   if (!questions.length) return null
-  const unseen = questions.filter((q) => !seenIds.has(q.id))
-  const pool = unseen.length ? unseen : questions
+  // HARD exclusion, unlike the seen PREFERENCE below. An item already asked in this
+  // lesson is never asked again for credit, so a wrong answer is followed by a
+  // different question rather than another go at the same one.
+  const fresh = questions.filter((q) => !askedThisLesson.has(q.id))
+  if (!fresh.length) return null
+  const unseen = fresh.filter((q) => !seenIds.has(q.id))
+  const pool = unseen.length ? unseen : fresh
   return pool[Math.min(pool.length - 1, Math.max(0, pick(pool.length)))] ?? null
 }
 
@@ -155,12 +205,21 @@ export function chooseCheckQuestion(
 export async function fetchCheckQuestion(
   student: LadderStudentRow,
   focusSlug: string | null,
+  askedThisLesson: Set<string> = new Set(),
 ): Promise<PracticeQuestion | null> {
-  if (!focusSlug) return null
+  if (!focusSlug) {
+    console.info('[check] lesson has no focus skill, not checking')
+    return null
+  }
   try {
     const eligible = await listEligibleSkills(student)
     const skill = eligible.find((s) => s.slug === focusSlug)
-    if (!skill) return null // cleared, above the ceiling, or age-pinned out
+    if (!skill) {
+      // Cleared, above the ceiling, or age-pinned out. Logged because a silent null
+      // here is exactly how this feature ran for weeks emitting nothing at all.
+      console.info('[check] focus skill not eligible, not checking', { focusSlug })
+      return null
+    }
 
     // Ramped like a practice set, so a check question tracks the same rolling
     // performance the practice flow does. Ask for a handful rather than one, then
@@ -169,7 +228,15 @@ export async function fetchCheckQuestion(
       fetchRampedQuestions(focusSlug, CHECK_POOL_SIZE, student.id),
       fetchSeenQuestionIds(student.id, skill.skill_id),
     ])
-    return chooseCheckQuestion(ramped.questions, seen)
+    const chosen = chooseCheckQuestion(ramped.questions, seen, undefined, askedThisLesson)
+    if (!chosen) {
+      console.info('[check] no unasked question left for this skill, not checking', {
+        focusSlug,
+        candidates: ramped.questions.length,
+        asked: askedThisLesson.size,
+      })
+    }
+    return chosen
   } catch (err) {
     console.error('fetchCheckQuestion threw', { err, focusSlug })
     return null
