@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, gradeLabel, levelLabel, avatarModeOf, updateAvatarMode, type AvatarMode, type Student } from '@/lib/students'
 import { canTakePracticeSat } from '@/lib/practiceSat'
-import { hasAnyMastery } from '@/lib/skills'
+import { hasPlacement } from '@/lib/skills'
 import { studentGradeNum } from '@/lib/diagnostic'
 import { isSchoolCovered } from '@/lib/schoolSession'
 import { HOMEWORK } from '@/lib/subjects'
@@ -42,7 +42,7 @@ export function KidHome() {
       setStudent(s)
       setLoading(false)
       if (studentGradeNum(s.grade) >= 3) {
-        const placed = await hasAnyMastery(s.id)
+        const placed = await hasPlacement(s.id)
         if (active) setOfferPlacement(!placed)
       }
     })

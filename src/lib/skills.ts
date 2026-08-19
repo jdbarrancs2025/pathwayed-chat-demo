@@ -396,22 +396,43 @@ export async function seedDiagnosticMastery(
 }
 
 /**
- * Whether a child has any mastery yet — i.e. has been placed by a completed
- * diagnostic (grades 3-12 seed mastery) or has practiced. Used to decide whether
- * to OFFER placement at the child's home. A brand-new, unplaced child has none.
+ * Whether a child has already been placed, so neither the child's home nor Skills
+ * building should offer the check again. TRUE on either signal:
+ *
+ *   1. a mastery row exists — a placement seeded, or real practice landed, or
+ *   2. the child has already ANSWERED diagnostic questions.
+ *
+ * Clause 2 is a loop guard, and it is the whole reason this is not just a mastery
+ * read. A diagnostic run that ends below PLACEMENT_MIN_QUESTIONS is deliberately
+ * discarded rather than seeded (see Diagnostic.finish), which used to leave the
+ * child pinned on the offer: the same check, re-offered identically, with nothing
+ * on the other side of it. Having answered counts as having taken it.
+ *
+ * It claims NO MASTERY. Nothing here writes, and nothing downstream reads it as
+ * evidence — nextLesson still advances only on graded status. Deliberate retakes
+ * stay available from the child's home, the parent dashboard, and a grade change,
+ * all of which pass ?fresh=1.
+ *
  * (K-2 placement intentionally doesn't seed, so the offer is gated to 3-12 by the
  * caller.) Fails safe to `true` on error so we never nag a child on a read glitch.
  */
-export async function hasAnyMastery(studentId: string): Promise<boolean> {
-  const { count, error } = await supabase
-    .from('student_skill_mastery')
-    .select('id', { count: 'exact', head: true })
-    .eq('student_id', studentId)
-  if (error) {
-    console.error('hasAnyMastery read failed', error)
+export async function hasPlacement(studentId: string): Promise<boolean> {
+  const [mastery, answered] = await Promise.all([
+    supabase
+      .from('student_skill_mastery')
+      .select('id', { count: 'exact', head: true })
+      .eq('student_id', studentId),
+    supabase
+      .from('question_attempts')
+      .select('id', { count: 'exact', head: true })
+      .eq('student_id', studentId)
+      .eq('is_diagnostic', true),
+  ])
+  if (mastery.error || answered.error) {
+    console.error('hasPlacement read failed', { mastery: mastery.error, answered: answered.error })
     return true
   }
-  return (count ?? 0) > 0
+  return (mastery.count ?? 0) > 0 || (answered.count ?? 0) > 0
 }
 
 // ---------------------------------------------------------------------------

@@ -466,6 +466,15 @@ export interface PracticeableSkill {
 const PRACTICE_SUBJECT_ORDER = ['math', 'reading', 'writing', 'science']
 
 /**
+ * Catalogue paging. CATALOGUE_PAGE matches Supabase's default PostgREST max-rows,
+ * so a full page means "there is probably more"; a smaller value would still be
+ * correct, just chattier. CATALOGUE_MAX_PAGES is a runaway guard, not a limit we
+ * expect to reach: at 1000 rows a page it allows 50k published questions.
+ */
+const CATALOGUE_PAGE = 1000
+const CATALOGUE_MAX_PAGES = 50
+
+/**
  * List the skills a student can actually practice right now: every skill with at
  * least one PUBLISHED question, joined to its skill metadata and sorted by
  * subject then name. Drives the dashboard practice picker — skills without
@@ -474,14 +483,46 @@ const PRACTICE_SUBJECT_ORDER = ['math', 'reading', 'writing', 'science']
 export async function listPracticeableSkills(status?: ReadStatus): Promise<PracticeableSkill[]> {
   // RLS already limits the client to status='published'; the filter is explicit
   // so the intent is clear and it still holds if policies change.
-  const { data: qRows, error: qError } = await supabase
-    .from('generated_questions')
-    .select('skill_id, passage_id')
-    .eq('status', 'published')
-  if (qError) {
-    console.error('listPracticeableSkills: questions read failed', qError)
-    if (status) status.failed = true
-    return []
+  //
+  // PAGINATED, and it has to be. PostgREST silently caps an unbounded select at the
+  // project's max-rows (1000 on Supabase), with no error and no flag on the
+  // response — you just get fewer rows than you asked for. This read is "every
+  // published question", which passed 1000 rows and started returning an arbitrary
+  // ~1/3 of the catalogue. Because the truncated slice is what defines which skills
+  // exist, whole grades collapsed to one or two skills: grade 12 went to a single
+  // skill, which made the placement diagnostic a one-question run that could never
+  // clear PLACEMENT_MIN_QUESTIONS, so it was discarded and re-offered forever.
+  // Anything that reads the whole catalogue MUST page.
+  const qRows: { skill_id: string; passage_id: string | null }[] = []
+  for (let page = 0; page < CATALOGUE_MAX_PAGES; page++) {
+    const from = page * CATALOGUE_PAGE
+    const { data, error: qError } = await supabase
+      .from('generated_questions')
+      .select('skill_id, passage_id')
+      // Range pagination needs a total order or pages can overlap and drop rows.
+      // skill_id alone is not unique, so id breaks the ties.
+      .order('skill_id', { ascending: true })
+      .order('id', { ascending: true })
+      .eq('status', 'published')
+      .range(from, from + CATALOGUE_PAGE - 1)
+    if (qError) {
+      console.error('listPracticeableSkills: questions read failed', qError)
+      if (status) status.failed = true
+      return []
+    }
+    const batch = data ?? []
+    qRows.push(...batch)
+    // A short page is the last page. An exactly-full final page costs one extra
+    // empty read, which is the right trade against guessing.
+    if (batch.length < CATALOGUE_PAGE) break
+    if (page === CATALOGUE_MAX_PAGES - 1) {
+      // Never truncate silently — that is the bug this loop exists to kill.
+      console.error(
+        'listPracticeableSkills: hit CATALOGUE_MAX_PAGES, the skill list is incomplete',
+        { pagesRead: CATALOGUE_MAX_PAGES, rowsRead: qRows.length },
+      )
+      if (status) status.failed = true
+    }
   }
   const skillIds = [...new Set((qRows ?? []).map((r) => r.skill_id).filter(Boolean))]
   if (!skillIds.length) return []
@@ -637,16 +678,34 @@ export interface DiagnosticQuestion extends PracticeQuestion {
 }
 
 /**
- * Placement diagnostic set (Phase 2): one PUBLISHED question from each of the
- * given skills, each tagged with its grade_band, shuffled into a mixed order.
- * Reuses the normal per-skill serve path, so diagnostic items are exactly the
- * questions a student would practice. Returns [] for an empty skill list.
+ * Placement diagnostic set (Phase 2): PUBLISHED questions drawn from the given
+ * skills, each tagged with its grade_band, shuffled into a mixed order. Reuses the
+ * normal per-skill serve path, so diagnostic items are exactly the questions a
+ * student would practice. Returns [] for an empty skill list.
+ *
+ * `minQuestions` is a FLOOR on the rung, not a cap: it raises how many are drawn
+ * per skill when the rung has few skills, and changes nothing when the rung is
+ * already wide. Pass the caller's placement minimum so a thin grade still produces
+ * a run long enough to place from.
  */
-export async function fetchDiagnosticQuestions(skills: PracticeableSkill[]): Promise<DiagnosticQuestion[]> {
+export async function fetchDiagnosticQuestions(
+  skills: PracticeableSkill[],
+  minQuestions = 1,
+): Promise<DiagnosticQuestion[]> {
   if (!skills.length) return []
+  // Draw enough per skill that a THIN rung still reaches minQuestions. A rung used
+  // to be exactly one question per skill, so a grade with few published skills
+  // produced a run too short to place from, which the caller then discarded and
+  // re-offered identically. Widening fixes that at the source: the run gets longer
+  // rather than the placement bar getting lower, so a placement is still only
+  // claimed from enough answers to mean something.
+  //
+  // Rungs that are already wide enough are unchanged: 6 skills against a minimum of
+  // 4 still draws 1 each. Only a thin rung draws more.
+  const perSkill = Math.max(1, Math.ceil(minQuestions / skills.length))
   const sets = await Promise.all(
     skills.map(async (s) => {
-      const qs = await fetchPracticeQuestions(s.slug, 1)
+      const qs = await fetchPracticeQuestions(s.slug, perSkill)
       return qs.map((q) => ({
         ...q,
         grade_band: s.grade_band,

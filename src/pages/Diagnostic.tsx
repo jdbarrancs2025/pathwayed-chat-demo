@@ -20,6 +20,7 @@ import {
   nextRung,
   settledGrade,
   placementSeeds,
+  PLACEMENT_MIN_QUESTIONS,
   type DiagnosticResult,
   type LadderDirection,
 } from '@/lib/diagnostic'
@@ -192,7 +193,7 @@ export function Diagnostic() {
         return
       }
       const rungSkills = practiceable.filter((sk) => sk.ccss_grade_num === start)
-      const qs = await fetchDiagnosticQuestions(rungSkills)
+      const qs = await fetchDiagnosticQuestions(rungSkills, PLACEMENT_MIN_QUESTIONS)
       if (!active) return
       setCurrentGrade(start)
       setDirection('none')
@@ -281,6 +282,12 @@ export function Diagnostic() {
         allResults.map((r) => ({ skillId: r.skillId, isCorrect: r.isCorrect })),
       )
     } else if (!early) {
+      // Below the floor, so nothing is seeded: a placement is only claimed from
+      // enough answers to mean something. This is no longer a dead end. Rungs are
+      // now drawn to PLACEMENT_MIN_QUESTIONS (see fetchDiagnosticQuestions), so a
+      // run reaching here means the catalogue itself is too thin, and hasPlacement
+      // counts the answers the child just gave, so the offer is not re-made
+      // identically. They land in Skills building either way.
       console.info('[diagnostic] run below placement floor, discarded, not seeded', allResults.length)
     }
     clearDiagnosticProgress(stu.id)
@@ -297,7 +304,7 @@ export function Diagnostic() {
     if (step.grade != null) {
       setBusy(true)
       const rungSkills = allSkills.filter((sk) => sk.ccss_grade_num === step.grade)
-      const more = await fetchDiagnosticQuestions(rungSkills)
+      const more = await fetchDiagnosticQuestions(rungSkills, PLACEMENT_MIN_QUESTIONS)
       setBusy(false)
       if (more.length) {
         setQuestions((qs) => [...(qs ?? []), ...more])

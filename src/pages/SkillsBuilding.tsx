@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getStudent, avatarModeOf, type Student } from '@/lib/students'
+import { hasPlacement } from '@/lib/skills'
 import { SUBJECTS, type SubjectDef } from '@/lib/subjects'
 import {
   scopeBandForGrade,
   scopeSubjectsForBand,
-  hasAnyMastery,
   nextLesson,
   SCOPE_SUBJECTS,
   type Lesson,
@@ -78,7 +78,9 @@ export function SkillsBuilding() {
       // K-2 pre-readers skip the placement check (it isn't built for them) and
       // go straight to picking their counting / phonics lesson.
       if (band !== 'k-2') {
-        const assessed = await hasAnyMastery(s.id)
+        // hasPlacement, not "has mastery": a diagnostic run too thin to seed is
+        // discarded, and gating on mastery alone re-offered that same run forever.
+        const assessed = await hasPlacement(s.id)
         if (!active) return
         if (!assessed) {
           setPhase('need-check')

@@ -226,13 +226,3 @@ async function promoteBand(
   }
 }
 
-/** Whether the student has any mastery yet — drives the first-arrival diagnostic. */
-export async function hasAnyMastery(studentId: string): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('student_skill_mastery')
-    .select('skill_id')
-    .eq('student_id', studentId)
-    .limit(1)
-  if (error) console.error('hasAnyMastery read failed', error)
-  return (data?.length ?? 0) > 0
-}
