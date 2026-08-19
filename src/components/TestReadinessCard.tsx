@@ -5,10 +5,11 @@ import { trajectorySummary, type ModuleTrajectory } from '@/lib/prep/testTraject
 import { showKidSatFraming } from '@/lib/satFraming'
 import { SatReadiness } from '@/components/SatReadiness'
 import { loadTestReadiness, type TestReadinessData } from '@/lib/prep/testReadinessLoad'
+import { prepModulesForGrade } from '@/lib/prep/access'
 import {
   ISEE_PERCENTILE_STANINE,
-  PRACTICE_DISCLOSURE,
-  SCALE_REFERENCE,
+  practiceDisclosure,
+  scaleReferenceFor,
   type CompositeRow,
   type HistoryRow,
   type ModuleReadiness,
@@ -30,6 +31,12 @@ import {
  * hold STS or ERB norming data, so inventing one would be a claim we cannot back.
  * The published scale facts sit in a collapsed reference block, clearly separated
  * from the child's results.
+ *
+ * The disclosure and that reference block name only the tests THIS student has.
+ * A 9-12 student is SAT-only (see prepModulesForGrade), and telling them how
+ * Scholastic Testing Service scales the HSPT is true, useless, and reads like the
+ * product cannot tell one child from another. See practiceDisclosure: the honesty
+ * is per test, never dropped.
  *
  * SAT is NOT recomputed here. This card composes the existing SatReadiness
  * component, which renders the stored readiness_scores payload exactly as before.
@@ -83,6 +90,18 @@ export function TestReadinessCard({
       ? student.above_grade_ok
       : showKidSatFraming({ grade, above_grade_ok: student.above_grade_ok })
 
+  // Which tests this card is actually talking about for THIS student. Driven by
+  // what renders, not by grade alone: the HSPT and ISEE blocks are not grade-gated
+  // (loadTestReadiness always loads both), so a grade 9 transfer can carry real
+  // 8th-grade HSPT results onto the card and the disclosure has to cover them.
+  // Grade eligibility is the fallback for a student who has attempted nothing yet.
+  const shown = new Set<string>()
+  for (const m of data.modules) if (m.hasResults) shown.add(m.moduleId)
+  for (const t of data.trajectories) shown.add(t.moduleId)
+  if (showSat) shown.add('sat')
+  if (shown.size === 0) for (const m of prepModulesForGrade(grade)) shown.add(m.id)
+  const shownModuleIds = [...shown]
+
   const heading = (text: string) =>
     audience === 'parent' ? <div className="pd-label">{text}</div> : <h3>{text}</h3>
 
@@ -98,7 +117,7 @@ export function TestReadinessCard({
           .map((m) => <ModuleBlock key={m.moduleId} module={m} />)
       )}
 
-      <p className="trc-disclosure">{PRACTICE_DISCLOSURE}</p>
+      <p className="trc-disclosure">{practiceDisclosure(shownModuleIds)}</p>
 
       {showSat && (
         <div className="trc-sat">
@@ -122,7 +141,7 @@ export function TestReadinessCard({
         </div>
       )}
 
-      <ScaleReference />
+      <ScaleReference moduleIds={shownModuleIds} />
       <History rows={data.history} />
     </>
   )
@@ -229,34 +248,44 @@ function BandPill({ band }: { band: ReadinessBand }) {
  * Published scale facts and the ISEE percentile to stanine table, as static
  * reference for families reading an official score report. Collapsed by default,
  * and never applied to the practice percents above.
+ *
+ * Narrowed to the tests the student has. The stanine table is ISEE's alone, so it
+ * only appears for a student who has ISEE; a SAT-only family has no score report
+ * it could help them read.
  */
-function ScaleReference() {
+function ScaleReference({ moduleIds }: { moduleIds: string[] }) {
+  const rows = scaleReferenceFor(moduleIds)
+  if (rows.length === 0) return null
   return (
     <details className="trc-scale">
       <summary>How the official tests are scored</summary>
       <div className="trc-scale-body">
-        {SCALE_REFERENCE.map((s) => (
+        {rows.map((s) => (
           <p key={s.test}>
             <b>{s.test}.</b> {s.text}
           </p>
         ))}
-        <div className="trc-label">ISEE percentile to stanine</div>
-        <table className="trc-table">
-          <thead>
-            <tr>
-              <th>Percentile</th>
-              <th>Stanine</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ISEE_PERCENTILE_STANINE.map((r) => (
-              <tr key={r.stanine}>
-                <td>{r.percentile}</td>
-                <td>{r.stanine}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {moduleIds.includes('isee') && (
+          <>
+            <div className="trc-label">ISEE percentile to stanine</div>
+            <table className="trc-table">
+              <thead>
+                <tr>
+                  <th>Percentile</th>
+                  <th>Stanine</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ISEE_PERCENTILE_STANINE.map((r) => (
+                  <tr key={r.stanine}>
+                    <td>{r.percentile}</td>
+                    <td>{r.stanine}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
     </details>
   )

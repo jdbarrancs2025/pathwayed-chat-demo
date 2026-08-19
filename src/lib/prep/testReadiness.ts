@@ -37,9 +37,59 @@ export function bandFor(percent: number): ReadinessBand {
   return 'Developing'
 }
 
-/** Shown under the HSPT and ISEE rows. Named so the two module blocks cannot drift. */
-export const PRACTICE_DISCLOSURE =
-  'Practice performance on PathwayEd questions. Official HSPT and ISEE scaled scores are produced by Scholastic Testing Service and ERB using their own national norming data.'
+/** Tests whose official score needs the publisher's own norming data, in card order. */
+const NORM_REFERENCED: { id: string; test: string; publisher: string }[] = [
+  { id: 'hspt', test: 'HSPT', publisher: 'Scholastic Testing Service' },
+  { id: 'isee', test: 'ISEE', publisher: 'ERB' },
+]
+
+/** "A", "A and B", "A, B and C". */
+function joinAnd(xs: string[]): string {
+  if (xs.length <= 1) return xs[0] ?? ''
+  return `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`
+}
+
+/**
+ * The practice disclosure, built from the tests actually on the card for THIS
+ * student.
+ *
+ * It used to be one constant naming HSPT, ISEE, Scholastic Testing Service and ERB
+ * to everybody. A grade 9-12 student only ever has SAT (gradeBand [9,12], against
+ * [6,8] for HSPT and ISEE), so that copy was accurate and irrelevant at once, and
+ * irrelevant copy on a parent-facing readiness panel reads like the product does
+ * not know who it is talking to.
+ *
+ * Every branch keeps the same promise: what PathwayEd shows is practice
+ * performance, and the official score is somebody else's to produce. Nothing here
+ * converts a practice percent onto anyone's published scale.
+ */
+export function practiceDisclosure(moduleIds: readonly string[]): string {
+  const ids = new Set(moduleIds)
+  const parts = ['Practice performance on PathwayEd questions.']
+
+  // HSPT and ISEE share a shape: a published scale we cannot compute because the
+  // norming data is the publisher's. One sentence, so it reads as one fact.
+  const normed = NORM_REFERENCED.filter((t) => ids.has(t.id))
+  if (normed.length > 0) {
+    parts.push(
+      `Official ${joinAnd(normed.map((t) => t.test))} scaled scores are produced by ` +
+        `${joinAnd(normed.map((t) => t.publisher))} using ${normed.length > 1 ? 'their' : 'its'} ` +
+        'own national norming data.',
+    )
+  }
+
+  // SAT is a different failure mode with the same answer. There is no norming table
+  // we are missing; the gap is that the range on this card is projected from
+  // mastery rather than earned on a test. Either way PathwayEd reports no official
+  // score, and the College Board is who does.
+  if (ids.has('sat')) {
+    parts.push(
+      'Official SAT scores are produced by the College Board from the real test. Any SAT range here is an estimate built from practice, not a reported score.',
+    )
+  }
+
+  return parts.join(' ')
+}
 
 /** Cap on the history list (most recent first). */
 export const HISTORY_LIMIT = 10
@@ -48,17 +98,29 @@ export const HISTORY_LIMIT = 10
 // Static scale reference. Copy only, rendered collapsed. Nothing here is computed
 // from, or applied to, a student's practice results.
 // ---------------------------------------------------------------------------
-export const SCALE_REFERENCE: { test: string; text: string }[] = [
+export const SCALE_REFERENCE: { id: string; test: string; text: string }[] = [
   {
+    id: 'hspt',
     test: 'HSPT',
     text: 'Reports standard scores from 200 to 800 with 500 as the mean, plus national and local percentiles and a Cognitive Skills Quotient averaging 100.',
   },
   {
+    id: 'isee',
     test: 'ISEE',
     text: 'Reports scaled scores from 760 to 940 per section, a percentile from 1 to 99, and a stanine from 1 to 9.',
   },
-  { test: 'SAT', text: 'Reports scores from 400 to 1600.' },
+  { id: 'sat', test: 'SAT', text: 'Reports scores from 400 to 1600.' },
 ]
+
+/**
+ * The reference rows for the tests this student actually has, in card order. A
+ * SAT-only student has no use for how ERB scales the ISEE, and seeing it named is
+ * the same irrelevance the disclosure had.
+ */
+export function scaleReferenceFor(moduleIds: readonly string[]): typeof SCALE_REFERENCE {
+  const ids = new Set(moduleIds)
+  return SCALE_REFERENCE.filter((s) => ids.has(s.id))
+}
 
 /**
  * The published ISEE percentile-to-stanine table, as static reference data. It is

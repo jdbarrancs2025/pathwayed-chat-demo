@@ -12,6 +12,8 @@ import {
   bandFor,
   buildHistory,
   buildModuleReadiness,
+  practiceDisclosure,
+  scaleReferenceFor,
   type HistoryAttemptInput,
 } from './testReadiness'
 
@@ -191,5 +193,59 @@ describe('ISEE percentile to stanine reference', () => {
       '89-95',
       '96-99',
     ])
+  })
+})
+
+/**
+ * The disclosure names tests, and naming a test the student cannot sit is how a
+ * 9-12 student ended up reading about Scholastic Testing Service and ERB. These
+ * guard both halves: irrelevant tests stay out, and every branch still says
+ * someone else produces the official score.
+ */
+describe('practiceDisclosure', () => {
+  it('names HSPT, ISEE and their publishers for a 6-8 student', () => {
+    const text = practiceDisclosure(['hspt', 'isee'])
+    expect(text).toBe(
+      'Practice performance on PathwayEd questions. Official HSPT and ISEE scaled scores are produced by Scholastic Testing Service and ERB using their own national norming data.',
+    )
+  })
+
+  it('never names HSPT, ISEE, STS or ERB for a SAT-only student', () => {
+    const text = practiceDisclosure(['sat'])
+    for (const word of ['HSPT', 'ISEE', 'Scholastic Testing Service', 'ERB']) {
+      expect(text).not.toContain(word)
+    }
+  })
+
+  it('still disclaims for SAT: an estimate, and the College Board owns the real score', () => {
+    const text = practiceDisclosure(['sat'])
+    expect(text).toContain('Practice performance on PathwayEd questions.')
+    expect(text).toContain('College Board')
+    expect(text).toContain('estimate')
+    expect(text).toContain('not a reported score')
+  })
+
+  it('uses singular agreement when only one norm-referenced test applies', () => {
+    expect(practiceDisclosure(['isee'])).toContain('produced by ERB using its own national norming data')
+    expect(practiceDisclosure(['isee'])).not.toContain('HSPT')
+  })
+
+  it('covers every test present, e.g. a transfer carrying HSPT results into grade 9', () => {
+    const text = practiceDisclosure(['hspt', 'sat'])
+    expect(text).toContain('Scholastic Testing Service')
+    expect(text).toContain('College Board')
+    expect(text).not.toContain('ERB')
+  })
+
+  it('keeps the practice claim even when no test applies', () => {
+    expect(practiceDisclosure([])).toBe('Practice performance on PathwayEd questions.')
+  })
+})
+
+describe('scaleReferenceFor', () => {
+  it('returns only the tests the student has, in card order', () => {
+    expect(scaleReferenceFor(['sat']).map((r) => r.test)).toEqual(['SAT'])
+    expect(scaleReferenceFor(['isee', 'hspt']).map((r) => r.test)).toEqual(['HSPT', 'ISEE'])
+    expect(scaleReferenceFor([])).toEqual([])
   })
 })
